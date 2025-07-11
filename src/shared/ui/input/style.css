@@ -1,0 +1,260 @@
+@reference "@style";
+
+.mdc-input {
+	@apply relative flex border-current rounded flex-wrap;
+	--input-section-width: 2rem;
+	--imput-padding: calc(var(--spacing) * 3);
+	--input-padding-start: var(--imput-padding);
+	--input-padding-end: var(--imput-padding);
+}
+.mdc-input,
+.mdc-input * {
+	@apply transition-all ease-in-out duration-200;
+}
+.mdc-input-before,
+.mdc-input-after {
+	@apply flex justify-center items-center content-center;
+}
+.mdc-input-before {
+	@apply mr-2;
+}
+.mdc-input-after {
+	@apply ml-2;
+}
+
+.mdc-input-container {
+	@apply flex-1 relative border-inherit rounded-[inherit];
+}
+.mdc-input-section {
+	@apply absolute top-0 bottom-0 z-10 flex justify-center items-center content-center;
+	width: var(--input-section-width);
+	&:is(*:first-child) {
+		top: 0;
+	}
+	&:is(*:last-child) {
+		right: 0;
+	}
+}
+
+.mdc-input-native {
+	@apply block w-full relative bg-transparent pt-6 pb-2 outline-none border-none placeholder:opacity-0 focus:placeholder:opacity-100 focus:outline-none;
+	padding-inline-start: var(--input-padding-start);
+	padding-inline-end: var(--input-padding-end);
+}
+.mdc-input-container:has(.mdc-input-section:is(*:first-child)) {
+	--input-padding-start: var(--input-section-width);
+}
+.mdc-input-container:has(.mdc-input-section:is(*:last-child)) {
+	--input-padding-end: var(--input-section-width);
+}
+
+.mdc-input-label {
+	@apply pointer-events-none opacity-70 truncate absolute top-1/2 max-w-[calc(100%-2rem)] -translate-y-1/2;
+	left: var(--input-padding-start);
+}
+
+.mdc-input--stack-label .mdc-input-native,
+.mdc-input-container:not(:has(.mdc-input-label)) .mdc-input-native {
+	@apply placeholder:opacity-100;
+}
+
+.mdc-input-container:not(:has(.mdc-input-label)) .mdc-input-native {
+	@apply py-4 placeholder:opacity-100;
+}
+
+.mdc-input-container:focus-within .mdc-input-label {
+	@apply opacity-100;
+}
+
+.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label,
+.mdc-input-native:focus ~ .mdc-input-label,
+.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+	@apply text-[0.8em] top-4;
+}
+
+.mdc-input-underlay,
+.mdc-input-underlined,
+.mdc-input-outline {
+	@apply hidden absolute bottom-0 left-0 w-full rounded-[inherit] border-inherit contain-layout box-border;
+}
+
+.mdc-input-underlay {
+	@apply h-full;
+	background-color: color-mix(in srgb, currentColor 5%, transparent);
+}
+.mdc-input-underlined {
+	@apply border-b;
+}
+
+.mdc-input-outline {
+	@apply h-full items-stretch pointer-events-none;
+}
+.mdc-input-outline > * {
+	@apply border-y border-inherit;
+}
+.mdc-input-outline > *:first-child {
+	@apply border-l rounded-l-[inherit];
+}
+.mdc-input-outline > *:last-child {
+	@apply border-r rounded-r-[inherit];
+}
+.mdc-input-outline > *:first-child {
+	@apply flex-initial min-w-2;
+}
+.mdc-input-outline > *:not(:first-child, :last-child) {
+	@apply flex-none max-w-[calc(100%-0.5rem)];
+}
+.mdc-input-outline > *:last-child {
+	@apply flex-[1];
+}
+.mdc-input-outline .mdc-input-label {
+	@apply invisible text-[0.8em] mx-1 relative;
+}
+
+.mdc-input--dense {
+	.mdc-input-native {
+		@apply pt-3 pb-1;
+	}
+	.mdc-input-native:focus ~ .mdc-input-label,
+	.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+		@apply text-[0.8em] top-2;
+	}
+	&:not(:has(*.mdc-input-label)) .mdc-input-native {
+		@apply py-2;
+	}
+}
+.mdc-input--dense.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label {
+	@apply text-[0.8em] top-2;
+}
+
+.mdc-input--outline .mdc-input-outline {
+	@apply flex;
+}
+.mdc-input--outline.mdc-input--dense {
+	.mdc-input-native {
+		@apply py-2;
+	}
+
+	&.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label,
+	.mdc-input-native:focus ~ .mdc-input-label,
+	.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+		@apply top-0;
+		left: var(--imput-padding);
+	}
+
+	&.mdc-input--stack-label,
+	&:focus-within,
+	&:has(input:not(:placeholder-shown)),
+	&:has(select) {
+		.mdc-input-outline > .mdc-input-outline-notch {
+			@apply border-t-transparent;
+		}
+	}
+}
+
+.mdc-input--filled .mdc-input-underlay {
+	@apply block;
+}
+.mdc-input--underlined .mdc-input-underlined {
+	@apply block;
+}
+.mdc-input--underlined:focus-within .mdc-input-underlined {
+	@apply border-b-3;
+}
+.mdc-input--square {
+	@apply rounded-none;
+}
+.mdc-input--disabled {
+	@apply opacity-50 cursor-not-allowed;
+}
+.mdc-input--disabled .mdc-input-native {
+	@apply pointer-events-none;
+}
+
+.mdc-input-container:focus-within {
+	@apply border-blue-600;
+}
+
+.mdc-input--primary,
+.mdc-input--secondary,
+.mdc-input--accent,
+.mdc-input--positive,
+.mdc-input--negative,
+.mdc-input--info,
+.mdc-input--warning {
+	.mdc-input-underlay {
+		background-color: color-mix(in srgb, currentColor 30%, transparent);
+	}
+	.mdc-input-outline,
+	.mdc-input-underlined {
+		@apply border-current opacity-60;
+	}
+	&:focus-within .mdc-input-outline,
+	&:focus-within .mdc-input-underlined {
+		@apply opacity-100;
+	}
+}
+
+.mdc-input--primary .mdc-input-outline,
+.mdc-input--primary .mdc-input-underlay,
+.mdc-input--primary .mdc-input-underlined {
+	@apply text-primary;
+}
+
+.mdc-input--secondary .mdc-input-outline,
+.mdc-input--secondary .mdc-input-underlay,
+.mdc-input--secondary .mdc-input-underlined {
+	@apply text-secondary;
+}
+.mdc-input--accent .mdc-input-outline,
+.mdc-input--accent .mdc-input-underlay,
+.mdc-input--accent .mdc-input-underlined {
+	@apply text-accent;
+}
+
+.mdc-input--positive .mdc-input-outline,
+.mdc-input--positive .mdc-input-underlay,
+.mdc-input--positive .mdc-input-underlined {
+	@apply text-positive;
+}
+
+.mdc-input--negative .mdc-input-outline,
+.mdc-input--negative .mdc-input-underlay,
+.mdc-input--negative .mdc-input-underlined {
+	@apply text-negative;
+}
+
+.mdc-input--info .mdc-input-outline,
+.mdc-input--info .mdc-input-underlay,
+.mdc-input--info .mdc-input-underlined {
+	@apply text-info;
+}
+
+.mdc-input--warning .mdc-input-outline,
+.mdc-input--warning .mdc-input-underlay,
+.mdc-input--warning .mdc-input-underlined {
+	@apply text-warning;
+}
+
+.mdc-input-messages {
+	@apply flex-auto w-full min-h-3 relative text-xs/none px-3 overflow-hidden;
+}
+.mdc-input-message {
+	@apply transition-all relative -top-full -translate-y-full;
+}
+.mdc-input-message--hint {
+}
+.mdc-input-message--error {
+	@apply text-negative absolute w-[calc(100%-1rem)];
+}
+.mdc-input-messages--error .mdc-input-message--hint {
+}
+.mdc-input-messages--error .mdc-input-message--error {
+	@apply top-0 translate-y-0;
+}
+.mdc-input:focus-within
+	.mdc-input-messages:not(.mdc-input-messages--error)
+	.mdc-input-message--hint,
+.mdc-input-messages--hint .mdc-input-message--hint {
+	@apply top-0 translate-y-0;
+}

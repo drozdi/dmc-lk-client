@@ -1,0 +1,226 @@
+@reference "@style";
+
+.mdc-btn {
+	@apply relative flex items-center justify-center select-none cursor-pointer rounded p-3 uppercase box-border overflow-hidden focus:outline-none focus-visible:outline-none shadow !shadow-black/50;
+	&:not(:disabled, .mdc-btn--disabled, .mdc-btn--loading) {
+		&:hover {
+			@apply shadow-xl;
+		}
+		&:focus {
+			@apply shadow-lg;
+		}
+		&:active {
+			@apply scale-[0.98] shadow-none;
+		}
+	}
+}
+.mdc-btn:disabled,
+.mdc-btn--disabled,
+.mdc-btn--loading {
+	@apply !shadow-none !opacity-50 !cursor-not-allowed !transform-none;
+}
+.mdc-btn::after,
+.mdc-btn::before,
+.mdc-btn-loader {
+	@apply absolute top-0 left-0 w-full h-full rounded-s-[inherit];
+}
+.mdc-btn::after {
+	@apply bg-transparent border border-current opacity-80;
+}
+.mdc-btn--outline::after {
+	content: '';
+}
+.mdc-btn::before {
+	@apply bg-black opacity-0;
+	content: ' ';
+}
+.mdc-btn,
+.mdc-btn::before,
+.mdc-btn::after,
+.mdc-btn * {
+	@apply transition-all duration-200 ease-in-out;
+}
+.mdc-btn-content,
+.mdc-btn-loader {
+	@apply flex z-10;
+}
+.mdc-btn-loader {
+	@apply top-full items-center justify-center;
+}
+.mdc-btn--loading {
+	.mdc-btn-content {
+		@apply translate-y-[calc(-100%-2*var(--spacing))];
+	}
+	.mdc-btn-loader {
+		@apply top-0;
+	}
+}
+.mdc-btn-section {
+	@apply flex items-center justify-center;
+	& > svg {
+		@apply block;
+	}
+}
+.mdc-btn:not(.mdc-btn--icon) .mdc-btn-section {
+	&:is(*:first-child) {
+		@apply mr-3;
+	}
+	&:is(*:last-child) {
+		@apply ml-3;
+	}
+}
+.mdc-btn:not(
+		:disabled,
+		.mdc-btn--disabled,
+		.mdc-btn--loading,
+		.mdc-btn--text
+	):hover::before {
+	@apply opacity-15;
+}
+.mdc-btn:not(
+		:disabled,
+		.mdc-btn--disabled,
+		.mdc-btn--loading,
+		.mdc-btn--text
+	):focus::before {
+	@apply opacity-20;
+}
+.mdc-btn:not(
+		:disabled,
+		.mdc-btn--disabled,
+		.mdc-btn--loading,
+		.mdc-btn--text
+	):active::before {
+	@apply opacity-25;
+}
+
+.mdc-btn--outline,
+.mdc-btn--plain,
+.mdc-btn--text {
+	@apply !bg-transparent;
+}
+.mdc-btn--tonal {
+	background-color: color-mix(
+		in srgb,
+		currentColor 20%,
+		transparent
+	) !important;
+}
+.mdc-btn--plain,
+.mdc-btn--text {
+	&::before {
+		@apply bg-current;
+	}
+}
+.mdc-btn--flat {
+	@apply !shadow-none;
+}
+.mdc-btn--outline:not(
+		:disabled,
+		.mdc-btn--disabled,
+		.mdc-btn--loading
+	):hover::after {
+	@apply opacity-100;
+}
+.mdc-btn--text,
+.mdc-btn--plain {
+	.mdc-btn-label {
+		@apply opacity-80;
+	}
+}
+.mdc-btn--text,
+.mdc-btn--plain {
+	&:not(:disabled, .mdc-btn--disabled, .mdc-btn--loading) {
+		&:hover,
+		&.mdc-btn--active {
+			.mdc-btn-label {
+				@apply opacity-100;
+			}
+		}
+	}
+}
+.mdc-btn--active {
+	@apply shadow-md;
+	&::before {
+		@apply !bg-current !opacity-20;
+	}
+}
+
+.mdc-btn--xs,
+.mdc-btn--sm,
+.mdc-btn--icon,
+.mdc-btn--round {
+	@apply px-0;
+}
+
+.mdc-btn--block {
+	@apply w-full;
+}
+.mdc-btn--rounded {
+	@apply rounded-full;
+}
+.mdc-btn--square {
+	@apply rounded-none;
+}
+.mdc-btn--round {
+	@apply rounded-[50%] min-w-8 min-h-8;
+}
+
+.mdc-btn--primary,
+.mdc-btn--secondary,
+.mdc-btn--accent,
+.mdc-btn--positive,
+.mdc-btn--negative,
+.mdc-btn--info,
+.mdc-btn--warning {
+	@apply text-white;
+}
+
+.mdc-btn--primary {
+	@apply bg-primary;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-primary;
+	}
+}
+
+.mdc-btn--secondary {
+	@apply bg-secondary;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-secondary;
+	}
+}
+
+.mdc-btn--accent {
+	@apply bg-accent;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-accent;
+	}
+}
+
+.mdc-btn--positive {
+	@apply bg-positive;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-positive;
+	}
+}
+
+.mdc-btn--negative {
+	@apply bg-negative;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-negative;
+	}
+}
+
+.mdc-btn--info {
+	@apply bg-info;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-info;
+	}
+}
+
+.mdc-btn--warning {
+	@apply bg-warning;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-warning;
+	}
+}
