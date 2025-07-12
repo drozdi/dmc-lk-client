@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Btn, Input } from '../../shared/ui'
 
-export function Verification() {
+export function VerificationForm() {
 	const [isLoading, setIsLoading] = useState(false)
 	const navigate = useNavigate()
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {}
@@ -16,7 +16,6 @@ export function Verification() {
 					name='link'
 					type='text'
 					square
-					dense
 					required
 					stackLabel
 					filled
@@ -24,7 +23,7 @@ export function Verification() {
 				/>
 
 				<Btn type='submit' color='primary' block loading={isLoading}>
-					Войти
+					Продолжить
 				</Btn>
 			</form>
 		</>

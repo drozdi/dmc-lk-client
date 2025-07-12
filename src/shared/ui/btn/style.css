@@ -25,7 +25,7 @@
 	@apply absolute top-0 left-0 w-full h-full rounded-s-[inherit];
 }
 .mdc-btn::after {
-	@apply bg-transparent border border-current opacity-80;
+	@apply bg-transparent border border-color opacity-80;
 }
 .mdc-btn--outline::after {
 	content: '';

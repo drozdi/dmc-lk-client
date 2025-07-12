@@ -1,0 +1,6 @@
+@utility border-color {
+	border-color: var(--border-color);
+}
+@utility divide-color {
+	border-color: var(--border-color);
+}

@@ -3,6 +3,7 @@ import { AuthLayout } from '../layout/AuthLayout'
 import { MainLayout } from '../layout/MainLayout'
 import { SignInPage } from '../pages/auth/sign-in'
 import { SignUpPage } from '../pages/auth/sign-up'
+import { VerificatinPage } from '../pages/auth/verification'
 
 export function AppRouters() {
 	return (
@@ -11,6 +12,7 @@ export function AppRouters() {
 				<Route path='' element='Hello World!' />
 			</Route>
 			<Route path='/auth' element={<AuthLayout />}>
+				<Route path='verificatin' element={<VerificatinPage />} />
 				<Route path='sign-in' element={<SignInPage />} />
 				<Route path='sign-up' element={<SignUpPage />} />
 				<Route path='sign-out' element='sign-out' />

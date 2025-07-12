@@ -1,7 +1,7 @@
 @reference "@style";
 
 .mdc-input {
-	@apply relative flex border-current rounded flex-wrap;
+	@apply relative flex border-color rounded flex-wrap;
 	--input-section-width: 2rem;
 	--imput-padding: calc(var(--spacing) * 3);
 	--input-padding-start: var(--imput-padding);
