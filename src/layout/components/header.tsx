@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 
 import { useSidebar } from '../context/sidebar'
 
+import { HeaderLink } from '../../features/lk/header-link'
 import { ThemeToggleButton } from './theme-toggle-button'
 
 const Header: React.FC = () => {
@@ -74,8 +75,10 @@ const Header: React.FC = () => {
 						)}
 						{/* Cross Icon */}
 					</button>
-
-					<ThemeToggleButton />
+					<div>
+						<HeaderLink />
+						<ThemeToggleButton />
+					</div>
 				</div>
 			</div>
 		</header>
