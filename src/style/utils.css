@@ -4,3 +4,8 @@
 @utility divide-color {
 	border-color: var(--border-color);
 }
+
+@utility mdc-bg-* {
+	background-color: --value(--color- *);
+	color: --value(--color-on- *);
+}

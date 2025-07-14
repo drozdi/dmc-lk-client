@@ -12,22 +12,27 @@
 
 	--border-color: rgb(0, 0, 0, 0.2);
 
+	--scrollbar-color: rgba(0, 0, 0, 0.3) rgba(255, 255, 255, 0.2);
+
+	--selection-bg: rgba(0, 0, 0, 0.2);
+	--selection-color: #fff;
+
 	--color-primary: #1975d2;
 	--color-secondary: #5cbbf6;
 	--color-accent: #9c27b0;
-	--color-positive: #4caf50;
-	--color-negative: #dc3545;
+	--color-success: #4caf50;
+	--color-warning: #dc3545;
 	--color-info: #2196f3;
-	--color-warning: #fb8c00;
+	--color-danger: #fb8c00;
 	--color-dark: #1d1d1d;
 
 	--color-on-primary: #ffffff;
 	--color-on-secondary: #ffffff;
 	--color-on-accent: #ffffff;
-	--color-on-positive: #ffffff;
-	--color-on-negative: #ffffff;
-	--color-on-info: #ffffff;
+	--color-on-success: #ffffff;
 	--color-on-warning: #ffffff;
+	--color-on-info: #ffffff;
+	--color-on-danger: #ffffff;
 	--color-on-dark: #ffffff;
 
 	--color-surface: #ffffff;
@@ -35,6 +40,20 @@
 
 	--color-background: var(--body-bg);
 	--color-on-background: var(--body-color);
+
+	--inset-shadow-md: inset 0 3px 5px rgb(0 0 0 / 0.25);
+
+	--shadow-1: 0px 1px 3px 0px rgba(166, 175, 195, 0.4);
+	--shadow-2: 0px 5px 12px 0px rgba(0, 0, 0, 0.1);
+	--shadow-3: 0px 4px 12px 0px rgba(13, 10, 44, 0.06);
+	--shadow-4: 0px 10px 30px 0px rgba(85, 106, 235, 0.12),
+		0px 4px 10px 0px rgba(85, 106, 235, 0.04),
+		0px -18px 38px 0px rgba(85, 106, 235, 0.04);
+	--shadow-5: 0px 13px 40px 0px rgba(13, 10, 44, 0.12),
+		0px -8px 18px 0px rgba(13, 10, 44, 0.04);
+	--shadow-6: 0px 12px 34px 0px rgba(13, 10, 44, 0.08),
+		0px 34px 26px 0px rgba(13, 10, 44, 0.05);
+	--shadow-strong: 0 4px 18px -2px #000000b3;
 
 	--opacity-d: 0.6;
 	--opacity-h: 0.2;

@@ -1,78 +1,73 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { observer } from 'mobx-react-lite'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { authStore } from '../../shared/stores/auth-store'
 import { Btn, Input, Message } from '../../shared/ui'
 
+interface IUser {
+	first_name: string
+	last_name: string
+	father_name: string
+	email: string
+	phone: string
+	save: boolean
+}
+
 const fieldsSchema = yup.object().shape({
-	first_name: yup.string().required('Заполните имя'),
-	last_name: yup.string().required('Заполните фамилию'),
-	father_name: yup.string().required('Заполните отчество'),
+	first_name: yup.string().required('Укажите имя'),
+	last_name: yup.string().required('Укажите фамилию'),
+	father_name: yup.string().required('Укажите отчество'),
 	email: yup
 		.string()
 		.email('Введите корректный email')
-		.required('Заполните email'),
+		.required('Укажите email'),
 	phone: yup
 		.string()
 		.matches(
 			/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
 			'Неверный номер телефона'
 		)
-		.required('Заполните телефон'),
-	password: yup
-		.string()
-		.required('Пароль обязателен.')
-		/*.matches(
-			/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/,
-			'Допустимые символы: буквы, цифры и спец. символы @#$%^&*'
-		)*/
-		.min(6, 'Должно быть не меньше 6 символов')
-		.max(16, 'Должно быть не больше 16 символов'),
-	re_password: yup
-		.string()
-		.required('Повтор пароль обязателен.')
-		.oneOf([yup.ref('password')], 'Пароли должны совпадать!'),
+		.required('Укажите телефон'),
 })
 
-/**
- * {
- * 	"first_name": "string",
- * 	"last_name": "string",
- * 	"email": "string",
- * 	"phone": "string",
- * 	"father_name": "string",
- * 	"password": "string"
- * }
- */
-
-export const SignUpForm = observer(() => {
+export const PersonalForm = observer(() => {
+	const { isLoading, error, user } = authStore
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors, isValid },
-	} = useForm({
+	} = useForm<IUser>({
 		mode: 'onChange',
 		defaultValues: {
-			first_name: '',
-			last_name: '',
-			email: '',
-			phone: '',
-			father_name: '',
-			password: '',
-			re_password: '',
+			first_name: user?.first_name,
+			last_name: user?.last_name,
+			father_name: user?.father_name,
+			email: user?.email,
+			phone: user?.phone,
+			save: true,
 		},
 		resolver: yupResolver(fieldsSchema),
 	})
-	const { isLoading, error } = authStore
+
 	const navigate = useNavigate()
 
-	async function sendFormData(formData) {
-		if (await authStore.register(formData)) {
-			navigate('/lk')
-		}
+	async function handleSave(formData) {
+		await authStore.updateUser(formData)
 	}
+	async function handleSaveNavigate(formData) {
+		try {
+			await authStore.updateUser(formData)
+			navigate('/')
+		} catch (e) {}
+	}
+
+	useEffect(() => {
+		reset(user)
+	}, [user])
 
 	return (
 		<>
@@ -85,11 +80,7 @@ export const SignUpForm = observer(() => {
 					label={error}
 				/>
 			)}
-			<form
-				name='registration'
-				className='space-y-1'
-				onSubmit={handleSubmit(sendFormData)}
-			>
+			<form name='registration' className='space-y-1'>
 				<input type='hidden' name='remember' value='true' />
 				<Input
 					label='Имя'
@@ -162,39 +153,29 @@ export const SignUpForm = observer(() => {
 					errorMessage={errors?.phone?.message}
 					{...register('phone')}
 				/>
+				<div className='flex flex-row gap-3'>
+					<Btn
+						type='button'
+						color='success'
+						size='xs'
+						onClick={handleSubmit(handleSaveNavigate)}
+						loading={isLoading}
+						disabled={!isValid}
+					>
+						Сохранить
+					</Btn>
 
-				<Input
-					label='Пароль'
-					placeholder='Придумай пароль'
-					id='registration_password'
-					type='password'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.password?.message}
-					{...register('password')}
-				/>
-				<Input
-					label='Повторноый пароль'
-					placeholder='Повтори пароль'
-					id='registration_re_password'
-					type='password'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.re_password?.message}
-					{...register('re_password')}
-				/>
-
-				<Btn type='submit' color='primary' block loading={isLoading}>
-					Войти
-				</Btn>
+					<Btn
+						type='button'
+						color='primary'
+						size='xs'
+						onClick={handleSubmit(handleSave)}
+						loading={isLoading}
+						disabled={!isValid}
+					>
+						Применить
+					</Btn>
+				</div>
 			</form>
 		</>
 	)

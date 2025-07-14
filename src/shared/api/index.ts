@@ -1,15 +1,15 @@
-import { axios, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants'
+import axios, { AxiosError } from 'axios'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, URL_API } from '../constants'
 
 export const api = axios.create({
-	baseURL: 'http://10.76.10.145:5055/v1/registration',
+	baseURL: URL_API,
 	headers: {
 		'Content-Type': 'application/json',
 	},
 })
 
 api.interceptors.request.use(
-	(config: AxiosRequestConfig) => {
+	config => {
 		const token = localStorage.getItem(ACCESS_TOKEN_KEY)
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`
@@ -18,10 +18,9 @@ api.interceptors.request.use(
 	},
 	(error: AxiosError) => Promise.reject(error)
 )
-
 // Интерцептор для обработки 401 ошибки (не авторизован)
 api.interceptors.response.use(
-	(response: AxiosResponse) => response,
+	response => response,
 	async (error: AxiosError) => {
 		const originalRequest = error.config
 		if (error.response?.status === 401) {

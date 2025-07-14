@@ -1,7 +1,6 @@
-import axios, { AxiosError } from 'axios'
 import { makeAutoObservable } from 'mobx'
 import { api } from '../api'
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, URL_API } from '../constants'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants'
 
 class AuthStore {
 	accessToken = localStorage.getItem(ACCESS_TOKEN_KEY) || null
@@ -9,70 +8,28 @@ class AuthStore {
 	user = null
 	error = null
 	isLoading = false
-	axiosInstance
 
 	get isAuthenticated() {
 		return !!this.accessToken && !!this.refreshToken
 	}
-	get interceptors() {
-		return this.axiosInstance
-	}
 	constructor() {
 		makeAutoObservable(this)
-		this.isAuthenticated = !!this.accessToken && !!this.refreshToken
-		this.axiosInstance = axios.create({
-			baseURL: URL_API,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		})
-
-		this.initInterceptors()
 		this.initializeAuth()
 	}
-	private initInterceptors() {
-		// Request interceptor для добавления access token
-		this.axiosInstance.interceptors.request.use(
-			config => {
-				if (this.accessToken && !config.headers.Authorization) {
-					config.headers.Authorization = `Bearer ${this.accessToken}`
-				}
-				return config
-			},
-			error => Promise.reject(error)
-		)
-		// Response interceptor для обработки 401 ошибки и refresh token
-		this.axiosInstance.interceptors.response.use(
-			response => response,
-			async (error: AxiosError) => {
-				const originalRequest = error.config
-
-				// Если ошибка 401 и это не запрос на обновление токена
-				if (
-					error.response?.status === 401 &&
-					!originalRequest.url?.includes('/registration/refresh')
-				) {
-					try {
-						// Пытаемся обновить токен
-						const { accessToken } = await this.refreshAuth()
-
-						// Повторяем оригинальный запрос с новым токеном
-						if (originalRequest.headers) {
-							originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
-						}
-						return this.axiosInstance(originalRequest)
-					} catch (refreshError) {
-						// Если не удалось обновить - разлогиниваем
-						this.logout()
-						return Promise.reject(error)
-					}
-				}
-
-				return Promise.reject(error)
+	private async initializeAuth() {
+		this.isLoading = true
+		this.error = null
+		try {
+			if (this.isAuthenticated) {
+				const response = await api.get('/user_profile/')
+				this.user = response.data.data.user
 			}
-		)
+		} catch (error) {
+			this.error = error.response?.data?.detail || 'Ошибка проверки'
+		} finally {
+			this.isLoading = false
+		}
 	}
-	private async initializeAuth() {}
 	private setAccessToken(accessToken: string) {
 		this.accessToken = accessToken
 		localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
@@ -106,38 +63,74 @@ class AuthStore {
 			throw error
 		}
 	}
+	async verification(link: string) {
+		this.isLoading = true
+		this.error = null
+		try {
+			const response = await api.get('/registration/verification', {
+				params: { link },
+			})
+			return response.data
+		} catch (error) {
+			this.error = error.response?.data?.detail || 'Ошибка входа'
+		} finally {
+			this.isLoading = false
+		}
+		return null
+	}
 	async login(email: string, password: string) {
 		this.isLoading = true
 		this.error = null
 		try {
-			const response = await api.post('/authorization', { email, password })
-			this.setAccessToken(response.data.accessToken)
-			this.setRefreshToken(response.data.refreshToken)
+			const response = await api.post('/registration/authorization', {
+				email,
+				password,
+			})
+			const { token } = response.data.data
+			this.setAccessToken(token.access)
+			this.setRefreshToken(token.refresh)
 			return true
 		} catch (error) {
-			this.error = error.response?.data?.message || 'Ошибка входа'
+			console.log(error)
+			this.error = error.response?.data?.detail || 'Ошибка входа'
 		} finally {
 			this.isLoading = false
 		}
 		return false
 	}
-	async register(userData) {
+	async register(userData: {}) {
 		this.isLoading = true
 		this.error = null
 		try {
-			const response = await api.post('/save_data', userData)
-			this.setAccessToken(response.data.accessToken)
-			this.setRefreshToken(response.data.refreshToken)
-			return true
+			const response = await api.post('/registration/save_data', userData)
+			const { user, token } = response.data.data
+			this.user = user
+			this.setAccessToken(token.access)
+			this.setRefreshToken(token.refresh)
+			return response.data
 		} catch (error) {
-			this.error = error.response?.data?.message || 'Ошибка регистрации'
+			this.error = error.response?.data?.detail || 'Ошибка регистрации'
 		} finally {
 			this.isLoading = false
 		}
-		return false
+		return null
 	}
 	async logout() {
 		this.clearAuth()
+	}
+	async updateUser(userData: {}) {
+		this.isLoading = true
+		this.error = null
+		try {
+			const response = await api.patch('/user_profile/', userData)
+			this.user = response.data.data
+			return response.data
+		} catch (error) {
+			this.error = error.response?.data?.detail || 'Ошибка регистрации'
+		} finally {
+			this.isLoading = false
+		}
+		return null
 	}
 }
 

@@ -178,10 +178,10 @@
 .mdc-input--primary,
 .mdc-input--secondary,
 .mdc-input--accent,
-.mdc-input--positive,
-.mdc-input--negative,
+.mdc-input--success,
+.mdc-input--warning,
 .mdc-input--info,
-.mdc-input--warning {
+.mdc-input--danger {
 	.mdc-input-underlay {
 		background-color: color-mix(in srgb, currentColor 30%, transparent);
 	}
@@ -212,16 +212,16 @@
 	@apply text-accent;
 }
 
-.mdc-input--positive .mdc-input-outline,
-.mdc-input--positive .mdc-input-underlay,
-.mdc-input--positive .mdc-input-underlined {
-	@apply text-positive;
+.mdc-input--success .mdc-input-outline,
+.mdc-input--success .mdc-input-underlay,
+.mdc-input--success .mdc-input-underlined {
+	@apply text-success;
 }
 
-.mdc-input--negative .mdc-input-outline,
-.mdc-input--negative .mdc-input-underlay,
-.mdc-input--negative .mdc-input-underlined {
-	@apply text-negative;
+.mdc-input--warning .mdc-input-outline,
+.mdc-input--warning .mdc-input-underlay,
+.mdc-input--warning .mdc-input-underlined {
+	@apply text-warning;
 }
 
 .mdc-input--info .mdc-input-outline,
@@ -230,10 +230,10 @@
 	@apply text-info;
 }
 
-.mdc-input--warning .mdc-input-outline,
-.mdc-input--warning .mdc-input-underlay,
-.mdc-input--warning .mdc-input-underlined {
-	@apply text-warning;
+.mdc-input--danger .mdc-input-outline,
+.mdc-input--danger .mdc-input-underlay,
+.mdc-input--danger .mdc-input-underlined {
+	@apply text-danger;
 }
 
 .mdc-input-messages {
@@ -245,7 +245,7 @@
 .mdc-input-message--hint {
 }
 .mdc-input-message--error {
-	@apply text-negative absolute w-[calc(100%-1rem)];
+	@apply text-warning absolute w-[calc(100%-1rem)];
 }
 .mdc-input-messages--error .mdc-input-message--hint {
 }

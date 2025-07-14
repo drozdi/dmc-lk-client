@@ -1,8 +1,9 @@
-import { debounce } from '../utils'
+import { useCallback, useState } from 'react'
+import { debounce, get, set, unset } from '../utils'
+
 const validation = (value: any, rules: Function[] = []) => {
 	return rules.map(rule => rule(value)).filter(v => v !== true)
 }
-
 export function useFormAction({ data, rules }) {
 	const [errors, setErrors] = useState(validation(value, rules))
 	const checkValue = useCallback(
@@ -11,6 +12,54 @@ export function useFormAction({ data, rules }) {
 		}, 200),
 		[rules]
 	)
+}
+
+export function useForm(defaultValue = {}, options = {}) {
+	const [errors, setErrors] = useState({})
+	const [data, setData] = useState({})
+	const [rules, _setRules] = useState({})
+
+	const setError = (fieldName: string, error: string) => {
+		set(errors, fieldName, error)
+		setErrors({ ...errors })
+	}
+	const getError = (fieldName: string) => {
+		return get(errors, fieldName)
+	}
+	const clearErrors = (fieldName?: string | string[]) => {
+		if (fieldName) {
+			if (!Array.isArray(fieldName)) {
+				fieldName = fieldName.split(/\s+/)
+			}
+			fieldName.forEach(n => {
+				unset(errors, n)
+			})
+			setErrors(errors)
+		} else {
+			setErrors({})
+		}
+	}
+
+	const setValue = (fieldName: string, value: any) => {
+		clearErrors(fieldName)
+		set(data, fieldName, value)
+		setData({ ...data })
+	}
+	const getValue = (fieldName: string) => {
+		return get(data, fieldName)
+	}
+
+	const setRules = (fieldName: string, rules: any[]) => {
+		set(rules, fieldName, rules)
+		_setRules({ ...rules })
+	}
+	const getRules = (fieldName: string) => {
+		return get(rules, fieldName)
+	}
+
+	return {
+		errors,
+	}
 }
 
 /*
@@ -70,41 +119,10 @@ export function stateForm (defaultValue = {}, options = {}) {
     })
     const subs = {}
 
-    const setValue = (fieldName, value) => {
-        clearErrors(fieldName)
-        set(data.value, fieldName, value)
-    }
-    const getValue = (fieldName) => {
-        return get(data.value, fieldName)
-    }
+    
+    
 
-    const setError = (fieldName, error) => {
-        set(errors.value, fieldName, error)
-    }
-    const getError = (fieldName) => {
-        return get(errors.value, fieldName)
-    }
-
-    const setRules = (fieldName, rules) => {
-        set(state.rules, fieldName, rules)
-    }
-    const getRules = (fieldName) => {
-        return get(state.rules, fieldName)
-    }
-
-    const clearErrors = (fieldName) => {
-        if (isUndefined(fieldName)) {
-            errors.value = {}
-        } else {
-            if (!isArray(fieldName)) {
-                fieldName = fieldName.split(/\s+/)
-            }
-            fieldName.forEach((name) => {
-                unset(errors.value, name)
-            })
-        }
-    }
-
+    
     const register = (fieldName, options = {required: false, disabled: false, readonly: false}) => {
         if (isObject(fieldName)) {
             return Object.entries(fieldName).reduce((accum, [key, opt]) => {

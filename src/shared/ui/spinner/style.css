@@ -1,0 +1,45 @@
+.mdc-spinner {
+	vertical-align: middle;
+}
+
+.mdc-spinner--mat {
+	animation: x-spin 2s linear infinite;
+	transform-origin: center center;
+}
+.mdc-spinner--mat .mdc-spinner__path {
+	stroke-dasharray: 1, 200;
+	stroke-dashoffset: 0;
+	animation: x-mat-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes x-spin {
+	0% {
+		transform: rotate3d(0, 0, 1, 0deg);
+	}
+	25% {
+		transform: rotate3d(0, 0, 1, 90deg);
+	}
+	50% {
+		transform: rotate3d(0, 0, 1, 180deg);
+	}
+	75% {
+		transform: rotate3d(0, 0, 1, 270deg);
+	}
+	100% {
+		transform: rotate3d(0, 0, 1, 359deg);
+	}
+}
+@keyframes x-mat-dash {
+	0% {
+		stroke-dasharray: 1, 200;
+		stroke-dashoffset: 0;
+	}
+	50% {
+		stroke-dasharray: 89, 200;
+		stroke-dashoffset: -35px;
+	}
+	100% {
+		stroke-dasharray: 89, 200;
+		stroke-dashoffset: -124px;
+	}
+}

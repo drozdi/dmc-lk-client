@@ -49,7 +49,7 @@
 }
 .mdc-btn--loading {
 	.mdc-btn-content {
-		@apply translate-y-[calc(-100%-2*var(--spacing))];
+		@apply translate-y-[calc(-100%-3*var(--spacing))];
 	}
 	.mdc-btn-loader {
 		@apply top-0;
@@ -146,8 +146,13 @@
 	}
 }
 
-.mdc-btn--xs,
-.mdc-btn--sm,
+.mdc-btn--xs {
+	@apply py-1 px-2;
+}
+.mdc-btn--sm {
+	@apply p-2;
+}
+
 .mdc-btn--icon,
 .mdc-btn--round {
 	@apply px-0;
@@ -197,17 +202,17 @@
 	}
 }
 
-.mdc-btn--positive {
-	@apply bg-positive;
+.mdc-btn--success {
+	@apply bg-success;
 	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
-		@apply text-positive;
+		@apply text-success;
 	}
 }
 
-.mdc-btn--negative {
-	@apply bg-negative;
+.mdc-btn--warning {
+	@apply bg-warning;
 	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
-		@apply text-negative;
+		@apply text-warning;
 	}
 }
 
@@ -218,9 +223,9 @@
 	}
 }
 
-.mdc-btn--warning {
-	@apply bg-warning;
+.mdc-btn--danger {
+	@apply bg-danger;
 	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
-		@apply text-warning;
+		@apply text-danger;
 	}
 }
