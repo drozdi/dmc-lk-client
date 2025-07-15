@@ -18,7 +18,7 @@ interface BtnProps {
 		| 'danger'
 		| 'accent'
 		| 'info'
-	size?: 'xs' | 'md' | 'lg'
+	size?: 'xs' | 'sm' | 'lg'
 	flat?: boolean
 	text?: boolean
 	tonal?: boolean

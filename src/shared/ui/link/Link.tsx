@@ -66,25 +66,22 @@ export function Link({
 			<Sections
 				as='a'
 				{...props}
-				square
 				aria-label={typeof label === 'string' ? label : undefined}
 				disabled={disabled}
 				aria-disabled={disabled}
-				className={({ isActive }) =>
-					cls(
-						'mdc-link',
-						{
-							'mdc-link--nowrap': noWrap,
-							'mdc-link--active': active || isActive,
-							'mdc-link--opened': opened,
-							'mdc-link--disabled': disabled,
-						},
-						className
-					)
-				}
+				className={cls(
+					'mdc-link',
+					{
+						'mdc-link--nowrap': noWrap,
+						'mdc-link--active': active,
+						'mdc-link--opened': opened,
+						'mdc-link--disabled': disabled,
+					},
+					className
+				)}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
-				bodyClass='mdc-link-body'
+				classBody='mdc-link-body'
 				leftSection={leftSection}
 				rightSection={
 					withChildren ? (
@@ -97,9 +94,11 @@ export function Link({
 				<span className='mdc-link-label'>{label}</span>
 				<span className='mdc-link-description'>{description}</span>
 			</Sections>
-			<Collapse active={opened}>
-				<div className='mdc-link-childrens'>{children}</div>
-			</Collapse>
+			{withChildren && (
+				<Collapse active={opened}>
+					<div className='mdc-link-childrens'>{children}</div>
+				</Collapse>
+			)}
 		</>
 	)
 }

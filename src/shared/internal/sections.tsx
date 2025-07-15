@@ -9,7 +9,7 @@ import { render } from './render'
  * @returns {null | React.ReactElement} Преобразованная секция
  */
 
-const processSection = (section?: React.ReactElement) => {
+const processSection = (section?: React.ReactNode) => {
 	return useMemo(() => {
 		if (!section) {
 			return null
@@ -34,8 +34,8 @@ interface SectionsProps {
 * @param {string|Function} [props.className] - классы
 * @param {string|Function} [props.classBody] - классы для тела
 * @param {React.ReactNode} [props.children] - дочерние элементы
-* @param {React.ReactElement} [props.leftSection] - левый раздел
-* @param {React.ReactElement} [props.rightSection] - правый раздел
+* @param {React.ReactNode} [props.leftSection] - левый раздел
+* @param {React.ReactNode} [props.rightSection] - правый раздел
 * @param {object} props - свойства
 * @returns {React.ReactElement} элемент Sections
 */

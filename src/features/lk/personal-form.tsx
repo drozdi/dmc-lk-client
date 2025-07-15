@@ -157,7 +157,7 @@ export const PersonalForm = observer(() => {
 						<Btn
 							type='button'
 							color='success'
-							size='xs'
+							size='sm'
 							onClick={handleSubmit(handleSaveNavigate)}
 							loading={isLoading}
 							disabled={!isValid}
@@ -169,7 +169,7 @@ export const PersonalForm = observer(() => {
 						<Btn
 							type='button'
 							color='primary'
-							size='xs'
+							size='sm'
 							onClick={handleSubmit(handleSave)}
 							loading={isLoading}
 							disabled={!isValid}
@@ -182,7 +182,7 @@ export const PersonalForm = observer(() => {
 					<Btn
 						type='button'
 						color='danger'
-						size='xs'
+						size='sm'
 						onClick={handleRemove}
 						loading={isLoading}
 						disabled={!isValid}

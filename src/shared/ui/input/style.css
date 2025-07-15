@@ -7,6 +7,10 @@
 	--input-padding-start: var(--imput-padding);
 	--input-padding-end: var(--imput-padding);
 }
+.mdc-input input,
+.mdc-input select {
+	@apply leading-[normal];
+}
 .mdc-input,
 .mdc-input * {
 	@apply transition-all ease-in-out duration-200;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
+import { render } from '../../internal/render'
 import { cls, debounce } from '../../utils'
 import { InputError } from './InputError'
 import { InputHint } from './InputHint'
@@ -44,6 +45,7 @@ interface InputProps {
 	hideMessage?: boolean
 	errorMessage?: string
 	rules?: Function[]
+	[key: string]: any
 }
 
 const validation = (value: any, rules: Function[] = []) => {
@@ -126,16 +128,16 @@ export const Input = ({
 						<div className='mdc-input-outline-end'></div>
 					</div>
 					<div className='mdc-input-underlined'></div>
-					<input
-						value={value}
-						required={required}
-						disabled={disabled}
-						type={type}
-						id={uid}
-						onBlur={handlerBlur}
-						{...props}
-						className='mdc-input-native'
-					/>
+					{render('input', {
+						...props,
+						value: value,
+						required: required,
+						disabled: disabled,
+						type,
+						id: uid,
+						onBlur: handlerBlur,
+						className: 'mdc-input-native',
+					})}
 					<InputLabel required={required} htmlFor={uid}>
 						{label}
 					</InputLabel>

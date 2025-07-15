@@ -1,7 +1,7 @@
 @reference "@style";
 
 .mdc-btn {
-	@apply relative flex items-center justify-center select-none cursor-pointer rounded p-3 uppercase box-border overflow-hidden focus:outline-none focus-visible:outline-none shadow !shadow-black/50;
+	@apply relative flex items-center justify-center select-none cursor-pointer rounded p-3  text-base uppercase box-border overflow-hidden focus:outline-none focus-visible:outline-none shadow !shadow-black/50;
 	&:not(:disabled, .mdc-btn--disabled, .mdc-btn--loading) {
 		&:hover {
 			@apply shadow-xl;
@@ -147,10 +147,10 @@
 }
 
 .mdc-btn--xs {
-	@apply py-1 px-2;
+	@apply text-xs py-1 px-2;
 }
 .mdc-btn--sm {
-	@apply p-2;
+	@apply text-sm p-2;
 }
 
 .mdc-btn--icon,
