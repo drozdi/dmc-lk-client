@@ -31,7 +31,7 @@ export const InputLabel = ({
 		>
 			{children}
 			{required && (
-				<span className='text-negative' aria-hidden>
+				<span className='text-warning' aria-hidden>
 					{' *'}
 				</span>
 			)}

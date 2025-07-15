@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { authStore } from '../../shared/stores/auth-store'
+import { authStore } from '../../entites/auth/auth-store'
 import { Btn, Input, Message } from '../../shared/ui'
 
 const fieldsSchema = yup.object().shape({

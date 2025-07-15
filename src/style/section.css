@@ -1,0 +1,26 @@
+.mdc-sections,
+.mdc-section {
+	@apply flex flex-wrap relative;
+}
+
+.mdc-sections--col,
+.mdc-section {
+	@apply flex-col;
+}
+
+.mdc-section:not(.mdc-section--side) {
+	@apply flex-1;
+}
+.mdc-section {
+	@apply items-start justify-center;
+	&--side > svg {
+		@apply block;
+	}
+}
+.mdc-section--side {
+	@apply items-center;
+}
+
+.mdc-section--row {
+	@apply flex-row;
+}

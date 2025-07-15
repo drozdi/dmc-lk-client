@@ -1,4 +1,8 @@
+import { useMemo } from 'react'
+import { render } from '../../internal/render'
+import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
+import { Icon } from '../icon'
 import { Spinner } from '../spinner'
 import './style.css'
 
@@ -25,6 +29,10 @@ interface BtnProps {
 	round?: boolean
 	rounded?: boolean
 	loading?: boolean
+	icon?: boolean
+	leftSection?: React.ReactElement
+	rightSection?: React.ReactElement
+	[key: string]: any
 }
 
 export const Btn = ({
@@ -42,34 +50,57 @@ export const Btn = ({
 	round,
 	rounded,
 	loading,
+	icon,
+	leftSection,
+	rightSection,
 	...props
 }: BtnProps) => {
-	return (
-		<button
-			{...props}
-			className={cls(
-				'mdc-btn',
-				{
-					'mdc-btn--flat': flat,
-					'mdc-btn--text': text,
-					'mdc-btn--tonal': tonal,
-					'mdc-btn--plain': plain,
-					'mdc-btn--outline': outline,
-					'mdc-btn--block': block,
-					'mdc-btn--square': square,
-					'mdc-btn--round': round,
-					'mdc-btn--rounded': rounded,
-					'mdc-btn--loading': loading,
-					[`mdc-btn--${color}`]: color,
-					[`mdc-btn--${size}`]: size,
-				},
-				className
-			)}
-		>
-			<span className='mdc-btn-content'>{children}</span>
-			<span className='mdc-btn-loader'>
-				<Spinner size='2em' thickness={5} />
-			</span>
-		</button>
+	const isIcon = useMemo(
+		() =>
+			(!!leftSection != !!rightSection && !children) ||
+			(children?.type === Icon && !leftSection && !rightSection),
+		[children, leftSection, rightSection]
 	)
+	return render('button', {
+		...props,
+		className: cls(
+			'mdc-btn',
+			{
+				'mdc-btn--flat': flat,
+				'mdc-btn--text': text,
+				'mdc-btn--tonal': tonal,
+				'mdc-btn--plain': plain,
+				'mdc-btn--outline': outline,
+				'mdc-btn--block': block,
+				'mdc-btn--square': square,
+				'mdc-btn--round': round,
+				'mdc-btn--rounded': rounded,
+				'mdc-btn--loading': loading,
+				'mdc-btn--icon': icon,
+				[`mdc-btn--${color}`]: color,
+				[`mdc-btn--${size}`]: size,
+			},
+			className
+		),
+		children:
+			typeof children === 'function' ? (
+				children
+			) : (
+				<>
+					<Sections
+						as='span'
+						leftSection={leftSection}
+						rightSection={rightSection}
+						className='mdc-btn-content'
+						classBody='mdc-btn-label'
+					>
+						{children}
+					</Sections>
+
+					<span className='mdc-btn-loader'>
+						<Spinner size='2em' thickness={5} />
+					</span>
+				</>
+			),
+	})
 }

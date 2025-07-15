@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authStore } from '../../shared/stores/auth-store'
+import { authStore } from '../../entites/auth/auth-store'
 import { Btn, Input, Message } from '../../shared/ui'
 
 export const SignInForm = observer(() => {

@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
-import { api } from '../api'
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants'
+import { api } from '../../shared/api'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../shared/constants'
 
 class AuthStore {
 	accessToken = localStorage.getItem(ACCESS_TOKEN_KEY) || null
@@ -98,7 +98,7 @@ class AuthStore {
 		}
 		return false
 	}
-	async register(userData: {}) {
+	async register(userData: IUserPassword) {
 		this.isLoading = true
 		this.error = null
 		try {
@@ -118,7 +118,7 @@ class AuthStore {
 	async logout() {
 		this.clearAuth()
 	}
-	async updateUser(userData: {}) {
+	async updateUser(userData: IUser) {
 		this.isLoading = true
 		this.error = null
 		try {
@@ -127,6 +127,20 @@ class AuthStore {
 			return response.data
 		} catch (error) {
 			this.error = error.response?.data?.detail || 'Ошибка регистрации'
+		} finally {
+			this.isLoading = false
+		}
+		return null
+	}
+	async removeUser() {
+		this.isLoading = true
+		this.error = null
+		try {
+			const response = await api.delete('/user_profile/')
+			this.clearAuth()
+			return response.data
+		} catch (error) {
+			this.error = error.response?.data?.detail || 'Ошибка удаления'
 		} finally {
 			this.isLoading = false
 		}

@@ -174,10 +174,10 @@
 .mdc-btn--primary,
 .mdc-btn--secondary,
 .mdc-btn--accent,
-.mdc-btn--positive,
-.mdc-btn--negative,
+.mdc-btn--success,
+.mdc-btn--warning,
 .mdc-btn--info,
-.mdc-btn--warning {
+.mdc-btn--danger {
 	@apply text-white;
 }
 

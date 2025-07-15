@@ -4,17 +4,8 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { authStore } from '../../shared/stores/auth-store'
+import { authStore } from '../../entites/auth/auth-store'
 import { Btn, Input, Message } from '../../shared/ui'
-
-interface IUser {
-	first_name: string
-	last_name: string
-	father_name: string
-	email: string
-	phone: string
-	save: boolean
-}
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
@@ -55,12 +46,21 @@ export const PersonalForm = observer(() => {
 
 	const navigate = useNavigate()
 
-	async function handleSave(formData) {
+	async function handleSave(formData: IUser) {
 		await authStore.updateUser(formData)
 	}
-	async function handleSaveNavigate(formData) {
+	async function handleSaveNavigate(formData: IUser) {
 		try {
 			await authStore.updateUser(formData)
+			navigate('/')
+		} catch (e) {}
+	}
+	async function handleRemove() {
+		if (!confirm('Вы уверены что хотите удалить себя?')) {
+			return
+		}
+		try {
+			//await authStore.removeUser()
 			navigate('/')
 		} catch (e) {}
 	}
@@ -153,27 +153,43 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.phone?.message}
 					{...register('phone')}
 				/>
-				<div className='flex flex-row gap-3'>
-					<Btn
-						type='button'
-						color='success'
-						size='xs'
-						onClick={handleSubmit(handleSaveNavigate)}
-						loading={isLoading}
-						disabled={!isValid}
-					>
-						Сохранить
-					</Btn>
+				<div className='flex flex-row flex-wrap gap-3 justify-between'>
+					<div className='flex flex-row gap-3'>
+						<Btn
+							type='button'
+							color='success'
+							size='xs'
+							onClick={handleSubmit(handleSaveNavigate)}
+							loading={isLoading}
+							disabled={!isValid}
+							label='Сохранить'
+						>
+							Сохранить
+						</Btn>
+
+						<Btn
+							type='button'
+							color='primary'
+							size='xs'
+							onClick={handleSubmit(handleSave)}
+							loading={isLoading}
+							disabled={!isValid}
+							label='Применить'
+						>
+							Применить
+						</Btn>
+					</div>
 
 					<Btn
 						type='button'
-						color='primary'
+						color='danger'
 						size='xs'
-						onClick={handleSubmit(handleSave)}
+						onClick={handleRemove}
 						loading={isLoading}
 						disabled={!isValid}
+						label='Удалить'
 					>
-						Применить
+						Удалить
 					</Btn>
 				</div>
 			</form>
