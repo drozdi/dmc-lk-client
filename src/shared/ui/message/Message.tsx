@@ -1,5 +1,7 @@
 import { memo } from 'react'
+import { TbX } from 'react-icons/tb'
 import { v4 as uuid } from 'uuid'
+import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
 import { Btn } from '../btn'
 import { Spinner } from '../spinner'
@@ -11,7 +13,7 @@ interface MessageProps {
 	className?: string
 	label?: React.ReactNode
 	description?: React.ReactNode
-	icon?: React.ReactNode
+	icon?: React.ReactElement
 	flat?: boolean
 	color?:
 		| 'primary'
@@ -39,6 +41,7 @@ export const Message = memo(
 		label,
 		description,
 		flat,
+		icon,
 		color,
 		outline,
 		square,
@@ -53,7 +56,7 @@ export const Message = memo(
 		const isClosable = false
 
 		return (
-			<div
+			<Sections
 				id={uid}
 				role='alert'
 				/*aria-live={toast ? 'assertive' : 'polite'}*/
@@ -70,27 +73,25 @@ export const Message = memo(
 					},
 					className
 				)}
+				classBody='mdc-message-body'
+				leftSection={loading ? <Spinner thickness='5' /> : icon}
+				rightSection={
+					isClosable && (
+						<div className='mdc-message--close'>
+							<Btn
+								leftSection={<TbX />}
+								size='xs'
+								flat
+								plain
+								/*onClick={handleClose}*/
+							/>
+						</div>
+					)
+				}
 			>
-				{/*icon && !loading && Icon*/}
-				{loading && <Spinner thickness='5' />}
-				<div className='mdc-message-body'>
-					<div className='mdc-message-label'>{label}</div>
-					<div className='mdc-message-description'>
-						{children ?? description}
-					</div>
-				</div>
-				{isClosable && (
-					<div className='mdc-message--close'>
-						<Btn
-							leftSection='mdi-close'
-							size='sm'
-							flat
-							plain
-							/*onClick={handleClose}*/
-						/>
-					</div>
-				)}
-			</div>
+				<div className='mdc-message-label'>{label}</div>
+				<div className='mdc-message-description'>{children ?? description}</div>
+			</Sections>
 		)
 	}
 )

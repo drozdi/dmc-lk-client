@@ -98,20 +98,20 @@
 
 .dark {
 	--body-bg: #002650;
-	--body-color: #ffffffb3;
+	--body-color: rgba(255, 255, 255, 0.8);
 
 	/*--link-color: #00aeff;*/
-	--link-color: #ffffffb3;
-	--link-hover-color: #ffffff;
+	--link-color: rgba(255, 255, 255, 0.8);
+	--link-hover-color: rgb(255, 255, 255);
 
-	--border-color: #ffffff33;
+	--border-color: rgba(255, 255, 255, 0.2);
 
 	--scrollbar-color: rgba(255, 255, 255, 0.2) rgba(0, 0, 0, 0.2);
 
 	--color-surface: #15171e;
 	--color-on-surface: #ffffff;
 
-	--color-separator: #ffffff26;
+	--color-separator: rgba(255, 255, 255, 0.149);
 	--color-divider: #ffffff26;
 }
 

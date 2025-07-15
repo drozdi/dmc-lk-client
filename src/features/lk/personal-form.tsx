@@ -81,7 +81,6 @@ export const PersonalForm = observer(() => {
 				/>
 			)}
 			<form name='registration' className='space-y-1'>
-				<input type='hidden' name='remember' value='true' />
 				<Input
 					label='Имя'
 					placeholder='Имя'

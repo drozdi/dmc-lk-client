@@ -90,7 +90,6 @@ export const SignUpForm = observer(() => {
 				className='space-y-1'
 				onSubmit={handleSubmit(sendFormData)}
 			>
-				<input type='hidden' name='remember' value='true' />
 				<Input
 					label='Имя'
 					placeholder='Имя'

@@ -28,7 +28,6 @@ export const SignInForm = observer(() => {
 				/>
 			)}
 			<form className='mt-8 space-y-3' onSubmit={handleSubmit}>
-				<input type='hidden' name='remember' value='true' />
 				<Input
 					label='Email'
 					placeholder='Email'

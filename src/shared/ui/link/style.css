@@ -1,0 +1,47 @@
+@reference "@style";
+
+.mdc-link {
+	@apply w-full flex gap-3 relative items-center px-3 py-2 select-none cursor-pointer;
+}
+.mdc-link::before {
+	@apply bg-current opacity-0 absolute top-0 left-0 h-full w-full -z-10 rounded-[inherit] transition-opacity ease-in-out duration-200;
+	content: ' ';
+}
+.mdc-link:not(.mdc-link--disabled):hover::before {
+	@apply opacity-15;
+}
+.mdc-link-body {
+	@apply overflow-hidden text-ellipsis;
+	.mdc-link--nowrap & {
+		@apply text-nowrap;
+	}
+}
+
+.mdc-link-label {
+	@apply text-sm/normal;
+}
+.mdc-link-description {
+	@apply block text-xs/normal opacity-80 overflow-hidden text-ellipsis;
+	.mdc-link--nowrap & {
+		@apply text-nowrap;
+	}
+}
+.mdc-link-chevron {
+	@apply text-xl/none transition-transform ease-in-out duration-200;
+}
+
+.mdc-link-childrens {
+	@apply ps-5;
+}
+
+.mdc-link[disabled],
+.mdc-link--disabled {
+	@apply cursor-not-allowed opacity-50;
+}
+
+.mdc-link--active {
+	background-color: color-mix(in srgb, currentColor 20%, transparent);
+}
+.mdc-link--opened .mdc-link-chevron {
+	@apply rotate-90;
+}

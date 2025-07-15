@@ -22,8 +22,8 @@ interface SectionsProps {
 	className?: string | Function
 	classBody?: string
 	children?: React.ReactNode
-	leftSection?: React.ReactElement
-	rightSection?: React.ReactElement
+	leftSection?: React.ReactNode
+	rightSection?: React.ReactNode
 	[key: string]: any
 }
 
