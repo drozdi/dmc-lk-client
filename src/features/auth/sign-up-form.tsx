@@ -86,7 +86,7 @@ export const SignUpForm = observer(() => {
 				/>
 			)}
 			<form
-				name='registration'
+				name='signUp'
 				className='space-y-1'
 				onSubmit={handleSubmit(sendFormData)}
 			>

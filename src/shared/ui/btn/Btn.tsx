@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { render } from '../../internal/render'
 import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
-import { Icon } from '../icon'
 import { Spinner } from '../spinner'
 import './style.css'
 
@@ -57,9 +56,10 @@ export const Btn = ({
 }: BtnProps) => {
 	const isIcon = useMemo(
 		() =>
-			(!!leftSection != !!rightSection && !children) ||
-			(children?.type === Icon && !leftSection && !rightSection),
-		[children, leftSection, rightSection]
+			icon &&
+			((!leftSection != !rightSection && !children) ||
+				(!leftSection && !rightSection && children)),
+		[children, leftSection, rightSection, icon]
 	)
 	return render('button', {
 		...props,
@@ -76,7 +76,7 @@ export const Btn = ({
 				'mdc-btn--round': round,
 				'mdc-btn--rounded': rounded,
 				'mdc-btn--loading': loading,
-				'mdc-btn--icon': icon,
+				'mdc-btn--icon': isIcon,
 				[`mdc-btn--${color}`]: color,
 				[`mdc-btn--${size}`]: size,
 			},

@@ -30,7 +30,7 @@ export const VerificationForm = observer(() => {
 					label={error}
 				/>
 			)}
-			<form className='space-y-3' onSubmit={handleSubmit}>
+			<form name='verification' className='space-y-3' onSubmit={handleSubmit}>
 				<Input
 					label='Код'
 					placeholder='Код'

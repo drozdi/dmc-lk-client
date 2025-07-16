@@ -27,7 +27,7 @@ export const SignInForm = observer(() => {
 					label={error}
 				/>
 			)}
-			<form className='mt-8 space-y-3' onSubmit={handleSubmit}>
+			<form name='signIn' className='mt-8 space-y-3' onSubmit={handleSubmit}>
 				<Input
 					label='Email'
 					placeholder='Email'

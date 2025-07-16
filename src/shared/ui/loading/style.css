@@ -1,0 +1,3 @@
+.mdc-loading {
+	@apply w-full h-full min-w-full min-h-full flex items-center justify-center;
+}

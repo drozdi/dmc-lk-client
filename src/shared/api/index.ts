@@ -26,14 +26,14 @@ api.interceptors.response.use(
 		if (error.response?.status === 401) {
 			try {
 				// Пытаемся обновить токен
-				const response = await api.post('/refresh', {
-					refreshToken: localStorage.getItem(REFRESH_TOKEN_KEY),
+				const response = await api.post('/registration/refresh', {
+					refresh_token: localStorage.getItem(REFRESH_TOKEN_KEY),
 				})
 
-				const { accessToken, refreshToken } = response.data
+				const { access, refresh } = response.data.token
 
-				localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
-				localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+				localStorage.setItem(ACCESS_TOKEN_KEY, access)
+				localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
 
 				return api.request(originalRequest)
 			} catch (refreshError) {

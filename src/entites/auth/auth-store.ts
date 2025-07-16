@@ -30,11 +30,11 @@ class AuthStore {
 			this.isLoading = false
 		}
 	}
-	private setAccessToken(accessToken: string) {
+	setAccessToken(accessToken: string) {
 		this.accessToken = accessToken
 		localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
 	}
-	private setRefreshToken(refreshToken: string) {
+	setRefreshToken(refreshToken: string) {
 		this.refreshToken = refreshToken
 		localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
 	}

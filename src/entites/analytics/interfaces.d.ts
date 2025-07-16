@@ -3,5 +3,14 @@ interface IAnalyticsQuery {
 	filterdate_to?: string
 	step?: 's' | 'm' | 'h' | 'd' | 'mon' | 'y'
 	event?: 'v' | 'i' | 'd' | 'p'
-	[key: string]: string
+}
+
+interface IProductionAnalytics {
+	address?: string
+	name: string
+	production_id: number
+}
+
+interface IAnalyticsResponse {
+	[key: string]: any
 }

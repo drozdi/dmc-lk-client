@@ -1,26 +1,14 @@
 import { useState } from 'react'
-import { api } from '../../shared/api'
+import { mapEvent, mapStep } from '../../entites/analytics/constants'
 import { Btn, Input, Select } from '../../shared/ui'
-const mapStep: Record<string, string> = {
-	s: 'секунда',
-	m: 'минута',
-	h: 'час',
-	d: 'день',
-	mon: 'месяц',
-	y: 'год',
-}
-const mapEvent: Record<string, string> = {
-	v: 'верифицировано',
-	i: 'инцидент',
-	d: 'дефект',
-	p: 'печать',
-}
+import { ChartAnalyticWidget } from '../../widgets/analytics/chart-analytic-widget'
 
 export function AnalyticsPage() {
 	const [query, setQuery] = useState<IAnalyticsQuery>({
 		step: '',
 		event: '',
 	})
+	const [params, setParams] = useState<IAnalyticsQuery>({})
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const handleChange = ({ target }: React.ChangeEvent) => {
@@ -55,23 +43,12 @@ export function AnalyticsPage() {
 
 	async function sendFormData() {
 		validate()
-		const url = Object.keys(query)
-			.reduce(
-				(acc, key) =>
-					acc + (query[key] ? `${key.split('_')[0]}=${query[key]}&` : ''),
-				'/analytics/?'
-			)
-			.replace(/&$/g, '')
-		console.log(url)
-
-		const res = await api.get(url)
-		console.log(res.data)
+		setParams({ ...query })
 		//setQuery({})
 	}
 
 	return (
 		<div>
-			<h2>Analytics Page</h2>
 			<div className='flex gap-0 items-start'>
 				<Input
 					value={query.filterdate_from}
@@ -143,8 +120,9 @@ export function AnalyticsPage() {
 					Отправить
 				</Btn>
 			</div>
-
-			<br />
+			<div>
+				<ChartAnalyticWidget filterdate_from='2024-05-16' step='mon' />
+			</div>
 		</div>
 	)
 }
