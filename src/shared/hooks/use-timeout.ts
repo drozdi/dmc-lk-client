@@ -38,5 +38,5 @@ export const useTimeout = (
 
 	useEffect(() => clear, [])
 
-	return [clear]
+	return clear
 }

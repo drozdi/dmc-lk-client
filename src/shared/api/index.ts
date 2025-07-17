@@ -40,7 +40,7 @@ api.interceptors.response.use(
 				// Если не удалось обновить - разлогиниваем
 				localStorage.removeItem(ACCESS_TOKEN_KEY)
 				localStorage.removeItem(REFRESH_TOKEN_KEY)
-
+				//window.location = '/auth/sign-in'
 				return Promise.reject(error)
 			}
 		}

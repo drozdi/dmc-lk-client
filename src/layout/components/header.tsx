@@ -3,6 +3,7 @@ import { TbMenu4, TbX } from 'react-icons/tb'
 import { useSidebar } from '../context/sidebar'
 
 import { HeaderLink } from '../../features/lk/header-link'
+import { ShopCartBtn } from '../../features/shop/shop-cart-btn'
 import { ThemeToggleButton } from './theme-toggle-button'
 
 const Header: React.FC = () => {
@@ -46,6 +47,7 @@ const Header: React.FC = () => {
 						{/* Cross Icon */}
 					</button>
 					<div className='flex gap-3'>
+						<ShopCartBtn />
 						<HeaderLink />
 						<ThemeToggleButton />
 					</div>

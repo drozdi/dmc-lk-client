@@ -1,4 +1,4 @@
-import { Spinner } from '../spinner'
+import { SpinnerClock } from '../spinner'
 
 import './style.css'
 
@@ -11,7 +11,7 @@ export function Loading({ children, active }: LoadingProps) {
 	if (active) {
 		return (
 			<div className='mdc-loading'>
-				<Spinner size='10rem' thickness={10} />
+				<SpinnerClock size='5rem' color='primary' />
 			</div>
 		)
 	}

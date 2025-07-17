@@ -17,6 +17,10 @@ const navItems: NavItem[] = [
 		path: '/analytics',
 	},
 	{
+		name: 'Магазин',
+		path: '/shop',
+	},
+	{
 		name: 'lk',
 		path: '/lk',
 	},
