@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { ShopCart } from '../features/shop/shop-cart'
+import { ShopCart } from '../apps/shop/features/shop-cart'
 import Header from './components/header'
 import Sidebar from './components/sidebar'
 import { useSidebar } from './context'

@@ -7,7 +7,8 @@ import { defineConfig } from 'vite'
 export default defineConfig({
 	resolve: {
 		alias: {
-			'@style': path.resolve(__dirname, './src/style/index.css'),
+			'@style': path.resolve(__dirname, './src/shared/style/index.css'),
+			'@ui': path.resolve(__dirname, './src/shared/ui'),
 		},
 	},
 	plugins: [react(), tailwindcss()],

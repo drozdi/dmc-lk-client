@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useLocation } from 'react-router'
 import { Link as LinkRouter } from 'react-router-dom'
-import { Logo } from '../../features/logo/Logo'
+import { Logo } from '../../components/features/logo/Logo'
 import { Link } from '../../shared/ui'
 import { useSidebar } from '../context/sidebar'
 type NavItem = {

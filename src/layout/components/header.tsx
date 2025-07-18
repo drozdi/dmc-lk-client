@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react'
 import { TbMenu4, TbX } from 'react-icons/tb'
 import { useSidebar } from '../context/sidebar'
 
-import { HeaderLink } from '../../features/lk/header-link'
-import { ShopCartBtn } from '../../features/shop/shop-cart-btn'
+import { ShopCartBtn } from '../../apps/shop/features/shop-cart-btn'
+import { HeaderLink } from '../../components/features/lk/header-link'
 import { ThemeToggleButton } from './theme-toggle-button'
 
 const Header: React.FC = () => {
