@@ -1,0 +1,18 @@
+@reference "@style";
+.mdc-fullscreen {
+	@apply relative;
+}
+.mdc-fullscreen--active {
+	@apply bg-surface fixed w-dvw h-dvh top-0 left-0 z-50;
+}
+
+.mdc-fullscreen-btn {
+	@apply hidden absolute right-0 top-0 w-12 h-12 border-0 bg-primary rounded-md z-50 text-white justify-center items-center;
+}
+.mdc-fullscreen:not(.mdc-fullscreen--active):hover .mdc-fullscreen-btn--open {
+	@apply flex;
+}
+
+.mdc-fullscreen--active .mdc-fullscreen-btn--close {
+	@apply flex;
+}

@@ -1,0 +1,183 @@
+import {
+	BarElement,
+	CategoryScale,
+	Chart as ChartJS,
+	Legend,
+	LinearScale,
+	Title,
+	Tooltip,
+} from 'chart.js'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { Bar } from 'react-chartjs-2'
+import { Btn, Loading, Select } from '../../../shared/ui'
+import { randomColor } from '../../../shared/utils'
+import { useAnalytics } from '../api/api'
+
+interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+
+export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
+	const { isLoading, request } = useAnalytics()
+	const [cuurent_production, setCurrentProduction] = useState(0)
+	const [data, setData] = useState<IAnalyticsResponse>()
+	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
+	const [errors, setErrors] = useState<{
+		filterdate_from?: string
+		filterdate_to?: string
+		step?: string
+		event?: string
+	}>({})
+
+	function reset() {
+		setQuery({ ...props })
+	}
+	function validate() {
+		try {
+			if (!props.filterdate_from && !props.filterdate_to) {
+				if (!props.filterdate_from) {
+					errors.filterdate_from = 'Поле обязательно для заполнения'
+				}
+				if (!props.filterdate_to) {
+					errors.filterdate_to = 'Поле обязательно для заполнения'
+				}
+			}
+			if (!props.step) {
+				errors.step = 'Поле обязательно для заполнения'
+			}
+			if (!event) {
+				errors.event = 'Поле обязательно для заполнения'
+			}
+			setErrors(errors)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+	async function sendRequest(event: IAnalyticsQuery['event']) {
+		return await request({ ...query, event })
+	}
+
+	// Извлекаем список площадок
+	const productions = useMemo<IProductionAnalytics[]>(() => {
+		if (data) {
+			return ((data?.production as Array<IProductionAnalytics>) || []).map(
+				item => ({
+					address: item.address,
+					name: item.name,
+					production_id: item.production_id,
+				})
+			)
+		}
+		return []
+	}, [data])
+	const [filterGap, setFilterGap] = useState<boolean>(true)
+	const formatName = useCallback(
+		(name: string) => {
+			try {
+				name = (name || '').toUpperCase().replace(/\./g, '')
+				return filterGap ? name.split('G')[0] : name
+			} catch (error) {
+				console.error(error)
+			}
+		},
+		[filterGap]
+	)
+	// Извлекаем список дат
+	const labels = useMemo<string[]>(() => {
+		let res: string[] = []
+		if (data) {
+			for (const p of data.production) {
+				res = res.concat(p.data.map(item => formatName(item.data)))
+			}
+		}
+		return [...new Set(res)].filter(label => label.length < 12).sort()
+	}, [data, formatName])
+	// Извлекаем, групируем данные
+	const datasets = useMemo<any[]>(() => {
+		const res: any[] = []
+		if (data) {
+			labels.forEach(label => {
+				4
+				const newItem = {
+					label: label,
+					data: [0],
+					backgroundColor: randomColor(),
+				}
+				data.production.forEach(production => {
+					if (
+						cuurent_production > 0 &&
+						cuurent_production !== production.production_id
+					) {
+						return
+					}
+					production.data.forEach(item => {
+						if (formatName(item.data) === label) {
+							newItem.data[0] += item.count
+						}
+					})
+				})
+
+				res.push(newItem)
+			})
+		}
+		return res.filter(item => item.data[0] > 1000)
+	}, [data, labels, cuurent_production])
+
+	useEffect(() => {
+		const send = async () => {
+			setData((await sendRequest('p')).message)
+		}
+		validate()
+		send()
+	}, [query])
+
+	return (
+		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
+			<h2 className='mb-3 w-full text-left'>Напечатано</h2>
+			<div className='flex w-full gap-0 items-start justify-end'>
+				<label className='flex'>
+					<input
+						type='checkbox'
+						checked={filterGap}
+						onChange={e => setFilterGap(e.target.checked)}
+					/>
+					<div className='ml-3'>Группировать по G</div>
+				</label>
+				<Select
+					label='Площадка'
+					name='production_id'
+					value={String(cuurent_production)}
+					onChange={(e: React.ChangeEvent) =>
+						setCurrentProduction(parseInt(e.target.value, 10))
+					}
+					dense
+					square
+					filled
+					underlined
+					hideMessage
+				>
+					<option value='0' selected>
+						Все площадки
+					</option>
+					{productions.map(item => (
+						<option key={item.production_id} value={item.production_id}>
+							{item.name}
+						</option>
+					))}
+				</Select>
+				<Btn
+					className='flex-none'
+					color='primary'
+					size='sm'
+					square
+					onClick={reset}
+				>
+					Сбросить
+				</Btn>
+			</div>
+			<Loading active={isLoading}>
+				<Bar data={{ labels: [''], datasets }} />
+			</Loading>
+		</div>
+	)
+})

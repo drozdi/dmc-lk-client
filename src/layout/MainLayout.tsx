@@ -17,7 +17,7 @@ export function MainLayout() {
 				} ${isMobileOpen ? 'ml-0' : ''}`}
 			>
 				<Header />
-				<div className='relative'>
+				<div className='relative overflow-x-hidden'>
 					<div className='p-3 mx-auto max-w-screen-2xl md:p-6'>
 						<Outlet />
 					</div>

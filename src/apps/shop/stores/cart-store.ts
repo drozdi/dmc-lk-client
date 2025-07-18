@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import {
 	addItemCart,
 	getCart,
+	getProductByCode,
 	removeItemCart,
 	updateItemCart,
 } from '../api/api'
@@ -23,13 +24,6 @@ class CartStore {
 	toogle() {
 		this.opened = !this.opened
 	}
-	get ids() {
-		if (this.list.length) {
-			return this.list.map(item => this.getId(item))
-		} else {
-			return []
-		}
-	}
 	get totalPrice() {
 		if (this.list.length) {
 			return this.list.reduce(
@@ -45,6 +39,12 @@ class CartStore {
 		try {
 			const data = await getCart()
 			this.list = data?.request || []
+			for (let i in this.list) {
+				this.list[i] = {
+					...this.list[i],
+					...(await getProductByCode(this.list[i].product_code)),
+				}
+			}
 		} catch (e) {
 			this.error = e.message
 		} finally {
@@ -64,19 +64,6 @@ class CartStore {
 		} catch (e) {
 			console.error(e)
 		}
-		/*if (this.ids.includes(this.getId(product))) {
-			this.list = this.list.map(item =>
-				this.getId(item) === this.getId(product)
-					? { ...item, count_product: item.count_product + 1 }
-					: item
-			)
-		} else {
-			this.list.push({
-				count_product: 1,
-				...product,
-			})
-		}*/
-		//this.save()
 	}
 	async removeFromCart(rItem) {
 		await removeItemCart(this.getId(rItem))
@@ -95,19 +82,13 @@ class CartStore {
 		}
 	}
 	getCountProduct(id) {
-		if (this.ids.includes(id)) {
-			return this.list.find(item => this.getId(item) === this.getId(id))
-				.count_product
-		} else {
-			return 0
-		}
+		return (
+			this.list.find(item => this.getId(item) === this.getId(id))
+				.count_product || 0
+		)
 	}
 	getProduct(id) {
-		if (this.ids.includes(id)) {
-			return this.list.find(item => this.getId(item) === this.getId(id))
-		} else {
-			return null
-		}
+		return this.list.find(item => this.getId(item) === this.getId(id))
 	}
 }
 

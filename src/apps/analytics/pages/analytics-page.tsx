@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Btn, Input, Select } from '../../../shared/ui'
+import { Btn, Fullscreen, Input, Select } from '../../../shared/ui'
 import { mapEvent, mapStep } from '../entites/constants'
-import { ChartAnalyticWidget } from '../widgets/chart-analytic-widget'
+import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
+import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
+import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 
 export function AnalyticsPage() {
 	const [query, setQuery] = useState<IAnalyticsQuery>({
@@ -120,8 +122,18 @@ export function AnalyticsPage() {
 					Отправить
 				</Btn>
 			</div>
-			<div>
-				<ChartAnalyticWidget filterdate_from='2024-05-16' step='mon' />
+
+			<div className='grid grid-cols-2 gap-6 *:max-h-156'>
+				<Fullscreen>
+					<AnalyticEventWidget filterdate_from='2024-05-16' step='mon' />
+				</Fullscreen>
+				<Fullscreen>
+					<AnalyticAllWidget filterdate_from='2024-05-16' step='mon' />
+				</Fullscreen>
+				<Fullscreen>
+					<AnalyticTypeWidget filterdate_from='2024-05-16' step='mon' />
+				</Fullscreen>
+				<div></div>
 			</div>
 		</div>
 	)

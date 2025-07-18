@@ -19,7 +19,7 @@ import React, {
 } from 'react'
 import { getElementsAtEvent, Line } from 'react-chartjs-2'
 import { Btn, Loading, Select } from '../../../shared/ui'
-import { useAnalytics } from '../entites/api'
+import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
@@ -34,7 +34,8 @@ ChartJS.register(
 	Legend
 )
 
-export const ChartAnalyticWidget = memo((props: ChartAnalyticProps) => {
+export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
+	//return ''
 	const { isLoading, request } = useAnalytics()
 	const ref = useRef(null)
 	const [cuurent_production, setCurrentProduction] = useState(0)
@@ -157,9 +158,6 @@ export const ChartAnalyticWidget = memo((props: ChartAnalyticProps) => {
 	}, [data, labels, cuurent_production])
 
 	useEffect(() => {
-		console.log(data)
-	}, [data])
-	useEffect(() => {
 		const send = async () => {
 			setData({
 				v: (await sendRequest('v')).message,
@@ -181,11 +179,39 @@ export const ChartAnalyticWidget = memo((props: ChartAnalyticProps) => {
 			let filterdate_to: ChartAnalyticProps['filterdate_to'] =
 				query.filterdate_to
 
+			/*s: 'секунда',
+	m: 'минута',
+	h: 'час',
+	d: 'день',
+	mon: 'месяц',
+	y: 'год',*/
 			switch (query.step) {
+				case 'y':
+					step = 'mon'
+					filterdate_from = d.year(d.year() - 1).format('YYYY-MM-DD')
+					filterdate_to = d.format('YYYY-MM-DD')
+					break
 				case 'mon':
 					step = 'd'
 					filterdate_from = d.month(d.month() - 1).format('YYYY-MM-DD')
 					filterdate_to = d.format('YYYY-MM-DD')
+					break
+				case 'd':
+					step = 'h'
+					filterdate_from = d.date(d.date() - 1).format('YYYY-MM-DD HH:mm:ss')
+					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
+					break
+				case 'h':
+					step = 'm'
+					filterdate_from = d.hour(d.hour() - 1).format('YYYY-MM-DD HH:mm:ss')
+					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
+					break
+				case 'm':
+					step = 's'
+					filterdate_from = d
+						.minute(d.minute() - 1)
+						.format('YYYY-MM-DD HH:mm:ss')
+					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
 					break
 			}
 
@@ -210,8 +236,8 @@ export const ChartAnalyticWidget = memo((props: ChartAnalyticProps) => {
 	)
 
 	return (
-		<>
-			<h2 className='mb-3'>ChartAnalytic</h2>
+		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
+			<h2 className='mb-3 w-full text-left'>ChartAnalytic</h2>
 			<div className='flex w-full gap-0 items-start justify-end'>
 				<Select
 					label='Площадка'
@@ -245,10 +271,9 @@ export const ChartAnalyticWidget = memo((props: ChartAnalyticProps) => {
 					Сбросить
 				</Btn>
 			</div>
-			<br />
 			<Loading active={isLoading}>
 				<Line data={{ labels, datasets }} onClick={onClick} ref={ref} />
 			</Loading>
-		</>
+		</div>
 	)
 })

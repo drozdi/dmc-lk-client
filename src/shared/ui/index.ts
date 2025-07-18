@@ -1,5 +1,6 @@
 export * from './btn'
 export * from './collapse'
+export * from './fullscreen'
 export * from './icon'
 export * from './input'
 export * from './item'

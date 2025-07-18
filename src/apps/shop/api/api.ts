@@ -19,6 +19,11 @@ export async function getProducts({
 	return res.data.message
 }
 
+export async function getProductByCode(code: string) {
+	const res = await api.get(`/products/?product_code=${code}`)
+	return res.data.message.product_info[0] || {}
+}
+
 export async function addItemCart(product: IShopProduct) {
 	const res = await api.post('/basket/save_basket', {
 		product_code: product.product_code,
