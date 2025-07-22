@@ -21,10 +21,13 @@ const navItems: NavItem[] = [
 		path: '/analytics/elastic',
 	},
 	{
+		name: 'Инциденты',
+		path: '/analytics/incident',
+	},
+	{
 		name: 'Магазин',
 		path: '/shop',
 	},
-
 	{
 		name: 'Пользователи',
 		path: '/users',

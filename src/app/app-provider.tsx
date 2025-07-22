@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { SidebarProvider, ThemeProvider } from '../layout/context'
 import { RenderProvider } from '../shared/internal/render'
 interface AppProviderProps {

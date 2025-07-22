@@ -14,3 +14,11 @@ interface IProductionAnalytics {
 interface IAnalyticsResponse {
 	[key: string]: any
 }
+interface IAnalyticsIncidentQuery {
+	filterdate?: string[]
+	data?: string | string[]
+	fields_name?: string | string[]
+	details_field?: string | string[]
+	id_record?: string
+	limit_page?: number
+}
