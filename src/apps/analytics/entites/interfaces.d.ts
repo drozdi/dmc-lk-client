@@ -11,7 +11,27 @@ interface IProductionAnalytics {
 	production_id: number
 }
 
-interface IAnalyticsResponse {
+interface IAnalyticsElasticQuery {
+	company: {
+		select_field: string[]
+		list_where?: Array<{
+			name_field_table?: string
+			search_value?: string | string[]
+			sing_action?: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like'
+			single_action_list?: 'and' | 'or' | 'not'
+		}>
+		date_limit: {
+			date_from: string
+			date_to: string
+			date_rounding?: 's' | 'm' | 'h' | 'd' | 'mon' | 'y'
+		}
+	}
+	paginate: {
+		id_record?: string
+		limit_page: number
+	}
+}
+interface IAnalyticsElasticResponse {
 	[key: string]: any
 }
 interface IAnalyticsIncidentQuery {
@@ -21,4 +41,7 @@ interface IAnalyticsIncidentQuery {
 	details_field?: string | string[]
 	id_record?: string
 	limit_page?: number
+}
+interface IAnalyticsIncidentResponse {
+	[key: string]: any
 }

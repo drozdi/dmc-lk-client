@@ -1,5 +1,5 @@
 import { api } from '../../../shared/api'
 
-export async function requestFields() {
+export async function requestAnalyticsFields() {
 	return await api.get('/analytics/available_fields')
 }

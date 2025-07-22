@@ -1,5 +1,5 @@
 import { api } from '../../../shared/api'
 
-export async function requestElastic(params: Record<string, any>) {
+export async function requestAnalyticsElastic(params: IAnalyticsElasticQuery) {
 	return await api.post('/analytics/elastic', params)
 }

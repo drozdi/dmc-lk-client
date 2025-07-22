@@ -6,14 +6,20 @@ import {
 import { observer } from 'mobx-react-lite'
 import { useMemo, useRef } from 'react'
 import { TbColumnInsertRight, TbColumnRemove } from 'react-icons/tb'
-import { Btn, Input, MarkupTable, Select } from '../../../../shared/ui'
+import { Btn, Input, Loading, MarkupTable, Select } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
+import { fieldsStore } from '../../stores/fields-store'
 import { ActionForm } from './components/action-form'
 import { InForm } from './components/in-form'
 import { SignForm } from './components/sign-form'
 
-export const TableElastic = observer(() => {
-	const { fields, list, template, date, data, isNext, isPrev, limit } =
+interface TableElasticProps {
+	className?: string
+}
+
+export const TableElastic = observer(({ className }: TableElasticProps) => {
+	const { fields, list } = fieldsStore
+	const { template, data, isNext, isPrev, limit, date, isLoading } =
 		elasticStore
 	const selectRef = useRef()
 
@@ -25,7 +31,7 @@ export const TableElastic = observer(() => {
 	>(() => {
 		return list.map(item => ({
 			value: item,
-			label: fields[item].label,
+			label: fields?.[item]?.label ?? item,
 		}))
 	}, [fields, list])
 
@@ -35,46 +41,86 @@ export const TableElastic = observer(() => {
 				accessorKey: 'id',
 				header: '#',
 			},
-			...template,
+			...template.company.select_field.map(item => ({
+				accessorKey: item,
+				header: fields?.[item]?.label ?? item,
+			})),
 		],
-		[template]
+		[template, fields]
 	)
+
 	const table = useReactTable({
 		columns,
 		data,
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	const handleAddField = (e: React.ChangeEvent) => {
-		elasticStore.saveTemp([
-			...template,
-			{
-				accessorKey: e.target.value,
-				header: fields[e.target.value].label,
-			},
-		])
+	const whereItem = (select: string) =>
+		template.company.list_where?.find(item => item.name_field_table === select)
+
+	const whereItemAppend = (
+		select: string,
+		sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like',
+		value: string | string[] = '',
+		action: 'and' | 'or' | 'not' = 'and'
+	) => {
+		const index = template.company.list_where?.findIndex(
+			item => item.name_field_table === select
+		)
+		let where = {
+			name_field_table: select,
+			sing_action: sign,
+			search_value: value,
+			single_action_list: action,
+		}
+		if (index === -1) {
+			template.company.list_where.push(where)
+		} else {
+			where = template.company.list_where[index]
+		}
+		return where
+	}
+
+	const handleAddField = (select: string) => {
+		template.company.select_field.push(select)
+		elasticStore.saveTemp({ ...template })
 		selectRef.current?.reset?.()
 	}
-	const handleRemoveField = (index: number) => {
-		template.splice(index, 1)
-		elasticStore.saveTemp([...template])
+	const handleRemoveField = (select: string) => {
+		template.company.select_field = template.company.select_field.filter(
+			item => item !== select
+		)
+		template.company.list_where = template.company.list_where.filter(
+			item => item.name_field_table !== select
+		)
+		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeSignField = (index: number, sign: string) => {
-		template[index].sign = sign
-		template[index].value = ''
-		elasticStore.saveTemp([...template])
+	const handleChangeActionField = (
+		select: string,
+		action: 'and' | 'or' | 'not'
+	) => {
+		const where = whereItemAppend(select, '=', '', action)
+		where.single_action_list = action
+		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeInField = (index: number, value: any[]) => {
-		template[index].value = value
-		elasticStore.saveTemp([...template])
+	const handleChangeSignField = (
+		select: string,
+		sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like'
+	) => {
+		const where = whereItemAppend(select, sign)
+		where.sing_action = sign
+		where.search_value = ''
+		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeValueField = (index: number, value: string) => {
-		template[index].value = value
-		elasticStore.saveTemp([...template])
+	const handleChangeInField = (select: string, value: string[]) => {
+		const where = whereItemAppend(select, '=', value)
+		where.search_value = value
+		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeActionField = (index: number, action: string) => {
-		template[index].action = action
-		elasticStore.saveTemp([...template])
+	const handleChangeValueField = (select: string, value: string) => {
+		const where = whereItemAppend(select, '=', value)
+		where.search_value = value
+		elasticStore.saveTemp({ ...template })
 	}
 	const handleDateChange = ({ target }: React.ChangeEvent) => {
 		elasticStore.setDate({
@@ -83,11 +129,11 @@ export const TableElastic = observer(() => {
 	}
 
 	const handleApply = async () => {
-		await elasticStore.send()
+		await elasticStore.reset()
 	}
 
 	return (
-		<>
+		<div className={className}>
 			<div className='flex justify-between items-start'>
 				<div className='flex gap-0 items-start justify-end'>
 					<Input
@@ -133,7 +179,7 @@ export const TableElastic = observer(() => {
 							filled
 							dense
 							underlined
-							onChange={handleAddField}
+							onChange={({ target }) => handleAddField(target.value)}
 							ref={selectRef}
 						>
 							{variantFields.map(item => (
@@ -145,86 +191,96 @@ export const TableElastic = observer(() => {
 					</div>
 				</div>
 			</div>
-			<MarkupTable rowBorder striped>
-				<MarkupTable.Thead>
-					{table.getHeaderGroups().map(headerGroup => (
-						<MarkupTable.Tr key={headerGroup.id}>
-							{headerGroup.headers.map((header, index) => (
-								<MarkupTable.Th
-									className='group relative overflow-visible'
-									key={header.id}
-									colSpan={header.colSpan}
-								>
-									<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 cle'>
-										<div className='flex gap-1 justify-between items-start'>
-											<ActionForm
-												value={template[index - 1]?.action || 'and'}
-												onChange={action =>
-													handleChangeActionField(index - 1, action)
+			<Loading active={isLoading}>
+				<MarkupTable rowBorder striped>
+					<MarkupTable.Thead>
+						{table.getHeaderGroups().map(headerGroup => (
+							<MarkupTable.Tr key={headerGroup.id}>
+								{headerGroup.headers.map((header, index) => (
+									<MarkupTable.Th
+										className='group relative overflow-visible'
+										key={header.id}
+										colSpan={header.colSpan}
+									>
+										<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 cle'>
+											<div className='flex gap-1 justify-between items-start'>
+												<ActionForm
+													value={
+														whereItem(header.id)?.single_action_list || 'and'
+													}
+													onChange={single_action_list =>
+														handleChangeActionField(
+															header.id,
+															single_action_list
+														)
+													}
+												/>
+												<button
+													className='p-3 bg-warning rounded py-1 cursor-pointer'
+													onClick={() => handleRemoveField(header.id)}
+													title='Удалить поле'
+												>
+													<TbColumnRemove />
+												</button>
+											</div>
+											<SignForm
+												value={whereItem(header.id)?.sing_action || '='}
+												onChange={sing_action =>
+													handleChangeSignField(header.id, sing_action)
 												}
 											/>
-											<button
-												className=' p-3 bg-warning rounded py-1 cursor-pointer'
-												onClick={() => handleRemoveField(index - 1)}
-												title='Удалить поле'
-											>
-												<TbColumnRemove />
-											</button>
+											{whereItem(header.id)?.sing_action === 'in' ||
+											whereItem(header.id)?.sing_action === 'not_in' ? (
+												<InForm
+													values={whereItem(header.id)?.search_value}
+													onChange={values =>
+														handleChangeInField(header.id, values)
+													}
+												/>
+											) : (
+												<Input
+													filled
+													dense
+													square
+													underlined
+													onChange={({ target }) =>
+														handleChangeValueField(header.id, target.value)
+													}
+												/>
+											)}
 										</div>
-										<SignForm
-											value={template[index - 1]?.sign || '='}
-											onChange={sign => handleChangeSignField(index - 1, sign)}
-										/>
-										{template[index - 1]?.sign === 'in' ||
-										template[index - 1]?.sign === 'not_in' ? (
-											<InForm
-												values={template[index - 1]?.value}
-												onChange={values =>
-													handleChangeInField(index - 1, values)
-												}
-											/>
-										) : (
-											<Input
-												filled
-												dense
-												square
-												underlined
-												onChange={({ target }) =>
-													handleChangeValueField(index - 1, target.value)
-												}
-											/>
-										)}
-									</div>
 
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext()
-										  )}
-								</MarkupTable.Th>
-							))}
-						</MarkupTable.Tr>
-					))}
-				</MarkupTable.Thead>
-				<MarkupTable.Tbody>
-					{table.getRowModel().rows.map(row => (
-						<MarkupTable.Tr key={row.id}>
-							{row.getVisibleCells().map(cell => (
-								<MarkupTable.Td key={cell.id}>
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</MarkupTable.Td>
-							))}
-						</MarkupTable.Tr>
-					))}
-				</MarkupTable.Tbody>
-			</MarkupTable>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext()
+											  )}
+									</MarkupTable.Th>
+								))}
+							</MarkupTable.Tr>
+						))}
+					</MarkupTable.Thead>
+					<MarkupTable.Tbody>
+						{table.getRowModel().rows.map(row => (
+							<MarkupTable.Tr key={row.id}>
+								{row.getVisibleCells().map(cell => (
+									<MarkupTable.Td key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</MarkupTable.Td>
+								))}
+							</MarkupTable.Tr>
+						))}
+					</MarkupTable.Tbody>
+				</MarkupTable>
+			</Loading>
 			<div className='flex gap-3 justify-between mt-3 items-start'>
 				<div className='flex gap-3 justify-end'>
 					<Btn
 						color='secondary'
 						size='sm'
 						disabled={!isPrev}
+						loading={isLoading}
 						onClick={() => elasticStore.prev()}
 					>
 						Предыдущая
@@ -233,6 +289,7 @@ export const TableElastic = observer(() => {
 						color='secondary'
 						size='sm'
 						disabled={!isNext}
+						loading={isLoading}
 						onClick={() => elasticStore.next()}
 					>
 						Следующая
@@ -251,6 +308,6 @@ export const TableElastic = observer(() => {
 					<option value={100}>100</option>
 				</Select>
 			</div>
-		</>
+		</div>
 	)
 })

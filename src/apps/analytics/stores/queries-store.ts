@@ -1,9 +1,7 @@
 import { makeAutoObservable } from 'mobx'
-import { requestAnalyticsFields } from '../api/fields'
+import { requestFields } from '../api/fields'
 
-const ANALYTICS_KEY = 'analytics.form'
-
-class FieldsStore {
+class QueriesStore {
 	fields: Record<string, any> = {}
 	isLoading = false
 	error = undefined
@@ -21,7 +19,7 @@ class FieldsStore {
 		}
 		this.isLoading = true
 		try {
-			const res = await requestAnalyticsFields()
+			const res = await requestFields()
 			this.fields = res.data.message
 			this.isLoaded = true
 		} catch (error) {
@@ -32,4 +30,4 @@ class FieldsStore {
 	}
 }
 
-export const fieldsStore = new FieldsStore()
+export const queriesStore = new QueriesStore()

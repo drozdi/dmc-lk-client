@@ -1,97 +1,106 @@
 import { makeAutoObservable } from 'mobx'
-import { requestElastic } from '../api/elastic'
-import { requestFields } from '../api/fields'
+import { requestAnalyticsElastic } from '../api/elastic'
 
-const ANALYTICS_KEY = 'analytics.form'
+const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 class ElasticStore {
-	fields: Record<string, any> = {}
 	isLoading = false
 	error = undefined
-	isLoaded = false
-	template: any[] = []
-	date: {
-		date_from: string
-		date_to: string
-	} = {
-		date_from: '2024-05-23',
-		date_to: '2024-07-23',
+
+	template: IAnalyticsElasticQuery = {
+		company: {
+			select_field: [],
+			list_where: [],
+			date_limit: {
+				date_from: '2024-05-23',
+				date_to: '2024-07-23',
+				date_rounding: undefined,
+			},
+		},
+		paginate: {
+			id_record: undefined,
+			limit_page: 50,
+		},
 	}
+
 	data = []
 	history = []
-	nextPage = ''
-	limit = 50
-	get list() {
-		return Object.keys(this.fields)
+
+	get nextPage() {
+		return this.template.paginate.id_record
+	}
+	set nextPage(value) {
+		this.template = {
+			...this.template,
+			paginate: {
+				...this.template.paginate,
+				id_record: value,
+			},
+		}
+	}
+	get limit() {
+		try {
+			return this.template.paginate.limit_page
+		} catch (error) {
+			return 50
+		}
+	}
+	set limit(value) {
+		this.template = {
+			...this.template,
+			paginate: {
+				...this.template.paginate,
+				limit_page: value,
+			},
+		}
 	}
 	get isNext() {
-		return !!this.nextPage
+		return !!this.template.paginate.id_record
 	}
 	get isPrev() {
 		return this.history.length > 1
 	}
+	get date() {
+		return this.template.company.date_limit
+	}
+
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
-		const data = localStorage.getItem(ANALYTICS_KEY)
+		const data = localStorage.getItem(ANALYTICS_ELASTIC_KEY)
 		if (data) {
 			this.template = JSON.parse(data)
-		}
-	}
-	async load() {
-		if (this.isLoaded) {
-			return
-		}
-		this.isLoading = true
-		try {
-			const res = await requestFields()
-			this.fields = res.data.message
-			this.isLoaded = true
-		} catch (error) {
-			this.error = error.message
-		} finally {
-			this.isLoading = false
 		}
 	}
 
 	saveTemp(data: any[]) {
 		this.template = data
-		localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data))
+		localStorage.setItem(ANALYTICS_ELASTIC_KEY, JSON.stringify(data))
 	}
 	setDate(date: {}) {
-		this.date = { ...this.date, ...date }
+		this.template.company.date_limit = {
+			...this.template.company.date_limit,
+			...date,
+		}
 	}
 	async send(page = '', histrory = true) {
 		this.isLoading = true
 		try {
-			const select_field = []
-			const list_where = []
-			const date_limit = {}
-
-			this.template.forEach(item => {
-				select_field.push(item.accessorKey)
-				if (Array.isArray(item.value)) {
-					item.value.length > 0 &&
-						list_where.push({
-							name_field_table: item.accessorKey,
-							search_value: item.value,
-							sing_action: item.sign || '=',
-							single_action_list: item.action || 'and',
-						})
-				} else if (item.value) {
-					list_where.push({
-						name_field_table: item.accessorKey,
-						search_value: item.value,
-						sing_action: item.sign || '=',
-						single_action_list: item.action || 'and',
-					})
+			const select_field = [...this.template.company.select_field]
+			const list_where = this.template.company.list_where?.filter(item => {
+				if (Array.isArray(item.search_value)) {
+					if (item.search_value.length > 0) {
+						return item
+					}
+				} else if (item.search_value) {
+					return item
 				}
 			})
-			delete list_where[list_where.length - 1]?.single_action_list
+			const date_limit = { ...this.template.company.date_limit }
 
-			date_limit.date_from = this.date.date_from
-			date_limit.date_to = this.date.date_to
+			if (list_where.length > 0) {
+				delete list_where[list_where.length - 1]?.single_action_list
+			}
 
-			const res = await requestElastic({
+			const res = await requestAnalyticsElastic({
 				company: {
 					select_field,
 					list_where,
@@ -122,10 +131,8 @@ class ElasticStore {
 		}
 	}
 	async reset() {
-		if (this.history.length) {
-			this.history = []
-			await this.send('', false)
-		}
+		this.history = []
+		await this.send('', true)
 	}
 	async setLimit(limit: number) {
 		if (limit !== this.limit) {

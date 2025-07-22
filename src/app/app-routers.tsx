@@ -11,6 +11,7 @@ import { ProtectedRoute } from '../components/features/protected-router/protecte
 
 import analyticsRouers from '../apps/analytics/routers'
 import shopRouers from '../apps/shop/routers'
+import uiRouters from '../apps/ui/routers'
 import usersRouers from '../apps/users/routers'
 
 const routes = () => [
@@ -59,6 +60,7 @@ const routes = () => [
 			analyticsRouers(),
 			shopRouers(),
 			usersRouers(),
+			uiRouters(),
 		],
 	},
 ]
