@@ -99,7 +99,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		let res: string[] = []
 		if (data) {
 			for (const event in mapEvent) {
-				for (const p of data[event].production) {
+				for (const p of data[event].production || []) {
 					res = res.concat(p.data.map(item => item.timestamp))
 				}
 			}
@@ -108,6 +108,9 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	}, [data])
 	// Извлекаем, групируем данные
 	const datasets = useMemo(() => {
+		if (!labels.length) {
+			return []
+		}
 		const res = {
 			v: {
 				label: mapEvent.v,
@@ -141,7 +144,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		}
 		if (data) {
 			for (const event in res) {
-				for (const p of data[event].production) {
+				for (const p of data[event]?.production || []) {
 					if (
 						cuurent_production > 0 &&
 						p.production_id !== cuurent_production
@@ -156,6 +159,8 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		}
 		return [res.v, res.i, res.d]
 	}, [data, labels, cuurent_production])
+
+	const isEmpty = useMemo(() => !datasets.length, [datasets])
 
 	useEffect(() => {
 		const send = async () => {
@@ -179,12 +184,6 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 			let filterdate_to: ChartAnalyticProps['filterdate_to'] =
 				query.filterdate_to
 
-			/*s: 'секунда',
-	m: 'минута',
-	h: 'час',
-	d: 'день',
-	mon: 'месяц',
-	y: 'год',*/
 			switch (query.step) {
 				case 'y':
 					step = 'mon'
@@ -272,7 +271,11 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 				</Btn>
 			</div>
 			<Loading active={isLoading}>
-				<Line data={{ labels, datasets }} onClick={onClick} ref={ref} />
+				{isEmpty ? (
+					<span>Данные ненашлись!</span>
+				) : (
+					<Line data={{ labels, datasets }} onClick={onClick} ref={ref} />
+				)}
 			</Loading>
 		</div>
 	)

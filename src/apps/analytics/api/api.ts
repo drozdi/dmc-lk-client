@@ -13,7 +13,6 @@ export function useAnalytics() {
 					'/analytics/?'
 				)
 				.replace(/&$/g, '')
-			console.log(url)
 			const res = await api.get(url)
 			return res.data
 		} catch (error) {

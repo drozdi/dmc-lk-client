@@ -1,0 +1,26 @@
+import { api } from '../../../shared/api'
+
+export async function listUsers({
+	size = 15,
+	number = 0,
+}: {
+	size: number
+	number: number
+}) {
+	const res = await await api.get('/users', {
+		params: {
+			size,
+			number,
+		},
+	})
+	return res.data.data
+}
+
+export async function getUser(id: number) {
+	const res = await api.get(`/users/?id_user=${id}`)
+	return res.data.data.user.request[0]
+}
+export async function updateUser(id: number, data: IUsersUser) {
+	const res = await api.patch(`/users/?id_user=${id}`, data)
+	return res.data
+}

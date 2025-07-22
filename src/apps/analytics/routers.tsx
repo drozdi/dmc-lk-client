@@ -1,8 +1,20 @@
+import { Outlet } from 'react-router-dom'
+import { AnalyticsElasticPage } from './pages/analytics-elastic-page'
 import { AnalyticsPage } from './pages/analytics-page'
 
-export default function ({ path = '/analytics' }: AppRouterProps): object {
+export default function ({ path = '/analytics' }: AppRouterProps = {}): object {
 	return {
 		path: path,
-		element: <AnalyticsPage />,
+		element: <Outlet />,
+		children: [
+			{
+				path: '',
+				element: <AnalyticsPage />,
+			},
+			{
+				path: 'elastic',
+				element: <AnalyticsElasticPage />,
+			},
+		],
 	}
 }

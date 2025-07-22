@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router'
 import { ShopGroupPage } from './pages/shop-group-page'
 
-export default function ({ path = '/analytics' }: AppRouterProps): object {
+export default function ({ path = '/shop' }: AppRouterProps = {}): object {
 	return {
 		path: path,
 		element: <Outlet />,

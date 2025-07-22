@@ -1,0 +1,21 @@
+.mdc-popover {
+	position: relative;
+	overflow: visible;
+}
+
+.mdc-popover__dropdown {
+	position: absolute;
+	background: white;
+	display: flex;
+	justify-content: space-between;
+	text-wrap: nowrap;
+	padding: calc(2 * var(--spacing));
+	border: 1px solid var(--color-active);
+	border-radius: 4px;
+	top: 0;
+	right: 0;
+	z-index: 10;
+}
+.mdc-popover__dropdown:not(.mdc-popover__dropdown--open) {
+	display: none;
+}

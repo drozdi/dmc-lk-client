@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useRoutes } from 'react-router'
+import { Navigate, useRoutes } from 'react-router'
 import { AuthLayout } from '../layout/AuthLayout'
 import { MainLayout } from '../layout/MainLayout'
 
@@ -9,8 +9,9 @@ import { PersonalPage } from '../components/pages/lk/personal-page'
 
 import { ProtectedRoute } from '../components/features/protected-router/protected-route'
 
-import { AnalyticsPage } from '../apps/analytics/pages/analytics-page'
-import { ShopGroupPage } from '../apps/shop/pages/shop-group-page'
+import analyticsRouers from '../apps/analytics/routers'
+import shopRouers from '../apps/shop/routers'
+import usersRouers from '../apps/users/routers'
 
 const routes = () => [
 	{
@@ -55,24 +56,9 @@ const routes = () => [
 				path: '/lk',
 				element: <PersonalPage />,
 			},
-			{
-				path: '/analytics',
-				element: <AnalyticsPage />,
-			},
-			{
-				path: '/shop',
-				element: <Outlet />,
-				children: [
-					{
-						path: '',
-						element: <ShopGroupPage />,
-					},
-					{
-						path: 'group/:groupId',
-						element: <ShopGroupPage />,
-					},
-				],
-			},
+			analyticsRouers(),
+			shopRouers(),
+			usersRouers(),
 		],
 	},
 ]

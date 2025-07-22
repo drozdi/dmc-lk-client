@@ -1,5 +1,7 @@
 export * from './_'
+export * from './cached'
 export * from './cls'
 export * from './currency-format'
 export * from './debounce'
 export * from './random-color'
+export * from './string'

@@ -1,4 +1,3 @@
-import { createPortal } from 'react-dom'
 import { TbArrowsMinimize, TbArrowsMove } from 'react-icons/tb'
 import { useDisclosure } from '../../hooks'
 import { cls } from '../../utils'
@@ -9,7 +8,8 @@ interface FullscreenProps {
 }
 export function Fullscreen({ children }: FullscreenProps) {
 	const [active, { toggle, close, open }] = useDisclosure(false)
-	const element = (
+
+	return (
 		<div
 			className={cls('mdc-fullscreen', {
 				'mdc-fullscreen--active': active,
@@ -30,9 +30,4 @@ export function Fullscreen({ children }: FullscreenProps) {
 			{children}
 		</div>
 	)
-	if (active) {
-		return createPortal(element, document.body)
-	}
-
-	return element
 }

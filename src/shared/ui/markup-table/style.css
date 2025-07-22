@@ -1,0 +1,96 @@
+@reference "@style";
+
+.mdc-table {
+	@apply w-full border-collapse border-spacing-0 table-auto border-color;
+}
+.mdc-table,
+.mdc-table *,
+.mdc-table *::before,
+.mdc-table *::after {
+	@apply transition-all duration-200 ease-in-out;
+}
+
+.mdc-table-tr {
+	@apply relative border-color;
+	&::after {
+		@apply absolute left-0 top-0 w-full h-full pointer-events-none -z-10 bg-current opacity-0;
+		content: '';
+	}
+}
+
+.mdc-table-td,
+.mdc-table-th {
+	@apply border-color px-4 py-2;
+}
+
+.mdc-table-td {
+}
+.mdc-table-th {
+	@apply select-none font-medium text-base;
+}
+
+.mdc-table-thead {
+}
+.mdc-table-tbody {
+}
+.mdc-table-tfoot {
+}
+
+.mdc-table--striped {
+	.mdc-table-tbody > :where(tr):nth-of-type(odd) {
+		@apply after:opacity-10;
+	}
+}
+.mdc-table--hover {
+	.mdc-table-tbody > :where(tr):not(.mdc-no-hover):hover {
+		@apply after:opacity-15;
+	}
+}
+.mdc-table--dense {
+	.mdc-table-td,
+	.mdc-table-th {
+		@apply px-2 py-1;
+		&:first-child {
+			@apply pl-4;
+		}
+		&:last-child {
+			@apply pr-4;
+		}
+	}
+}
+
+.mdc-table--row-border .mdc-table-tr {
+	@apply border-b;
+}
+
+.mdc-table--col-border {
+	.mdc-table-td,
+	.mdc-table-th {
+		&:not(:last-child) {
+			@apply border-r;
+		}
+	}
+}
+.mdc-table--border {
+	@apply border;
+}
+.mdc-table-tbody .mdc-table-tr:last-child {
+	@apply border-b-0;
+}
+
+.mdc-table--fixed {
+	@apply table-fixed;
+}
+.mdc-table--auto {
+	@apply table-auto;
+}
+
+.mdc-table-td-title {
+	display: none;
+}
+
+.mdc-table--show-title {
+	.mdc-table-td-title {
+		display: block;
+	}
+}
