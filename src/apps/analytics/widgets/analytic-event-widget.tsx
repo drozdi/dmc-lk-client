@@ -284,18 +284,21 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 						<Tooltip />
 						<Legend />
 						<Line
+							name={mapEvent.d}
 							type='monotone'
 							dataKey='d'
 							stroke='#35a2eb'
 							label={mapEvent.d}
 						/>
 						<Line
+							name={mapEvent.i}
 							type='monotone'
 							dataKey='i'
 							stroke='#ff6384'
 							label={mapEvent.i}
 						/>
 						<Line
+							name={mapEvent.v}
 							type='monotone'
 							dataKey='v'
 							stroke='#00ff84'

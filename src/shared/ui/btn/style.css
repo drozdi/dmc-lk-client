@@ -180,7 +180,8 @@
 .mdc-btn--success,
 .mdc-btn--warning,
 .mdc-btn--info,
-.mdc-btn--danger {
+.mdc-btn--danger,
+.mdc-btn--dark {
 	@apply text-white;
 }
 
@@ -230,5 +231,12 @@
 	@apply bg-danger;
 	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
 		@apply text-danger;
+	}
+}
+
+.mdc-btn--dark {
+	@apply bg-dark;
+	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+		@apply text-dark;
 	}
 }
