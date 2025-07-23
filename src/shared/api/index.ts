@@ -35,8 +35,9 @@ api.interceptors.response.use(
 				localStorage.setItem(ACCESS_TOKEN_KEY, access)
 				localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
 
-				return api.request(originalRequest)
+				return await api.request(originalRequest)
 			} catch (refreshError) {
+				console.error(refreshError)
 				// Если не удалось обновить - разлогиниваем
 				localStorage.removeItem(ACCESS_TOKEN_KEY)
 				localStorage.removeItem(REFRESH_TOKEN_KEY)

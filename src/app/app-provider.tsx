@@ -1,15 +1,22 @@
 import { Link } from 'react-router'
-import { SidebarProvider, ThemeProvider } from '../layout/context'
+import {
+	FooterProvider,
+	SidebarProvider,
+	ThemeProvider,
+} from '../layout/context'
 import { RenderProvider } from '../shared/internal/render'
+
 interface AppProviderProps {
 	children: React.ReactNode
 }
 
 export function AppProvider({ children }: AppProviderProps) {
 	return (
-		<RenderProvider as={Link}>
+		<RenderProvider render={({ as, to }) => (!!to ? Link : as)}>
 			<ThemeProvider>
-				<SidebarProvider>{children}</SidebarProvider>
+				<SidebarProvider>
+					<FooterProvider>{children}</FooterProvider>
+				</SidebarProvider>
 			</ThemeProvider>
 		</RenderProvider>
 	)

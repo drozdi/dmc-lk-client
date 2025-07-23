@@ -18,7 +18,7 @@ const navItems: NavItem[] = [
 	},
 	{
 		name: 'Отчеты',
-		path: '/analytics/elastic',
+		path: '/analytics/queries',
 	},
 	{
 		name: 'Инциденты',

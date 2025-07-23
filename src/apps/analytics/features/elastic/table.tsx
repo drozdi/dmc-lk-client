@@ -4,7 +4,7 @@ import {
 	useReactTable,
 } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { TbColumnInsertRight, TbColumnRemove } from 'react-icons/tb'
 import { Btn, Input, Loading, MarkupTable, Select } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
@@ -131,6 +131,18 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	const handleApply = async () => {
 		await elasticStore.reset()
 	}
+	const handleSave = async () => {
+		if (!elasticStore.name) {
+			elasticStore.setName(prompt('Введите название запроса'))
+		}
+		await elasticStore.save()
+	}
+
+	useEffect(() => {
+		if (elasticStore.id) {
+			elasticStore.reset()
+		}
+	}, [])
 
 	return (
 		<div className={className}>
@@ -160,7 +172,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					/>
 				</div>
 				<div className='flex gap-3 justify-end'>
-					<Btn color='success' size='sm'>
+					<Btn color='success' size='sm' onClick={handleSave}>
 						Сохранить
 					</Btn>
 					<Btn color='info' size='sm' onClick={handleApply}>

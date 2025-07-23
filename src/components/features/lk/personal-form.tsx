@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
+import { FooterTemplate } from '../../../layout/context/footer'
 import { Btn, Input, Message } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
@@ -152,45 +153,46 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.phone?.message}
 					{...register('phone')}
 				/>
-				<div className='flex flex-row flex-wrap gap-3 justify-between'>
-					<div className='flex flex-row gap-3'>
-						<Btn
-							type='button'
-							color='success'
-							size='sm'
-							onClick={handleSubmit(handleSaveNavigate)}
-							loading={isLoading}
-							disabled={!isValid}
-							label='Сохранить'
-						>
-							Сохранить
-						</Btn>
+				<FooterTemplate>
+					<div className='flex flex-row flex-wrap gap-3 justify-between'>
+						<div className='flex flex-row gap-3'>
+							<Btn
+								type='button'
+								color='success'
+								size='sm'
+								onClick={handleSubmit(handleSaveNavigate)}
+								loading={isLoading}
+								disabled={!isValid}
+								label='Сохранить'
+							>
+								Сохранить
+							</Btn>
 
+							<Btn
+								type='button'
+								color='primary'
+								size='sm'
+								onClick={handleSubmit(handleSave)}
+								loading={isLoading}
+								disabled={!isValid}
+								label='Применить'
+							>
+								Применить
+							</Btn>
+						</div>
 						<Btn
 							type='button'
-							color='primary'
+							color='danger'
 							size='sm'
-							onClick={handleSubmit(handleSave)}
+							onClick={handleRemove}
 							loading={isLoading}
 							disabled={!isValid}
-							label='Применить'
+							label='Удалить'
 						>
-							Применить
+							Удалить
 						</Btn>
 					</div>
-
-					<Btn
-						type='button'
-						color='danger'
-						size='sm'
-						onClick={handleRemove}
-						loading={isLoading}
-						disabled={!isValid}
-						label='Удалить'
-					>
-						Удалить
-					</Btn>
-				</div>
+				</FooterTemplate>
 			</form>
 		</>
 	)

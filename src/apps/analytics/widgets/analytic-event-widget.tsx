@@ -1,38 +1,20 @@
-import {
-	CategoryScale,
-	Chart as ChartJS,
-	Legend,
-	LinearScale,
-	LineElement,
-	PointElement,
-	Title,
-	Tooltip,
-} from 'chart.js'
 import dayjs from 'dayjs'
-import React, {
-	memo,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react'
-import { getElementsAtEvent, Line } from 'react-chartjs-2'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+	CartesianGrid,
+	Legend,
+	Line,
+	LineChart,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from 'recharts'
+
 import { Btn, Loading, Select } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
-
-ChartJS.register(
-	CategoryScale,
-	LinearScale,
-	PointElement,
-	LineElement,
-	Title,
-	Tooltip,
-	Legend
-)
 
 export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
@@ -82,24 +64,32 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 
 	// Извлекаем список площадок
 	const productions = useMemo<IProductionAnalytics[]>(() => {
+		const productions: IProductionAnalytics[] = []
 		if (data) {
-			return (
-				((data?.v || data?.i || data?.d || data?.p)
-					?.production as Array<IProductionAnalytics>) || []
-			).map(item => ({
-				address: item.address,
-				name: item.name,
-				production_id: item.production_id,
-			}))
+			for (const event in mapEvent) {
+				data[event]?.production?.forEach(item => {
+					if (
+						productions.findIndex(
+							production => production.production_id === item.production_id
+						) === -1
+					) {
+						productions.push({
+							name: item.name,
+							address: item.address,
+							production_id: item.production_id,
+						})
+					}
+				})
+			}
 		}
-		return []
+		return productions
 	}, [data])
 	// Извлекаем список дат
 	const labels = useMemo<string[]>(() => {
 		let res: string[] = []
 		if (data) {
 			for (const event in mapEvent) {
-				for (const p of data[event].production || []) {
+				for (const p of data[event]?.production || []) {
 					res = res.concat(p.data.map(item => item.timestamp))
 				}
 			}
@@ -160,7 +150,33 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		return [res.v, res.i, res.d]
 	}, [data, labels, cuurent_production])
 
-	const isEmpty = useMemo(() => !datasets.length, [datasets])
+	const ddata = useMemo(() => {
+		const initialData = Object.fromEntries(
+			labels.map(item => [
+				item,
+				Object.fromEntries(Object.keys(mapEvent).map(item => [item, 0])),
+			])
+		)
+		for (const event in mapEvent) {
+			if (!data?.[event]?.production) {
+				continue
+			}
+			for (const p of data[event].production) {
+				if (cuurent_production > 0 && p.production_id !== cuurent_production) {
+					continue
+				}
+				;(p.data as any[]).forEach(item => {
+					initialData[item.timestamp][event] += item.count
+				})
+			}
+		}
+		return Object.entries(initialData).map(([name, data]) => ({
+			...data,
+			name,
+		}))
+	}, [data, labels, cuurent_production])
+
+	const isEmpty = useMemo(() => !ddata.length, [ddata])
 
 	useEffect(() => {
 		const send = async () => {
@@ -223,21 +239,14 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		[labels, query]
 	)
 
-	const onClick = useCallback(
-		(event: React.MouseEvent) => {
-			const items = getElementsAtEvent(ref.current, event)
-			if (items.length === 0) {
-				return
-			}
-			stepLow(items[0].index)
-		},
-		[stepLow]
-	)
+	useEffect(() => {
+		console.log(ddata)
+	}, [ddata])
 
 	return (
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
 			<h2 className='mb-3 w-full text-left'>ChartAnalytic</h2>
-			<div className='flex w-full gap-0 items-start justify-end'>
+			<div className='flex w-full gap-0 justify-end'>
 				<Select
 					label='Площадка'
 					name='production_id'
@@ -260,13 +269,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 						</option>
 					))}
 				</Select>
-				<Btn
-					className='flex-none'
-					color='primary'
-					size='sm'
-					square
-					onClick={reset}
-				>
+				<Btn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
 				</Btn>
 			</div>
@@ -274,9 +277,40 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 				{isEmpty ? (
 					<span>Данные ненашлись!</span>
 				) : (
-					<Line data={{ labels, datasets }} onClick={onClick} ref={ref} />
+					<LineChart width={500} height={300} data={ddata}>
+						<CartesianGrid stroke='#aaa' strokeDasharray='5 5' />
+						<XAxis dataKey='name' />
+						<YAxis />
+						<Tooltip />
+						<Legend />
+						<Line
+							type='monotone'
+							dataKey='d'
+							stroke='#35a2eb'
+							label={mapEvent.d}
+						/>
+						<Line
+							type='monotone'
+							dataKey='i'
+							stroke='#ff6384'
+							label={mapEvent.i}
+						/>
+						<Line
+							type='monotone'
+							dataKey='v'
+							stroke='#00ff84'
+							label={mapEvent.v}
+						/>
+					</LineChart>
 				)}
 			</Loading>
 		</div>
 	)
 })
+
+/**
+ * v: '#00ff84',
+ * i: '#ff6384',
+ * d: '#35a2eb',
+ * p: '#006384'
+ * */

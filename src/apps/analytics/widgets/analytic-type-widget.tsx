@@ -97,7 +97,6 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		const res: any[] = []
 		if (data) {
 			labels.forEach(label => {
-				4
 				const newItem = {
 					label: label,
 					data: [0],
@@ -165,13 +164,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 						</option>
 					))}
 				</Select>
-				<Btn
-					className='flex-none'
-					color='primary'
-					size='sm'
-					square
-					onClick={reset}
-				>
+				<Btn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
 				</Btn>
 			</div>

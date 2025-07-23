@@ -29,7 +29,6 @@ export function BtnPage() {
 			round: false,
 			rounded: false,
 			disabled: false,
-			link: false,
 			active: false,
 			loading: false,
 			leftSection: '',
@@ -181,7 +180,6 @@ export function BtnPage() {
 							rounded: { type: 'checkbox' },
 							round: { type: 'checkbox' },
 							disabled: { type: 'checkbox' },
-							link: { type: 'checkbox' },
 							active: { type: 'checkbox' },
 						},
 						btnExample

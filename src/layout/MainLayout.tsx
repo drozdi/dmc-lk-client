@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { ShopCart } from '../apps/shop/features/shop-cart'
+import { Footer } from './components/footer'
 import Header from './components/header'
 import Sidebar from './components/sidebar'
 import { useSidebar } from './context'
@@ -23,6 +24,7 @@ export function MainLayout() {
 					</div>
 					<ShopCart />
 				</div>
+				<Footer />
 			</div>
 		</div>
 	)

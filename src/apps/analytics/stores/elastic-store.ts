@@ -1,5 +1,9 @@
 import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsElastic } from '../api/elastic'
+import {
+	requestAnalyticsAddQuery,
+	requestAnalyticsUpdateQuery,
+} from '../api/queries'
 
 const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 class ElasticStore {
@@ -24,6 +28,14 @@ class ElasticStore {
 
 	data = []
 	history = []
+	id = 0
+	name = ''
+	setId(id: number) {
+		this.id = id
+	}
+	setName(name: string) {
+		this.name = name
+	}
 
 	get nextPage() {
 		return this.template.paginate.id_record
@@ -71,7 +83,7 @@ class ElasticStore {
 		}
 	}
 
-	saveTemp(data: any[]) {
+	saveTemp(data: IAnalyticsElasticQuery) {
 		this.template = data
 		localStorage.setItem(ANALYTICS_ELASTIC_KEY, JSON.stringify(data))
 	}
@@ -140,6 +152,45 @@ class ElasticStore {
 			this.history = []
 			await this.send('', false)
 		}
+	}
+	async save() {
+		this.isLoading = true
+		try {
+			let res
+			if (this.id) {
+				res = await requestAnalyticsUpdateQuery(
+					this.id,
+					this.name,
+					this.template
+				)
+			} else {
+				res = await requestAnalyticsAddQuery(this.name, this.template)
+			}
+			console.log(res)
+		} catch (error) {
+			this.error = error.message
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async clear() {
+		this.template = {
+			company: {
+				select_field: [],
+				list_where: [],
+				date_limit: {
+					date_from: '2024-05-23',
+					date_to: '2024-07-23',
+					date_rounding: undefined,
+				},
+			},
+			paginate: {
+				id_record: undefined,
+				limit_page: 50,
+			},
+		}
+		this.id = 0
+		this.name = ''
 	}
 }
 
