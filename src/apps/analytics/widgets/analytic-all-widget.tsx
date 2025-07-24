@@ -30,27 +30,6 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		event?: string
 	}>({})
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
-	function validate() {
-		try {
-			if (!props.filterdate_from && !props.filterdate_to) {
-				if (!props.filterdate_from) {
-					errors.filterdate_from = 'Поле обязательно для заполнения'
-				}
-				if (!props.filterdate_to) {
-					errors.filterdate_to = 'Поле обязательно для заполнения'
-				}
-			}
-			if (!props.step) {
-				errors.step = 'Поле обязательно для заполнения'
-			}
-			if (!event) {
-				errors.event = 'Поле обязательно для заполнения'
-			}
-			setErrors(errors)
-		} catch (error) {
-			console.error(error)
-		}
-	}
 	async function sendRequest(event: IAnalyticsQuery['event']) {
 		return await request({ ...query, event })
 	}
@@ -78,13 +57,15 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 			i: { value: 0, color: '#ff6384' },
 		}
 
-		for (const event in res) {
-			if (cuurent_production > 0) {
-				res[event].value = data[event].production.find(
-					item => item.production_id === cuurent_production
-				).all_label_prod
-			} else {
-				res[event].value = data[event]?.sum_company
+		if (data) {
+			for (const event in res) {
+				if (cuurent_production > 0) {
+					res[event].value = data[event].production.find(
+						item => item.production_id === cuurent_production
+					).all_label_prod
+				} else {
+					res[event].value = data[event]?.sum_company
+				}
 			}
 		}
 
@@ -95,6 +76,8 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		}))
 	}, [data, cuurent_production])
 
+	const isEmpty = useMemo(() => !ddata.length, [ddata])
+
 	useEffect(() => {
 		const send = async () => {
 			setData({
@@ -104,9 +87,11 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 				p: (await sendRequest('p')).message,
 			})
 		}
-		validate()
 		send()
 	}, [query])
+	useEffect(() => {
+		setQuery(props)
+	}, [props])
 
 	return (
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
@@ -137,24 +122,28 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 			</div>
 			<div className='w-full aspect-square'>
 				<Loading active={isLoading}>
-					<ResponsiveContainer>
-						<PieChart>
-							<Tooltip />
-							<Legend />
-							<Pie
-								data={ddata}
-								cx='50%'
-								cy='50%'
-								label
-								fill='#8884d8'
-								dataKey='value'
-							>
-								{ddata.map((entry, index) => (
-									<Cell key={`cell-${entry.name}`} fill={entry.color} />
-								))}
-							</Pie>
-						</PieChart>
-					</ResponsiveContainer>
+					{isEmpty ? (
+						<span>Данные ненашлись!</span>
+					) : (
+						<ResponsiveContainer>
+							<PieChart>
+								<Tooltip />
+								<Legend />
+								<Pie
+									data={ddata}
+									cx='50%'
+									cy='50%'
+									label
+									fill='#8884d8'
+									dataKey='value'
+								>
+									{ddata.map((entry, index) => (
+										<Cell key={`cell-${entry.name}`} fill={entry.color} />
+									))}
+								</Pie>
+							</PieChart>
+						</ResponsiveContainer>
+					)}
 				</Loading>
 			</div>
 		</div>

@@ -1,4 +1,6 @@
-import { memo, useMemo } from 'react'
+import { forwardRef, memo, useMemo, useRef } from 'react'
+import { useForkRef } from '../../hooks'
+import { render } from '../../internal/render'
 import { cls } from '../../utils'
 import './style.css'
 
@@ -30,84 +32,95 @@ interface ItemProps {
 }
 
 export const Item = memo(
-	({
-		as = 'li',
-		className,
-		children,
-		tabIndex = 0,
-		vertical,
-		dense,
-		active,
-		activeClass,
-		disabled,
-		bordered,
-		role,
-		onClick,
-		hoverable,
-		...props
-	}: ItemProps) => {
-		const Tag = as
-		const isActionable = useMemo(() => {
-			return clickableTag.includes(as) || typeof onClick === 'function'
-		}, [props, onClick])
+	forwardRef(
+		(
+			{
+				className,
+				children,
+				tabIndex = 0,
+				vertical,
+				dense,
+				active,
+				activeClass,
+				disabled,
+				bordered,
+				role,
+				onClick,
+				hoverable,
+				...props
+			}: ItemProps,
+			ref
+		) => {
+			const elementRef = useRef()
+			const handleRef = useForkRef(ref, elementRef)
+			const isActionable = useMemo(() => {
+				return (
+					clickableTag.includes(
+						elementRef.current?.nodeName.toLowerCase() ?? props.as
+					) || typeof onClick === 'function'
+				)
+			}, [props.as, elementRef.current, onClick])
 
-		const isClickable = !disabled && isActionable
+			const isClickable = !disabled && isActionable
+			const isHoverable = isClickable || hoverable
 
-		const isHoverable = isClickable || hoverable
+			const attrs = useMemo(() => {
+				const attrs: Record<string, any> = {
+					className: cls(
+						'mdc-item',
+						{
+							'mdc-item--dense': dense,
+							'mdc-item--active': active,
+							'mdc-item--disabled': disabled,
+							'mdc-item--clickable': isClickable,
+							'mdc-item--hoverable': isHoverable,
+							'mdc-item--vertical': vertical,
+							'mdc-item--bordered': bordered,
+						},
+						className
+					),
+					role: disRoleTag.includes(props.as) ? undefined : role ?? 'listitem',
+					disabled: disabled,
+				}
+				if (isActionable) {
+					attrs['aria-disabled'] = disabled
+				}
+				if (isClickable) {
+					attrs.tabIndex = disabled ? -1 : tabIndex ?? -1
+				}
+				if (disDisabledTag.includes(props.as)) {
+					delete attrs.disabled
+				}
+				return attrs
+			}, [
+				disabled,
+				tabIndex,
+				role,
+				dense,
+				active,
+				className,
+				activeClass,
+				isHoverable,
+				isClickable,
+				isActionable,
+			])
 
-		const attrs = useMemo(() => {
-			const attrs: Record<string, any> = {
-				className: cls(
-					'mdc-item',
-					{
-						'mdc-item--dense': dense,
-						'mdc-item--active': active,
-						'mdc-item--disabled': disabled,
-						'mdc-item--clickable': isClickable,
-						'mdc-item--hoverable': isHoverable,
-						'mdc-item--vertical': vertical,
-						'mdc-item--bordered': bordered,
+			return render(
+				'li',
+				{
+					...props,
+					...attrs,
+					ref: handleRef,
+					onClick: (event: React.MouseEvent<HTMLElement>) => {
+						if (disabled) {
+							event.preventDefault()
+						}
+						onClick?.(event)
 					},
-					className
-				),
-				role: disRoleTag.includes(as) ? undefined : role ?? 'listitem',
-				disabled: disabled,
-			}
-			if (isActionable) {
-				attrs['aria-disabled'] = disabled
-			}
-			if (isClickable) {
-				attrs.tabIndex = disabled ? -1 : tabIndex ?? -1
-			}
-			if (disDisabledTag.includes(as)) {
-				delete attrs.disabled
-			}
-			return attrs
-		}, [
-			disabled,
-			tabIndex,
-			role,
-			dense,
-			active,
-			className,
-			activeClass,
-			isClickable,
-			isActionable,
-		])
-
-		return (
-			<Tag
-				{...props}
-				{...attrs}
-				onClick={(event: React.MouseEvent<HTMLElement>) => {
-					if (disabled) {
-						event.preventDefault()
-					}
-					onClick?.(event)
-				}}
-			>
-				{children}
-			</Tag>
-		)
-	}
+					children,
+				},
+				{ active, disabled }
+			)
+		}
+	)
 )

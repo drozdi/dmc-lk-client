@@ -1,5 +1,6 @@
 import { createElement as h } from 'react'
 import { cls } from '../../utils'
+
 interface IconProps {
 	children?: string
 	className?: string
@@ -20,6 +21,7 @@ export function Icon({
 	}
 	color &&= color = ' text-' + color
 	color ||= ''
+
 	return h(
 		as,
 		{

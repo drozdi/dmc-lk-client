@@ -68,21 +68,21 @@ export function ListPage() {
 					</Item>
 					<Item>
 						<ItemSection avatar>
-							<Icon>mdi-home</Icon>
+							<Icon>home</Icon>
 						</ItemSection>
 						<ItemSection>
 							<ItemLabel>Item 3</ItemLabel>
 						</ItemSection>
 						<ItemSection side>
-							<Icon>mdi-home</Icon>
+							<Icon>home</Icon>
 						</ItemSection>
 						<ItemSection side>
 							<Icon>mdi-close</Icon>
 						</ItemSection>
 					</Item>
-					<Item to='https://ya.ru/' target='_blank'>
+					<Item to='/' target='_blank'>
 						<ItemSection side>
-							<Icon>mdi-home</Icon>
+							<Icon>home</Icon>
 						</ItemSection>
 						<ItemSection>
 							<ItemLabel overline>Item 1</ItemLabel>
@@ -90,12 +90,12 @@ export function ListPage() {
 							<ItemLabel caption>Description</ItemLabel>
 						</ItemSection>
 						<ItemSection side top>
-							<Icon>mdi-close</Icon>
+							<Icon>x</Icon>
 						</ItemSection>
 					</Item>
 					<Item to='https://ya.ru/' target='_blank' disabled>
 						<ItemSection side>
-							<Icon>mdi-home</Icon>
+							<Icon>home</Icon>
 						</ItemSection>
 						<ItemSection>Yandex</ItemSection>
 					</Item>

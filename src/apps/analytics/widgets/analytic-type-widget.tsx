@@ -20,36 +20,9 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	const [cuurent_production, setCurrentProduction] = useState(0)
 	const [data, setData] = useState<IAnalyticsResponse>()
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
-	const [errors, setErrors] = useState<{
-		filterdate_from?: string
-		filterdate_to?: string
-		step?: string
-		event?: string
-	}>({})
 
 	function reset() {
 		setQuery({ ...props })
-	}
-	function validate() {
-		try {
-			if (!props.filterdate_from && !props.filterdate_to) {
-				if (!props.filterdate_from) {
-					errors.filterdate_from = 'Поле обязательно для заполнения'
-				}
-				if (!props.filterdate_to) {
-					errors.filterdate_to = 'Поле обязательно для заполнения'
-				}
-			}
-			if (!props.step) {
-				errors.step = 'Поле обязательно для заполнения'
-			}
-			if (!event) {
-				errors.event = 'Поле обязательно для заполнения'
-			}
-			setErrors(errors)
-		} catch (error) {
-			console.error(error)
-		}
 	}
 	async function sendRequest(event: IAnalyticsQuery['event']) {
 		return await request({ ...query, event })
@@ -124,17 +97,18 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		}
 		return res.filter(item => item.value > 1000)
 	}, [data, labels, cuurent_production])
-	useEffect(() => {
-		console.log(ddata)
-	}, [ddata])
+
+	const isEmpty = useMemo(() => !ddata.length, [ddata])
 
 	useEffect(() => {
 		const send = async () => {
 			setData((await sendRequest('p')).message)
 		}
-		validate()
 		send()
 	}, [query])
+	useEffect(() => {
+		setQuery(props)
+	}, [props])
 
 	return (
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
@@ -176,19 +150,23 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 			</div>
 			<div className='w-full aspect-square'>
 				<Loading active={isLoading}>
-					<ResponsiveContainer>
-						<BarChart data={ddata}>
-							<Tooltip />
-							<CartesianGrid strokeDasharray='3 3' />
-							<XAxis dataKey='name' />
-							<YAxis />
-							<Bar dataKey='value' fill='#8884d8' label={{ position: 'top' }}>
-								{ddata.map((entry, index) => (
-									<Cell key={`cell-${index}`} fill={entry.color} />
-								))}
-							</Bar>
-						</BarChart>
-					</ResponsiveContainer>
+					{isEmpty ? (
+						<span>Данные ненашлись!</span>
+					) : (
+						<ResponsiveContainer>
+							<BarChart data={ddata}>
+								<Tooltip />
+								<CartesianGrid strokeDasharray='3 3' />
+								<XAxis dataKey='name' />
+								<YAxis />
+								<Bar dataKey='value' fill='#8884d8' label={{ position: 'top' }}>
+									{ddata.map((entry, index) => (
+										<Cell key={`cell-${index}`} fill={entry.color} />
+									))}
+								</Bar>
+							</BarChart>
+						</ResponsiveContainer>
+					)}
 				</Loading>
 			</div>
 		</div>

@@ -53,7 +53,9 @@ export function Sections({
 		children: (
 			<>
 				{processSection(leftSection)}
-				{children && <span className={classBody}>{children}</span>}
+				{children && (
+					<span className={cls('mdc-section', classBody)}>{children}</span>
+				)}
 				{processSection(rightSection)}
 			</>
 		),

@@ -74,12 +74,11 @@ export function render(
 		if: _if,
 		...rest
 	}: {
-		as?: string | Function
+		as?: string | Function | any
 		children?: React.ReactNode
 		if?: (state?: Record<string, any>) => boolean
 		[key: string]: any
 	} = applyContextToProps(props)
-
 	// Условный рендеринг
 	if (_if?.(state) === false) {
 		return null

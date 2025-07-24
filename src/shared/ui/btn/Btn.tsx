@@ -30,12 +30,15 @@ interface BtnProps {
 	rounded?: boolean
 	loading?: boolean
 	icon?: boolean
+	active?: boolean
+	disabled?: boolean
 	leftSection?: React.ReactElement
 	rightSection?: React.ReactElement
 	[key: string]: any
 }
 
 export const Btn = ({
+	active,
 	children,
 	className,
 	color,
@@ -67,6 +70,8 @@ export const Btn = ({
 		className: cls(
 			'mdc-btn',
 			{
+				'ndc-btn--disabled': props.disabled,
+				'mdc-btn--active': active,
 				'mdc-btn--flat': flat,
 				'mdc-btn--text': text,
 				'mdc-btn--tonal': tonal,

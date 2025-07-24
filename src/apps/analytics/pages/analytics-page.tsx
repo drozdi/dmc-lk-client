@@ -1,16 +1,14 @@
-import { useState } from 'react'
-import { Btn, Fullscreen, Input, Select } from '../../../shared/ui'
-import { mapEvent, mapStep } from '../entites/constants'
+import { useEffect, useState } from 'react'
+import { Fullscreen, Input } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 
 export function AnalyticsPage() {
-	const [query, setQuery] = useState<IAnalyticsQuery>({
-		step: '',
-		event: '',
+	const [query, setQuery] = useState<Omit<IAnalyticsQuery, 'step' | 'event'>>({
+		filterdate_from: '2024-05-24',
+		filterdate_to: '2024-07-24',
 	})
-	const [params, setParams] = useState<IAnalyticsQuery>({})
 	const [errors, setErrors] = useState<Record<string, string>>({})
 
 	const handleChange = ({ target }: React.ChangeEvent) => {
@@ -19,7 +17,6 @@ export function AnalyticsPage() {
 			...v,
 			[target.name]: target.value,
 		}))
-		sendFormData()
 	}
 
 	function validate() {
@@ -32,27 +29,19 @@ export function AnalyticsPage() {
 					errors.filterdate_to = 'Поле обязательно для заполнения'
 				}
 			}
-			if (!query.step) {
-				errors.step = 'Поле обязательно для заполнения'
-			}
-			if (!query.event) {
-				errors.event = 'Поле обязательно для заполнения'
-			}
 			setErrors(errors)
 		} catch (error) {
 			console.error(error)
 		}
 	}
 
-	async function sendFormData() {
-		validate()
-		setParams({ ...query })
-		//setQuery({})
-	}
+	useEffect(() => {
+		console.log(query)
+	}, [query])
 
 	return (
 		<div>
-			<div className='flex gap-0'>
+			<div className='flex gap-0 justify-center'>
 				<Input
 					value={query.filterdate_from}
 					label='С'
@@ -77,71 +66,17 @@ export function AnalyticsPage() {
 					underlined
 					errorMessage={errors?.filterdate_to}
 				/>
-				<Select
-					label='Шаг'
-					value={query.step}
-					name='step'
-					onChange={handleChange}
-					dense
-					square
-					filled
-					underlined
-					required
-					errorMessage={errors?.step}
-				>
-					<option value='' selected disabled>
-						Шаг
-					</option>
-					{Object.keys(mapStep).map(key => (
-						<option key={key} value={key}>
-							{mapStep[key]}
-						</option>
-					))}
-				</Select>
-				<Select
-					label='Событие'
-					value={query.event}
-					name='event'
-					onChange={handleChange}
-					dense
-					square
-					filled
-					underlined
-					required
-					errorMessage={errors?.event}
-				>
-					<option value='' selected disabled>
-						Событие
-					</option>
-					{Object.keys(mapEvent).map(key => (
-						<option key={key} value={key}>
-							{mapEvent[key]}
-						</option>
-					))}
-				</Select>
-				<Btn color='primary' size='sm' square onClick={sendFormData}>
-					Отправить
-				</Btn>
 			</div>
 
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl'>
 				<Fullscreen>
-					<AnalyticEventWidget
-						filterdate_from={params.filterdate_from}
-						step='mon'
-					/>
+					<AnalyticEventWidget {...query} step='mon' />
 				</Fullscreen>
 				<Fullscreen>
-					<AnalyticAllWidget
-						filterdate_from={params.filterdate_from}
-						step='mon'
-					/>
+					<AnalyticAllWidget {...query} step='mon' />
 				</Fullscreen>
 				<Fullscreen>
-					<AnalyticTypeWidget
-						filterdate_from={params.filterdate_from}
-						step='mon'
-					/>
+					<AnalyticTypeWidget {...query} step='mon' />
 				</Fullscreen>
 			</div>
 		</div>

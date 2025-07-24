@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	CartesianGrid,
 	Legend,
@@ -19,8 +19,8 @@ interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
 export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
+	console.log('props', props)
 	const { isLoading, request } = useAnalytics()
-	const ref = useRef(null)
 	const [cuurent_production, setCurrentProduction] = useState(0)
 	const [data, setData] = useState<{
 		v?: IAnalyticsResponse
@@ -28,36 +28,10 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		d?: IAnalyticsResponse
 		p?: IAnalyticsResponse
 	}>()
-	const [errors, setErrors] = useState<{
-		filterdate_from?: string
-		filterdate_to?: string
-		step?: string
-		event?: string
-	}>({})
+
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
 	function reset() {
 		setQuery({ ...props })
-	}
-	function validate() {
-		try {
-			if (!props.filterdate_from && !props.filterdate_to) {
-				if (!props.filterdate_from) {
-					errors.filterdate_from = 'Поле обязательно для заполнения'
-				}
-				if (!props.filterdate_to) {
-					errors.filterdate_to = 'Поле обязательно для заполнения'
-				}
-			}
-			if (!props.step) {
-				errors.step = 'Поле обязательно для заполнения'
-			}
-			if (!event) {
-				errors.event = 'Поле обязательно для заполнения'
-			}
-			setErrors(errors)
-		} catch (error) {
-			console.error(error)
-		}
 	}
 	async function sendRequest(event: IAnalyticsQuery['event']) {
 		return await request({ ...query, event })
@@ -188,9 +162,12 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 				p: (await sendRequest('p')).message,
 			})
 		}
-		validate()
 		send()
 	}, [query])
+
+	useEffect(() => {
+		setQuery(props)
+	}, [props])
 
 	const stepLow = useCallback(
 		(index: number) => {

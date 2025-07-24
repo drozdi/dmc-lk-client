@@ -139,7 +139,7 @@
 		}
 	}
 }
-.mdc-btn--active {
+.mdc-btn--active:not(.mdc-btn--disabled, :disabled) {
 	@apply shadow-md;
 	&::before {
 		@apply !bg-current !opacity-20;

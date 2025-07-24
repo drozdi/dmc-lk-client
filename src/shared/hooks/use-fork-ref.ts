@@ -8,7 +8,7 @@ import { useMemo } from 'react'
 export function setRef(ref: Function | object, value: any = null) {
 	if (typeof ref === 'function') {
 		ref(value)
-	} else if (typeof ref === 'object' && 'current' in ref) {
+	} else if (ref && typeof ref === 'object' && 'current' in ref) {
 		ref.current = value
 	}
 }
@@ -19,9 +19,9 @@ export function setRef(ref: Function | object, value: any = null) {
  * @returns {Function|null} - Функция для установки значения для ссылок или null, если все ссылки равны null.
  */
 export function useForkRef(...refs: any[]): Function {
-	return useMemo<Function>(() => {
+	return useMemo<Function>((): Function => {
 		if (refs.every(ref => ref == null)) {
-			return null
+			return undefined
 		}
 		return (instance: any) => {
 			refs.forEach(ref => {

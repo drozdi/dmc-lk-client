@@ -12,7 +12,9 @@ interface AppProviderProps {
 
 export function AppProvider({ children }: AppProviderProps) {
 	return (
-		<RenderProvider render={({ as, to }) => (!!to ? Link : as)}>
+		<RenderProvider
+			render={({ as, to }: { to?: string; as?: any }) => (!!to ? Link : as)}
+		>
 			<ThemeProvider>
 				<SidebarProvider>
 					<TemplateProvider>{children}</TemplateProvider>
