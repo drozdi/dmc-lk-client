@@ -1,26 +1,19 @@
 import {
 	cloneElement,
 	createContext,
-	Fragment,
+	isValidElement,
 	useContext,
 	useEffect,
 	useId,
 	useMemo,
-	useRef,
 	useState,
 } from 'react'
 
-type TemplateManagerStateType = Record<
-	string,
-	Array<{
-		id: number
-		element: React.ReactNode
-	}>
->
+type TemplateManagerStateType = Record<string, any>
 type TemplateManagerContextType = {
 	templates: TemplateManagerStateType
-	registerTemplate: (slotName: string, element: React.ReactNode) => number
-	unregisterTemplate: (slotName: string, id: number) => void
+	registerTemplate: (slotName: string, element: any) => void
+	unregisterTemplate: (slotName: string) => void
 }
 
 export function createTemplateContext() {
@@ -37,29 +30,21 @@ export function createTemplateContext() {
 		// Состояние для хранения шаблонов: { [slotName]: [elements] }
 		const [templates, setTemplates] = useState<TemplateManagerStateType>({})
 
-		// Счетчик для генерации уникальных ключей
-		const counterRef = useRef(0)
-
 		// Регистрация шаблона
-		const registerTemplate = (slotName: string, element: any): number => {
-			const id = ++counterRef.current
-
+		const registerTemplate = (slotName: string, element: any) => {
 			setTemplates(prev => ({
 				...prev,
-				[slotName]: [...(prev[slotName] || []), { id, element }],
+				[slotName]: element,
 			}))
-
-			return id
 		}
 
 		// Удаление шаблона
-		const unregisterTemplate = (slotName: string, id: number) => {
+		const unregisterTemplate = (slotName: string) => {
 			setTemplates(
 				(prev: TemplateManagerStateType): TemplateManagerStateType => {
-					const slotTemplates = prev[slotName]?.filter(t => t.id !== id) || []
 					return {
 						...prev,
-						[slotName]: slotTemplates.length ? slotTemplates : undefined,
+						[slotName]: undefined,
 					} as TemplateManagerStateType
 				}
 			)
@@ -82,37 +67,28 @@ export function createTemplateContext() {
 		)
 	}
 
-	function Template({
-		slot,
-		children,
-	}: {
-		slot: string
-		children: React.ReactNode
-	}) {
+	function Template({ slot, children }: { slot: string; children: any }) {
 		const manager = useContext(TemplateManagerContext)
-		const [isRegistered, setIsRegistered] = useState(false)
-		const templateId = useRef<number | null>(null)
 		const uniqueId = useId()
 
 		useEffect(() => {
-			if (manager && !isRegistered) {
+			if (manager) {
 				// Регистрируем шаблон в менеджере
-				templateId.current = manager.registerTemplate(
+				manager.registerTemplate(
 					slot,
 					cloneElement(children, { key: uniqueId })
 				)
-				setIsRegistered(true)
 			}
 
 			return () => {
-				if (manager && isRegistered) {
-					manager.unregisterTemplate(slot, templateId.current)
+				if (manager) {
+					manager.unregisterTemplate(slot)
 				}
 			}
-		}, [manager, slot, children, isRegistered, uniqueId])
+		}, [children])
 
 		// Отображаем на месте, если не в контексте или не зарегистрирован
-		if (!manager || !isRegistered) {
+		if (!manager) {
 			return children
 		}
 
@@ -140,18 +116,13 @@ export function createTemplateContext() {
 			return null
 		}
 
-		const slotTemplates = manager.templates[name] || []
+		const slotTemplates = manager.templates[name]
 
-		return (
-			<>
-				{slotTemplates.length
-					? slotTemplates.map(({ id, element }) => (
-							<Fragment key={id}>{cloneElement(element, props)}</Fragment>
-					  ))
-					: children
-					? cloneElement(children, props)
-					: null}
-			</>
+		const element = slotTemplates ? slotTemplates : children
+
+		return cloneElement(
+			isValidElement(element) ? element : <>{element}</>,
+			props
 		)
 	}
 
@@ -169,9 +140,8 @@ export function createTemplateContext() {
 		}
 
 		return {
-			getTemplates: (slotName: string) => context.templates[slotName] || [],
-			isTemplates: (slotName: string) =>
-				context.templates[slotName]?.length || [].length,
+			getTemplates: (slotName: string) => context.templates[slotName],
+			isTemplates: (slotName: string) => !!context.templates[slotName],
 		}
 	}
 	return [TemplateProvider, Template, TemplateSlot, useTemplateManager]

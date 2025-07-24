@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
 import {
-	FooterProvider,
 	SidebarProvider,
 	TemplateProvider,
 	ThemeProvider,
@@ -16,9 +15,7 @@ export function AppProvider({ children }: AppProviderProps) {
 		<RenderProvider render={({ as, to }) => (!!to ? Link : as)}>
 			<ThemeProvider>
 				<SidebarProvider>
-					<FooterProvider>
-						<TemplateProvider>{children}</TemplateProvider>
-					</FooterProvider>
+					<TemplateProvider>{children}</TemplateProvider>
 				</SidebarProvider>
 			</ThemeProvider>
 		</RenderProvider>
