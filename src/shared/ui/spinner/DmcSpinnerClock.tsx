@@ -1,13 +1,13 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerClockProps {
 	size?: string | number
 	color?: string
 }
 
-export function SpinnerClock({ size = '1em', color }: SpinnerClockProps) {
+export function DmcSpinnerClock({ size = '1em', color }: SpinnerClockProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 100 100'
@@ -61,6 +61,6 @@ export function SpinnerClock({ size = '1em', color }: SpinnerClockProps) {
 					repeatCount='indefinite'
 				></animateTransform>
 			</line>{' '}
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

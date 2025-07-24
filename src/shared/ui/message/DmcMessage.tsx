@@ -4,8 +4,8 @@ import { v4 as uuid } from 'uuid'
 import { useTimeout } from '../../hooks'
 import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
-import { Btn } from '../btn'
-import { Spinner } from '../spinner'
+import { DmcBtn } from '../btn'
+import { DmcSpinner } from '../spinner'
 import './style.css'
 
 interface MessageProps {
@@ -34,7 +34,7 @@ interface MessageProps {
 	onClose?: () => void
 }
 
-export const Message = memo(
+export const DmcMessage = memo(
 	({
 		id,
 		className,
@@ -62,23 +62,23 @@ export const Message = memo(
 				aria-live={onClose ? 'assertive' : 'polite'}
 				aria-atomic='true'
 				className={cls(
-					'mdc-message',
+					'dmc-message',
 					{
-						[`mdc-message--${color}`]: color,
-						'mdc-message--square': square,
-						'mdc-message--outline': outline,
-						'mdc-message--filled': filled,
-						'mdc-message--flat': flat,
-						[`mdc-message--underlined-${underlined}`]: underlined,
+						[`dmc-message--${color}`]: color,
+						'dmc-message--square': square,
+						'dmc-message--outline': outline,
+						'dmc-message--filled': filled,
+						'dmc-message--flat': flat,
+						[`dmc-message--underlined-${underlined}`]: underlined,
 					},
 					className
 				)}
-				classBody='mdc-message-body'
-				leftSection={loading ? <Spinner thickness={5} /> : icon}
+				classBody='dmc-message-body'
+				leftSection={loading ? <DmcSpinner thickness={5} /> : icon}
 				rightSection={
 					onClose && (
-						<div className='mdc-message--close'>
-							<Btn
+						<div className='dmc-message--close'>
+							<DmcBtn
 								leftSection={<TbX />}
 								size='xs'
 								flat
@@ -89,8 +89,8 @@ export const Message = memo(
 					)
 				}
 			>
-				<div className='mdc-message-label'>{label}</div>
-				<div className='mdc-message-description'>{children ?? description}</div>
+				<div className='dmc-message-label'>{label}</div>
+				<div className='dmc-message-description'>{children ?? description}</div>
 			</Sections>
 		)
 	}

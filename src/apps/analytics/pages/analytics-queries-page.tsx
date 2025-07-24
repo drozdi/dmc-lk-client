@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Template } from '../../../layout/context'
-import { Btn } from '../../../shared/ui'
+import { DmcBtn } from '../../../shared/ui'
 import { ListQueries } from '../features/queries/list-queries'
 export function AnalyticsQueriesPage() {
 	return (
@@ -9,9 +9,9 @@ export function AnalyticsQueriesPage() {
 			<ListQueries />
 			<Template slot='footer'>
 				<div className='flex w-full justify-end'>
-					<Btn as={Link} to='/analytics/elastic'>
+					<DmcBtn as={Link} to='/analytics/elastic'>
 						Добавить
-					</Btn>
+					</DmcBtn>
 				</div>
 			</Template>
 		</>

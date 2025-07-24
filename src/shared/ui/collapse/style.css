@@ -1,19 +1,19 @@
 @reference "@style";
 
-.mdc-collapse {
+.dmc-collapse {
 	@apply grid relative transition-all ease-in-out duration-300;
 	grid-template-rows: 0fr;
 }
-.mdc-collapse-panel,
-.mdc-collapse-panel {
+.dmc-collapse-panel,
+.dmc-collapse-panel {
 	@apply m-0 p-0;
 }
-.mdc-collapse-panel {
+.dmc-collapse-panel {
 	@apply overflow-hidden transition-all ease-in-out duration-300;
 }
-.mdc-collapse--active {
+.dmc-collapse--active {
 	grid-template-rows: 1fr;
 }
-.mdc-collapse--active .mdc-collapse-content {
+.dmc-collapse--active .dmc-collapse-content {
 	@apply block;
 }

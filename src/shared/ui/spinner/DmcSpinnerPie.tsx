@@ -1,12 +1,12 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerPieProps {
 	size?: string | number
 	color?: string
 }
-export function SpinnerPie({ size = '1em', color }: SpinnerPieProps) {
+export function DmcSpinnerPie({ size = '1em', color }: SpinnerPieProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 100 100'
@@ -69,6 +69,6 @@ export function SpinnerPie({ size = '1em', color }: SpinnerPieProps) {
 					repeatCount='indefinite'
 				></animateTransform>
 			</path>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

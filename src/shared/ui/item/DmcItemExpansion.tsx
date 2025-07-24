@@ -2,11 +2,10 @@ import { memo } from 'react'
 import { TbChevronDown } from 'react-icons/tb'
 import { useDisclosure } from '../../hooks/use-disclosure'
 import { cls } from '../../utils'
-import { Collapse } from '../collapse'
-import { Icon } from '../icon'
-import { Item } from './Item'
-import { ItemLabel } from './ItemLabel'
-import { ItemSection } from './ItemSection'
+import { DmcCollapse } from '../collapse'
+import { DmcItem } from './DmcItem'
+import { DmcItemLabel } from './DmcItemLabel'
+import { DmcItemSection } from './DmcItemSection'
 import './style.css'
 
 interface ItemExpansionProps {
@@ -29,7 +28,7 @@ interface ItemExpansionProps {
 	[key: string]: any
 }
 
-export const ItemExpansion = memo(
+export const DmcItemExpansion = memo(
 	({
 		className,
 		children,
@@ -62,29 +61,29 @@ export const ItemExpansion = memo(
 
 		return (
 			<>
-				<Item
+				<DmcItem
 					className={cls({
-						'mdc-item--opened': opened,
+						'dmc-item--opened': opened,
 					})}
 					role='button'
 					onClick={handleClick}
 				>
 					{icon && (
-						<ItemSection side>
-							<Icon>{icon}</Icon>
-						</ItemSection>
+						<DmcItemSection side>
+							<DmcIcon>{icon}</DmcIcon>
+						</DmcItemSection>
 					)}
-					<ItemSection>
-						{label && <ItemLabel>{label}</ItemLabel>}
-						{caption && <ItemLabel caption>{caption}</ItemLabel>}
-					</ItemSection>
-					<ItemSection side>
-						<TbChevronDown className='mdc-item__chevron' />
-					</ItemSection>
-				</Item>
-				<Collapse className='mdc-list-items' active={opened}>
+					<DmcItemSection>
+						{label && <DmcItemLabel>{label}</DmcItemLabel>}
+						{caption && <DmcItemLabel caption>{caption}</DmcItemLabel>}
+					</DmcItemSection>
+					<DmcItemSection side>
+						<TbChevronDown className='dmc-item__chevron' />
+					</DmcItemSection>
+				</DmcItem>
+				<DmcCollapse className='dmc-list-items' active={opened}>
 					{children}
-				</Collapse>
+				</DmcCollapse>
 			</>
 		)
 	}

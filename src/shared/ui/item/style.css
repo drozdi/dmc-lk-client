@@ -1,6 +1,6 @@
 @reference "@style";
 
-.mdc-item {
+.dmc-item {
 	@apply flex flex-nowrap relative min-h-12 gap-3 py-2 text-inherit cursor-default;
 	--padding-multiplier: 3;
 	padding-inline-start: calc(
@@ -11,127 +11,127 @@
 		var(--spacing, 0.25rem) * var(--padding-multiplier, 3)
 	);
 }
-.mdc-item,
-.mdc-item::before,
-.mdc-item::after,
-.mdc-item * {
+.dmc-item,
+.dmc-item::before,
+.dmc-item::after,
+.dmc-item * {
 	@apply transition-all ease-in-out duration-300;
 }
-.mdc-item--vertical {
+.dmc-item--vertical {
 	@apply flex-col;
 }
-.mdc-item--active {
+.dmc-item--active {
 	@apply text-primary;
 }
-.mdc-item--clickable {
+.dmc-item--clickable {
 	@apply cursor-pointer;
 }
-.mdc-item--disabled,
-.mdc-item:has(input:disabled) {
+.dmc-item--disabled,
+.dmc-item:has(input:disabled) {
 	@apply cursor-not-allowed opacity-60;
 }
-.mdc-item--bordered {
+.dmc-item--bordered {
 	@apply border border-color;
 }
 
-.mdc-item---vertical {
+.dmc-item---vertical {
 	@apply gap-2;
 }
 
-.mdc-item--dense,
-.mdc-list--dense .mdc-item {
+.dmc-item--dense,
+.dmc-list--dense .dmc-item {
 	@apply min-h-8 gap-2 py-1;
 	--padding-multiplier: 3;
-	&.mdc-item---vertical {
+	&.dmc-item---vertical {
 		@apply gap-1;
 	}
 }
-.mdc-item--opened .mdc-item__chevron {
+.dmc-item--opened .dmc-item__chevron {
 	@apply rotate-90;
 }
 
-.mdc-item--hoverable::before {
+.dmc-item--hoverable::before {
 	@apply absolute top-0 left-0 w-full h-full bg-current opacity-0;
 	content: ' ';
 }
-.mdc-item--hoverable:not(
-		.mdc-item--disabled,
+.dmc-item--hoverable:not(
+		.dmc-item--disabled,
 		:has(input:disabled),
 		:disabled
 	):hover::before {
 	@apply opacity-15;
 }
 
-.mdc-item__section {
+.dmc-item__section {
 	@apply flex flex-col justify-center items-start gap-1 w-auto h-auto min-w-0 max-w-full;
 }
-.mdc-item__section--row.mdc-item__section--end {
+.dmc-item__section--row.dmc-item__section--end {
 	@apply justify-end;
 }
-.mdc-item__section--main {
+.dmc-item__section--main {
 	@apply flex-1;
 }
-.mdc-item__section--top {
+.dmc-item__section--top {
 	@apply justify-start;
 }
-.mdc-item__section--nowrap {
+.dmc-item__section--nowrap {
 	@apply flex-nowrap;
 }
-.mdc-item__section--thumbnail {
+.dmc-item__section--thumbnail {
 	img,
 	svg {
 		@apply max-h-14 max-w-24 h-auto w-auto;
 	}
 }
-.mdc-item__section--end,
-.mdc-item__section ~ .mdc-item__section--side {
+.dmc-item__section--end,
+.dmc-item__section ~ .dmc-item__section--side {
 	@apply items-end;
 }
-.mdc-item__section--row {
+.dmc-item__section--row {
 	@apply flex-row items-center;
 }
-.mdc-item__section--side > .mdc-icon {
+.dmc-item__section--side > .dmc-icon {
 	@apply text-2xl/none;
 }
-.mdc-item__section--avatar {
+.dmc-item__section--avatar {
 	@apply min-w-12 items-center;
 }
 
-.mdc-item > .mdc-item__section--thumbnail:first-child {
+.dmc-item > .dmc-item__section--thumbnail:first-child {
 	@apply -ml-3;
 }
-.mdc-item > .mdc-item__section--thumbnail:last-of-type {
+.dmc-item > .dmc-item__section--thumbnail:last-of-type {
 	@apply -mr-3;
 }
 
-.mdc-item__section--main.mdc-item__section--thumbnail {
+.dmc-item__section--main.dmc-item__section--thumbnail {
 	@apply ml-0 -mr-3;
 }
-.mdc-item--dense,
-.mdc-list--dense .mdc-item {
-	& > .mdc-item__section--thumbnail:first-child {
+.dmc-item--dense,
+.dmc-list--dense .dmc-item {
+	& > .dmc-item__section--thumbnail:first-child {
 		@apply -ml-2;
 	}
-	& > .mdc-item__section--thumbnail:last-of-type {
+	& > .dmc-item__section--thumbnail:last-of-type {
 		@apply -mr-2;
 	}
-	& > .mdc-item__section--main.mdc-item__section--thumbnail {
+	& > .dmc-item__section--main.dmc-item__section--thumbnail {
 		@apply -mr-2;
 	}
 }
 
-.mdc-item__label {
+.dmc-item__label {
 	@apply max-w-full;
 }
-.mdc-item__label--header {
+.dmc-item__label--header {
 	@apply px-3 opacity-65;
 }
-.mdc-item__label--overline {
+.dmc-item__label--overline {
 	@apply text-xs font-medium tracking-widest uppercase opacity-70;
 }
-.mdc-item__label--caption {
+.dmc-item__label--caption {
 	@apply text-xs font-normal opacity-60;
 }
-.mdc-item__label--lines {
+.dmc-item__label--lines {
 	@apply truncate;
 }

@@ -1,12 +1,12 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerRadioProps {
 	size?: string | number
 	color?: string
 }
-export function SpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
+export function DmcSpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 100 100'
@@ -57,6 +57,6 @@ export function SpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 					></animate>
 				</path>
 			</g>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

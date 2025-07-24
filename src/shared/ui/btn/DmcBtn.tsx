@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { render } from '../../internal/render'
 import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
-import { Spinner } from '../spinner'
+import { DmcSpinner } from '../spinner'
 import './style.css'
 
 interface BtnProps {
@@ -37,7 +37,7 @@ interface BtnProps {
 	[key: string]: any
 }
 
-export const Btn = ({
+export const DmcBtn = ({
 	active,
 	children,
 	className,
@@ -68,23 +68,23 @@ export const Btn = ({
 	return render('button', {
 		...props,
 		className: cls(
-			'mdc-btn',
+			'dmc-btn',
 			{
 				'ndc-btn--disabled': props.disabled,
-				'mdc-btn--active': active,
-				'mdc-btn--flat': flat,
-				'mdc-btn--text': text,
-				'mdc-btn--tonal': tonal,
-				'mdc-btn--plain': plain,
-				'mdc-btn--outline': outline,
-				'mdc-btn--block': block,
-				'mdc-btn--square': square,
-				'mdc-btn--round': round,
-				'mdc-btn--rounded': rounded,
-				'mdc-btn--loading': loading,
-				'mdc-btn--icon': isIcon,
-				[`mdc-btn--${color}`]: color,
-				[`mdc-btn--${size}`]: size,
+				'dmc-btn--active': active,
+				'dmc-btn--flat': flat,
+				'dmc-btn--text': text,
+				'dmc-btn--tonal': tonal,
+				'dmc-btn--plain': plain,
+				'dmc-btn--outline': outline,
+				'dmc-btn--block': block,
+				'dmc-btn--square': square,
+				'dmc-btn--round': round,
+				'dmc-btn--rounded': rounded,
+				'dmc-btn--loading': loading,
+				'dmc-btn--icon': isIcon,
+				[`dmc-btn--${color}`]: color,
+				[`dmc-btn--${size}`]: size,
 			},
 			className
 		),
@@ -97,14 +97,14 @@ export const Btn = ({
 						as='span'
 						leftSection={leftSection}
 						rightSection={rightSection}
-						className='mdc-btn-content'
-						classBody='mdc-btn-label'
+						className='dmc-btn-content'
+						classBody='dmc-btn-label'
 					>
 						{children}
 					</Sections>
 
-					<span className='mdc-btn-loader'>
-						<Spinner size='2em' thickness={5} />
+					<span className='dmc-btn-loader'>
+						<DmcSpinner size='2em' thickness={5} />
 					</span>
 				</>
 			),

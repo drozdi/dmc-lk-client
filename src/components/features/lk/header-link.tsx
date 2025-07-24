@@ -1,5 +1,5 @@
 import { TbUserCircle } from 'react-icons/tb'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 export function HeaderLink() {
 	return (
 		<Link

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { Loading } from '../../../shared/ui'
+import { DmcLoading } from '../../../shared/ui'
 import { requestAnalyticsGetQuery } from '../api'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
@@ -22,9 +22,9 @@ export function AnalyticsQueryPage() {
 	}, [])
 	return (
 		<>
-			<Loading active={isLoading}>
+			<DmcLoading active={isLoading}>
 				<TableElastic />
-			</Loading>
+			</DmcLoading>
 		</>
 	)
 }

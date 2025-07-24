@@ -1,13 +1,13 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerGridProps {
 	size?: string | number
 	color?: string
 }
 
-export function SpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
+export function DmcSpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			color={color}
 			size={size}
 			viewBox='0 0 105 105'
@@ -103,6 +103,6 @@ export function SpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
 					repeatCount='indefinite'
 				></animate>
 			</circle>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

@@ -1,12 +1,15 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerCommentProps {
 	size?: string | number
 	color?: string
 }
-export function SpinnerComment({ size = '1em', color }: SpinnerCommentProps) {
+export function DmcSpinnerComment({
+	size = '1em',
+	color,
+}: SpinnerCommentProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			color={color}
 			size={size}
 			viewBox='0 0 100 100'
@@ -50,6 +53,6 @@ export function SpinnerComment({ size = '1em', color }: SpinnerCommentProps) {
 					repeatCount='indefinite'
 				></animate>
 			</circle>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

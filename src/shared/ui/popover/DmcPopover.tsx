@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo } from 'react'
 import { useDisclosure } from '../../hooks'
-import { PopoverProvider } from './PopoverContext'
-import { PopoverDropdown } from './PopoverDropdown'
-import { PopoverTarget } from './PopoverTarget'
+import { DmcPopoverProvider } from './DmcPopoverContext'
+import { DmcPopoverDropdown } from './DmcPopoverDropdown'
+import { DmcPopoverTarget } from './DmcPopoverTarget'
 import './style.css'
 
 interface PopoverProps {
@@ -14,7 +14,7 @@ interface PopoverProps {
 	onOpen?: (event?: React.MouseEvent) => void
 	onClose?: (event?: React.MouseEvent) => void
 }
-export const Popover = ({
+export const DmcPopover = ({
 	as = 'div',
 	position = 'top',
 	disabled,
@@ -47,7 +47,7 @@ export const Popover = ({
 		const closeHandler = (event: MouseEvent) => {
 			if (
 				event.target instanceof HTMLElement &&
-				!event.target.closest('.mdc-popover')
+				!event.target.closest('.dmc-popover')
 			) {
 				close()
 			}
@@ -59,13 +59,13 @@ export const Popover = ({
 	}, [autoClose])
 
 	return (
-		<PopoverProvider value={context}>
-			<Tag {...props} className='mdc-popover'>
+		<DmcPopoverProvider value={context}>
+			<Tag {...props} className='dmc-popover'>
 				{children}
 			</Tag>
-		</PopoverProvider>
+		</DmcPopoverProvider>
 	)
 }
 
-Popover.Target = PopoverTarget
-Popover.Dropdown = PopoverDropdown
+DmcPopover.Target = DmcPopoverTarget
+DmcPopover.Dropdown = DmcPopoverDropdown

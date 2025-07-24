@@ -9,7 +9,7 @@ interface IconProps {
 	as?: string
 	[key: string]: any
 }
-export function Icon({
+export function DmcIcon({
 	children,
 	className,
 	color,

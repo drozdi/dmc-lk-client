@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Icon, Input } from '../../../shared/ui'
+import { Input } from '../../../shared/ui'
 import { Form, useProps } from './utils'
 export function InputPage() {
 	const [danses, setDanses] = useState({
@@ -44,8 +44,10 @@ export function InputPage() {
 			hideHint: false,
 			hideMessage: false,
 			///???
-			before: <Icon className='text-danger text-4xl'>mdi-home-account</Icon>,
-			after: <Icon className='text-primary text-2xl'>mdi-close</Icon>,
+			before: (
+				<DmcIcon className='text-danger text-4xl'>mdi-home-account</DmcIcon>
+			),
+			after: <DmcIcon className='text-primary text-2xl'>mdi-close</DmcIcon>,
 			rules: [
 				v => (v && v.length > 2) || 'min 3 characters',
 				v => (v && v.length < 7) || 'max 6 characters',

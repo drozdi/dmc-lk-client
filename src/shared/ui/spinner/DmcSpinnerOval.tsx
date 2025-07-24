@@ -1,13 +1,13 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerOvalProps {
 	size?: string | number
 	color?: string
 }
 
-export function SpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
+export function DmcSpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 38 38'
@@ -31,6 +31,6 @@ export function SpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
 					></animateTransform>
 				</path>
 			</g>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

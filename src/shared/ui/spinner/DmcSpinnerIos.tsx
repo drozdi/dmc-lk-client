@@ -1,13 +1,13 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerIosProps {
 	size?: string | number
 	color?: string
 }
 
-export function SpinnerIos({ size = '1em', color }: SpinnerIosProps) {
+export function DmcSpinnerIos({ size = '1em', color }: SpinnerIosProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 64 64'
@@ -112,6 +112,6 @@ export function SpinnerIos({ size = '1em', color }: SpinnerIosProps) {
 					></animate>
 				</line>
 			</g>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

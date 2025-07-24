@@ -1,9 +1,9 @@
-.mdc-popover {
+.dmc-popover {
 	position: relative;
 	overflow: visible;
 }
 
-.mdc-popover__dropdown {
+.dmc-popover__dropdown {
 	position: absolute;
 	background: white;
 	display: flex;
@@ -16,6 +16,6 @@
 	right: 0;
 	z-index: 10;
 }
-.mdc-popover__dropdown:not(.mdc-popover__dropdown--open) {
+.dmc-popover__dropdown:not(.dmc-popover__dropdown--open) {
 	display: none;
 }

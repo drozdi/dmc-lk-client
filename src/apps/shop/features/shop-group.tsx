@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Loading } from '../../../shared/ui'
+import { DmcLoading } from '../../../shared/ui'
 import { getProducts } from '../api/api'
 import { cartStore } from '../stores/cart-store'
 import { GroupView } from './view/group-view'
@@ -47,7 +47,7 @@ export const ShopGroup = observer(({ groupId }: ShopGroupProps) => {
 	}
 
 	return (
-		<Loading active={isLoading}>
+		<DmcLoading active={isLoading}>
 			<div className='grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-6'>
 				{groupId && (
 					<GroupView
@@ -76,6 +76,6 @@ export const ShopGroup = observer(({ groupId }: ShopGroupProps) => {
 					/>
 				))}
 			</div>
-		</Loading>
+		</DmcLoading>
 	)
 })

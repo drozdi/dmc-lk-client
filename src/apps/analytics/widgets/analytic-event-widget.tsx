@@ -11,7 +11,7 @@ import {
 	YAxis,
 } from 'recharts'
 
-import { Btn, Loading, Select } from '../../../shared/ui'
+import { DmcBtn, DmcLoading, Select } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
@@ -19,7 +19,6 @@ interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
 export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
-	console.log('props', props)
 	const { isLoading, request } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState(0)
 	const [data, setData] = useState<{
@@ -253,12 +252,12 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 						</option>
 					))}
 				</Select>
-				<Btn className='flex-none' color='primary' square onClick={reset}>
+				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
-				</Btn>
+				</DmcBtn>
 			</div>
 			<div className='w-full aspect-square'>
-				<Loading active={isLoading}>
+				<DmcLoading active={isLoading}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
@@ -298,7 +297,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 							</LineChart>
 						</ResponsiveContainer>
 					)}
-				</Loading>
+				</DmcLoading>
 			</div>
 		</div>
 	)

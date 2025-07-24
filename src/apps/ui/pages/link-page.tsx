@@ -1,93 +1,93 @@
-import { Chevron, Icon, Link } from '../../../shared/ui'
+import { DmcChevron, DmcIcon, DmcLink } from '../../../shared/ui'
 
 export function LinkPage() {
 	return (
 		<div className='max-w-4xl m-auto flex flex-col gap-3'>
 			<div className='grid grid-cols-2 gap-3'>
 				<div>
-					<Link
+					<DmcLink
 						to='#required-for-focus'
 						label='With icon'
 						leftSection='mdi-home'
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='With right section'
 						leftSection='mdi-gauge'
-						rightSection={<Chevron />}
+						rightSection={<DmcChevron />}
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='Disabled'
 						leftSection='mdi-circle-off-outline'
 						disabled
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='With description'
 						description='Additional information'
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='Active subtle'
 						description='Additional information'
 						leftSection='mdi-sine-wave'
-						rightSection={<Chevron />}
+						rightSection={<DmcChevron />}
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='Active light'
 						leftSection='mdi-sine-wave'
-						rightSection={<Chevron />}
+						rightSection={<DmcChevron />}
 						active
 					/>
-					<Link
+					<DmcLink
 						href='#required-for-focus'
 						label='Active light'
 						description='Additional information'
 						leftSection='mdi-sine-wave'
-						rightSection={<Chevron />}
+						rightSection={<DmcChevron />}
 						active
 					/>
 				</div>
 				<pre className='bg-sky-500/50 text-white p-2 rounded-md mt-4 select-text'>
 					<code className='language-jsx'>
-						{`<Link
+						{`<DmcLink
 	href="#required-for-focus"
 	label="With icon"
 	leftSection="mdi-home" />
-<Link
+<DmcLink
 	href="#required-for-focus"
 	label="With right section"
-	leftSection={<Icon>mdi-gauge</Icon>}
-	rightSection={<Chevron />}	/>
-<Link
+	leftSection={<DmcIcon>mdi-gauge</DmcIcon>}
+	rightSection={<DmcChevron />}	/>
+<DmcLink
 	href="#required-for-focus"
  	label="Disabled"
 	leftSection="mdi-circle-off-outline"
 	disabled />
-<Link
+<DmcLink
 	href="#required-for-focus"
 	label="With description"
 	description="Additional information" />
-<Link
+<DmcLink
 	href="#required-for-focus"
 	label="Active subtle"
 	description="Additional information"
 	leftSection="mdi-sine-wave"
-	rightSection={<Chevron />}	/>
-<Link
+	rightSection={<DmcChevron />}	/>
+<DmcLink
 	href="#required-for-focus"
 	label="Active light"
 	leftSection="mdi-sine-wave"
-	rightSection={<Chevron />}
+	rightSection={<DmcChevron />}
 	active />
-<Link
+<DmcLink
 	href="#required-for-focus"
 	label="Active light"
 	description="Additional information"
 	leftSection="mdi-sine-wave"
-	rightSection={<Chevron />}
+	rightSection={<DmcChevron />}
 	active />`}
 					</code>
 				</pre>
@@ -96,175 +96,175 @@ export function LinkPage() {
 
 			<div className='grid grid-cols-2 gap-3'>
 				<div>
-					<Link label='label' href='#1' leftSection='mdi-close'>
-						<Link label='label' href='#1' leftSection='mdi-home'>
-							<Link
+					<DmcLink label='label' href='#1' leftSection='mdi-close'>
+						<DmcLink label='label' href='#1' leftSection='mdi-home'>
+							<DmcLink
 								label='label'
 								leftSection='mdi-home'
 								description='description'
 								href='#1'
 							/>
-							<Link label='label' description='description' href='#1' />
-						</Link>
-						<Link label='label' description='description' href='#1' active />
-						<Link
+							<DmcLink label='label' description='description' href='#1' />
+						</DmcLink>
+						<DmcLink label='label' description='description' href='#1' active />
+						<DmcLink
 							label='label'
 							leftSection='mdi-home'
 							description='description'
 							href='#1'
 							disabled
 						/>
-						<Link
+						<DmcLink
 							label='label'
 							description='description'
 							href='#1'
-							leftSection={<Icon>mdi-close</Icon>}
+							leftSection={<DmcIcon>mdi-close</DmcIcon>}
 							disabled
 						>
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-						</Link>
-					</Link>
-					<Link label='label' href='#1' leftSection='mdi-close'>
-						<Link label='label' href='#1' leftSection='mdi-home'>
-							<Link
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+						</DmcLink>
+					</DmcLink>
+					<DmcLink label='label' href='#1' leftSection='mdi-close'>
+						<DmcLink label='label' href='#1' leftSection='mdi-home'>
+							<DmcLink
 								label='label'
 								leftSection='mdi-home'
 								description='description'
 								href='#1'
 							/>
-							<Link label='label' description='description' href='#1' />
-						</Link>
-						<Link label='label' description='description' href='#1' active />
-						<Link
+							<DmcLink label='label' description='description' href='#1' />
+						</DmcLink>
+						<DmcLink label='label' description='description' href='#1' active />
+						<DmcLink
 							label='label'
 							leftSection='mdi-home'
 							description='description'
 							href='#1'
 							disabled
 						/>
-						<Link
+						<DmcLink
 							label='label'
 							description='description'
 							href='#1'
-							leftSection={<Icon>mdi-close</Icon>}
+							leftSection={<DmcIcon>mdi-close</DmcIcon>}
 						>
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-							<Link label='label' description='description' href='#1' />
-						</Link>
-					</Link>
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+							<DmcLink label='label' description='description' href='#1' />
+						</DmcLink>
+					</DmcLink>
 				</div>
 				<pre className='bg-sky-500/50 text-white p-2 rounded-md mt-4 select-text'>
 					<code className='language-jsx'>
-						{`<Link 
+						{`<DmcLink 
 	label="label"
 	href="#1"
 	leftSection="mdi-close">
-	<Link 
+	<DmcLink 
 		label="label" 
 		href="#1" 
 		leftSection="mdi-home">
-		<Link
+		<DmcLink
 			label="label"
 			leftSection="mdi-home"
 			description="description"
 			href="#1" />
-		<Link
+		<DmcLink
 			label="label"
 			description="description"
 			href="#1" />
-	</Link>
-	<Link
+	</DmcLink>
+	<DmcLink
 		label="label"
 		description="description"
 		href="#1"
 		active />
-	<Link
+	<DmcLink
 		label="label"
 		leftSection="mdi-home"
 		description="description"
 		href="#1"
 		disabled />
-	<Link
+	<DmcLink
 		label="label"
 		description="description"
 		href="#1"
-		leftSection={<Icon>mdi-close</Icon>}
+		leftSection={<DmcIcon>mdi-close</DmcIcon>}
 		disabled>
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-	</Link>
-</Link>
-<Link 
+	</DmcLink>
+</DmcLink>
+<DmcLink 
 	label="label"
 	href="#1"
 	leftSection="mdi-close">
-	<Link 
+	<DmcLink 
 		label="label" 
 		href="#1" 
 		leftSection="mdi-home">
-		<Link
+		<DmcLink
 			label="label"
 			leftSection="mdi-home"
 			description="description"
 			href="#1" />
-		<Link
+		<DmcLink
 			label="label"
 			description="description"
 			href="#1" />
-	</Link>
-	<Link
+	</DmcLink>
+	<DmcLink
 		label="label"
 		description="description"
 		href="#1"
 		active />
-	<Link
+	<DmcLink
 		label="label"
 		leftSection="mdi-home"
 		description="description"
 		href="#1"
 		disabled />
-	<Link
+	<DmcLink
 		label="label"
 		description="description"
 		href="#1"
-		leftSection={<Icon>mdi-close</Icon>}>
-			<Link
+		leftSection={<DmcIcon>mdi-close</DmcIcon>}>
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-			<Link
+			<DmcLink
 				label="label"
 				description="description"
 				href="#1" />
-	</Link>
-</Link>`}
+	</DmcLink>
+</DmcLink>`}
 					</code>
 				</pre>
 			</div>

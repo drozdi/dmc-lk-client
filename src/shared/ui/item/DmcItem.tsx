@@ -31,7 +31,7 @@ interface ItemProps {
 	[key: string]: any
 }
 
-export const Item = memo(
+export const DmcItem = memo(
 	forwardRef(
 		(
 			{
@@ -67,15 +67,15 @@ export const Item = memo(
 			const attrs = useMemo(() => {
 				const attrs: Record<string, any> = {
 					className: cls(
-						'mdc-item',
+						'dmc-item',
 						{
-							'mdc-item--dense': dense,
-							'mdc-item--active': active,
-							'mdc-item--disabled': disabled,
-							'mdc-item--clickable': isClickable,
-							'mdc-item--hoverable': isHoverable,
-							'mdc-item--vertical': vertical,
-							'mdc-item--bordered': bordered,
+							'dmc-item--dense': dense,
+							'dmc-item--active': active,
+							'dmc-item--disabled': disabled,
+							'dmc-item--clickable': isClickable,
+							'dmc-item--hoverable': isHoverable,
+							'dmc-item--vertical': vertical,
+							'dmc-item--bordered': bordered,
 						},
 						className
 					),

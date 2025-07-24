@@ -6,7 +6,13 @@ import {
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
 import { TbColumnRemove, TbXboxX } from 'react-icons/tb'
-import { Btn, Input, Loading, MarkupTable, Select } from '../../../../shared/ui'
+import {
+	DmcBtn,
+	DmcLoading,
+	DmcMarkupTable,
+	Input,
+	Select,
+} from '../../../../shared/ui'
 import { fieldsStore } from '../../stores/fields-store'
 import { incidentStore } from '../../stores/incident-store'
 
@@ -195,9 +201,9 @@ export const TableIncident = observer(() => {
 					/>
 				</div>
 				<div className='flex gap-3 justify-end'>
-					<Btn color='info' size='sm' onClick={() => incidentStore.send()}>
+					<DmcBtn color='info' size='sm' onClick={() => incidentStore.send()}>
 						Применить
-					</Btn>
+					</DmcBtn>
 				</div>
 				<div className='flex-none justify-end group relative overflow-visible'>
 					<button className='border-0 p-3 bg-info'>Показывать</button>
@@ -217,13 +223,13 @@ export const TableIncident = observer(() => {
 					</div>
 				</div>
 			</div>
-			<Loading active={isLoading}>
-				<MarkupTable rowBorder striped>
-					<MarkupTable.Thead>
+			<DmcLoading active={isLoading}>
+				<DmcMarkupTable rowBorder striped>
+					<DmcMarkupTable.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
-							<MarkupTable.Tr key={headerGroup.id}>
+							<DmcMarkupTable.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header, index) => (
-									<MarkupTable.Th
+									<DmcMarkupTable.Th
 										className='group relative overflow-visible'
 										key={header.id}
 										colSpan={header.colSpan}
@@ -246,24 +252,24 @@ export const TableIncident = observer(() => {
 													header.column.columnDef.header,
 													header.getContext()
 											  )}
-									</MarkupTable.Th>
+									</DmcMarkupTable.Th>
 								))}
-							</MarkupTable.Tr>
+							</DmcMarkupTable.Tr>
 						))}
-					</MarkupTable.Thead>
-					<MarkupTable.Tbody>
+					</DmcMarkupTable.Thead>
+					<DmcMarkupTable.Tbody>
 						{table.getRowModel().rows.map(row => (
-							<MarkupTable.Tr key={row.id}>
+							<DmcMarkupTable.Tr key={row.id}>
 								{row.getVisibleCells().map(cell => (
-									<MarkupTable.Td key={cell.id}>
+									<DmcMarkupTable.Td key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</MarkupTable.Td>
+									</DmcMarkupTable.Td>
 								))}
-							</MarkupTable.Tr>
+							</DmcMarkupTable.Tr>
 						))}
-					</MarkupTable.Tbody>
-				</MarkupTable>
-			</Loading>
+					</DmcMarkupTable.Tbody>
+				</DmcMarkupTable>
+			</DmcLoading>
 			<div className='flex gap-3 justify-end mt-3 items-start'>
 				<Select
 					dense

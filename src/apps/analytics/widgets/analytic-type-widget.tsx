@@ -9,13 +9,14 @@ import {
 	XAxis,
 	YAxis,
 } from 'recharts'
-import { Btn, Loading, Select } from '../../../shared/ui'
+import { DmcBtn, DmcLoading, Select } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
 import { useAnalytics } from '../api/api'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
 export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
+	//return ''
 	const { isLoading, request } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState(0)
 	const [data, setData] = useState<IAnalyticsResponse>()
@@ -57,7 +58,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	const labels = useMemo<string[]>(() => {
 		let res: string[] = []
 		if (data) {
-			for (const p of data.production) {
+			for (const p of data?.production || []) {
 				res = res.concat(p.data.map(item => formatName(item.data)))
 			}
 		}
@@ -95,7 +96,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 				res.push(newItem)
 			})
 		}
-		return res.filter(item => item.value > 1000)
+		return res.filter(item => item.value > 100)
 	}, [data, labels, cuurent_production])
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata])
@@ -144,12 +145,12 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 						</option>
 					))}
 				</Select>
-				<Btn className='flex-none' color='primary' square onClick={reset}>
+				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
-				</Btn>
+				</DmcBtn>
 			</div>
 			<div className='w-full aspect-square'>
-				<Loading active={isLoading}>
+				<DmcLoading active={isLoading}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
@@ -167,7 +168,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 							</BarChart>
 						</ResponsiveContainer>
 					)}
-				</Loading>
+				</DmcLoading>
 			</div>
 		</div>
 	)

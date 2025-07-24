@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { cls } from '../../../shared/utils'
 export function Logo({ className }: { className?: string }) {
 	return (

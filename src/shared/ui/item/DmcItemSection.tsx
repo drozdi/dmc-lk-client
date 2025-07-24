@@ -15,7 +15,7 @@ interface ItemSectionProps {
 	[key: string]: any
 }
 
-export const ItemSection = memo(
+export const DmcItemSection = memo(
 	({
 		children,
 		className,
@@ -32,15 +32,15 @@ export const ItemSection = memo(
 		return (
 			<div
 				{...props}
-				className={cls('mdc-item__section', className, {
-					'mdc-item__section--main': !isSide,
-					'mdc-item__section--side': isSide,
-					'mdc-item__section--top': top,
-					'mdc-item__section--row': row,
-					'mdc-item__section--end': end,
-					'mdc-item__section--nowrap': noWrap,
-					'mdc-item__section--avatar': avatar,
-					'mdc-item__section--thumbnail': thumbnail,
+				className={cls('dmc-item__section', className, {
+					'dmc-item__section--main': !isSide,
+					'dmc-item__section--side': isSide,
+					'dmc-item__section--top': top,
+					'dmc-item__section--row': row,
+					'dmc-item__section--end': end,
+					'dmc-item__section--nowrap': noWrap,
+					'dmc-item__section--avatar': avatar,
+					'dmc-item__section--thumbnail': thumbnail,
 				})}
 			>
 				{children}

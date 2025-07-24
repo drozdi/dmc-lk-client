@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Btn, Input, Message } from '../../../shared/ui'
+import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
@@ -22,7 +22,7 @@ export const VerificationForm = observer(() => {
 	return (
 		<>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -46,9 +46,9 @@ export const VerificationForm = observer(() => {
 					underlined
 				/>
 
-				<Btn type='submit' color='primary' block loading={isLoading}>
+				<DmcBtn type='submit' color='primary' block loading={isLoading}>
 					Продолжить
-				</Btn>
+				</DmcBtn>
 			</form>
 		</>
 	)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Loading } from '../../../shared/ui'
+import { DmcLoading } from '../../../shared/ui'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
 export function AnalyticsElasticPage() {
@@ -12,8 +12,8 @@ export function AnalyticsElasticPage() {
 		clear()
 	}, [])
 	return (
-		<Loading active={isLoading}>
+		<DmcLoading active={isLoading}>
 			<TableElastic />
-		</Loading>
+		</DmcLoading>
 	)
 }

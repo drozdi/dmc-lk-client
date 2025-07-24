@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
 import {
-	Btn,
-	Item,
-	ItemLabel,
-	ItemSection,
-	List,
-	Loading,
-	Message,
+	DmcBtn,
+	DmcItem,
+	DmcItemLabel,
+	DmcItemSection,
+	DmcList,
+	DmcLoading,
+	DmcMessage,
 	Select,
 } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
@@ -80,7 +80,7 @@ export function ListQueries({ className }: ListQueriesProps) {
 	return (
 		<div className={cls(className, 'flex flex-col gap-3')}>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -88,35 +88,35 @@ export function ListQueries({ className }: ListQueriesProps) {
 					label={error}
 				/>
 			)}
-			<Loading active={isLoading}>
-				<List separator>
+			<DmcLoading active={isLoading}>
+				<DmcList separator>
 					{list.map(item => (
-						<Item
+						<DmcItem
 							key={item.id}
 							className='cursor-pointer'
 							as={LinkRouter}
 							to={`/analytics/query/${item.id}`}
 							hoverable
 						>
-							<ItemSection>
-								<ItemLabel>{item.name_query}</ItemLabel>
-							</ItemSection>
-							<ItemSection side>
-								<Btn
+							<DmcItemSection>
+								<DmcItemLabel>{item.name_query}</DmcItemLabel>
+							</DmcItemSection>
+							<DmcItemSection side>
+								<DmcBtn
 									color='warning'
 									title='Удалить'
 									onClick={e => handleRemove(e, item)}
 								>
 									<TbCircleMinus />
-								</Btn>
-							</ItemSection>
-						</Item>
+								</DmcBtn>
+							</DmcItemSection>
+						</DmcItem>
 					))}
-				</List>
-			</Loading>
+				</DmcList>
+			</DmcLoading>
 			<div className='flex justify-between items-center gap-3'>
 				<div className='flex items-center gap-3'>
-					<Btn
+					<DmcBtn
 						size='sm'
 						color='secondary'
 						disabled={!isPrev}
@@ -124,8 +124,8 @@ export function ListQueries({ className }: ListQueriesProps) {
 						onClick={() => setNumber(v => v - 1)}
 					>
 						Предыдущая
-					</Btn>
-					<Btn
+					</DmcBtn>
+					<DmcBtn
 						size='sm'
 						color='secondary'
 						disabled={!isNext}
@@ -133,7 +133,7 @@ export function ListQueries({ className }: ListQueriesProps) {
 						onClick={() => setNumber(v => v + 1)}
 					>
 						Следующая
-					</Btn>
+					</DmcBtn>
 				</div>
 				<Select
 					defaultValue={size}

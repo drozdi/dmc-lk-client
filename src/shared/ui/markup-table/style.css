@@ -1,16 +1,16 @@
 @reference "@style";
 
-.mdc-table {
+.dmc-table {
 	@apply w-full border-collapse border-spacing-0 table-auto border-color;
 }
-.mdc-table,
-.mdc-table *,
-.mdc-table *::before,
-.mdc-table *::after {
+.dmc-table,
+.dmc-table *,
+.dmc-table *::before,
+.dmc-table *::after {
 	@apply transition-all duration-200 ease-in-out;
 }
 
-.mdc-table-tr {
+.dmc-table-tr {
 	@apply relative border-color;
 	&::after {
 		@apply absolute left-0 top-0 w-full h-full pointer-events-none -z-10 bg-current opacity-0;
@@ -18,37 +18,37 @@
 	}
 }
 
-.mdc-table-td,
-.mdc-table-th {
+.dmc-table-td,
+.dmc-table-th {
 	@apply border-color px-4 py-2;
 }
 
-.mdc-table-td {
+.dmc-table-td {
 }
-.mdc-table-th {
+.dmc-table-th {
 	@apply select-none font-medium text-base;
 }
 
-.mdc-table-thead {
+.dmc-table-thead {
 }
-.mdc-table-tbody {
+.dmc-table-tbody {
 }
-.mdc-table-tfoot {
+.dmc-table-tfoot {
 }
 
-.mdc-table--striped {
-	.mdc-table-tbody > :where(tr):nth-of-type(odd) {
+.dmc-table--striped {
+	.dmc-table-tbody > :where(tr):nth-of-type(odd) {
 		@apply after:opacity-10;
 	}
 }
-.mdc-table--hover {
-	.mdc-table-tbody > :where(tr):not(.mdc-no-hover):hover {
+.dmc-table--hover {
+	.dmc-table-tbody > :where(tr):not(.dmc-no-hover):hover {
 		@apply after:opacity-15;
 	}
 }
-.mdc-table--dense {
-	.mdc-table-td,
-	.mdc-table-th {
+.dmc-table--dense {
+	.dmc-table-td,
+	.dmc-table-th {
 		@apply px-2 py-1;
 		&:first-child {
 			@apply pl-4;
@@ -59,38 +59,38 @@
 	}
 }
 
-.mdc-table--row-border .mdc-table-tr {
+.dmc-table--row-border .dmc-table-tr {
 	@apply border-b;
 }
 
-.mdc-table--col-border {
-	.mdc-table-td,
-	.mdc-table-th {
+.dmc-table--col-border {
+	.dmc-table-td,
+	.dmc-table-th {
 		&:not(:last-child) {
 			@apply border-r;
 		}
 	}
 }
-.mdc-table--border {
+.dmc-table--border {
 	@apply border;
 }
-.mdc-table-tbody .mdc-table-tr:last-child {
+.dmc-table-tbody .dmc-table-tr:last-child {
 	@apply border-b-0;
 }
 
-.mdc-table--fixed {
+.dmc-table--fixed {
 	@apply table-fixed;
 }
-.mdc-table--auto {
+.dmc-table--auto {
 	@apply table-auto;
 }
 
-.mdc-table-td-title {
+.dmc-table-td-title {
 	display: none;
 }
 
-.mdc-table--show-title {
-	.mdc-table-td-title {
+.dmc-table--show-title {
+	.dmc-table-td-title {
 		display: block;
 	}
 }

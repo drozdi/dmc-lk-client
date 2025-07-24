@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Btn } from '../../../shared/ui'
+import { DmcBtn } from '../../../shared/ui'
 import { Form, useProps } from './utils'
 
 export function BtnPage() {
@@ -34,7 +34,7 @@ export function BtnPage() {
 			leftSection: '',
 			rightSection: '',
 		},
-		'Btn',
+		'DmcBtn',
 		label
 	)
 
@@ -82,43 +82,63 @@ export function BtnPage() {
 										</label>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color}>
+										<DmcBtn disabled={disables[color]} color={color}>
 											Default
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color} flat={true}>
+										<DmcBtn
+											disabled={disables[color]}
+											color={color}
+											flat={true}
+										>
 											Flat
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn
+										<DmcBtn
 											disabled={disables[color]}
 											color={color}
 											outline={true}
 										>
 											Outline
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color} tonal={true}>
+										<DmcBtn
+											disabled={disables[color]}
+											color={color}
+											tonal={true}
+										>
 											Tonal
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color} plain={true}>
+										<DmcBtn
+											disabled={disables[color]}
+											color={color}
+											plain={true}
+										>
 											Plain
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color} text={true}>
+										<DmcBtn
+											disabled={disables[color]}
+											color={color}
+											text={true}
+										>
 											Text
-										</Btn>
+										</DmcBtn>
 									</td>
 									<td>
-										<Btn disabled={disables[color]} color={color} active={true}>
+										<DmcBtn
+											disabled={disables[color]}
+											color={color}
+											active={true}
+										>
 											Active
-										</Btn>
+										</DmcBtn>
 									</td>
 								</tr>
 							))}
@@ -128,7 +148,7 @@ export function BtnPage() {
 			<h3>Generate</h3>
 			<div className='grid grid-cols-2 *:col-span-1 *:p-4 *:border *:border-color'>
 				<div>
-					<Btn {...btnExample.props}>{label}</Btn>
+					<DmcBtn {...btnExample.props}>{label}</DmcBtn>
 					<pre className='bg-sky-500/50 text-white p-2 rounded-md mt-4 select-text'>
 						{btnExample.code}
 					</pre>

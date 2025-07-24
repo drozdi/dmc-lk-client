@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Template } from '../../../layout/context/template'
-import { Btn, Input, Message } from '../../../shared/ui'
+import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -73,7 +73,7 @@ export const PersonalForm = observer(() => {
 	return (
 		<>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -156,7 +156,7 @@ export const PersonalForm = observer(() => {
 				<Template slot='footer'>
 					<div className='flex flex-row flex-wrap gap-3 justify-between'>
 						<div className='flex flex-row gap-3'>
-							<Btn
+							<DmcBtn
 								type='button'
 								color='success'
 								size='sm'
@@ -166,9 +166,9 @@ export const PersonalForm = observer(() => {
 								label='Сохранить'
 							>
 								Сохранить
-							</Btn>
+							</DmcBtn>
 
-							<Btn
+							<DmcBtn
 								type='button'
 								color='primary'
 								size='sm'
@@ -178,9 +178,9 @@ export const PersonalForm = observer(() => {
 								label='Применить'
 							>
 								Применить
-							</Btn>
+							</DmcBtn>
 						</div>
-						<Btn
+						<DmcBtn
 							type='button'
 							color='danger'
 							size='sm'
@@ -190,7 +190,7 @@ export const PersonalForm = observer(() => {
 							label='Удалить'
 						>
 							Удалить
-						</Btn>
+						</DmcBtn>
 					</div>
 				</Template>
 			</form>

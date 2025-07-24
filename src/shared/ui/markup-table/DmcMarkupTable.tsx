@@ -24,7 +24,7 @@ interface MarkupTableCaptionProps extends MarkupTableElementProps {
 	side?: 'top' | 'bottom'
 }
 
-export const MarkupTable = memo(
+export const DmcMarkupTable = memo(
 	({
 		children,
 		className,
@@ -41,16 +41,16 @@ export const MarkupTable = memo(
 		return render('table', {
 			...props,
 			className: cls(
-				'mdc-table',
+				'dmc-table',
 				{
-					'mdc-table--striped': striped,
-					'mdc-table--hover': hover,
-					'mdc-table--dense': dense,
-					'mdc-table--row-border': rowBorder,
-					'mdc-table--col-border': colBorder,
-					'mdc-table--border': border,
-					'mdc-table--show-title': showTitle,
-					[`mdc-table--${layout}`]: layout,
+					'dmc-table--striped': striped,
+					'dmc-table--hover': hover,
+					'dmc-table--dense': dense,
+					'dmc-table--row-border': rowBorder,
+					'dmc-table--col-border': colBorder,
+					'dmc-table--border': border,
+					'dmc-table--show-title': showTitle,
+					[`dmc-table--${layout}`]: layout,
 				},
 				className
 			),
@@ -60,14 +60,15 @@ export const MarkupTable = memo(
 )
 
 'tr td th thead tbody tfoot caption'.split(/\s+/).forEach(name => {
-	MarkupTable[capitalize(name)] = memo(
+	DmcMarkupTable[capitalize(name)] = memo(
 		({ children, className, ...props }: MarkupTableElementProps) => {
 			return render(name, {
 				...props,
-				className: cls('mdc-table-' + name, className),
+				className: cls('dmc-table-' + name, className),
 				children,
 			})
 		}
 	)
-	MarkupTable[capitalize(name)].displayName = 'MarkupTable' + capitalize(name)
+	DmcMarkupTable[capitalize(name)].displayName =
+		'MarkupTable' + capitalize(name)
 })

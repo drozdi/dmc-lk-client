@@ -1,12 +1,12 @@
-.mdc-spinner {
+.dmc-spinner {
 	vertical-align: middle;
 }
 
-.mdc-spinner--mat {
+.dmc-spinner--mat {
 	animation: x-spin 2s linear infinite;
 	transform-origin: center center;
 }
-.mdc-spinner--mat .mdc-spinner__path {
+.dmc-spinner--mat .dmc-spinner__path {
 	stroke-dasharray: 1, 200;
 	stroke-dashoffset: 0;
 	animation: x-mat-dash 1.5s ease-in-out infinite;

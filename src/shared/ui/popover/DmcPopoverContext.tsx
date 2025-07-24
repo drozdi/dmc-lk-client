@@ -8,9 +8,9 @@ interface IPopoverContext {
 	onToggle: (event?: React.MouseEvent) => void
 }
 
-const PopoverContext = createContext<IPopoverContext | null>(null)
+const DmcPopoverContext = createContext<IPopoverContext | null>(null)
 
-export const PopoverProvider = ({
+export const DmcPopoverProvider = ({
 	value,
 	children,
 }: {
@@ -18,12 +18,14 @@ export const PopoverProvider = ({
 	children: React.ReactNode
 }) => {
 	return (
-		<PopoverContext.Provider value={value}>{children}</PopoverContext.Provider>
+		<DmcPopoverContext.Provider value={value}>
+			{children}
+		</DmcPopoverContext.Provider>
 	)
 }
 
-export const usePopover = (): IPopoverContext => {
-	const context = useContext(PopoverContext)
+export const useDmcPopover = (): IPopoverContext => {
+	const context = useContext(DmcPopoverContext)
 	if (context === null) {
 		throw new Error('Popover component was not found in the tree')
 	}

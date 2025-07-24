@@ -6,23 +6,23 @@ import './style.css'
 interface FullscreenProps {
 	children?: React.ReactNode
 }
-export function Fullscreen({ children }: FullscreenProps) {
+export function DmcFullscreen({ children }: FullscreenProps) {
 	const [active, { toggle, close, open }] = useDisclosure(false)
 
 	return (
 		<div
-			className={cls('mdc-fullscreen', {
-				'mdc-fullscreen--active': active,
+			className={cls('dmc-fullscreen', {
+				'dmc-fullscreen--active': active,
 			})}
 		>
 			<button
-				className='mdc-fullscreen-btn mdc-fullscreen-btn--open'
+				className='dmc-fullscreen-btn dmc-fullscreen-btn--open'
 				onClick={open}
 			>
 				<TbArrowsMove />
 			</button>
 			<button
-				className='mdc-fullscreen-btn mdc-fullscreen-btn--close'
+				className='dmc-fullscreen-btn dmc-fullscreen-btn--close'
 				onClick={close}
 			>
 				<TbArrowsMinimize />

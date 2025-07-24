@@ -1,2 +1,2 @@
-export * from './Chevron'
-export * from './Icon'
+export * from './DmcChevron'
+export * from './DmcIcon'

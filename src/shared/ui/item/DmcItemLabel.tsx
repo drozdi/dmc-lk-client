@@ -12,7 +12,7 @@ interface ItemLabelProps {
 	[key: string]: any
 }
 
-export const ItemLabel = memo(
+export const DmcItemLabel = memo(
 	({
 		children,
 		className,
@@ -25,11 +25,11 @@ export const ItemLabel = memo(
 		return (
 			<div
 				{...props}
-				className={cls('mdc-item__label', className, {
-					'mdc-item__label--overline': overline,
-					'mdc-item__label--caption': caption,
-					'mdc-item__label--header': header,
-					'mdc-item__label--lines': lines,
+				className={cls('dmc-item__label', className, {
+					'dmc-item__label--overline': overline,
+					'dmc-item__label--caption': caption,
+					'dmc-item__label--header': header,
+					'dmc-item__label--lines': lines,
 				})}
 			>
 				{children}

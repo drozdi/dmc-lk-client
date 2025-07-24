@@ -8,20 +8,20 @@ interface CollapseProps {
 	active?: boolean
 }
 
-export const Collapse = memo(
+export const DmcCollapse = memo(
 	({ className, children, active }: CollapseProps) => {
 		return (
 			<div
 				className={cls(
-					'mdc-collapse',
+					'dmc-collapse',
 					{
-						'mdc-collapse--active': active,
+						'dmc-collapse--active': active,
 					},
 					className
 				)}
 			>
-				<div className='mdc-collapse-panel'>
-					<div className='mdc-collapse-content'>{children}</div>
+				<div className='dmc-collapse-panel'>
+					<div className='dmc-collapse-content'>{children}</div>
 				</div>
 			</div>
 		)

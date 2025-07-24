@@ -1,2 +1,2 @@
-export * from './Popover'
-export * from './PopoverContext'
+export * from './DmcPopover'
+export * from './DmcPopoverContext'

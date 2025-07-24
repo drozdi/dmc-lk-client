@@ -1,18 +1,18 @@
 @reference "@style";
-.mdc-fullscreen {
+.dmc-fullscreen {
 	@apply relative transition-all ease-in-out duration-300;
 }
-.mdc-fullscreen--active {
+.dmc-fullscreen--active {
 	@apply bg-surface fixed w-dvw h-dvh top-0 left-0 z-50 p-6;
 }
 
-.mdc-fullscreen-btn {
+.dmc-fullscreen-btn {
 	@apply hidden absolute right-0 top-0 w-8 h-8 border-0 bg-primary rounded-md z-50 text-white justify-center items-center;
 }
-.mdc-fullscreen:not(.mdc-fullscreen--active):hover .mdc-fullscreen-btn--open {
+.dmc-fullscreen:not(.dmc-fullscreen--active):hover .dmc-fullscreen-btn--open {
 	@apply flex;
 }
 
-.mdc-fullscreen--active .mdc-fullscreen-btn--close {
+.dmc-fullscreen--active .dmc-fullscreen-btn--close {
 	@apply flex right-6 top-6;
 }

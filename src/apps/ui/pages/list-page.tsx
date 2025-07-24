@@ -1,114 +1,113 @@
 import {
-	Icon,
-	Item,
-	ItemExpansion,
-	ItemLabel,
-	ItemSection,
-	List,
+	DmcItem,
+	DmcItemExpansion,
+	DmcItemLabel,
+	DmcItemSection,
+	DmcList,
 } from '../../../shared/ui'
 
 export function ListPage() {
 	return (
 		<div className='max-w-4xl m-auto'>
 			<div className='w-64'>
-				<List bordered>
-					<ItemExpansion label='XItemExpansion 1'>
-						<List>
-							<ItemExpansion label='XItemExpansion 1.1'>
-								<List>
-									<ItemExpansion label='XItemExpansion 1.1.1'>
-										<List>
-											<ItemExpansion label='XItemExpansion 1.1.1.1'>
+				<DmcList bordered>
+					<DmcItemExpansion label='XItemExpansion 1'>
+						<DmcList>
+							<DmcItemExpansion label='XItemExpansion 1.1'>
+								<DmcList>
+									<DmcItemExpansion label='XItemExpansion 1.1.1'>
+										<DmcList>
+											<DmcItemExpansion label='XItemExpansion 1.1.1.1'>
 												ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-											</ItemExpansion>
-											<ItemExpansion label='XItemExpansion 1.1.1.2'>
+											</DmcItemExpansion>
+											<DmcItemExpansion label='XItemExpansion 1.1.1.2'>
 												ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-											</ItemExpansion>
-										</List>
-									</ItemExpansion>
-									<ItemExpansion label='XItemExpansion 1.1.2'>
+											</DmcItemExpansion>
+										</DmcList>
+									</DmcItemExpansion>
+									<DmcItemExpansion label='XItemExpansion 1.1.2'>
 										ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-									</ItemExpansion>
-								</List>
-							</ItemExpansion>
-							<ItemExpansion label='XItemExpansion 1.2'>
+									</DmcItemExpansion>
+								</DmcList>
+							</DmcItemExpansion>
+							<DmcItemExpansion label='XItemExpansion 1.2'>
 								ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-							</ItemExpansion>
-						</List>
-					</ItemExpansion>
-					<ItemExpansion label='XItemExpansion 2'>
+							</DmcItemExpansion>
+						</DmcList>
+					</DmcItemExpansion>
+					<DmcItemExpansion label='XItemExpansion 2'>
 						ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-					</ItemExpansion>
-					<ItemExpansion label='XItemExpansion 3'>
+					</DmcItemExpansion>
+					<DmcItemExpansion label='XItemExpansion 3'>
 						ldlkdfhblkfdbfdkl ndbkldfnbklfdnb mdfnbdf,bnf
-					</ItemExpansion>
-					<Item as='label'>
-						<ItemSection side>
+					</DmcItemExpansion>
+					<DmcItem as='label'>
+						<DmcItemSection side>
 							<input type='checkbox' value={1} disabled />
-						</ItemSection>
-						<ItemSection>
-							<ItemLabel>Item 1</ItemLabel>
-						</ItemSection>
-					</Item>
-					<Item as='label'>
-						<ItemSection side>
+						</DmcItemSection>
+						<DmcItemSection>
+							<DmcItemLabel>Item 1</DmcItemLabel>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem as='label'>
+						<DmcItemSection side>
 							<input type='checkbox' value={2} />
-						</ItemSection>
-						<ItemSection>
-							<ItemLabel>Item 2</ItemLabel>
-						</ItemSection>
-					</Item>
-					<Item as='label'>
-						<ItemSection side>
+						</DmcItemSection>
+						<DmcItemSection>
+							<DmcItemLabel>Item 2</DmcItemLabel>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem as='label'>
+						<DmcItemSection side>
 							<input type='checkbox' value={3} />
-						</ItemSection>
-						<ItemSection>
-							<ItemLabel>Item 3</ItemLabel>
-						</ItemSection>
-					</Item>
-					<Item>
-						<ItemSection avatar>
-							<Icon>home</Icon>
-						</ItemSection>
-						<ItemSection>
-							<ItemLabel>Item 3</ItemLabel>
-						</ItemSection>
-						<ItemSection side>
-							<Icon>home</Icon>
-						</ItemSection>
-						<ItemSection side>
-							<Icon>mdi-close</Icon>
-						</ItemSection>
-					</Item>
-					<Item to='/' target='_blank'>
-						<ItemSection side>
-							<Icon>home</Icon>
-						</ItemSection>
-						<ItemSection>
-							<ItemLabel overline>Item 1</ItemLabel>
-							<ItemLabel>label</ItemLabel>
-							<ItemLabel caption>Description</ItemLabel>
-						</ItemSection>
-						<ItemSection side top>
-							<Icon>x</Icon>
-						</ItemSection>
-					</Item>
-					<Item to='https://ya.ru/' target='_blank' disabled>
-						<ItemSection side>
-							<Icon>home</Icon>
-						</ItemSection>
-						<ItemSection>Yandex</ItemSection>
-					</Item>
-					<Item disabled>
-						<ItemSection>Item 3</ItemSection>
-						<ItemSection side>
-							<Icon>mdi-arrow-down</Icon>
-						</ItemSection>
-					</Item>
-					<Item active>
-						<ItemSection>Item 4</ItemSection>
-					</Item>
-				</List>
+						</DmcItemSection>
+						<DmcItemSection>
+							<DmcItemLabel>Item 3</DmcItemLabel>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem>
+						<DmcItemSection avatar>
+							<DmcIcon>home</DmcIcon>
+						</DmcItemSection>
+						<DmcItemSection>
+							<DmcItemLabel>Item 3</DmcItemLabel>
+						</DmcItemSection>
+						<DmcItemSection side>
+							<DmcIcon>home</DmcIcon>
+						</DmcItemSection>
+						<DmcItemSection side>
+							<DmcIcon>mdi-close</DmcIcon>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem to='/' target='_blank'>
+						<DmcItemSection side>
+							<DmcIcon>home</DmcIcon>
+						</DmcItemSection>
+						<DmcItemSection>
+							<DmcItemLabel overline>Item 1</DmcItemLabel>
+							<DmcItemLabel>label</DmcItemLabel>
+							<DmcItemLabel caption>Description</DmcItemLabel>
+						</DmcItemSection>
+						<DmcItemSection side top>
+							<DmcIcon>x</DmcIcon>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem to='https://ya.ru/' target='_blank' disabled>
+						<DmcItemSection side>
+							<DmcIcon>home</DmcIcon>
+						</DmcItemSection>
+						<DmcItemSection>Yandex</DmcItemSection>
+					</DmcItem>
+					<DmcItem disabled>
+						<DmcItemSection>Item 3</DmcItemSection>
+						<DmcItemSection side>
+							<DmcIcon>mdi-arrow-down</DmcIcon>
+						</DmcItemSection>
+					</DmcItem>
+					<DmcItem active>
+						<DmcItemSection>Item 4</DmcItemSection>
+					</DmcItem>
+				</DmcList>
 			</div>
 		</div>
 	)

@@ -1,8 +1,8 @@
 @reference "@style";
 
-.mdc-btn {
+.dmc-btn {
 	@apply relative flex items-center justify-center select-none cursor-pointer rounded px-4 py-2   text-base uppercase box-border overflow-hidden focus:outline-none focus-visible:outline-none shadow !shadow-black/50;
-	&:not(:disabled, .mdc-btn--disabled, .mdc-btn--loading) {
+	&:not(:disabled, .dmc-btn--disabled, .dmc-btn--loading) {
 		&:hover {
 			@apply shadow-xl;
 		}
@@ -14,54 +14,54 @@
 		}
 	}
 }
-.mdc-btn:disabled,
-.mdc-btn--disabled,
-.mdc-btn--loading {
+.dmc-btn:disabled,
+.dmc-btn--disabled,
+.dmc-btn--loading {
 	@apply !shadow-none !opacity-50 !cursor-not-allowed !transform-none;
 }
-.mdc-btn::after,
-.mdc-btn::before,
-.mdc-btn-loader {
+.dmc-btn::after,
+.dmc-btn::before,
+.dmc-btn-loader {
 	@apply absolute top-0 left-0 w-full h-full rounded-s-[inherit];
 }
-.mdc-btn::after {
+.dmc-btn::after {
 	@apply bg-transparent border border-current opacity-80;
 }
-.mdc-btn--outline::after {
+.dmc-btn--outline::after {
 	content: '';
 }
-.mdc-btn::before {
+.dmc-btn::before {
 	@apply bg-black opacity-0;
 	content: ' ';
 }
-.mdc-btn,
-.mdc-btn::before,
-.mdc-btn::after,
-.mdc-btn * {
+.dmc-btn,
+.dmc-btn::before,
+.dmc-btn::after,
+.dmc-btn * {
 	@apply transition-all duration-200 ease-in-out;
 }
-.mdc-btn-content,
-.mdc-btn-loader {
+.dmc-btn-content,
+.dmc-btn-loader {
 	@apply flex z-10;
 }
-.mdc-btn-loader {
+.dmc-btn-loader {
 	@apply top-full items-center justify-center;
 }
-.mdc-btn--loading {
-	.mdc-btn-content {
+.dmc-btn--loading {
+	.dmc-btn-content {
 		@apply translate-y-[calc(-100%-3*var(--spacing))];
 	}
-	.mdc-btn-loader {
+	.dmc-btn-loader {
 		@apply top-0;
 	}
 }
-.mdc-btn-section {
+.dmc-btn-section {
 	@apply flex items-center justify-center;
 	& > svg {
 		@apply block;
 	}
 }
-.mdc-btn:not(.mdc-btn--icon) .mdc-btn-section {
+.dmc-btn:not(.dmc-btn--icon) .dmc-btn-section {
 	&:is(*:first-child) {
 		@apply mr-3;
 	}
@@ -69,174 +69,174 @@
 		@apply ml-3;
 	}
 }
-.mdc-btn:not(
+.dmc-btn:not(
 		:disabled,
-		.mdc-btn--disabled,
-		.mdc-btn--loading,
-		.mdc-btn--text
+		.dmc-btn--disabled,
+		.dmc-btn--loading,
+		.dmc-btn--text
 	):hover::before {
 	@apply opacity-15;
 }
-.mdc-btn:not(
+.dmc-btn:not(
 		:disabled,
-		.mdc-btn--disabled,
-		.mdc-btn--loading,
-		.mdc-btn--text
+		.dmc-btn--disabled,
+		.dmc-btn--loading,
+		.dmc-btn--text
 	):focus::before {
 	@apply opacity-20;
 }
-.mdc-btn:not(
+.dmc-btn:not(
 		:disabled,
-		.mdc-btn--disabled,
-		.mdc-btn--loading,
-		.mdc-btn--text
+		.dmc-btn--disabled,
+		.dmc-btn--loading,
+		.dmc-btn--text
 	):active::before {
 	@apply opacity-25;
 }
 
-.mdc-btn--outline,
-.mdc-btn--plain,
-.mdc-btn--text {
+.dmc-btn--outline,
+.dmc-btn--plain,
+.dmc-btn--text {
 	@apply !bg-transparent;
 }
-.mdc-btn--tonal {
+.dmc-btn--tonal {
 	background-color: color-mix(
 		in srgb,
 		currentColor 20%,
 		transparent
 	) !important;
 }
-.mdc-btn--plain,
-.mdc-btn--text {
+.dmc-btn--plain,
+.dmc-btn--text {
 	&::before {
 		@apply bg-current;
 	}
 }
-.mdc-btn--flat {
+.dmc-btn--flat {
 	@apply !shadow-none;
 }
-.mdc-btn--outline:not(
+.dmc-btn--outline:not(
 		:disabled,
-		.mdc-btn--disabled,
-		.mdc-btn--loading
+		.dmc-btn--disabled,
+		.dmc-btn--loading
 	):hover::after {
 	@apply opacity-100;
 }
-.mdc-btn--text,
-.mdc-btn--plain {
-	.mdc-btn-label {
+.dmc-btn--text,
+.dmc-btn--plain {
+	.dmc-btn-label {
 		@apply opacity-80;
 	}
 }
-.mdc-btn--text,
-.mdc-btn--plain {
-	&:not(:disabled, .mdc-btn--disabled, .mdc-btn--loading) {
+.dmc-btn--text,
+.dmc-btn--plain {
+	&:not(:disabled, .dmc-btn--disabled, .dmc-btn--loading) {
 		&:hover,
-		&.mdc-btn--active {
-			.mdc-btn-label {
+		&.dmc-btn--active {
+			.dmc-btn-label {
 				@apply opacity-100;
 			}
 		}
 	}
 }
-.mdc-btn--active:not(.mdc-btn--disabled, :disabled) {
+.dmc-btn--active:not(.dmc-btn--disabled, :disabled) {
 	@apply shadow-md;
 	&::before {
 		@apply !bg-current !opacity-20;
 	}
 }
 
-.mdc-btn--xs {
+.dmc-btn--xs {
 	@apply text-xs px-2 py-1;
 }
-.mdc-btn--sm {
+.dmc-btn--sm {
 	@apply text-sm px-3 py-1;
 }
-.mdc-btn--lg {
+.dmc-btn--lg {
 	@apply text-lg px-6 py-3;
 }
 
-.mdc-btn--icon,
-.mdc-btn--round {
+.dmc-btn--icon,
+.dmc-btn--round {
 	@apply px-0;
 }
 
-.mdc-btn--block {
+.dmc-btn--block {
 	@apply w-full;
 }
-.mdc-btn--rounded {
+.dmc-btn--rounded {
 	@apply rounded-full;
 }
-.mdc-btn--square {
+.dmc-btn--square {
 	@apply rounded-none;
 }
-.mdc-btn--round {
+.dmc-btn--round {
 	@apply rounded-[50%] min-w-8 min-h-8;
 }
 
-.mdc-btn--primary,
-.mdc-btn--secondary,
-.mdc-btn--accent,
-.mdc-btn--success,
-.mdc-btn--warning,
-.mdc-btn--info,
-.mdc-btn--danger,
-.mdc-btn--dark {
+.dmc-btn--primary,
+.dmc-btn--secondary,
+.dmc-btn--accent,
+.dmc-btn--success,
+.dmc-btn--warning,
+.dmc-btn--info,
+.dmc-btn--danger,
+.dmc-btn--dark {
 	@apply text-white;
 }
 
-.mdc-btn--primary {
+.dmc-btn--primary {
 	@apply bg-primary;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-primary;
 	}
 }
 
-.mdc-btn--secondary {
+.dmc-btn--secondary {
 	@apply bg-secondary;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-secondary;
 	}
 }
 
-.mdc-btn--accent {
+.dmc-btn--accent {
 	@apply bg-accent;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-accent;
 	}
 }
 
-.mdc-btn--success {
+.dmc-btn--success {
 	@apply bg-success;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-success;
 	}
 }
 
-.mdc-btn--warning {
+.dmc-btn--warning {
 	@apply bg-warning;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-warning;
 	}
 }
 
-.mdc-btn--info {
+.dmc-btn--info {
 	@apply bg-info;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-info;
 	}
 }
 
-.mdc-btn--danger {
+.dmc-btn--danger {
 	@apply bg-danger;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-danger;
 	}
 }
 
-.mdc-btn--dark {
+.dmc-btn--dark {
 	@apply bg-dark;
-	&:where(.mdc-btn--tonal, .mdc-btn--outline, .mdc-btn--text, .mdc-btn--plain) {
+	&:where(.dmc-btn--tonal, .dmc-btn--outline, .dmc-btn--text, .dmc-btn--plain) {
 		@apply text-dark;
 	}
 }

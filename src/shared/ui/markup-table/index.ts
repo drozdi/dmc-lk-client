@@ -1,1 +1,1 @@
-export * from './MarkupTable'
+export * from './DmcMarkupTable'

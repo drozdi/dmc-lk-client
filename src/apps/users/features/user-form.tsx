@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
-import { Btn, Input, Message } from '../../../shared/ui'
+import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
 import { getUser, updateUser } from '../api'
 
 const fieldsSchema = yup.object().shape({
@@ -90,7 +90,7 @@ export function UserForm({ id, className }) {
 	return (
 		<div className={className}>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -185,7 +185,7 @@ export function UserForm({ id, className }) {
 				</div>
 
 				<div className='flex flex-row gap-3 justify-end'>
-					<Btn
+					<DmcBtn
 						type='button'
 						color='success'
 						size='sm'
@@ -195,9 +195,9 @@ export function UserForm({ id, className }) {
 						label='Сохранить'
 					>
 						Сохранить
-					</Btn>
+					</DmcBtn>
 
-					<Btn
+					<DmcBtn
 						type='button'
 						color='primary'
 						size='sm'
@@ -207,7 +207,7 @@ export function UserForm({ id, className }) {
 						label='Применить'
 					>
 						Применить
-					</Btn>
+					</DmcBtn>
 				</div>
 			</form>
 		</div>

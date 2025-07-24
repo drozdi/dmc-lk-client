@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { Btn, Input, Message } from '../../../shared/ui'
+import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -77,7 +77,7 @@ export const SignUpForm = observer(() => {
 	return (
 		<>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -191,9 +191,9 @@ export const SignUpForm = observer(() => {
 					{...register('re_password')}
 				/>
 
-				<Btn type='submit' color='primary' block loading={isLoading}>
+				<DmcBtn type='submit' color='primary' block loading={isLoading}>
 					Войти
-				</Btn>
+				</DmcBtn>
 			</form>
 		</>
 	)

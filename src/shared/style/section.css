@@ -1,31 +1,31 @@
-.mdc-sections,
-.mdc-section {
+.dmc-sections,
+.dmc-section {
 	@apply flex flex-wrap relative;
 }
 
-.mdc-sections--col,
-.mdc-section {
+.dmc-sections--col,
+.dmc-section {
 	@apply flex-col;
 }
-.mdc-sections {
+.dmc-sections {
 	@apply justify-between;
 }
-.mdc-sections > * {
+.dmc-sections > * {
 	@apply flex-1;
 }
-.mdc-section:not(.mdc-section--side) {
+.dmc-section:not(.dmc-section--side) {
 	@apply flex-1;
 }
-.mdc-section {
+.dmc-section {
 	@apply items-start justify-center;
 	&--side > svg {
 		@apply block;
 	}
 }
-.mdc-section--side {
+.dmc-section--side {
 	@apply flex-none items-center;
 }
 
-.mdc-section--row {
+.dmc-section--row {
 	@apply flex-row;
 }

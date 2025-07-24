@@ -1,16 +1,16 @@
-import { SpinnerBase } from './SpinnerBase'
+import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerHourglassProps {
 	size?: string | number
 	color?: string
 }
 
-export function SpinnerHourglass({
+export function DmcSpinnerHourglass({
 	size = '1em',
 	color,
 }: SpinnerHourglassProps) {
 	return (
-		<SpinnerBase
+		<DmcSpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 100 100'
@@ -89,6 +89,6 @@ export function SpinnerHourglass({
 					keyTimes='0;0.7;1'
 				></animateTransform>
 			</g>
-		</SpinnerBase>
+		</DmcSpinnerBase>
 	)
 }

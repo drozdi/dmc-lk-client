@@ -6,7 +6,13 @@ import {
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
 import { TbColumnInsertRight, TbColumnRemove } from 'react-icons/tb'
-import { Btn, Input, Loading, MarkupTable, Select } from '../../../../shared/ui'
+import {
+	DmcBtn,
+	DmcLoading,
+	DmcMarkupTable,
+	Input,
+	Select,
+} from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
 import { fieldsStore } from '../../stores/fields-store'
 import { ActionForm } from './components/action-form'
@@ -172,12 +178,12 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					/>
 				</div>
 				<div className='flex gap-3 justify-end'>
-					<Btn color='success' size='sm' onClick={handleSave}>
+					<DmcBtn color='success' size='sm' onClick={handleSave}>
 						Сохранить
-					</Btn>
-					<Btn color='info' size='sm' onClick={handleApply}>
+					</DmcBtn>
+					<DmcBtn color='info' size='sm' onClick={handleApply}>
 						Применить
-					</Btn>
+					</DmcBtn>
 				</div>
 				<div
 					className='w-8 flex-none justify-end group relative overflow-visible'
@@ -203,13 +209,13 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					</div>
 				</div>
 			</div>
-			<Loading active={isLoading}>
-				<MarkupTable rowBorder striped>
-					<MarkupTable.Thead>
+			<DmcLoading active={isLoading}>
+				<DmcMarkupTable rowBorder striped>
+					<DmcMarkupTable.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
-							<MarkupTable.Tr key={headerGroup.id}>
+							<DmcMarkupTable.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header, index) => (
-									<MarkupTable.Th
+									<DmcMarkupTable.Th
 										className='group relative overflow-visible'
 										key={header.id}
 										colSpan={header.colSpan}
@@ -268,27 +274,27 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 													header.column.columnDef.header,
 													header.getContext()
 											  )}
-									</MarkupTable.Th>
+									</DmcMarkupTable.Th>
 								))}
-							</MarkupTable.Tr>
+							</DmcMarkupTable.Tr>
 						))}
-					</MarkupTable.Thead>
-					<MarkupTable.Tbody>
+					</DmcMarkupTable.Thead>
+					<DmcMarkupTable.Tbody>
 						{table.getRowModel().rows.map(row => (
-							<MarkupTable.Tr key={row.id}>
+							<DmcMarkupTable.Tr key={row.id}>
 								{row.getVisibleCells().map(cell => (
-									<MarkupTable.Td key={cell.id}>
+									<DmcMarkupTable.Td key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</MarkupTable.Td>
+									</DmcMarkupTable.Td>
 								))}
-							</MarkupTable.Tr>
+							</DmcMarkupTable.Tr>
 						))}
-					</MarkupTable.Tbody>
-				</MarkupTable>
-			</Loading>
+					</DmcMarkupTable.Tbody>
+				</DmcMarkupTable>
+			</DmcLoading>
 			<div className='flex gap-3 justify-between mt-3 items-start'>
 				<div className='flex gap-3 justify-end'>
-					<Btn
+					<DmcBtn
 						color='secondary'
 						size='sm'
 						disabled={!isPrev}
@@ -296,8 +302,8 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						onClick={() => elasticStore.prev()}
 					>
 						Предыдущая
-					</Btn>
-					<Btn
+					</DmcBtn>
+					<DmcBtn
 						color='secondary'
 						size='sm'
 						disabled={!isNext}
@@ -305,7 +311,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						onClick={() => elasticStore.next()}
 					>
 						Следующая
-					</Btn>
+					</DmcBtn>
 				</div>
 				<Select
 					dense

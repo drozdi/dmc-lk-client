@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link as LinkTo } from 'react-router'
-import { Btn, Link, Loading, Message, Select } from '../../../shared/ui'
+import {
+	DmcBtn,
+	DmcLink,
+	DmcLoading,
+	DmcMessage,
+	Select,
+} from '../../../shared/ui'
 import { listUsers } from '../api'
 
 interface UsersListProps {
@@ -32,9 +38,9 @@ export function UsersList({ className }: UsersListProps) {
 
 	return (
 		<div className={className}>
-			<Loading active={isLoading}>
+			<DmcLoading active={isLoading}>
 				{error && (
-					<Message
+					<DmcMessage
 						className='mb-8'
 						color='warning'
 						square
@@ -43,7 +49,7 @@ export function UsersList({ className }: UsersListProps) {
 					/>
 				)}
 				{list.map(item => (
-					<Link
+					<DmcLink
 						as={LinkTo}
 						key={item.id}
 						to={`/users/${item.id}`}
@@ -52,15 +58,15 @@ export function UsersList({ className }: UsersListProps) {
 						)}
 					/>
 				))}
-			</Loading>
+			</DmcLoading>
 			<div className='mt-3 flex justify-between items-start gap-3'>
 				<div className='flex justify-start items-start gap-3'>
-					<Btn disabled={number != 1} color='secondary' size='sm'>
+					<DmcBtn disabled={number != 1} color='secondary' size='sm'>
 						Предыдущая
-					</Btn>
-					<Btn disabled={list.length < size} color='secondary' size='sm'>
+					</DmcBtn>
+					<DmcBtn disabled={list.length < size} color='secondary' size='sm'>
 						Следующая
-					</Btn>
+					</DmcBtn>
 				</div>
 				<div>
 					<Select

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Btn, Input, Message } from '../../../shared/ui'
+import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const SignInForm = observer(() => {
@@ -19,7 +19,7 @@ export const SignInForm = observer(() => {
 	return (
 		<>
 			{error && (
-				<Message
+				<DmcMessage
 					className='mb-8'
 					color='warning'
 					square
@@ -57,9 +57,9 @@ export const SignInForm = observer(() => {
 					onChange={e => setPassword(e.target.value)}
 				/>
 
-				<Btn type='submit' color='primary' block loading={isLoading}>
+				<DmcBtn type='submit' color='primary' block loading={isLoading}>
 					Войти
-				</Btn>
+				</DmcBtn>
 			</form>
 		</>
 	)

@@ -1,1 +1,1 @@
-export * from './Fullscreen'
+export * from './DmcFullscreen'

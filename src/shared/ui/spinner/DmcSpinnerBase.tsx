@@ -13,7 +13,7 @@ export interface SpinnerBaseProps {
 	stroke?: string
 }
 
-export function SpinnerBase({
+export function DmcSpinnerBase({
 	children,
 	className,
 	size = '1em',

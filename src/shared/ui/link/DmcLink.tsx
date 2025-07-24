@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { TbChevronDown } from 'react-icons/tb'
 import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
-import { Collapse } from '../collapse'
+import { DmcCollapse } from '../collapse'
 import './style.css'
 
 interface LinkProps {
@@ -21,7 +21,7 @@ interface LinkProps {
 	[key: string]: any
 }
 
-export function Link({
+export function DmcLink({
 	className,
 	children,
 	noWrap,
@@ -70,34 +70,34 @@ export function Link({
 				disabled={disabled}
 				aria-disabled={disabled}
 				className={cls(
-					'mdc-link',
+					'dmc-link',
 					{
-						'mdc-link--nowrap': noWrap,
-						'mdc-link--active': active,
-						'mdc-link--opened': opened,
-						'mdc-link--disabled': disabled,
+						'dmc-link--nowrap': noWrap,
+						'dmc-link--active': active,
+						'dmc-link--opened': opened,
+						'dmc-link--disabled': disabled,
 					},
 					className
 				)}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
-				classBody='mdc-link-body'
+				classBody='dmc-link-body'
 				leftSection={leftSection}
 				rightSection={
 					withChildren ? (
-						<TbChevronDown className='mdc-link-chevron' />
+						<TbChevronDown className='dmc-link-chevron' />
 					) : (
 						rightSection
 					)
 				}
 			>
-				<span className='mdc-link-label'>{label}</span>
-				<span className='mdc-link-description'>{description}</span>
+				<span className='dmc-link-label'>{label}</span>
+				<span className='dmc-link-description'>{description}</span>
 			</Sections>
 			{withChildren && (
-				<Collapse active={opened}>
-					<div className='mdc-link-childrens'>{children}</div>
-				</Collapse>
+				<DmcCollapse active={opened}>
+					<div className='dmc-link-childrens'>{children}</div>
+				</DmcCollapse>
 			)}
 		</>
 	)

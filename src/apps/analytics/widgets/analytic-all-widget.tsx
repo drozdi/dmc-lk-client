@@ -7,7 +7,7 @@ import {
 	ResponsiveContainer,
 	Tooltip,
 } from 'recharts'
-import { Loading, Select } from '../../../shared/ui'
+import { DmcLoading, Select } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
@@ -121,7 +121,7 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 				</Select>
 			</div>
 			<div className='w-full aspect-square'>
-				<Loading active={isLoading}>
+				<DmcLoading active={isLoading}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
@@ -144,7 +144,7 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 							</PieChart>
 						</ResponsiveContainer>
 					)}
-				</Loading>
+				</DmcLoading>
 			</div>
 		</div>
 	)

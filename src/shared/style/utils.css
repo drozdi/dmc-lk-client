@@ -5,7 +5,7 @@
 	border-color: var(--border-color);
 }
 
-@utility mdc-bg-* {
+@utility dmc-bg-* {
 	background-color: --value(--color- *);
 	color: --value(--color-on- *);
 }

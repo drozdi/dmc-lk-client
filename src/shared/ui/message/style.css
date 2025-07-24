@@ -1,87 +1,87 @@
 @reference "@style";
 
-.mdc-message {
+.dmc-message {
 	@apply rounded cursor-default shadow-2 shadow-black/50 p-3 relative;
 	background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-.mdc-message::before {
+.dmc-message::before {
 	@apply absolute top-0 left-0 w-full h-full rounded-[inherit] contain-layout pointer-events-none border-0 border-current;
 	content: '';
 }
 
-.mdc-message-label {
+.dmc-message-label {
 	@apply text-sm/normal;
 }
-.mdc-message-description {
+.dmc-message-description {
 	@apply block opacity-80 overflow-hidden text-ellipsis;
 }
 
-.mdc-message--square {
+.dmc-message--square {
 	@apply rounded-none;
 }
-.mdc-message--flat {
+.dmc-message--flat {
 	@apply !shadow-none;
 }
-.mdc-message--outline::before {
+.dmc-message--outline::before {
 	@apply border;
 }
-.mdc-message--underlined-top::before {
+.dmc-message--underlined-top::before {
 	@apply border-t-4;
 }
-.mdc-message--underlined-bottom::before {
+.dmc-message--underlined-bottom::before {
 	@apply border-b-4;
 }
-.mdc-message--underlined-left::before {
+.dmc-message--underlined-left::before {
 	@apply border-l-4;
 }
-.mdc-message--underlined-right::before {
+.dmc-message--underlined-right::before {
 	@apply border-r-4;
 }
 
-.mdc-message--primary {
+.dmc-message--primary {
 	@apply text-primary;
 }
-.mdc-message--secondary {
+.dmc-message--secondary {
 	@apply text-secondary;
 }
-.mdc-message--accent {
+.dmc-message--accent {
 	@apply text-accent;
 }
-.mdc-message--success {
+.dmc-message--success {
 	@apply text-success;
 }
-.mdc-message--warning {
+.dmc-message--warning {
 	@apply text-warning;
 }
-.mdc-message--info {
+.dmc-message--info {
 	@apply text-info;
 }
-.mdc-message--danger {
+.dmc-message--danger {
 	@apply text-warning;
 }
 
-.mdc-message--filled.mdc-message--primary {
-	@apply mdc-bg-primary;
+.dmc-message--filled.dmc-message--primary {
+	@apply dmc-bg-primary;
 }
-.mdc-message--filled.mdc-message--secondary {
-	@apply mdc-bg-secondary;
+.dmc-message--filled.dmc-message--secondary {
+	@apply dmc-bg-secondary;
 }
-.mdc-message--filled.mdc-message--accent {
-	@apply mdc-bg-accent;
+.dmc-message--filled.dmc-message--accent {
+	@apply dmc-bg-accent;
 }
-.mdc-message--filled.mdc-message--success {
-	@apply mdc-bg-success;
+.dmc-message--filled.dmc-message--success {
+	@apply dmc-bg-success;
 }
-.mdc-message--filled.mdc-message--warning {
-	@apply mdc-bg-warning;
+.dmc-message--filled.dmc-message--warning {
+	@apply dmc-bg-warning;
 }
-.mdc-message--filled.mdc-message--info {
-	@apply mdc-bg-info;
+.dmc-message--filled.dmc-message--info {
+	@apply dmc-bg-info;
 }
-.mdc-message--filled.mdc-message--danger {
-	@apply mdc-bg-danger;
+.dmc-message--filled.dmc-message--danger {
+	@apply dmc-bg-danger;
 }
-.mdc-message--filled::before {
+.dmc-message--filled::before {
 	@apply border-color;
 }

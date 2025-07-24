@@ -20,7 +20,7 @@ interface ListProps {
 	onKeyPress?: () => void
 }
 
-export const List = memo(
+export const DmcList = memo(
 	({
 		as = 'ul',
 		children,
@@ -40,12 +40,12 @@ export const List = memo(
 			<Tag
 				{...props}
 				className={cls(
-					'mdc-list',
+					'dmc-list',
 					{
-						'mdc-list--dense': dense,
-						'mdc-list--visible': visible,
-						'mdc-list--separator': separator,
-						'mdc-list--bordered': bordered,
+						'dmc-list--dense': dense,
+						'dmc-list--visible': visible,
+						'dmc-list--separator': separator,
+						'dmc-list--bordered': bordered,
 					},
 					className
 				)}

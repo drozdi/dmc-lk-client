@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Fullscreen, Input } from '../../../shared/ui'
+import { DmcFullscreen, Input } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
@@ -69,15 +69,15 @@ export function AnalyticsPage() {
 			</div>
 
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl'>
-				<Fullscreen>
+				<DmcFullscreen>
 					<AnalyticEventWidget {...query} step='mon' />
-				</Fullscreen>
-				<Fullscreen>
+				</DmcFullscreen>
+				<DmcFullscreen>
 					<AnalyticAllWidget {...query} step='mon' />
-				</Fullscreen>
-				<Fullscreen>
+				</DmcFullscreen>
+				<DmcFullscreen>
 					<AnalyticTypeWidget {...query} step='mon' />
-				</Fullscreen>
+				</DmcFullscreen>
 			</div>
 		</div>
 	)

@@ -10,6 +10,7 @@ import { PersonalPage } from '../components/pages/lk/personal-page'
 import { ProtectedRoute } from '../components/features/protected-router/protected-route'
 
 import analyticsRouers from '../apps/analytics/routers'
+import labelsRouers from '../apps/labels/routers'
 import shopRouers from '../apps/shop/routers'
 import uiRouters from '../apps/ui/routers'
 import usersRouers from '../apps/users/routers'
@@ -60,6 +61,7 @@ const routes = () => [
 			analyticsRouers(),
 			shopRouers(),
 			usersRouers(),
+			labelsRouers(),
 			uiRouters(),
 		],
 	},
