@@ -128,7 +128,8 @@ class ElasticStore {
 			this.data = res.data.message
 			return res.data
 		} catch (error) {
-			this.error = error.message
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -166,9 +167,9 @@ class ElasticStore {
 			} else {
 				res = await requestAnalyticsAddQuery(this.name, this.template)
 			}
-			console.log(res)
 		} catch (error) {
-			this.error = error.message
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -179,8 +180,8 @@ class ElasticStore {
 				select_field: [],
 				list_where: [],
 				date_limit: {
-					date_from: '2024-05-23',
-					date_to: '2024-07-23',
+					date_from: '',
+					date_to: '',
 					date_rounding: undefined,
 				},
 			},

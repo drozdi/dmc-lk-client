@@ -5,6 +5,7 @@ import {
 	Legend,
 	Line,
 	LineChart,
+	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
@@ -239,9 +240,15 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		[labels, query]
 	)
 
-	useEffect(() => {
-		console.log(ddata)
-	}, [ddata])
+	const handleMouseDown = (...args) => {
+		//console.log('handleMouseDown', args)
+	}
+	const handleMouseMove = (...args) => {
+		//console.log('handleMouseMove', args)
+	}
+	const handleMouseUp = (...args) => {
+		//console.log('handleMouseUp', args)
+	}
 
 	return (
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
@@ -273,40 +280,49 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 					Сбросить
 				</Btn>
 			</div>
-			<Loading active={isLoading}>
-				{isEmpty ? (
-					<span>Данные ненашлись!</span>
-				) : (
-					<LineChart width={500} height={300} data={ddata}>
-						<CartesianGrid stroke='#aaa' strokeDasharray='5 5' />
-						<XAxis dataKey='name' />
-						<YAxis />
-						<Tooltip />
-						<Legend />
-						<Line
-							name={mapEvent.d}
-							type='monotone'
-							dataKey='d'
-							stroke='#35a2eb'
-							label={mapEvent.d}
-						/>
-						<Line
-							name={mapEvent.i}
-							type='monotone'
-							dataKey='i'
-							stroke='#ff6384'
-							label={mapEvent.i}
-						/>
-						<Line
-							name={mapEvent.v}
-							type='monotone'
-							dataKey='v'
-							stroke='#00ff84'
-							label={mapEvent.v}
-						/>
-					</LineChart>
-				)}
-			</Loading>
+			<div className='w-full aspect-square'>
+				<Loading active={isLoading}>
+					{isEmpty ? (
+						<span>Данные ненашлись!</span>
+					) : (
+						<ResponsiveContainer>
+							<LineChart
+								data={ddata}
+								onMouseDown={handleMouseDown}
+								onMouseMove={handleMouseMove}
+								onMouseUp={handleMouseUp}
+							>
+								<CartesianGrid stroke='#aaa' strokeDasharray='5 5' />
+								<XAxis dataKey='name' />
+								<YAxis />
+								<Tooltip />
+								<Legend />
+								<Line
+									name={mapEvent.d}
+									type='monotone'
+									dataKey='d'
+									stroke='#35a2eb'
+									label={mapEvent.d}
+								/>
+								<Line
+									name={mapEvent.i}
+									type='monotone'
+									dataKey='i'
+									stroke='#ff6384'
+									label={mapEvent.i}
+								/>
+								<Line
+									name={mapEvent.v}
+									type='monotone'
+									dataKey='v'
+									stroke='#00ff84'
+									label={mapEvent.v}
+								/>
+							</LineChart>
+						</ResponsiveContainer>
+					)}
+				</Loading>
+			</div>
 		</div>
 	)
 })

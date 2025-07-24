@@ -1,15 +1,17 @@
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import React, { useEffect, useMemo, useState } from 'react'
-import { Pie } from 'react-chartjs-2'
+import {
+	Cell,
+	Legend,
+	Pie,
+	PieChart,
+	ResponsiveContainer,
+	Tooltip,
+} from 'recharts'
 import { Loading, Select } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
-
-ChartJS.register(ArcElement, Tooltip, Legend)
-const arr = 'v i d'.split(/\s+/)
-const labels = arr.map(key => mapEvent[key])
 
 export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 	//return ''
@@ -67,60 +69,30 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		}
 		return []
 	}, [data])
-	// Извлекаем список дат
 
 	// Извлекаем, групируем данные
-	const datasets = useMemo(() => {
+	const ddata = useMemo(() => {
 		const res = {
-			v: {
-				label: mapEvent.v,
-				data: 0,
-				borderColor: 'rgb(0, 255, 132)',
-				backgroundColor: 'rgba(0, 255, 132, 0.5)',
-				yAxisID: 'y',
-			},
-			i: {
-				label: mapEvent.i,
-				data: 0,
-				borderColor: 'rgb(255, 99, 132)',
-				backgroundColor: 'rgba(255, 99, 132, 0.5)',
-				yAxisID: 'y',
-			},
-			d: {
-				label: mapEvent.d,
-				data: 0,
-				borderColor: 'rgb(53, 162, 235)',
-				backgroundColor: 'rgba(53, 162, 235, 0.5)',
-				yAxisID: 'y',
-			},
-			p: {
-				label: mapEvent.p,
-				data: 0,
-				borderColor: 'rgb(0, 99, 132)',
-				backgroundColor: 'rgba(0, 99, 132, 0.5)',
-				yAxisID: 'y',
-			},
+			v: { value: 0, color: '#00ff84' },
+			d: { value: 0, color: '#35a2eb' },
+			i: { value: 0, color: '#ff6384' },
 		}
-		if (data) {
-			for (const event of arr) {
-				if (cuurent_production > 0) {
-					res[event].data = data[event].production.find(
-						item => item.production_id === cuurent_production
-					).all_label_prod
-				} else {
-					res[event].data = data[event]?.sum_company
-				}
+
+		for (const event in res) {
+			if (cuurent_production > 0) {
+				res[event].value = data[event].production.find(
+					item => item.production_id === cuurent_production
+				).all_label_prod
+			} else {
+				res[event].value = data[event]?.sum_company
 			}
 		}
-		return [
-			{
-				label: '# of Votes',
-				data: arr.map(event => res[event]?.data),
-				backgroundColor: arr.map(event => res[event]?.backgroundColor),
-				borderColor: arr.map(event => res[event]?.borderColor),
-				borderWidth: 1,
-			},
-		]
+
+		return Object.entries(res).map(([name, { value, color }]) => ({
+			name: mapEvent[name],
+			value,
+			color,
+		}))
 	}, [data, cuurent_production])
 
 	useEffect(() => {
@@ -163,9 +135,26 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 					))}
 				</Select>
 			</div>
-			<div className='flex-1'>
+			<div className='w-full aspect-square'>
 				<Loading active={isLoading}>
-					<Pie data={{ labels, datasets }} />
+					<ResponsiveContainer>
+						<PieChart>
+							<Tooltip />
+							<Legend />
+							<Pie
+								data={ddata}
+								cx='50%'
+								cy='50%'
+								label
+								fill='#8884d8'
+								dataKey='value'
+							>
+								{ddata.map((entry, index) => (
+									<Cell key={`cell-${entry.name}`} fill={entry.color} />
+								))}
+							</Pie>
+						</PieChart>
+					</ResponsiveContainer>
 				</Loading>
 			</div>
 		</div>

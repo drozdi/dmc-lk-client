@@ -7,7 +7,6 @@ class FieldsStore {
 	fields: Record<string, any> = {}
 	isLoading = false
 	error = undefined
-	isLoaded = false
 	get list() {
 		return Object.keys(this.fields)
 	}
@@ -16,16 +15,13 @@ class FieldsStore {
 		this.load()
 	}
 	async load() {
-		if (this.isLoaded) {
-			return
-		}
 		this.isLoading = true
 		try {
 			const res = await requestAnalyticsFields()
 			this.fields = res.data.message
-			this.isLoaded = true
 		} catch (error) {
-			this.error = error.message
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

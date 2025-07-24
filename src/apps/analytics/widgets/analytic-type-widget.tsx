@@ -1,21 +1,19 @@
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import {
-	BarElement,
-	CategoryScale,
-	Chart as ChartJS,
-	Legend,
-	LinearScale,
-	Title,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	ResponsiveContainer,
 	Tooltip,
-} from 'chart.js'
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { Bar } from 'react-chartjs-2'
+	XAxis,
+	YAxis,
+} from 'recharts'
 import { Btn, Loading, Select } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
 import { useAnalytics } from '../api/api'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	const { isLoading, request } = useAnalytics()
@@ -93,14 +91,19 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		return [...new Set(res)].filter(label => label.length < 12).sort()
 	}, [data, formatName])
 	// Извлекаем, групируем данные
-	const datasets = useMemo<any[]>(() => {
-		const res: any[] = []
+	const ddata = useMemo(() => {
+		const res: Array<{
+			name: string
+			value: number
+			color: string
+		}> = []
+
 		if (data) {
 			labels.forEach(label => {
 				const newItem = {
-					label: label,
-					data: [0],
-					backgroundColor: randomColor(),
+					name: label,
+					value: 0,
+					color: randomColor(),
 				}
 				data.production.forEach(production => {
 					if (
@@ -111,7 +114,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					}
 					production.data.forEach(item => {
 						if (formatName(item.data) === label) {
-							newItem.data[0] += item.count
+							newItem.value += item.count
 						}
 					})
 				})
@@ -119,8 +122,11 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 				res.push(newItem)
 			})
 		}
-		return res.filter(item => item.data[0] > 1000)
+		return res.filter(item => item.value > 1000)
 	}, [data, labels, cuurent_production])
+	useEffect(() => {
+		console.log(ddata)
+	}, [ddata])
 
 	useEffect(() => {
 		const send = async () => {
@@ -168,9 +174,23 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					Сбросить
 				</Btn>
 			</div>
-			<Loading active={isLoading}>
-				<Bar data={{ labels: [''], datasets }} />
-			</Loading>
+			<div className='w-full aspect-square'>
+				<Loading active={isLoading}>
+					<ResponsiveContainer>
+						<BarChart data={ddata}>
+							<Tooltip />
+							<CartesianGrid strokeDasharray='3 3' />
+							<XAxis dataKey='name' />
+							<YAxis />
+							<Bar dataKey='value' fill='#8884d8' label={{ position: 'top' }}>
+								{ddata.map((entry, index) => (
+									<Cell key={`cell-${index}`} fill={entry.color} />
+								))}
+							</Bar>
+						</BarChart>
+					</ResponsiveContainer>
+				</Loading>
+			</div>
 		</div>
 	)
 })

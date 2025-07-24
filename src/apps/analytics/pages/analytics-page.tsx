@@ -19,6 +19,7 @@ export function AnalyticsPage() {
 			...v,
 			[target.name]: target.value,
 		}))
+		sendFormData()
 	}
 
 	function validate() {
@@ -51,7 +52,7 @@ export function AnalyticsPage() {
 
 	return (
 		<div>
-			<div className='flex gap-0 items-start'>
+			<div className='flex gap-0'>
 				<Input
 					value={query.filterdate_from}
 					label='С'
@@ -123,17 +124,25 @@ export function AnalyticsPage() {
 				</Btn>
 			</div>
 
-			<div className='grid grid-cols-2 gap-6 *:max-h-156'>
+			<div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl'>
 				<Fullscreen>
-					<AnalyticEventWidget filterdate_from='2024-05-16' step='mon' />
+					<AnalyticEventWidget
+						filterdate_from={params.filterdate_from}
+						step='mon'
+					/>
 				</Fullscreen>
 				<Fullscreen>
-					<AnalyticAllWidget filterdate_from='2024-05-16' step='mon' />
+					<AnalyticAllWidget
+						filterdate_from={params.filterdate_from}
+						step='mon'
+					/>
 				</Fullscreen>
 				<Fullscreen>
-					<AnalyticTypeWidget filterdate_from='2024-05-16' step='mon' />
+					<AnalyticTypeWidget
+						filterdate_from={params.filterdate_from}
+						step='mon'
+					/>
 				</Fullscreen>
-				<div></div>
 			</div>
 		</div>
 	)

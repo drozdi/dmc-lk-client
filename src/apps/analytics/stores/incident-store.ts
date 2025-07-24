@@ -59,11 +59,8 @@ class IncidentStore {
 			})
 			this.data = res.message
 		} catch (error) {
-			if (error.response) {
-				this.error = error.response.data.message
-			} else {
-				this.error = error.message
-			}
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

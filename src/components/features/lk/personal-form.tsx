@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { FooterTemplate } from '../../../layout/context/footer'
+import { Template } from '../../../layout/context/template'
 import { Btn, Input, Message } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
@@ -153,7 +153,7 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.phone?.message}
 					{...register('phone')}
 				/>
-				<FooterTemplate>
+				<Template slot='footer'>
 					<div className='flex flex-row flex-wrap gap-3 justify-between'>
 						<div className='flex flex-row gap-3'>
 							<Btn
@@ -192,7 +192,7 @@ export const PersonalForm = observer(() => {
 							Удалить
 						</Btn>
 					</div>
-				</FooterTemplate>
+				</Template>
 			</form>
 		</>
 	)
