@@ -8,10 +8,10 @@ import { useEffect, useMemo, useRef } from 'react'
 import { TbColumnInsertRight, TbColumnRemove } from 'react-icons/tb'
 import {
 	DmcBtn,
+	DmcInput,
 	DmcLoading,
 	DmcMarkupTable,
-	Input,
-	Select,
+	DmcSelect,
 } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
 import { fieldsStore } from '../../stores/fields-store'
@@ -154,7 +154,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		<div className={className}>
 			<div className='flex justify-between items-start'>
 				<div className='flex gap-0 items-start justify-end'>
-					<Input
+					<DmcInput
 						value={date.date_from}
 						label='С'
 						type='date'
@@ -165,7 +165,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						filled
 						underlined
 					/>
-					<Input
+					<DmcInput
 						value={date.date_to}
 						label='по'
 						type='date'
@@ -193,7 +193,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						<TbColumnInsertRight />
 					</button>
 					<div className='absolute right-0 p-3 mt-2 w-72 bg-surface rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-10'>
-						<Select
+						<DmcSelect
 							filled
 							dense
 							underlined
@@ -205,7 +205,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 									{item.label}
 								</option>
 							))}
-						</Select>
+						</DmcSelect>
 					</div>
 				</div>
 			</div>
@@ -256,7 +256,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 													}
 												/>
 											) : (
-												<Input
+												<DmcInput
 													filled
 													dense
 													square
@@ -313,7 +313,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						Следующая
 					</DmcBtn>
 				</div>
-				<Select
+				<DmcSelect
 					dense
 					filled
 					value={limit}
@@ -324,7 +324,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					<option value={50}>50</option>
 					<option value={75}>75</option>
 					<option value={100}>100</option>
-				</Select>
+				</DmcSelect>
 			</div>
 		</div>
 	)

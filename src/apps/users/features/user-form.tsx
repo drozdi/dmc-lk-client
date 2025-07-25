@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
-import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
+import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
 import { getUser, updateUser } from '../api'
 
 const fieldsSchema = yup.object().shape({
@@ -101,7 +101,7 @@ export function UserForm({ id, className }) {
 			<form name='registration' className='space-y-1'>
 				<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
 					<div className='flex-1'>
-						<Input
+						<DmcInput
 							label='Фамилия'
 							placeholder='Фамилия'
 							id='registration_last_name'
@@ -115,7 +115,7 @@ export function UserForm({ id, className }) {
 							errorMessage={errors?.last_name?.message}
 							{...register('last_name')}
 						/>
-						<Input
+						<DmcInput
 							label='Имя'
 							placeholder='Имя'
 							id='registration_first_name'
@@ -129,7 +129,7 @@ export function UserForm({ id, className }) {
 							errorMessage={errors?.first_name?.message}
 							{...register('first_name')}
 						/>
-						<Input
+						<DmcInput
 							label='Отчество'
 							placeholder='Отчество'
 							id='registration_father_name'
@@ -153,7 +153,7 @@ export function UserForm({ id, className }) {
 							Суперпользователь
 							<input {...register('is_superuser')} type='checkbox' />
 						</label>
-						<Input
+						<DmcInput
 							label='Email'
 							placeholder='Email'
 							id='registration_email'
@@ -167,7 +167,7 @@ export function UserForm({ id, className }) {
 							errorMessage={errors?.email?.message}
 							{...register('email')}
 						/>
-						<Input
+						<DmcInput
 							label='Телефон'
 							placeholder='Телефон'
 							id='registration_phone'

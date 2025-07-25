@@ -1,22 +1,20 @@
 import { makeAutoObservable } from 'mobx'
-import { requestAnalyticsFields } from '../api/fields'
+import { requestLabelsAllPrint } from '../api'
 
-class FieldsStore {
-	fields: Record<string, any> = {}
+class PrintStore {
+	prints: string[] = []
 	isLoading = false
-	error = undefined
-	get list() {
-		return Object.keys(this.fields)
-	}
+	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
 		this.load()
 	}
 	async load() {
+		this.error = undefined
 		this.isLoading = true
 		try {
-			const res = await requestAnalyticsFields()
-			this.fields = res.data.message
+			const res = await requestLabelsAllPrint()
+			this.prints = res.data
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
@@ -26,4 +24,4 @@ class FieldsStore {
 	}
 }
 
-export const fieldsStore = new FieldsStore()
+export const printStore = new PrintStore()

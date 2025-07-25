@@ -1,4 +1,5 @@
 import {
+	DmcIcon,
 	DmcItem,
 	DmcItemExpansion,
 	DmcItemLabel,

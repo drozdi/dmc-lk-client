@@ -8,7 +8,7 @@ interface InputLabelProps {
 	className?: string
 }
 
-export const InputLabel = ({
+export const DmcInputLabel = ({
 	className,
 	children,
 	htmlFor,
@@ -24,7 +24,7 @@ export const InputLabel = ({
 			{...props}
 			htmlFor={htmlFor}
 			className={cls(
-				'mdc-input-label',
+				'dmc-input-label',
 				color ? 'text-' + color : '',
 				className
 			)}

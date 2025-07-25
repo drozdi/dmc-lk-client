@@ -9,7 +9,7 @@ import {
 	DmcList,
 	DmcLoading,
 	DmcMessage,
-	Select,
+	DmcSelect,
 } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
 import {
@@ -135,7 +135,7 @@ export function ListQueries({ className }: ListQueriesProps) {
 						Следующая
 					</DmcBtn>
 				</div>
-				<Select
+				<DmcSelect
 					defaultValue={size}
 					filled
 					dense
@@ -147,7 +147,7 @@ export function ListQueries({ className }: ListQueriesProps) {
 					<option value='50'>50</option>
 					<option value='75'>75</option>
 					<option value='100'>100</option>
-				</Select>
+				</DmcSelect>
 			</div>
 		</div>
 	)

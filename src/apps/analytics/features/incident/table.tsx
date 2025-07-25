@@ -8,10 +8,10 @@ import { useMemo, useState } from 'react'
 import { TbColumnRemove, TbXboxX } from 'react-icons/tb'
 import {
 	DmcBtn,
+	DmcInput,
 	DmcLoading,
 	DmcMarkupTable,
-	Input,
-	Select,
+	DmcSelect,
 } from '../../../../shared/ui'
 import { fieldsStore } from '../../stores/fields-store'
 import { incidentStore } from '../../stores/incident-store'
@@ -146,7 +146,7 @@ export const TableIncident = observer(() => {
 					</li>
 				))}
 				<li>
-					<Input
+					<DmcInput
 						filled
 						dense
 						square
@@ -162,7 +162,7 @@ export const TableIncident = observer(() => {
 				<div className='flex-none justify-end group relative overflow-visible'>
 					<button className='border-0 p-3 bg-info'>Групировать</button>
 					<div className='absolute left-0 p-3 mt-2 w-72 bg-surface rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-10'>
-						<Select
+						<DmcSelect
 							filled
 							dense
 							underlined
@@ -173,11 +173,11 @@ export const TableIncident = observer(() => {
 									{item.label}
 								</option>
 							))}
-						</Select>
+						</DmcSelect>
 					</div>
 				</div>
 				<div className='flex gap-0 items-start justify-end'>
-					<Input
+					<DmcInput
 						label='С'
 						type='date'
 						name='date_from'
@@ -188,7 +188,7 @@ export const TableIncident = observer(() => {
 						value={template.filterdate?.[0] || ''}
 						onChange={({ target }) => handleDate(0, target.value)}
 					/>
-					<Input
+					<DmcInput
 						label='по'
 						type='date'
 						name='date_to'
@@ -208,7 +208,7 @@ export const TableIncident = observer(() => {
 				<div className='flex-none justify-end group relative overflow-visible'>
 					<button className='border-0 p-3 bg-info'>Показывать</button>
 					<div className='absolute right-0 p-3 mt-2 w-72 bg-surface rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-10'>
-						<Select
+						<DmcSelect
 							filled
 							dense
 							underlined
@@ -219,7 +219,7 @@ export const TableIncident = observer(() => {
 									{item.label}
 								</option>
 							))}
-						</Select>
+						</DmcSelect>
 					</div>
 				</div>
 			</div>
@@ -271,7 +271,7 @@ export const TableIncident = observer(() => {
 				</DmcMarkupTable>
 			</DmcLoading>
 			<div className='flex gap-3 justify-end mt-3 items-start'>
-				<Select
+				<DmcSelect
 					dense
 					filled
 					value={limit}
@@ -282,7 +282,7 @@ export const TableIncident = observer(() => {
 					<option value={50}>50</option>
 					<option value={75}>75</option>
 					<option value={100}>100</option>
-				</Select>
+				</DmcSelect>
 			</div>
 		</>
 	)

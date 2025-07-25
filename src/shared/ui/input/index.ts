@@ -1,2 +1,2 @@
-export * from './Input'
-export * from './Select'
+export * from './DmcInput'
+export * from './DmcSelect'

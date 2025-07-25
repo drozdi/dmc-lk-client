@@ -62,6 +62,7 @@ export const DmcItemExpansion = memo(
 		return (
 			<>
 				<DmcItem
+					{...props}
 					className={cls({
 						'dmc-item--opened': opened,
 					})}

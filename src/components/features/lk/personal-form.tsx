@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Template } from '../../../layout/context/template'
-import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
+import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -82,7 +82,7 @@ export const PersonalForm = observer(() => {
 				/>
 			)}
 			<form name='registration' className='space-y-1'>
-				<Input
+				<DmcInput
 					label='Имя'
 					placeholder='Имя'
 					id='registration_first_name'
@@ -96,7 +96,7 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.first_name?.message}
 					{...register('first_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Фамилия'
 					placeholder='Фамилия'
 					id='registration_last_name'
@@ -110,7 +110,7 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.last_name?.message}
 					{...register('last_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Отчество'
 					placeholder='Отчество'
 					id='registration_father_name'
@@ -124,7 +124,7 @@ export const PersonalForm = observer(() => {
 					errorMessage={errors?.father_name?.message}
 					{...register('father_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Email'
 					placeholder='Email'
 					id='registration_email'
@@ -139,7 +139,7 @@ export const PersonalForm = observer(() => {
 					{...register('email')}
 				/>
 
-				<Input
+				<DmcInput
 					label='Телефон'
 					placeholder='Телефон'
 					id='registration_phone'

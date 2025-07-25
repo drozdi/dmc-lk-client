@@ -1,4 +1,4 @@
-import { Input } from './Input'
+import { DmcInput } from './DmcInput'
 import './style.css'
 
 interface SelectProps {
@@ -41,4 +41,6 @@ interface SelectProps {
 	[key: string]: any
 }
 
-export const Select = (props: SelectProps) => <Input {...props} as='select' />
+export const DmcSelect = (props: SelectProps) => (
+	<DmcInput {...props} as='select' />
+)

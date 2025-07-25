@@ -1,4 +1,4 @@
-import { Select } from '../../../../../shared/ui'
+import { DmcSelect } from '../../../../../shared/ui'
 export function ActionForm({
 	value = '',
 	onChange,
@@ -7,7 +7,7 @@ export function ActionForm({
 	onChange?: (value: string) => void
 }) {
 	return (
-		<Select
+		<DmcSelect
 			underlined
 			dense
 			filled
@@ -17,6 +17,6 @@ export function ActionForm({
 			<option value='and'>and</option>
 			<option value='or'>or</option>
 			<option value='not'>not</option>
-		</Select>
+		</DmcSelect>
 	)
 }

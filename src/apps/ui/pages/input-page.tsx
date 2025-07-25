@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Input } from '../../../shared/ui'
+import { DmcInput } from '../../../shared/ui'
 import { Form, useProps } from './utils'
 export function InputPage() {
 	const [danses, setDanses] = useState({
@@ -109,7 +109,7 @@ export function InputPage() {
 										</label>
 									</td>
 									<td>
-										<Input
+										<DmcInput
 											color={color !== 'default' ? color : ''}
 											dense={danses[color]}
 											disabled={disables[color]}
@@ -118,7 +118,7 @@ export function InputPage() {
 										/>
 									</td>
 									<td>
-										<Input
+										<DmcInput
 											color={color !== 'default' ? color : ''}
 											dense={danses[color]}
 											disabled={disables[color]}
@@ -128,7 +128,7 @@ export function InputPage() {
 										/>
 									</td>
 									<td>
-										<Input
+										<DmcInput
 											color={color !== 'default' ? color : ''}
 											dense={danses[color]}
 											disabled={disables[color]}
@@ -139,7 +139,7 @@ export function InputPage() {
 									</td>
 
 									<td>
-										<Input
+										<DmcInput
 											color={color !== 'default' ? color : ''}
 											dense={danses[color]}
 											disabled={disables[color]}
@@ -156,7 +156,7 @@ export function InputPage() {
 			{true && (
 				<div className='grid grid-cols-2 *:col-span-1 *:p-4 *:border *:border-separator'>
 					<div>
-						<Input {...inputExample.props} />
+						<DmcInput {...inputExample.props} />
 						<pre className='bg-sky-500/50 text-white p-2 rounded-md mt-4 select-text overflow-auto'>
 							<code className='language-jsx'>{inputExample.code}</code>
 						</pre>

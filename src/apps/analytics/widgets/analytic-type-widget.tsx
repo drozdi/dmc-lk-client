@@ -9,7 +9,7 @@ import {
 	XAxis,
 	YAxis,
 } from 'recharts'
-import { DmcBtn, DmcLoading, Select } from '../../../shared/ui'
+import { DmcBtn, DmcLoading, DmcSelect } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
 import { useAnalytics } from '../api/api'
 
@@ -123,7 +123,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					/>
 					<div className='ml-3'>Группировать по G</div>
 				</label>
-				<Select
+				<DmcSelect
 					label='Площадка'
 					name='production_id'
 					value={String(cuurent_production)}
@@ -144,7 +144,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 							{item.name}
 						</option>
 					))}
-				</Select>
+				</DmcSelect>
 				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
 				</DmcBtn>

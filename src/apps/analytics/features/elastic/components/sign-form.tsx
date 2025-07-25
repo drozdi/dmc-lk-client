@@ -1,4 +1,4 @@
-import { Select } from '../../../../../shared/ui'
+import { DmcSelect } from '../../../../../shared/ui'
 export function SignForm({
 	value = '',
 	onChange,
@@ -7,7 +7,7 @@ export function SignForm({
 	onChange?: (value: string) => void
 }) {
 	return (
-		<Select
+		<DmcSelect
 			underlined
 			dense
 			filled
@@ -21,6 +21,6 @@ export function SignForm({
 			<option value='in'>in</option>
 			<option value='not_in'>not_in</option>
 			<option value='like'>like</option>
-		</Select>
+		</DmcSelect>
 	)
 }

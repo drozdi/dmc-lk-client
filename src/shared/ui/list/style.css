@@ -27,3 +27,7 @@
 		@apply border-t border-color;
 	}
 }
+
+.dmc-list--striped > *:nth-of-type(odd) {
+	@apply bg-gray-100 dark:bg-gray-600;
+}

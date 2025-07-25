@@ -5,7 +5,7 @@ import {
 	DmcLink,
 	DmcLoading,
 	DmcMessage,
-	Select,
+	DmcSelect,
 } from '../../../shared/ui'
 import { listUsers } from '../api'
 
@@ -69,7 +69,7 @@ export function UsersList({ className }: UsersListProps) {
 					</DmcBtn>
 				</div>
 				<div>
-					<Select
+					<DmcSelect
 						dense
 						filled
 						value={size}
@@ -83,7 +83,7 @@ export function UsersList({ className }: UsersListProps) {
 						<option value='50'>50</option>
 						<option value='75'>75</option>
 						<option value='100'>100</option>
-					</Select>
+					</DmcSelect>
 				</div>
 			</div>
 		</div>

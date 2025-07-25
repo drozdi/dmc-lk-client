@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import { render } from '../../internal/render'
 import { cls, debounce } from '../../utils'
-import { InputError } from './InputError'
-import { InputHint } from './InputHint'
-import { InputLabel } from './InputLabel'
-import { InputMessages } from './InputMessages'
+import { DmcInputError } from './DmcInputError'
+import { DmcInputHint } from './DmcInputHint'
+import { DmcInputLabel } from './DmcInputLabel'
+import { DmcInputMessages } from './DmcInputMessages'
 import './style.css'
 
 interface InputProps {
@@ -37,8 +37,7 @@ interface InputProps {
 	ariaValueNow?: number
 	ariaValueMin?: number
 	ariaValueMax?: number
-	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-	onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void
+	onChange?: (e: React.ChangeEvent) => void
 	lazyRules?: boolean
 	hint?: string
 	hideHint?: boolean
@@ -52,7 +51,7 @@ const validation = (value: any, rules: Function[] = []) => {
 	return rules.map(rule => rule(value)).filter(v => v !== true)
 }
 
-export const Input = ({
+export const DmcInput = ({
 	color,
 	dense,
 	square,
@@ -107,27 +106,27 @@ export const Input = ({
 	return (
 		<>
 			<div
-				className={cls('mdc-input', {
-					'mdc-input--dense': dense,
-					'mdc-input--square': square,
-					'mdc-input--filled': filled,
-					'mdc-input--outline': outline,
-					'mdc-input--underlined': underlined,
-					'mdc-input--disabled': disabled,
-					'mdc-input--stack-label': stackLabel,
-					[`mdc-input--${modColor}`]: !!modColor,
+				className={cls('dmc-input', {
+					'dmc-input--dense': dense,
+					'dmc-input--square': square,
+					'dmc-input--filled': filled,
+					'dmc-input--outline': outline,
+					'dmc-input--underlined': underlined,
+					'dmc-input--disabled': disabled,
+					'dmc-input--stack-label': stackLabel,
+					[`dmc-input--${modColor}`]: !!modColor,
 				})}
 			>
-				<div className='mdc-input-container'>
-					<div className='mdc-input-underlay'></div>
-					<div className='mdc-input-outline'>
-						<div className='mdc-input-outline-start'></div>
-						<div className='mdc-input-outline-notch'>
-							<InputLabel required={required}>{label}</InputLabel>
+				<div className='dmc-input-container'>
+					<div className='dmc-input-underlay'></div>
+					<div className='dmc-input-outline'>
+						<div className='dmc-input-outline-start'></div>
+						<div className='dmc-input-outline-notch'>
+							<DmcInputLabel required={required}>{label}</DmcInputLabel>
 						</div>
-						<div className='mdc-input-outline-end'></div>
+						<div className='dmc-input-outline-end'></div>
 					</div>
-					<div className='mdc-input-underlined'></div>
+					<div className='dmc-input-underlined'></div>
 					{render('input', {
 						...props,
 						value: value,
@@ -136,20 +135,20 @@ export const Input = ({
 						type,
 						id: uid,
 						onBlur: handlerBlur,
-						className: 'mdc-input-native',
+						className: 'dmc-input-native',
 					})}
-					<InputLabel required={required} htmlFor={uid}>
+					<DmcInputLabel required={required} htmlFor={uid}>
 						{label}
-					</InputLabel>
+					</DmcInputLabel>
 				</div>
-				<InputMessages
+				<DmcInputMessages
 					hideMessage={hideMessage}
 					hideHint={hideHint}
 					error={isError}
 				>
-					{hint && <InputHint>{hint}</InputHint>}
-					{isError && <InputError>{errorMes}</InputError>}
-				</InputMessages>
+					{hint && <DmcInputHint>{hint}</DmcInputHint>}
+					{isError && <DmcInputError>{errorMes}</DmcInputError>}
+				</DmcInputMessages>
 			</div>
 		</>
 	)

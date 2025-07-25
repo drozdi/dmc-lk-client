@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
+import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const SignInForm = observer(() => {
@@ -28,7 +28,7 @@ export const SignInForm = observer(() => {
 				/>
 			)}
 			<form name='signIn' className='mt-8 space-y-3' onSubmit={handleSubmit}>
-				<Input
+				<DmcInput
 					label='Email'
 					placeholder='Email'
 					id='email-address'
@@ -42,7 +42,7 @@ export const SignInForm = observer(() => {
 					value={email}
 					onChange={e => setEmail(e.target.value)}
 				/>
-				<Input
+				<DmcInput
 					label='Пароль'
 					placeholder='Пароль'
 					id='email-address'

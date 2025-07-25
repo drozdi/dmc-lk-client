@@ -8,7 +8,7 @@ interface InputMessagesProps {
 	hideHint?: boolean
 	error?: boolean
 }
-export function InputMessages({
+export function DmcInputMessages({
 	className,
 	children,
 	hideMessage,
@@ -20,9 +20,9 @@ export function InputMessages({
 		!hideMessage && (
 			<div
 				{...props}
-				className={cls('mdc-input-messages', {
-					'mdc-input-messages--hint': !error && !hideHint,
-					'mdc-input-messages--error': error,
+				className={cls('dmc-input-messages', {
+					'dmc-input-messages--hint': !error && !hideHint,
+					'dmc-input-messages--error': error,
 				})}
 				role='alert'
 				aria-live='polite'

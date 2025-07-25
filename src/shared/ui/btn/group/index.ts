@@ -1,2 +1,2 @@
-export * from './BtnGroup'
-export * from './BtnGroupContext'
+export * from './DmcBtnGroup'
+export * from './DmcBtnGroupContext'

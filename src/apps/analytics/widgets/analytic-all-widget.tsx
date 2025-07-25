@@ -7,7 +7,7 @@ import {
 	ResponsiveContainer,
 	Tooltip,
 } from 'recharts'
-import { DmcLoading, Select } from '../../../shared/ui'
+import { DmcLoading, DmcSelect } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
@@ -97,7 +97,7 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
 			<h2 className='mb-3 flex-none text-left w-full'>Все</h2>
 			<div className='flex flex-none w-full gap-0 items-start justify-end'>
-				<Select
+				<DmcSelect
 					label='Площадка'
 					name='production_id'
 					value={String(cuurent_production)}
@@ -118,7 +118,7 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 							{item.name}
 						</option>
 					))}
-				</Select>
+				</DmcSelect>
 			</div>
 			<div className='w-full aspect-square'>
 				<DmcLoading active={isLoading}>

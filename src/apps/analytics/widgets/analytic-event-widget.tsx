@@ -11,7 +11,7 @@ import {
 	YAxis,
 } from 'recharts'
 
-import { DmcBtn, DmcLoading, Select } from '../../../shared/ui'
+import { DmcBtn, DmcLoading, DmcSelect } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent } from '../entites/constants'
 
@@ -230,7 +230,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
 			<h2 className='mb-3 w-full text-left'>ChartAnalytic</h2>
 			<div className='flex w-full gap-0 justify-end'>
-				<Select
+				<DmcSelect
 					label='Площадка'
 					name='production_id'
 					value={String(cuurent_production)}
@@ -251,7 +251,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 							{item.name}
 						</option>
 					))}
-				</Select>
+				</DmcSelect>
 				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
 					Сбросить
 				</DmcBtn>

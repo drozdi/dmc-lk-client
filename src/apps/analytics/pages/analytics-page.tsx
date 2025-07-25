@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { DmcFullscreen, Input } from '../../../shared/ui'
+import { DmcFullscreen, DmcInput } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
@@ -42,7 +42,7 @@ export function AnalyticsPage() {
 	return (
 		<div>
 			<div className='flex gap-0 justify-center'>
-				<Input
+				<DmcInput
 					value={query.filterdate_from}
 					label='С'
 					type='date'
@@ -54,7 +54,7 @@ export function AnalyticsPage() {
 					underlined
 					errorMessage={errors?.filterdate_from}
 				/>
-				<Input
+				<DmcInput
 					value={query.filterdate_to}
 					label='по'
 					type='date'

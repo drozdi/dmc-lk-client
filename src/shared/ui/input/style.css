@@ -1,35 +1,35 @@
 @reference "@style";
 
-.mdc-input {
+.dmc-input {
 	@apply relative flex border-color rounded flex-wrap;
 	--input-section-width: 2rem;
 	--imput-padding: calc(var(--spacing) * 3);
 	--input-padding-start: var(--imput-padding);
 	--input-padding-end: var(--imput-padding);
 }
-.mdc-input input,
-.mdc-input select {
+.dmc-input input,
+.dmc-input select {
 	@apply leading-[normal];
 }
-.mdc-input,
-.mdc-input * {
+.dmc-input,
+.dmc-input * {
 	@apply transition-all ease-in-out duration-200;
 }
-.mdc-input-before,
-.mdc-input-after {
+.dmc-input-before,
+.dmc-input-after {
 	@apply flex justify-center items-center content-center;
 }
-.mdc-input-before {
+.dmc-input-before {
 	@apply mr-2;
 }
-.mdc-input-after {
+.dmc-input-after {
 	@apply ml-2;
 }
 
-.mdc-input-container {
+.dmc-input-container {
 	@apply flex-1 relative border-inherit rounded-[inherit];
 }
-.mdc-input-section {
+.dmc-input-section {
 	@apply absolute top-0 bottom-0 z-10 flex justify-center items-center content-center;
 	width: var(--input-section-width);
 	&:is(*:first-child) {
@@ -40,225 +40,225 @@
 	}
 }
 
-.mdc-input-native {
+.dmc-input-native {
 	@apply block w-full relative bg-transparent pt-6 pb-2 outline-none border-none placeholder:opacity-0 focus:placeholder:opacity-100 focus:outline-none;
 	padding-inline-start: var(--input-padding-start);
 	padding-inline-end: var(--input-padding-end);
 }
-.mdc-input-container:has(.mdc-input-section:is(*:first-child)) {
+.dmc-input-container:has(.dmc-input-section:is(*:first-child)) {
 	--input-padding-start: var(--input-section-width);
 }
-.mdc-input-container:has(.mdc-input-section:is(*:last-child)) {
+.dmc-input-container:has(.dmc-input-section:is(*:last-child)) {
 	--input-padding-end: var(--input-section-width);
 }
 
-.mdc-input-label {
+.dmc-input-label {
 	@apply pointer-events-none opacity-70 truncate absolute top-1/2 max-w-[calc(100%-2rem)] -translate-y-1/2;
 	left: var(--input-padding-start);
 }
 
-.mdc-input--stack-label .mdc-input-native,
-.mdc-input-container:not(:has(.mdc-input-label)) .mdc-input-native {
+.dmc-input--stack-label .dmc-input-native,
+.dmc-input-container:not(:has(.dmc-input-label)) .dmc-input-native {
 	@apply placeholder:opacity-100;
 }
 
-.mdc-input-container:not(:has(.mdc-input-label)) .mdc-input-native {
+.dmc-input-container:not(:has(.dmc-input-label)) .dmc-input-native {
 	@apply py-4 placeholder:opacity-100;
 }
 
-.mdc-input-container:focus-within .mdc-input-label {
+.dmc-input-container:focus-within .dmc-input-label {
 	@apply opacity-100;
 }
 
-.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label,
-.mdc-input-native:focus ~ .mdc-input-label,
-.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+.dmc-input--stack-label .dmc-input-native ~ .dmc-input-label,
+.dmc-input-native:focus ~ .dmc-input-label,
+.dmc-input-native:not(:placeholder-shown) ~ .dmc-input-label {
 	@apply text-[0.8em] top-4;
 }
 
-.mdc-input-underlay,
-.mdc-input-underlined,
-.mdc-input-outline {
+.dmc-input-underlay,
+.dmc-input-underlined,
+.dmc-input-outline {
 	@apply hidden absolute bottom-0 left-0 w-full rounded-[inherit] border-inherit contain-layout box-border;
 }
 
-.mdc-input-underlay {
+.dmc-input-underlay {
 	@apply h-full;
 	background-color: color-mix(in srgb, currentColor 5%, transparent);
 }
-.mdc-input-underlined {
+.dmc-input-underlined {
 	@apply border-b;
 }
 
-.mdc-input-outline {
+.dmc-input-outline {
 	@apply h-full items-stretch pointer-events-none;
 }
-.mdc-input-outline > * {
+.dmc-input-outline > * {
 	@apply border-y border-inherit;
 }
-.mdc-input-outline > *:first-child {
+.dmc-input-outline > *:first-child {
 	@apply border-l rounded-l-[inherit];
 }
-.mdc-input-outline > *:last-child {
+.dmc-input-outline > *:last-child {
 	@apply border-r rounded-r-[inherit];
 }
-.mdc-input-outline > *:first-child {
+.dmc-input-outline > *:first-child {
 	@apply flex-initial min-w-2;
 }
-.mdc-input-outline > *:not(:first-child, :last-child) {
+.dmc-input-outline > *:not(:first-child, :last-child) {
 	@apply flex-none max-w-[calc(100%-0.5rem)];
 }
-.mdc-input-outline > *:last-child {
+.dmc-input-outline > *:last-child {
 	@apply flex-[1];
 }
-.mdc-input-outline .mdc-input-label {
+.dmc-input-outline .dmc-input-label {
 	@apply invisible text-[0.8em] mx-1 relative;
 }
 
-.mdc-input--dense {
-	.mdc-input-native {
+.dmc-input--dense {
+	.dmc-input-native {
 		@apply pt-3 pb-1;
 	}
-	.mdc-input-native:focus ~ .mdc-input-label,
-	.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+	.dmc-input-native:focus ~ .dmc-input-label,
+	.dmc-input-native:not(:placeholder-shown) ~ .dmc-input-label {
 		@apply text-[0.8em] top-2;
 	}
-	&:not(:has(*.mdc-input-label)) .mdc-input-native {
+	&:not(:has(*.dmc-input-label)) .dmc-input-native {
 		@apply py-2;
 	}
 }
-.mdc-input--dense.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label {
+.dmc-input--dense.dmc-input--stack-label .dmc-input-native ~ .dmc-input-label {
 	@apply text-[0.8em] top-2;
 }
 
-.mdc-input--outline .mdc-input-outline {
+.dmc-input--outline .dmc-input-outline {
 	@apply flex;
 }
-.mdc-input--outline.mdc-input--dense {
-	.mdc-input-native {
+.dmc-input--outline.dmc-input--dense {
+	.dmc-input-native {
 		@apply py-2;
 	}
 
-	&.mdc-input--stack-label .mdc-input-native ~ .mdc-input-label,
-	.mdc-input-native:focus ~ .mdc-input-label,
-	.mdc-input-native:not(:placeholder-shown) ~ .mdc-input-label {
+	&.dmc-input--stack-label .dmc-input-native ~ .dmc-input-label,
+	.dmc-input-native:focus ~ .dmc-input-label,
+	.dmc-input-native:not(:placeholder-shown) ~ .dmc-input-label {
 		@apply top-0;
 		left: var(--imput-padding);
 	}
 
-	&.mdc-input--stack-label,
+	&.dmc-input--stack-label,
 	&:focus-within,
 	&:has(input:not(:placeholder-shown)),
 	&:has(select) {
-		.mdc-input-outline > .mdc-input-outline-notch {
+		.dmc-input-outline > .dmc-input-outline-notch {
 			@apply border-t-transparent;
 		}
 	}
 }
 
-.mdc-input--filled .mdc-input-underlay {
+.dmc-input--filled .dmc-input-underlay {
 	@apply block;
 }
-.mdc-input--underlined .mdc-input-underlined {
+.dmc-input--underlined .dmc-input-underlined {
 	@apply block;
 }
-.mdc-input--underlined:focus-within .mdc-input-underlined {
+.dmc-input--underlined:focus-within .dmc-input-underlined {
 	@apply border-b-3;
 }
-.mdc-input--square {
+.dmc-input--square {
 	@apply rounded-none;
 }
-.mdc-input--disabled {
+.dmc-input--disabled {
 	@apply opacity-50 cursor-not-allowed;
 }
-.mdc-input--disabled .mdc-input-native {
+.dmc-input--disabled .dmc-input-native {
 	@apply pointer-events-none;
 }
 
-.mdc-input-container:focus-within {
+.dmc-input-container:focus-within {
 	@apply border-blue-600;
 }
 
-.mdc-input--primary,
-.mdc-input--secondary,
-.mdc-input--accent,
-.mdc-input--success,
-.mdc-input--warning,
-.mdc-input--info,
-.mdc-input--danger {
-	.mdc-input-underlay {
+.dmc-input--primary,
+.dmc-input--secondary,
+.dmc-input--accent,
+.dmc-input--success,
+.dmc-input--warning,
+.dmc-input--info,
+.dmc-input--danger {
+	.dmc-input-underlay {
 		background-color: color-mix(in srgb, currentColor 30%, transparent);
 	}
-	.mdc-input-outline,
-	.mdc-input-underlined {
+	.dmc-input-outline,
+	.dmc-input-underlined {
 		@apply border-current opacity-60;
 	}
-	&:focus-within .mdc-input-outline,
-	&:focus-within .mdc-input-underlined {
+	&:focus-within .dmc-input-outline,
+	&:focus-within .dmc-input-underlined {
 		@apply opacity-100;
 	}
 }
 
-.mdc-input--primary .mdc-input-outline,
-.mdc-input--primary .mdc-input-underlay,
-.mdc-input--primary .mdc-input-underlined {
+.dmc-input--primary .dmc-input-outline,
+.dmc-input--primary .dmc-input-underlay,
+.dmc-input--primary .dmc-input-underlined {
 	@apply text-primary;
 }
 
-.mdc-input--secondary .mdc-input-outline,
-.mdc-input--secondary .mdc-input-underlay,
-.mdc-input--secondary .mdc-input-underlined {
+.dmc-input--secondary .dmc-input-outline,
+.dmc-input--secondary .dmc-input-underlay,
+.dmc-input--secondary .dmc-input-underlined {
 	@apply text-secondary;
 }
-.mdc-input--accent .mdc-input-outline,
-.mdc-input--accent .mdc-input-underlay,
-.mdc-input--accent .mdc-input-underlined {
+.dmc-input--accent .dmc-input-outline,
+.dmc-input--accent .dmc-input-underlay,
+.dmc-input--accent .dmc-input-underlined {
 	@apply text-accent;
 }
 
-.mdc-input--success .mdc-input-outline,
-.mdc-input--success .mdc-input-underlay,
-.mdc-input--success .mdc-input-underlined {
+.dmc-input--success .dmc-input-outline,
+.dmc-input--success .dmc-input-underlay,
+.dmc-input--success .dmc-input-underlined {
 	@apply text-success;
 }
 
-.mdc-input--warning .mdc-input-outline,
-.mdc-input--warning .mdc-input-underlay,
-.mdc-input--warning .mdc-input-underlined {
+.dmc-input--warning .dmc-input-outline,
+.dmc-input--warning .dmc-input-underlay,
+.dmc-input--warning .dmc-input-underlined {
 	@apply text-warning;
 }
 
-.mdc-input--info .mdc-input-outline,
-.mdc-input--info .mdc-input-underlay,
-.mdc-input--info .mdc-input-underlined {
+.dmc-input--info .dmc-input-outline,
+.dmc-input--info .dmc-input-underlay,
+.dmc-input--info .dmc-input-underlined {
 	@apply text-info;
 }
 
-.mdc-input--danger .mdc-input-outline,
-.mdc-input--danger .mdc-input-underlay,
-.mdc-input--danger .mdc-input-underlined {
+.dmc-input--danger .dmc-input-outline,
+.dmc-input--danger .dmc-input-underlay,
+.dmc-input--danger .dmc-input-underlined {
 	@apply text-danger;
 }
 
-.mdc-input-messages {
+.dmc-input-messages {
 	@apply flex-auto w-full min-h-3 relative text-xs/none px-3 overflow-hidden;
 }
-.mdc-input-message {
+.dmc-input-message {
 	@apply transition-all relative -top-full -translate-y-full;
 }
-.mdc-input-message--hint {
+.dmc-input-message--hint {
 }
-.mdc-input-message--error {
+.dmc-input-message--error {
 	@apply text-warning absolute w-[calc(100%-1rem)];
 }
-.mdc-input-messages--error .mdc-input-message--hint {
+.dmc-input-messages--error .dmc-input-message--hint {
 }
-.mdc-input-messages--error .mdc-input-message--error {
+.dmc-input-messages--error .dmc-input-message--error {
 	@apply top-0 translate-y-0;
 }
-.mdc-input:focus-within
-	.mdc-input-messages:not(.mdc-input-messages--error)
-	.mdc-input-message--hint,
-.mdc-input-messages--hint .mdc-input-message--hint {
+.dmc-input:focus-within
+	.dmc-input-messages:not(.dmc-input-messages--error)
+	.dmc-input-message--hint,
+.dmc-input-messages--hint .dmc-input-message--hint {
 	@apply top-0 translate-y-0;
 }

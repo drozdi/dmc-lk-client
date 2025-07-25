@@ -1,18 +1,18 @@
 import { v4 as uuid } from 'uuid'
 import { cls } from '../../utils'
 import './style.css'
-interface InputHintProps {
+interface InputErrorProps {
 	children?: React.ReactNode
 	id?: string
 	className?: string
 }
 
-export const InputHint = ({
+export const DmcInputError = ({
 	id,
 	className,
 	children,
 	...props
-}: InputHintProps) => {
+}: InputErrorProps) => {
 	if (!children) {
 		return null
 	}
@@ -21,7 +21,7 @@ export const InputHint = ({
 		<p
 			id={uid}
 			{...props}
-			className={cls('mdc-input-message mdc-input-message--error', className)}
+			className={cls('dmc-input-message dmc-input-message--error', className)}
 		>
 			{children}
 		</p>

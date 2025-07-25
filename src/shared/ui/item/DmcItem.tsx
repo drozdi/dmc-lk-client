@@ -10,7 +10,7 @@ const disDisabledTag = ['div', 'span', 'a', 'label']
 
 interface ItemProps {
 	as?: 'li'
-	children: React.ReactNode
+	children?: React.ReactNode
 	className?: string
 	role?: string
 	tabIndex?: number

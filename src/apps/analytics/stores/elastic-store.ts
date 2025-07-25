@@ -6,6 +6,7 @@ import {
 } from '../api/queries'
 
 const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
+
 class ElasticStore {
 	isLoading = false
 	error = undefined

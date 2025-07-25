@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { DmcBtn, DmcMessage, Input } from '../../../shared/ui'
+import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -90,7 +90,7 @@ export const SignUpForm = observer(() => {
 				className='space-y-1'
 				onSubmit={handleSubmit(sendFormData)}
 			>
-				<Input
+				<DmcInput
 					label='Имя'
 					placeholder='Имя'
 					id='registration_first_name'
@@ -104,7 +104,7 @@ export const SignUpForm = observer(() => {
 					errorMessage={errors?.first_name?.message}
 					{...register('first_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Фамилия'
 					placeholder='Фамилия'
 					id='registration_last_name'
@@ -118,7 +118,7 @@ export const SignUpForm = observer(() => {
 					errorMessage={errors?.last_name?.message}
 					{...register('last_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Отчество'
 					placeholder='Отчество'
 					id='registration_father_name'
@@ -132,7 +132,7 @@ export const SignUpForm = observer(() => {
 					errorMessage={errors?.father_name?.message}
 					{...register('father_name')}
 				/>
-				<Input
+				<DmcInput
 					label='Email'
 					placeholder='Email'
 					id='registration_email'
@@ -147,7 +147,7 @@ export const SignUpForm = observer(() => {
 					{...register('email')}
 				/>
 
-				<Input
+				<DmcInput
 					label='Телефон'
 					placeholder='Телефон'
 					id='registration_phone'
@@ -162,7 +162,7 @@ export const SignUpForm = observer(() => {
 					{...register('phone')}
 				/>
 
-				<Input
+				<DmcInput
 					label='Пароль'
 					placeholder='Придумай пароль'
 					id='registration_password'
@@ -176,7 +176,7 @@ export const SignUpForm = observer(() => {
 					errorMessage={errors?.password?.message}
 					{...register('password')}
 				/>
-				<Input
+				<DmcInput
 					label='Повторноый пароль'
 					placeholder='Повтори пароль'
 					id='registration_re_password'

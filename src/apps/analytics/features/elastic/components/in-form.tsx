@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TbXboxX } from 'react-icons/tb'
-import { Input } from '../../../../../shared/ui'
+import { DmcInput } from '../../../../../shared/ui'
 
 export function InForm({
 	values,
@@ -32,7 +32,7 @@ export function InForm({
 				</li>
 			))}
 			<li>
-				<Input
+				<DmcInput
 					filled
 					dense
 					square

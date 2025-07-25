@@ -29,6 +29,10 @@ const navItems: NavItem[] = [
 		path: '/shop',
 	},
 	{
+		name: 'Labels',
+		path: '/labels',
+	},
+	{
 		name: 'Пользователи',
 		path: '/users',
 	},

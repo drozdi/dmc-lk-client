@@ -11,9 +11,9 @@ interface IBtnGroupContext {
 	isActive: (value: any) => boolean
 }
 
-const BtnGroupContext = createContext<IBtnGroupContext | null>(null)
+const DmcBtnGroupContext = createContext<IBtnGroupContext | null>(null)
 
-export const BtnGroupProvider = ({
+export const DmcBtnGroupProvider = ({
 	value,
 	children,
 }: {
@@ -21,16 +21,16 @@ export const BtnGroupProvider = ({
 	children: React.ReactNode
 }) => {
 	return (
-		<BtnGroupContext.Provider value={value}>
+		<DmcBtnGroupContext.Provider value={value}>
 			{children}
-		</BtnGroupContext.Provider>
+		</DmcBtnGroupContext.Provider>
 	)
 }
 
-export const useBtnGroupContext = (): IBtnGroupContext => {
-	const context = useContext(BtnGroupContext)
+export const useDmcBtnGroupContext = (): IBtnGroupContext => {
+	const context = useContext(DmcBtnGroupContext)
 	if (context === null) {
-		throw new Error('Popover component was not found in the tree')
+		throw new Error('BtnGroup component was not found in the tree')
 	}
 	return context
 }
