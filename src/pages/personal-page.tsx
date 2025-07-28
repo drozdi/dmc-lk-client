@@ -1,4 +1,4 @@
-import { PersonalForm } from '../../features/lk/Personal-form'
+import { PersonalForm } from '../components/features/lk/Personal-form'
 
 export function PersonalPage() {
 	return (

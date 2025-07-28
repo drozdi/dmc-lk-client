@@ -7,13 +7,14 @@ class FormatStore {
 	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
+		//this.load()
 	}
 	async load() {
 		this.error = undefined
 		this.isLoading = true
 		try {
 			const res = await requestLabelsAllFormat()
+			console.log('format', res.data)
 			this.formats = res.data
 		} catch (error) {
 			this.error =

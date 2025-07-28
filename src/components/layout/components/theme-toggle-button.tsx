@@ -1,5 +1,5 @@
 import { TbMoon, TbSun } from 'react-icons/tb'
-import { useTheme } from '../context/theme'
+import { useTheme } from '../../context/theme'
 
 export const ThemeToggleButton: React.FC = () => {
 	const { toggleTheme, theme } = useTheme()

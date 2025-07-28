@@ -1,9 +1,8 @@
 import { Outlet } from 'react-router-dom'
-import { ShopCart } from '../apps/shop/features/shop-cart'
+import { useSidebar } from '../context'
 import { Footer } from './components/footer'
 import Header from './components/header'
 import Sidebar from './components/sidebar'
-import { useSidebar } from './context'
 
 export function MainLayout() {
 	const { isExpanded, isHovered, isMobileOpen } = useSidebar()
@@ -22,7 +21,6 @@ export function MainLayout() {
 					<div className='p-3 mx-auto max-w-screen-2xl md:p-6'>
 						<Outlet />
 					</div>
-					<ShopCart />
 				</div>
 				<Footer />
 			</div>

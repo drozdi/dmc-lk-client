@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Template } from '../../../layout/context'
+import { Template } from '../../../components/context'
 import { DmcBtn } from '../../../shared/ui'
 import { ListQueries } from '../features/queries/list-queries'
 export function AnalyticsQueriesPage() {

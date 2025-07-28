@@ -1,4 +1,4 @@
-import { useSortable } from '@dnd-kit/react/sortable'
+import { useDraggable } from '@dnd-kit/react'
 import { DmcItem, DmcItemLabel, DmcItemSection } from '../../../../shared/ui'
 
 interface ItemProps {
@@ -9,7 +9,7 @@ interface ItemProps {
 }
 
 export function Item({ id, index, column, data }: ItemProps) {
-	const { ref, isDragging } = useSortable({
+	const { ref, isDragging } = useDraggable({
 		id,
 		index,
 		type: 'item',

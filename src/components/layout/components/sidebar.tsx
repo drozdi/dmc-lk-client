@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
 import { useLocation } from 'react-router'
 import { Link as LinkRouter } from 'react-router-dom'
-import { Logo } from '../../components/features/logo/Logo'
-import { DmcLink } from '../../shared/ui'
-import { useSidebar } from '../context/sidebar'
+import { DmcLink } from '../../../shared/ui'
+import { useSidebar } from '../../context/sidebar'
+import { Logo } from '../../features/logo/Logo'
 type NavItem = {
 	name: string
 	icon?: React.ReactNode

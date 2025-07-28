@@ -1,10 +1,18 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
-import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
-import { getUser, updateUser } from '../api'
+import { Template } from '../../../components/context'
+import {
+	DmcBtn,
+	DmcInput,
+	DmcLoading,
+	DmcMessage,
+	DmcTabs,
+} from '../../../shared/ui'
+import { requestGetUser, requestUpdateUser } from '../api'
+import { usersStores } from '../stores/users-stores'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
@@ -28,15 +36,17 @@ interface UserFormProps {
 	className?: string
 }
 
-export function UserForm({ id, className }) {
-	const [isLoading, setIsLoading] = useState<boolean>(false)
+export function UserForm({ id, className }: UserFormProps) {
+	const [_isLoading, setIsLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string | null>(null)
+	const { products } = usersStores
 
 	const {
 		register,
 		handleSubmit,
 		reset,
-		formState: { errors, isValid },
+		watch,
+		formState: { errors, isValid, isLoading: isLoadingForm },
 	} = useForm<IUsersUser>({
 		mode: 'onChange',
 		defaultValues: {
@@ -47,169 +57,213 @@ export function UserForm({ id, className }) {
 			phone: '',
 			is_active: true,
 			is_superuser: false,
+			id_production: [],
 		},
 		resolver: yupResolver(fieldsSchema),
 	})
+
+	const isLoading = useMemo(
+		() => isLoadingForm || _isLoading,
+		[isLoadingForm, _isLoading]
+	)
 
 	const navigate = useNavigate()
 
 	async function handleSave(formData: IUsersUser) {
 		try {
-			await updateUser(id, formData)
+			await requestUpdateUser(id, formData)
 		} catch (e) {
 			setError(e.message)
 		}
 	}
 	async function handleSaveNavigate(formData: IUsersUser) {
 		try {
-			await updateUser(id, formData)
+			await requestUpdateUser(id, formData)
 			navigate('/users')
 		} catch (e) {
 			setError(e.message)
 		}
 	}
 
-	const fetchUser = async () => {
-		if (!id) {
-			return
-		}
-		setIsLoading(true)
-		try {
-			const user = await getUser(id)
-			reset(user)
-		} catch (e) {
-		} finally {
-			setIsLoading(false)
-		}
-	}
+	const selectProductions = watch('id_production')
 
 	useEffect(() => {
+		const fetchUser = async () => {
+			if (!id) {
+				return
+			}
+			setIsLoading(true)
+			setError('')
+			try {
+				const user = await requestGetUser(id)
+				user.id_production = (user.id_production || []).map(item =>
+					String(item)
+				)
+				reset(user)
+			} catch (e) {
+				setError('Пользователь не найден')
+			} finally {
+				setIsLoading(false)
+			}
+		}
 		fetchUser()
 	}, [id])
 
 	return (
 		<div className={className}>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<form name='registration' className='space-y-1'>
-				<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
-					<div className='flex-1'>
-						<DmcInput
-							label='Фамилия'
-							placeholder='Фамилия'
-							id='registration_last_name'
-							type='text'
-							dense
-							square
-							required
-							stackLabel
-							filled
-							underlined
-							errorMessage={errors?.last_name?.message}
-							{...register('last_name')}
-						/>
-						<DmcInput
-							label='Имя'
-							placeholder='Имя'
-							id='registration_first_name'
-							type='text'
-							dense
-							square
-							required
-							stackLabel
-							filled
-							underlined
-							errorMessage={errors?.first_name?.message}
-							{...register('first_name')}
-						/>
-						<DmcInput
-							label='Отчество'
-							placeholder='Отчество'
-							id='registration_father_name'
-							type='text'
-							dense
-							square
-							required
-							stackLabel
-							filled
-							underlined
-							errorMessage={errors?.father_name?.message}
-							{...register('father_name')}
-						/>
-					</div>
-					<div className='flex-1'>
-						<label className='flex justify-between mb-3'>
-							Активный
-							<input {...register('is_active')} type='checkbox' />
-						</label>
-						<label className='flex justify-between mb-3'>
-							Суперпользователь
-							<input {...register('is_superuser')} type='checkbox' />
-						</label>
-						<DmcInput
-							label='Email'
-							placeholder='Email'
-							id='registration_email'
-							type='email'
-							dense
-							square
-							required
-							stackLabel
-							filled
-							underlined
-							errorMessage={errors?.email?.message}
-							{...register('email')}
-						/>
-						<DmcInput
-							label='Телефон'
-							placeholder='Телефон'
-							id='registration_phone'
-							type='phone'
-							dense
-							square
-							required
-							stackLabel
-							filled
-							underlined
-							errorMessage={errors?.phone?.message}
-							{...register('phone')}
-						/>
-					</div>
-				</div>
+			<DmcLoading active={isLoading} keepMounted>
+				{error && (
+					<DmcMessage
+						className='mb-8'
+						color='warning'
+						square
+						underlined='left'
+						label={error}
+					/>
+				)}
+				<form name='registration' className='space-y-1'>
+					<DmcTabs>
+						<DmcTabs.List grow>
+							<DmcTabs.Tab value='tab-general'>Общие</DmcTabs.Tab>
+							<DmcTabs.Tab value='tab-product'>Площадки</DmcTabs.Tab>
+						</DmcTabs.List>
+						<DmcTabs.Panels className='pb-3'>
+							<DmcTabs.Panel value='tab-general'>
+								<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
+									<div className='flex-1'>
+										<DmcInput
+											label='Фамилия'
+											placeholder='Фамилия'
+											id='registration_last_name'
+											type='text'
+											dense
+											square
+											required
+											stackLabel
+											filled
+											underlined
+											errorMessage={errors?.last_name?.message}
+											{...register('last_name')}
+										/>
+										<DmcInput
+											label='Имя'
+											placeholder='Имя'
+											id='registration_first_name'
+											type='text'
+											dense
+											square
+											required
+											stackLabel
+											filled
+											underlined
+											errorMessage={errors?.first_name?.message}
+											{...register('first_name')}
+										/>
+										<DmcInput
+											label='Отчество'
+											placeholder='Отчество'
+											id='registration_father_name'
+											type='text'
+											dense
+											square
+											required
+											stackLabel
+											filled
+											underlined
+											errorMessage={errors?.father_name?.message}
+											{...register('father_name')}
+										/>
+									</div>
+									<div className='flex-1'>
+										<label className='flex justify-between mb-3'>
+											Активный
+											<input {...register('is_active')} type='checkbox' />
+										</label>
+										<label className='flex justify-between mb-3'>
+											Суперпользователь
+											<input {...register('is_superuser')} type='checkbox' />
+										</label>
+										<DmcInput
+											label='Email'
+											placeholder='Email'
+											id='registration_email'
+											type='email'
+											dense
+											square
+											required
+											stackLabel
+											filled
+											underlined
+											errorMessage={errors?.email?.message}
+											{...register('email')}
+										/>
+										<DmcInput
+											label='Телефон'
+											placeholder='Телефон'
+											id='registration_phone'
+											type='phone'
+											dense
+											square
+											required
+											stackLabel
+											filled
+											underlined
+											errorMessage={errors?.phone?.message}
+											{...register('phone')}
+										/>
+									</div>
+								</div>
+							</DmcTabs.Panel>
+							<DmcTabs.Panel value='tab-product'>
+								{products.map(product => (
+									<label
+										key={product.production_id}
+										className='block flex justify-between mt-3 border-b border-color'
+									>
+										<span>{product.name_production}</span>
+										<input
+											type='checkbox'
+											value={`${product.production_id}`}
+											{...register('id_production')}
+											checked={selectProductions.includes(
+												`${product.production_id}`
+											)}
+										/>
+									</label>
+								))}
+							</DmcTabs.Panel>
+						</DmcTabs.Panels>
+					</DmcTabs>
 
-				<div className='flex flex-row gap-3 justify-end'>
-					<DmcBtn
-						type='button'
-						color='success'
-						size='sm'
-						onClick={handleSubmit(handleSaveNavigate)}
-						loading={isLoading}
-						disabled={!isValid}
-						label='Сохранить'
-					>
-						Сохранить
-					</DmcBtn>
+					<Template slot='footer'>
+						<div className='flex gap-3 justify-start items-start'>
+							<DmcBtn
+								type='button'
+								color='success'
+								size='sm'
+								onClick={handleSubmit(handleSaveNavigate)}
+								loading={isLoading}
+								disabled={!isValid}
+								label='Сохранить'
+							>
+								Сохранить
+							</DmcBtn>
 
-					<DmcBtn
-						type='button'
-						color='primary'
-						size='sm'
-						onClick={handleSubmit(handleSave)}
-						loading={isLoading}
-						disabled={!isValid}
-						label='Применить'
-					>
-						Применить
-					</DmcBtn>
-				</div>
-			</form>
+							<DmcBtn
+								type='button'
+								color='primary'
+								size='sm'
+								onClick={handleSubmit(handleSave)}
+								loading={isLoading}
+								disabled={!isValid}
+								label='Применить'
+							>
+								Применить
+							</DmcBtn>
+						</div>
+					</Template>
+				</form>
+			</DmcLoading>
 		</div>
 	)
 }

@@ -7,7 +7,7 @@ import {
 	DmcMessage,
 	DmcSelect,
 } from '../../../shared/ui'
-import { listUsers } from '../api'
+import { requestGetUsers } from '../api'
 
 interface UsersListProps {
 	className?: string
@@ -22,8 +22,7 @@ export function UsersList({ className }: UsersListProps) {
 	const fetchUsers = async () => {
 		setIsLoading(true)
 		try {
-			const res = await listUsers({ size, number })
-			console.log(res)
+			const res = await requestGetUsers({ size, number })
 			setList(res.user.request)
 		} catch (error) {
 			setError(error.message || 'Ошибка при загрузке пользователей')
@@ -38,7 +37,7 @@ export function UsersList({ className }: UsersListProps) {
 
 	return (
 		<div className={className}>
-			<DmcLoading active={isLoading}>
+			<DmcLoading active={isLoading} keepMounted>
 				{error && (
 					<DmcMessage
 						className='mb-8'

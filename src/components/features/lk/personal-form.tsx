@@ -4,8 +4,8 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { Template } from '../../../layout/context/template'
-import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
+import { Template } from '../../../components/context'
+import { DmcBtn, DmcInput, DmcLoading, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -81,119 +81,122 @@ export const PersonalForm = observer(() => {
 					label={error}
 				/>
 			)}
-			<form name='registration' className='space-y-1'>
-				<DmcInput
-					label='Имя'
-					placeholder='Имя'
-					id='registration_first_name'
-					type='text'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.first_name?.message}
-					{...register('first_name')}
-				/>
-				<DmcInput
-					label='Фамилия'
-					placeholder='Фамилия'
-					id='registration_last_name'
-					type='text'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.last_name?.message}
-					{...register('last_name')}
-				/>
-				<DmcInput
-					label='Отчество'
-					placeholder='Отчество'
-					id='registration_father_name'
-					type='text'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.father_name?.message}
-					{...register('father_name')}
-				/>
-				<DmcInput
-					label='Email'
-					placeholder='Email'
-					id='registration_email'
-					type='email'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.email?.message}
-					{...register('email')}
-				/>
+			<DmcLoading active={isLoading} keepMounted>
+				<form name='registration' className='space-y-1'>
+					<DmcInput
+						label='Имя'
+						placeholder='Имя'
+						id='registration_first_name'
+						type='text'
+						dense
+						square
+						required
+						stackLabel
+						filled
+						underlined
+						errorMessage={errors?.first_name?.message}
+						{...register('first_name')}
+					/>
+					<DmcInput
+						label='Фамилия'
+						placeholder='Фамилия'
+						id='registration_last_name'
+						type='text'
+						dense
+						square
+						required
+						stackLabel
+						filled
+						underlined
+						errorMessage={errors?.last_name?.message}
+						{...register('last_name')}
+					/>
+					<DmcInput
+						label='Отчество'
+						placeholder='Отчество'
+						id='registration_father_name'
+						type='text'
+						dense
+						square
+						required
+						stackLabel
+						filled
+						underlined
+						errorMessage={errors?.father_name?.message}
+						{...register('father_name')}
+					/>
+					<DmcInput
+						label='Email'
+						placeholder='Email'
+						id='registration_email'
+						type='email'
+						dense
+						square
+						required
+						stackLabel
+						filled
+						underlined
+						errorMessage={errors?.email?.message}
+						{...register('email')}
+					/>
 
-				<DmcInput
-					label='Телефон'
-					placeholder='Телефон'
-					id='registration_phone'
-					type='phone'
-					dense
-					square
-					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.phone?.message}
-					{...register('phone')}
-				/>
-				<Template slot='footer'>
-					<div className='flex flex-row flex-wrap gap-3 justify-between'>
-						<div className='flex flex-row gap-3'>
+					<DmcInput
+						label='Телефон'
+						placeholder='Телефон'
+						id='registration_phone'
+						type='phone'
+						dense
+						square
+						required
+						stackLabel
+						filled
+						underlined
+						errorMessage={errors?.phone?.message}
+						{...register('phone')}
+					/>
+
+					<Template slot='footer'>
+						<div className='flex flex-row flex-wrap gap-3 justify-between'>
+							<div className='flex flex-row gap-3'>
+								<DmcBtn
+									type='button'
+									color='success'
+									size='sm'
+									onClick={handleSubmit(handleSaveNavigate)}
+									loading={isLoading}
+									disabled={!isValid}
+									label='Сохранить'
+								>
+									Сохранить
+								</DmcBtn>
+
+								<DmcBtn
+									type='button'
+									color='primary'
+									size='sm'
+									onClick={handleSubmit(handleSave)}
+									loading={isLoading}
+									disabled={!isValid}
+									label='Применить'
+								>
+									Применить
+								</DmcBtn>
+							</div>
 							<DmcBtn
 								type='button'
-								color='success'
+								color='danger'
 								size='sm'
-								onClick={handleSubmit(handleSaveNavigate)}
+								onClick={handleRemove}
 								loading={isLoading}
 								disabled={!isValid}
-								label='Сохранить'
+								label='Удалить'
 							>
-								Сохранить
-							</DmcBtn>
-
-							<DmcBtn
-								type='button'
-								color='primary'
-								size='sm'
-								onClick={handleSubmit(handleSave)}
-								loading={isLoading}
-								disabled={!isValid}
-								label='Применить'
-							>
-								Применить
+								Удалить
 							</DmcBtn>
 						</div>
-						<DmcBtn
-							type='button'
-							color='danger'
-							size='sm'
-							onClick={handleRemove}
-							loading={isLoading}
-							disabled={!isValid}
-							label='Удалить'
-						>
-							Удалить
-						</DmcBtn>
-					</div>
-				</Template>
-			</form>
+					</Template>
+				</form>
+			</DmcLoading>
 		</>
 	)
 })

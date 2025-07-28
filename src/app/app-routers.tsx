@@ -1,13 +1,13 @@
 import { Navigate, useRoutes } from 'react-router'
-import { AuthLayout } from '../layout/AuthLayout'
-import { MainLayout } from '../layout/MainLayout'
-
-import { SignInPage } from '../components/pages/auth/sign-in'
-import { SignUpPage } from '../components/pages/auth/sign-up'
-import { VerificatinPage } from '../components/pages/auth/verification'
-import { PersonalPage } from '../components/pages/lk/personal-page'
+import { AuthLayout } from '../components/layout/AuthLayout'
+import { MainLayout } from '../components/layout/MainLayout'
 
 import { ProtectedRoute } from '../components/features/protected-router/protected-route'
+
+import { PersonalPage } from '../pages/personal-page'
+import { SignInPage } from '../pages/sign-in-page'
+import { SignUpPage } from '../pages/sign-up-page'
+import { VerificatinPage } from '../pages/verification-page'
 
 import analyticsRouers from '../apps/analytics/routers'
 import labelsRouers from '../apps/labels/routers'

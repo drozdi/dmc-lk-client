@@ -3,7 +3,7 @@ import {
 	SidebarProvider,
 	TemplateProvider,
 	ThemeProvider,
-} from '../layout/context'
+} from '../components/context'
 import { RenderProvider } from '../shared/internal/render'
 
 interface AppProviderProps {

@@ -7,13 +7,14 @@ class PrintStore {
 	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
+		//this.load()
 	}
 	async load() {
 		this.error = undefined
 		this.isLoading = true
 		try {
 			const res = await requestLabelsAllPrint()
+			console.log('print', res.data)
 			this.prints = res.data
 		} catch (error) {
 			this.error =

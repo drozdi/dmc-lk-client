@@ -5,6 +5,7 @@ interface IUsersUser {
 	email: string
 	phone: string
 	is_superuser: boolean
+	id_production?: number[] | string[]
 	is_active: boolean
 	id: number
 }

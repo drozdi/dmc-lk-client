@@ -1,4 +1,4 @@
-import { VerificationForm } from '../../features/auth/verification-form'
+import { VerificationForm } from '../components/features/auth/verification-form'
 export function VerificatinPage() {
 	return (
 		<>

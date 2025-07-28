@@ -1,4 +1,3 @@
-import { move } from '@dnd-kit/helpers'
 import { DragDropProvider } from '@dnd-kit/react'
 import { observer } from 'mobx-react-lite'
 
@@ -27,21 +26,21 @@ export const LabelsPage = observer(() => {
 			}>
 		>
 	>(() => {
-		const con = Object.fromEntries(formats.map(item => [item, []]))
-		con['.default'] = prints.map(item => ({
+		const con = Object.fromEntries((formats || []).map(item => [item, []]))
+		con['.default'] = (prints || []).map(item => ({
 			print: item,
 			id: item,
 			format: '.default',
 			_id: undefined,
 		}))
-
 		formatPrints.forEach(item => {
-			con[item.format].push({
-				format: item.format,
-				print: item.print,
-				id: item.print,
-				_id: item.id,
-			})
+			item.format &&
+				con[item.format].push({
+					format: item.format,
+					print: item.print,
+					id: item.print,
+					_id: item.id,
+				})
 			const i = con['.default'].findIndex(e => e === item.print)
 			if (i !== -1) {
 				con['.default'].splice(i, 1)
@@ -71,17 +70,45 @@ export const LabelsPage = observer(() => {
 	}
 	const handleDragEnd = event => {
 		const { source, target } = event.operation
-		//console.log(event)
-		const sourceIndex2 = containers.findIndex(item =>
-			findIndex(item, source.id)
-		)
-		const targetIndex2 = containers.findIndex(item =>
-			findIndex(item, target.id)
+
+		let sourceIndex = -1
+		let sourceParent
+		let targetIndex = -1
+		let targetParent
+
+		for (const [id, children] of Object.entries(containers)) {
+			if (sourceIndex === -1) {
+				sourceIndex = children.findIndex(item => findIndex(item, source.id))
+				if (sourceIndex !== -1) {
+					sourceParent = id
+				}
+			}
+			if (targetIndex === -1) {
+				targetIndex = children.findIndex(item => findIndex(item, target.id))
+				if (targetIndex !== -1) {
+					targetParent = id
+				}
+			}
+			if (sourceIndex !== -1 && targetIndex !== -1) {
+				break
+			}
+		}
+		if (sourceIndex === -1 || targetIndex === -1) {
+			return
+		}
+
+		console.log(
+			sourceIndex,
+			targetIndex,
+			sourceParent,
+			targetParent,
+			source.id,
+			target.id
 		)
 
-		console.log(sourceIndex2, targetIndex2, source.id, target.id)
+		console.log(containers[sourceParent][sourceIndex])
 
-		update(move(containers, event))
+		//update(move(containers, event))
 		if (event.canceled || source.type !== 'column') return
 	}
 

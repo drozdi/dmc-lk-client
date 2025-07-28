@@ -23,7 +23,12 @@ api.interceptors.response.use(
 	response => response,
 	async (error: AxiosError) => {
 		const originalRequest = error.config
-		if (error.response?.status === 401) {
+
+		localStorage.removeItem(ACCESS_TOKEN_KEY)
+		localStorage.removeItem(REFRESH_TOKEN_KEY)
+
+		if (error.response?.status === 401 && !originalRequest._retry) {
+			originalRequest._retry = true
 			try {
 				// Пытаемся обновить токен
 				const response = await api.post('/registration/refresh', {
@@ -35,13 +40,14 @@ api.interceptors.response.use(
 				localStorage.setItem(ACCESS_TOKEN_KEY, access)
 				localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
 
-				return await api.request(originalRequest)
+				originalRequest.headers.Authorization = `Bearer ${access}`
+				return await api(originalRequest)
 			} catch (refreshError) {
 				console.error(refreshError)
 				// Если не удалось обновить - разлогиниваем
 				localStorage.removeItem(ACCESS_TOKEN_KEY)
 				localStorage.removeItem(REFRESH_TOKEN_KEY)
-				//window.location = '/auth/sign-in'
+				//window.location.href = '/auth/sign-in'
 				return Promise.reject(error)
 			}
 		}

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { requestLabelsList } from '../api'
+import { requestLabelsList, requestLabelsUpdateJoined } from '../api'
 
 class FormatPrintStore {
 	formatPrints: Array<{
@@ -11,7 +11,7 @@ class FormatPrintStore {
 	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
+		//this.load()
 	}
 	async load() {
 		this.error = undefined
@@ -38,8 +38,30 @@ class FormatPrintStore {
 				)
 				number++
 			} while (res.response.length === 100)
-
+			console.log('format-print', newList)
 			this.formatPrints = newList
+		} catch (error) {
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async add() {}
+	async update(
+		id: number,
+		data: {
+			format: string
+			print: string
+		}
+	) {
+		this.error = undefined
+		this.isLoading = true
+		try {
+			const res = await requestLabelsUpdateJoined(id, data)
+			this.formatPrints = this.formatPrints.map(item =>
+				id === item.id ? {} : item
+			)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'

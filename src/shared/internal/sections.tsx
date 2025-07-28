@@ -14,7 +14,7 @@ const processSection = (section?: React.ReactNode) => {
 		if (!section) {
 			return null
 		}
-		return <span className='mdc-section mdc-section--side'>{section}</span>
+		return <span className='dmc-section dmc-section--side'>{section}</span>
 	}, [section])
 }
 
@@ -49,12 +49,12 @@ export function Sections({
 }: SectionsProps) {
 	return render('div', {
 		...props,
-		className: cls('mdc-sections', className),
+		className: cls('dmc-sections', className),
 		children: (
 			<>
 				{processSection(leftSection)}
 				{children && (
-					<span className={cls('mdc-section', classBody)}>{children}</span>
+					<span className={cls('dmc-section', classBody)}>{children}</span>
 				)}
 				{processSection(rightSection)}
 			</>
