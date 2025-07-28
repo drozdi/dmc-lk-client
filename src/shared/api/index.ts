@@ -55,3 +55,12 @@ api.interceptors.response.use(
 		return Promise.reject(error)
 	}
 )
+
+export async function requestLogin(credentials) {
+	const res = await api.post('/registration/authorization', credentials)
+	return res.data
+}
+export async function requestRegister(userData: IUserPassword) {
+	const res = await api.post('/registration/save_data', userData)
+	return res.data
+}

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { api } from '../../shared/api'
+import { api, requestLogin, requestRegister } from '../../shared/api'
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../shared/constants'
 
 class AuthStore {
@@ -82,17 +82,17 @@ class AuthStore {
 		this.isLoading = true
 		this.error = null
 		try {
-			const response = await api.post('/registration/authorization', {
+			const response = await requestLogin({
 				email,
 				password,
 			})
-			const { token } = response.data.data
+			const { token } = response.data
 			this.setAccessToken(token.access)
 			this.setRefreshToken(token.refresh)
 			return true
 		} catch (error) {
-			console.log(error)
-			this.error = error.response?.data?.detail || 'Ошибка входа'
+			this.error =
+				error?.response?.data?.detail || error?.message || 'Ошибка входа'
 		} finally {
 			this.isLoading = false
 		}
@@ -102,14 +102,15 @@ class AuthStore {
 		this.isLoading = true
 		this.error = null
 		try {
-			const response = await api.post('/registration/save_data', userData)
-			const { user, token } = response.data.data
+			const response = await requestRegister(userData)
+			const { user, token } = response.data
 			this.user = user
 			this.setAccessToken(token.access)
 			this.setRefreshToken(token.refresh)
 			return response.data
 		} catch (error) {
-			this.error = error.response?.data?.detail || 'Ошибка регистрации'
+			this.error =
+				error?.response?.data?.detail || error?.message || 'Ошибка регистрации'
 		} finally {
 			this.isLoading = false
 		}

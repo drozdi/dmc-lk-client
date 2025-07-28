@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { TbMenu4, TbX } from 'react-icons/tb'
 import { useSidebar } from '../../context/sidebar'
-import { HeaderLink } from '../../features/lk/header-link'
-import { ThemeToggleButton } from './theme-toggle-button'
+import { InOutBtn } from '../../features/auth/in-out-btn'
+import { PersonalLink } from '../../features/lk/personal-link'
+import { ThemeToggleBtn } from './theme-toggle-btn'
 
 const Header: React.FC = () => {
 	const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar()
@@ -45,8 +46,9 @@ const Header: React.FC = () => {
 						{/* Cross Icon */}
 					</button>
 					<div className='flex gap-3'>
-						<HeaderLink />
-						<ThemeToggleButton />
+						<PersonalLink />
+						<InOutBtn />
+						<ThemeToggleBtn />
 					</div>
 				</div>
 			</div>

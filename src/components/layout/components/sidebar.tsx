@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { useLocation } from 'react-router'
-import { Link as LinkRouter } from 'react-router-dom'
 import { DmcLink } from '../../../shared/ui'
 import { useSidebar } from '../../context/sidebar'
 import { Logo } from '../../features/logo/Logo'
@@ -51,12 +50,11 @@ const Sidebar: React.FC = () => {
 	const renderMenuItems = (items: NavItem[]) =>
 		items.map((nav, index) => (
 			<DmcLink
-				as={LinkRouter}
-				key={nav.name}
+				key={nav.path}
 				to={nav.path}
 				label={nav.name}
 				active={isActive(nav.path)}
-			></DmcLink>
+			/>
 		))
 
 	return (

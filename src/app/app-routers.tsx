@@ -2,10 +2,11 @@ import { Navigate, useRoutes } from 'react-router'
 import { AuthLayout } from '../components/layout/AuthLayout'
 import { MainLayout } from '../components/layout/MainLayout'
 
-import { ProtectedRoute } from '../components/features/protected-router/protected-route'
+import { ProtectedRoute } from '../components/features/router/protected-route'
 
 import { PersonalPage } from '../pages/personal-page'
 import { SignInPage } from '../pages/sign-in-page'
+import { SignOutPage } from '../pages/sign-out-page'
 import { SignUpPage } from '../pages/sign-up-page'
 import { VerificatinPage } from '../pages/verification-page'
 
@@ -38,7 +39,7 @@ const routes = () => [
 			},
 			{
 				path: 'sign-out',
-				element: 'sign-out',
+				element: <SignOutPage />,
 			},
 		],
 	},
