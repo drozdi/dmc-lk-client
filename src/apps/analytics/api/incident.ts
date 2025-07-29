@@ -7,7 +7,7 @@ export async function requestAnalyticsIncident(
 	for (let key in params) {
 		if (Array.isArray(params[key])) {
 			params[key].forEach(item => {
-				arr.push(key + '=' + item)
+				item && arr.push(key + '=' + item)
 			})
 		} else if (params[key]) {
 			arr.push(key + '=' + params[key])

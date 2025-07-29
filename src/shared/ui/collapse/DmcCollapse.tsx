@@ -6,6 +6,7 @@ interface CollapseProps {
 	children?: React.ReactNode
 	className?: string
 	active?: boolean
+	keepMounted?: boolean
 }
 
 export const DmcCollapse = memo(

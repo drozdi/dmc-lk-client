@@ -1,8 +1,8 @@
 import { memo } from 'react'
-import { TbChevronDown } from 'react-icons/tb'
 import { useDisclosure } from '../../hooks/use-disclosure'
 import { cls } from '../../utils'
 import { DmcCollapse } from '../collapse'
+import { DmcChevron } from '../icon'
 import { DmcItem } from './DmcItem'
 import { DmcItemLabel } from './DmcItemLabel'
 import { DmcItemSection } from './DmcItemSection'
@@ -21,10 +21,12 @@ interface ItemExpansionProps {
 	tabIndex?: number
 	role?: string
 	onClick?: (event: React.MouseEvent) => void
-	icon?: React.ReactNode
+	leftSection?: React.ReactNode
+	rightSection?: React.ReactNode
 	label?: string
 	caption?: string
 	opened?: boolean
+	keepMounted?: boolean
 	[key: string]: any
 }
 
@@ -42,10 +44,12 @@ export const DmcItemExpansion = memo(
 		onClick,
 		hoverable,
 		color,
-		icon,
+		leftSection,
+		rightSection,
 		label,
 		caption,
 		opened: _opened,
+		keepMounted,
 		...props
 	}: ItemExpansionProps) => {
 		const [opened, { toggle }] = useDisclosure(Boolean(_opened))
@@ -69,21 +73,18 @@ export const DmcItemExpansion = memo(
 					role='button'
 					onClick={handleClick}
 				>
-					{icon && (
-						<DmcItemSection side>
-							<DmcIcon>{icon}</DmcIcon>
-						</DmcItemSection>
-					)}
+					{leftSection && <DmcItemSection side>{leftSection}</DmcItemSection>}
 					<DmcItemSection>
 						{label && <DmcItemLabel>{label}</DmcItemLabel>}
 						{caption && <DmcItemLabel caption>{caption}</DmcItemLabel>}
 					</DmcItemSection>
+					{rightSection && <DmcItemSection side>{rightSection}</DmcItemSection>}
 					<DmcItemSection side>
-						<TbChevronDown className='dmc-item__chevron' />
+						<DmcChevron className='dmc-item__chevron' />
 					</DmcItemSection>
 				</DmcItem>
 				<DmcCollapse className='dmc-list-items' active={opened}>
-					{children}
+					{(keepMounted || opened) && children}
 				</DmcCollapse>
 			</>
 		)

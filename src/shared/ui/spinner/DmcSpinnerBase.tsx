@@ -24,7 +24,7 @@ export function DmcSpinnerBase({
 	return (
 		<svg
 			className={cls(
-				'mdc-spinner',
+				'dmc-spinner',
 				{
 					[`text-${color}`]: color,
 				},

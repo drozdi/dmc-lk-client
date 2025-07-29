@@ -1,5 +1,5 @@
-import { TableIncident } from '../features/incident/table'
+import { AllIncident } from '../features/incident/all'
 
 export function AnalyticsIncidentPage() {
-	return <TableIncident />
+	return <AllIncident />
 }

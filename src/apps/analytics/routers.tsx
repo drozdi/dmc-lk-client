@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { AnalyticsElasticPage } from './pages/analytics-elastic-page'
+import { AnalyticsIncidentFilterPage } from './pages/analytics-incident-filter-page'
 import { AnalyticsIncidentPage } from './pages/analytics-incident-page'
 import { AnalyticsPage } from './pages/analytics-page'
 import { AnalyticsQueriesPage } from './pages/analytics-queries-page'
@@ -28,6 +29,10 @@ export default function ({ path = '/analytics' }: AppRouterProps = {}): object {
 			},
 			{
 				path: 'incident',
+				element: <AnalyticsIncidentFilterPage />,
+			},
+			{
+				path: 'incident/all',
 				element: <AnalyticsIncidentPage />,
 			},
 		],

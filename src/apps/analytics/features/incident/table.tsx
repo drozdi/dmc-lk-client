@@ -223,7 +223,7 @@ export const TableIncident = observer(() => {
 					</div>
 				</div>
 			</div>
-			<DmcLoading active={isLoading}>
+			<DmcLoading active={isLoading} keepMounted>
 				<DmcMarkupTable rowBorder striped>
 					<DmcMarkupTable.Thead>
 						{table.getHeaderGroups().map(headerGroup => (

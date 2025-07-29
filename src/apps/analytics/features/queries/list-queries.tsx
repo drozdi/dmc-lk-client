@@ -88,7 +88,7 @@ export function ListQueries({ className }: ListQueriesProps) {
 					label={error}
 				/>
 			)}
-			<DmcLoading active={isLoading}>
+			<DmcLoading active={isLoading} keepMounted>
 				<DmcList separator>
 					{list.map(item => (
 						<DmcItem

@@ -209,7 +209,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					</div>
 				</div>
 			</div>
-			<DmcLoading active={isLoading}>
+			<DmcLoading active={isLoading} keepMounted>
 				<DmcMarkupTable rowBorder striped>
 					<DmcMarkupTable.Thead>
 						{table.getHeaderGroups().map(headerGroup => (

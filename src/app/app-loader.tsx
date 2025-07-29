@@ -1,12 +1,12 @@
+import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-
 import { authStore } from '../components/stores/auth-store'
 import { userStore } from '../components/stores/user-store'
 
 interface AppLoaderProps {
 	children: React.ReactNode
 }
-export function AppLoader({ children }: AppLoaderProps) {
+export const AppLoader = observer(({ children }: AppLoaderProps) => {
 	useEffect(() => {
 		if (authStore.isAuthenticated) {
 			userStore.fetch()
@@ -15,4 +15,4 @@ export function AppLoader({ children }: AppLoaderProps) {
 		}
 	}, [authStore.isAuthenticated])
 	return children
-}
+})

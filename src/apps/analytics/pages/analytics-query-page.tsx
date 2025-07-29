@@ -22,7 +22,7 @@ export function AnalyticsQueryPage() {
 	}, [])
 	return (
 		<>
-			<DmcLoading active={isLoading}>
+			<DmcLoading active={isLoading} keepMounted>
 				<TableElastic />
 			</DmcLoading>
 		</>

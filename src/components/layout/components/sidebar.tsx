@@ -24,6 +24,10 @@ const navItems: NavItem[] = [
 		path: '/analytics/incident',
 	},
 	{
+		name: 'Инциденты все',
+		path: '/analytics/incident/all',
+	},
+	{
 		name: 'Магазин',
 		path: '/shop',
 	},

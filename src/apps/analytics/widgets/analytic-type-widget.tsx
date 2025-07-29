@@ -149,7 +149,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					Сбросить
 				</DmcBtn>
 			</div>
-			<div className='w-full aspect-square'>
+			<div className='w-full aspect-square max-h-1/2 max-w-1/2'>
 				<DmcLoading active={isLoading}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>

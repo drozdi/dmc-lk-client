@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { TbMenu4, TbX } from 'react-icons/tb'
+import { ShopCartBtn } from '../../../apps/shop/features/shop-cart-btn'
 import { useSidebar } from '../../context/sidebar'
 import { InOutBtn } from '../../features/auth/in-out-btn'
 import { ChangeProduct } from '../../features/lk/change-product'
@@ -50,6 +51,7 @@ const Header: React.FC = () => {
 						<ChangeProduct />
 						<PersonalLink />
 						<InOutBtn />
+						<ShopCartBtn />
 						<ThemeToggleBtn />
 					</div>
 				</div>
