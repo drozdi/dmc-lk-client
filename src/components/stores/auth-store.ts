@@ -1,62 +1,46 @@
 import { makeAutoObservable } from 'mobx'
-import { api, requestLogin, requestRegister } from '../../shared/api'
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../shared/constants'
+import {
+	requestLogin,
+	requestRefresh,
+	requestRegister,
+	requestVerification,
+} from '../../shared/api'
+import {
+	clearTokens,
+	getAccessToken,
+	getRefreshToken,
+	setAccessToken,
+	setRefreshToken,
+} from '../../shared/api/token-service'
 
 class AuthStore {
-	accessToken = localStorage.getItem(ACCESS_TOKEN_KEY) || null
-	refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY) || null
-	user = null
 	error = null
 	isLoading = false
+	isAuthenticated = false
 
-	get isAuthenticated() {
-		return !!this.accessToken && !!this.refreshToken
-	}
 	constructor() {
 		makeAutoObservable(this)
-		this.initializeAuth()
+		this.checkAuth()
 	}
-	private async initializeAuth() {
-		this.isLoading = true
-		this.error = null
-		try {
-			if (this.isAuthenticated) {
-				const response = await api.get('/user_profile/')
-				this.user = response.data.data.user
-			}
-		} catch (error) {
-			this.error = error.response?.data?.detail || 'Ошибка проверки'
-		} finally {
-			this.isLoading = false
-		}
-	}
-	setAccessToken(accessToken: string) {
-		this.accessToken = accessToken
-		localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
-	}
-	setRefreshToken(refreshToken: string) {
-		this.refreshToken = refreshToken
-		localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+	checkAuth = () => {
+		this.isAuthenticated = !!getAccessToken()
 	}
 	private clearAuth() {
-		this.accessToken = null
-		this.refreshToken = null
-		this.user = null
-		localStorage.removeItem(ACCESS_TOKEN_KEY)
-		localStorage.removeItem(REFRESH_TOKEN_KEY)
+		this.isAuthenticated = false
+		clearTokens()
 	}
 	private async refreshAuth() {
-		if (!this.refreshToken) {
+		const refresh = getRefreshToken()
+
+		if (!refresh) {
 			throw new Error('Нет refresh token')
 		}
 
 		try {
-			const response = await api.post('/registration/refresh', {
-				refresh_token: this.refreshToken,
-			})
-			const { accessToken, refreshToken } = response.data
-			this.setAccessToken(accessToken)
-			this.setRefreshToken(refreshToken)
+			const response = await requestRefresh(refresh)
+			const { accessToken, refreshToken } = response
+			setAccessToken(accessToken)
+			setRefreshToken(refreshToken)
 			return { accessToken, refreshToken }
 		} catch (error) {
 			this.clearAuth()
@@ -67,12 +51,11 @@ class AuthStore {
 		this.isLoading = true
 		this.error = null
 		try {
-			const response = await api.get('/registration/verification', {
-				params: { link },
-			})
-			return response.data
+			const response = requestVerification(link)
+			return response
 		} catch (error) {
-			this.error = error.response?.data?.detail || 'Ошибка входа'
+			this.error =
+				error.response?.data?.detail || error?.message || 'Ошибка входа'
 		} finally {
 			this.isLoading = false
 		}
@@ -87,9 +70,9 @@ class AuthStore {
 				password,
 			})
 			const { token } = response.data
-			this.setAccessToken(token.access)
-			this.setRefreshToken(token.refresh)
-			return true
+			setAccessToken(token.access)
+			setRefreshToken(token.refresh)
+			this.isAuthenticated = true
 		} catch (error) {
 			this.error =
 				error?.response?.data?.detail || error?.message || 'Ошибка входа'
@@ -103,10 +86,10 @@ class AuthStore {
 		this.error = null
 		try {
 			const response = await requestRegister(userData)
-			const { user, token } = response.data
-			this.user = user
-			this.setAccessToken(token.access)
-			this.setRefreshToken(token.refresh)
+			const { token } = response.data
+			setAccessToken(token.access)
+			setRefreshToken(token.refresh)
+			this.isAuthenticated = true
 			return response.data
 		} catch (error) {
 			this.error =
@@ -118,34 +101,6 @@ class AuthStore {
 	}
 	async logout() {
 		this.clearAuth()
-	}
-	async updateUser(userData: IUser) {
-		this.isLoading = true
-		this.error = null
-		try {
-			const response = await api.patch('/user_profile/', userData)
-			this.user = response.data.data
-			return response.data
-		} catch (error) {
-			this.error = error.response?.data?.detail || 'Ошибка регистрации'
-		} finally {
-			this.isLoading = false
-		}
-		return null
-	}
-	async removeUser() {
-		this.isLoading = true
-		this.error = null
-		try {
-			const response = await api.delete('/user_profile/')
-			this.clearAuth()
-			return response.data
-		} catch (error) {
-			this.error = error.response?.data?.detail || 'Ошибка удаления'
-		} finally {
-			this.isLoading = false
-		}
-		return null
 	}
 }
 

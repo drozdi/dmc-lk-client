@@ -2,7 +2,7 @@ import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerOvalProps {
 	size?: string | number
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
 export function DmcSpinnerOval({ size = '1em', color }: SpinnerOvalProps) {

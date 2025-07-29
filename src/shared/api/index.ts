@@ -1,5 +1,12 @@
 import axios, { AxiosError } from 'axios'
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, URL_API } from '../constants'
+import { PRODUCT_ID_KEY, URL_API } from '../constants'
+import {
+	clearTokens,
+	getAccessToken,
+	getRefreshToken,
+	setAccessToken,
+	setRefreshToken,
+} from './token-service'
 
 export const api = axios.create({
 	baseURL: URL_API,
@@ -10,11 +17,29 @@ export const api = axios.create({
 
 api.interceptors.request.use(
 	config => {
-		const token = localStorage.getItem(ACCESS_TOKEN_KEY)
+		const token = getAccessToken()
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`
 		}
 		return config
+		// Площадка
+		if (config.data instanceof FormData) {
+			// Для FormData
+			config.data.append('production_id', localStorage.getItem(PRODUCT_ID_KEY))
+		} else {
+			// Для JSON или других данных
+			config.data = {
+				...config.data,
+				production_id: localStorage.getItem(PRODUCT_ID_KEY),
+			}
+		}
+		return {
+			...config,
+			params: {
+				...config.params,
+				production_id: localStorage.getItem(PRODUCT_ID_KEY),
+			},
+		}
 	},
 	(error: AxiosError) => Promise.reject(error)
 )
@@ -24,29 +49,23 @@ api.interceptors.response.use(
 	async (error: AxiosError) => {
 		const originalRequest = error.config
 
-		localStorage.removeItem(ACCESS_TOKEN_KEY)
-		localStorage.removeItem(REFRESH_TOKEN_KEY)
-
 		if (error.response?.status === 401 && !originalRequest._retry) {
 			originalRequest._retry = true
 			try {
 				// Пытаемся обновить токен
-				const response = await api.post('/registration/refresh', {
-					refresh_token: localStorage.getItem(REFRESH_TOKEN_KEY),
-				})
+				const response = await requestRefresh(getRefreshToken())
 
-				const { access, refresh } = response.data.token
+				const { access, refresh } = response.token
 
-				localStorage.setItem(ACCESS_TOKEN_KEY, access)
-				localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
+				setAccessToken(access)
+				setRefreshToken(refresh)
 
 				originalRequest.headers.Authorization = `Bearer ${access}`
 				return await api(originalRequest)
 			} catch (refreshError) {
 				console.error(refreshError)
 				// Если не удалось обновить - разлогиниваем
-				localStorage.removeItem(ACCESS_TOKEN_KEY)
-				localStorage.removeItem(REFRESH_TOKEN_KEY)
+				clearTokens()
 				//window.location.href = '/auth/sign-in'
 				return Promise.reject(error)
 			}
@@ -56,11 +75,39 @@ api.interceptors.response.use(
 	}
 )
 
-export async function requestLogin(credentials) {
+export async function requestLogin(credentials: {
+	email: string
+	password: string
+}) {
 	const res = await api.post('/registration/authorization', credentials)
+	return res.data
+}
+export async function requestVerification(link: string) {
+	const res = await api.get('/registration/verification', {
+		params: { link },
+	})
 	return res.data
 }
 export async function requestRegister(userData: IUserPassword) {
 	const res = await api.post('/registration/save_data', userData)
+	return res.data
+}
+export async function requestRefresh(refreshToken: string) {
+	const res = await api.post('/registration/refresh', {
+		refresh_token: refreshToken,
+	})
+	return res.data
+}
+
+export async function requestGetUser() {
+	const res = await api.get('/user_profile/')
+	return res.data
+}
+export async function requestRemoveUser() {
+	const res = await api.delete('/user_profile/')
+	return res.data
+}
+export async function requestUpdateUser(userData: IUser) {
+	const res = await api.patch('/user_profile/', userData)
 	return res.data
 }

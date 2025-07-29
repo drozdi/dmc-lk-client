@@ -2,7 +2,7 @@ import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerClockProps {
 	size?: string | number
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
 export function DmcSpinnerClock({ size = '1em', color }: SpinnerClockProps) {

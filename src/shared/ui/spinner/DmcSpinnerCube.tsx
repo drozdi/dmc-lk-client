@@ -2,7 +2,7 @@ import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerCubeProps {
 	size?: string | number
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
 export function DmcSpinnerCube({ size = '1em', color }: SpinnerCubeProps) {

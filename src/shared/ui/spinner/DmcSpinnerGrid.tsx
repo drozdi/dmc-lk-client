@@ -2,7 +2,7 @@ import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerGridProps {
 	size?: string | number
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
 export function DmcSpinnerGrid({ size = '1em', color }: SpinnerGridProps) {

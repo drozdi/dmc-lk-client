@@ -7,7 +7,7 @@ class PrintStore {
 	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
-		//this.load()
+		this.load()
 	}
 	async load() {
 		this.error = undefined

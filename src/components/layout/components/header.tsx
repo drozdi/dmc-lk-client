@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { TbMenu4, TbX } from 'react-icons/tb'
 import { useSidebar } from '../../context/sidebar'
 import { InOutBtn } from '../../features/auth/in-out-btn'
+import { ChangeProduct } from '../../features/lk/change-product'
 import { PersonalLink } from '../../features/lk/personal-link'
 import { ThemeToggleBtn } from './theme-toggle-btn'
 
@@ -45,7 +46,8 @@ const Header: React.FC = () => {
 						{isMobileOpen ? <TbX /> : <TbMenu4 />}
 						{/* Cross Icon */}
 					</button>
-					<div className='flex gap-3'>
+					<div className='flex gap-3 items-center'>
+						<ChangeProduct />
 						<PersonalLink />
 						<InOutBtn />
 						<ThemeToggleBtn />

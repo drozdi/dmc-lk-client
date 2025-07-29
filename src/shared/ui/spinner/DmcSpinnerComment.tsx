@@ -2,7 +2,7 @@ import { DmcSpinnerBase } from './DmcSpinnerBase'
 
 interface SpinnerCommentProps {
 	size?: string | number
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 export function DmcSpinnerComment({
 	size = '1em',

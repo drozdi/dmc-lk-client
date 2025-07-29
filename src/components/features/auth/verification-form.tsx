@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { setAccessToken } from '../../../shared/api/token-service'
 import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
@@ -13,7 +14,7 @@ export const VerificationForm = observer(() => {
 		e.preventDefault()
 		try {
 			const data = await authStore.verification(link)
-			authStore.setAccessToken(data.data.token)
+			setAccessToken(data.data.token)
 			navigate('/auth/sign-up')
 		} catch (error) {
 			console.log(error)

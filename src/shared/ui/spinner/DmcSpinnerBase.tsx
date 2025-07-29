@@ -4,7 +4,7 @@ import './style.css'
 export interface SpinnerBaseProps {
 	children?: React.ReactNode
 	className?: string
-	color?: string
+	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 	size?: string | number
 	viewBox?: string
 	preserveAspectRatio?: string

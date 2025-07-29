@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
+import { DmcBtn, DmcInput, DmcLoading, DmcMessage } from '../../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const SignInForm = observer(() => {
@@ -11,9 +11,8 @@ export const SignInForm = observer(() => {
 	const navigate = useNavigate()
 	const handleSubmit = async (e: SubmitEvent) => {
 		e.preventDefault()
-		if (await authStore.login(email, password)) {
-			navigate('/')
-		}
+		await authStore.login(email, password)
+		navigate('/')
 	}
 
 	return (
@@ -28,35 +27,36 @@ export const SignInForm = observer(() => {
 				/>
 			)}
 			<form name='signIn' className='mt-8 space-y-3' onSubmit={handleSubmit}>
-				<DmcInput
-					label='Email'
-					placeholder='Email'
-					id='email-address'
-					name='email'
-					type='email'
-					autoComplete='email'
-					required
-					stackLabel
-					filled
-					underlined
-					value={email}
-					onChange={e => setEmail(e.target.value)}
-				/>
-				<DmcInput
-					label='Пароль'
-					placeholder='Пароль'
-					id='email-address'
-					name='password'
-					type='password'
-					autoComplete='current-password'
-					required
-					stackLabel
-					filled
-					underlined
-					value={password}
-					onChange={e => setPassword(e.target.value)}
-				/>
-
+				<DmcLoading active={isLoading} keepMounted>
+					<DmcInput
+						label='Email'
+						placeholder='Email'
+						id='email-address'
+						name='email'
+						type='email'
+						autoComplete='email'
+						required
+						stackLabel
+						filled
+						underlined
+						value={email}
+						onChange={e => setEmail(e.target.value)}
+					/>
+					<DmcInput
+						label='Пароль'
+						placeholder='Пароль'
+						id='email-address'
+						name='password'
+						type='password'
+						autoComplete='current-password'
+						required
+						stackLabel
+						filled
+						underlined
+						value={password}
+						onChange={e => setPassword(e.target.value)}
+					/>
+				</DmcLoading>
 				<DmcBtn type='submit' color='primary' block loading={isLoading}>
 					Войти
 				</DmcBtn>

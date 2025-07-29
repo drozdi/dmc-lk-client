@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Template } from '../../../components/context'
 import { DmcBtn, DmcInput, DmcLoading, DmcMessage } from '../../../shared/ui'
-import { authStore } from '../../stores/auth-store'
+import { userStore } from '../../stores/user-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
@@ -26,7 +26,8 @@ const fieldsSchema = yup.object().shape({
 })
 
 export const PersonalForm = observer(() => {
-	const { isLoading, error, user } = authStore
+	const { isLoading, error, user } = userStore
+	console.log(user)
 	const {
 		register,
 		handleSubmit,
@@ -40,7 +41,6 @@ export const PersonalForm = observer(() => {
 			father_name: user?.father_name,
 			email: user?.email,
 			phone: user?.phone,
-			save: true,
 		},
 		resolver: yupResolver(fieldsSchema),
 	})
@@ -48,11 +48,11 @@ export const PersonalForm = observer(() => {
 	const navigate = useNavigate()
 
 	async function handleSave(formData: IUser) {
-		await authStore.updateUser(formData)
+		await userStore.update(formData)
 	}
 	async function handleSaveNavigate(formData: IUser) {
 		try {
-			await authStore.updateUser(formData)
+			await userStore.update(formData)
 			navigate('/')
 		} catch (e) {}
 	}
@@ -61,7 +61,7 @@ export const PersonalForm = observer(() => {
 			return
 		}
 		try {
-			//await authStore.removeUser()
+			//await userStore.remove()
 			navigate('/')
 		} catch (e) {}
 	}

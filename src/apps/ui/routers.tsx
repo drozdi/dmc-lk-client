@@ -5,6 +5,8 @@ import { IndexPage } from './pages/index-page'
 import { InputPage } from './pages/input-page'
 import { LinkPage } from './pages/link-page'
 import { ListPage } from './pages/list-page'
+import { ProgressPage } from './pages/progress-page'
+import { SpinnerPage } from './pages/spinner-page'
 import { TabsPage } from './pages/tabs-page'
 
 export default function ({ path = '/ui' }: AppRouterProps = {}): object {
@@ -39,6 +41,14 @@ export default function ({ path = '/ui' }: AppRouterProps = {}): object {
 			{
 				path: 'accordion',
 				element: <AccordionPage />,
+			},
+			{
+				path: 'progress',
+				element: <ProgressPage />,
+			},
+			{
+				path: 'spinner',
+				element: <SpinnerPage />,
 			},
 		],
 	}

@@ -71,59 +71,6 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		return [...new Set(res)].sort()
 	}, [data])
 	// Извлекаем, групируем данные
-	const datasets = useMemo(() => {
-		if (!labels.length) {
-			return []
-		}
-		const res = {
-			v: {
-				label: mapEvent.v,
-				data: new Array(labels.length).fill(0),
-				borderColor: 'rgb(0, 255, 132)',
-				backgroundColor: 'rgba(0, 255, 132, 0.5)',
-
-				yAxisID: 'y',
-			},
-			i: {
-				label: mapEvent.i,
-				data: new Array(labels.length).fill(0),
-				borderColor: 'rgb(255, 99, 132)',
-				backgroundColor: 'rgba(255, 99, 132, 0.5)',
-				yAxisID: 'y',
-			},
-			d: {
-				label: mapEvent.d,
-				data: new Array(labels.length).fill(0),
-				borderColor: 'rgb(53, 162, 235)',
-				backgroundColor: 'rgba(53, 162, 235, 0.5)',
-				yAxisID: 'y',
-			},
-			p: {
-				label: mapEvent.p,
-				data: new Array(labels.length).fill(0),
-				borderColor: 'rgb(0, 99, 132)',
-				backgroundColor: 'rgba(0, 99, 132, 0.5)',
-				yAxisID: 'y',
-			},
-		}
-		if (data) {
-			for (const event in res) {
-				for (const p of data[event]?.production || []) {
-					if (
-						cuurent_production > 0 &&
-						p.production_id !== cuurent_production
-					) {
-						continue
-					}
-					;(p.data as any[]).forEach(item => {
-						res[event].data[labels.indexOf(item.timestamp)] += item.count
-					})
-				}
-			}
-		}
-		return [res.v, res.i, res.d]
-	}, [data, labels, cuurent_production])
-
 	const ddata = useMemo(() => {
 		const initialData = Object.fromEntries(
 			labels.map(item => [
