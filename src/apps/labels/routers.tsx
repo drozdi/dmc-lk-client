@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router'
+import { LabelsCountPage } from './pages/lables-count-page'
 import { LabelsPage } from './pages/lables-page'
 
 export default function ({ path = '/labels' }: AppRouterProps = {}): object {
@@ -9,6 +10,10 @@ export default function ({ path = '/labels' }: AppRouterProps = {}): object {
 			{
 				path: '',
 				element: <LabelsPage />,
+			},
+			{
+				path: 'count',
+				element: <LabelsCountPage />,
 			},
 		],
 	}

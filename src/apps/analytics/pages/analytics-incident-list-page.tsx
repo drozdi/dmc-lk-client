@@ -1,5 +1,5 @@
 import { AllIncident } from '../features/incident/all'
 
-export function AnalyticsIncidentPage() {
+export function AnalyticsIncidentListPage() {
 	return <AllIncident />
 }

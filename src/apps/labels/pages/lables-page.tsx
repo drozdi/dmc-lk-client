@@ -5,15 +5,58 @@ import { formatPrintStore } from '../stores/format-print-store'
 import { formatStore } from '../stores/format-store'
 import { printStore } from '../stores/print-store'
 
-import { DmcItemExpansion, DmcList, DmcLoading } from '../../../shared/ui'
+import {
+	DmcInput,
+	DmcItem,
+	DmcItemExpansion,
+	DmcItemSection,
+	DmcList,
+	DmcLoading,
+	DmcMessage,
+	DmcSelect,
+} from '../../../shared/ui'
 
-import { useEffect, useMemo, useRef } from 'react'
-import { Container } from './components/Container'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { userStore } from '../../../components/stores/user-store'
+import { Container } from './components/form/Container'
+import { List } from './components/form/List'
 
 export const LabelsPage = observer(() => {
-	const { prints, isLoading: isLoadingPrints } = printStore
-	const { formats, isLoading: isLoadingFormats } = formatStore
-	const { formatPrints, isLoading: isLoadingFormatPrints } = formatPrintStore
+	const { products } = userStore
+	const {
+		prints: _prints,
+		isLoading: isLoadingPrints,
+		error: errorPrints,
+	} = printStore
+	const {
+		formats: _formats,
+		isLoading: isLoadingFormats,
+		error: errorFormats,
+	} = formatStore
+	const {
+		formatPrints: _formatPrints,
+		isLoading: isLoadingFormatPrints,
+		error: errorFormatPrints,
+	} = formatPrintStore
+
+	const [production_id, setProduction_id] = useState()
+
+	const prints = useMemo(
+		() => _prints[production_id] || [],
+		[_prints, production_id]
+	)
+	const formats = useMemo(
+		() => _formats[production_id] || [],
+		[_formats, production_id]
+	)
+	const formatPrints = useMemo(
+		() => _formatPrints[production_id] || [],
+		[_formatPrints, production_id]
+	)
+	const error = useMemo(
+		() => errorPrints || errorFormats || errorFormatPrints,
+		[errorPrints, errorFormats, errorFormatPrints]
+	)
 
 	const containers = useMemo<
 		Record<
@@ -26,7 +69,8 @@ export const LabelsPage = observer(() => {
 			}>
 		>
 	>(() => {
-		const con = Object.fromEntries((formats || []).map(item => [item, []]))
+		const con =
+			Object.fromEntries((formats || []).map(item => [item, []])) || {}
 		con['.default'] = (prints || []).map(item => ({
 			print: item,
 			id: item,
@@ -35,13 +79,13 @@ export const LabelsPage = observer(() => {
 		}))
 		formatPrints.forEach(item => {
 			item.format &&
-				con[item.format].push({
+				con[item.format]?.push({
 					format: item.format,
 					print: item.print,
 					id: item.print,
 					_id: item.id,
 				})
-			const i = con['.default'].findIndex(e => e === item.print)
+			const i = con['.default'].findIndex(e => e.print === item.print)
 			if (i !== -1) {
 				con['.default'].splice(i, 1)
 			}
@@ -55,15 +99,14 @@ export const LabelsPage = observer(() => {
 		previousItems.current = containers
 	}, [containers])
 
+	useEffect(() => {
+		if (!production_id) {
+			setProduction_id(products[0]?.production_id)
+		}
+	}, [products, production_id])
+
 	const findIndex = (item, id) =>
 		item === id || (typeof item === 'object' && 'id' in item && item.id === id)
-
-	const update = newList => {
-		console.log(newList)
-		if (JSON.stringify(newList) === JSON.stringify(previousItems.current)) {
-			return
-		}
-	}
 
 	const handleDragStart = event => {
 		previousItems.current = { ...containers }
@@ -93,47 +136,112 @@ export const LabelsPage = observer(() => {
 				break
 			}
 		}
-		if (sourceIndex === -1 || targetIndex === -1) {
+
+		if (sourceIndex === -1 && targetIndex === -1) {
 			return
 		}
 
-		console.log(
-			sourceIndex,
-			targetIndex,
-			sourceParent,
-			targetParent,
-			source.id,
-			target.id
-		)
+		if (containers[sourceParent][sourceIndex]._id && target.id === '.default') {
+			formatPrintStore.delete(containers[sourceParent][sourceIndex]._id)
+		} else if (containers[sourceParent][sourceIndex]._id) {
+			formatPrintStore.update(containers[sourceParent][sourceIndex]._id, {
+				production_id,
+				add_label_format: target.id,
+				statistics_print_format: containers[sourceParent][sourceIndex].print,
+			})
+		} else if (target.id !== '.default') {
+			formatPrintStore.add({
+				production_id,
+				add_label_format: target.id,
+				statistics_print_format: containers[sourceParent][sourceIndex].print,
+			})
+		}
 
-		console.log(containers[sourceParent][sourceIndex])
-
-		//update(move(containers, event))
 		if (event.canceled || source.type !== 'column') return
 	}
 
+	const [newFormat, setNewFormat] = useState<string>('')
+	const handleChange = ({ target }: React.ChangeEvent) => {
+		setNewFormat(target.value)
+	}
+	const handleKeyPress = ({ key }: React.KeyboardEvent) => {
+		if (key === 'Enter') {
+			formatStore.add({ format: newFormat.trim(), production_id })
+			setNewFormat('')
+		}
+	}
+
 	return (
-		<div className='flex gap-3'>
+		<div className=''>
+			{error && (
+				<DmcMessage
+					className='mb-8'
+					color='warning'
+					square
+					underlined='left'
+					label={error}
+				/>
+			)}
+			<div className='flex gap-3'>
+				<DmcSelect
+					dense
+					filled
+					value={production_id}
+					onChange={({ target }) => setProduction_id(target.value)}
+				>
+					{products.map(product => (
+						<option key={product.production_id} value={product.production_id}>
+							{product.name_production} ({product.production_id})
+						</option>
+					))}
+				</DmcSelect>
+			</div>
+
 			<DmcLoading
 				active={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints}
+				keepMounted
 			>
-				<DragDropProvider
-					onDragStart={handleDragStart}
-					onDragEnd={handleDragEnd}
-				>
-					<DmcList as='div' className='flex-1/2'>
-						{formats.map(item => (
-							<DmcItemExpansion as='div' opened key={item} label={item}>
-								<Container column={item} items={containers[item]} />
-							</DmcItemExpansion>
-						))}
-					</DmcList>
-					<Container
-						className='flex-1/2'
-						column='.default'
-						items={containers['.default']}
-					/>
-				</DragDropProvider>
+				<div className='flex gap-3'>
+					<DragDropProvider
+						onDragStart={handleDragStart}
+						onDragEnd={handleDragEnd}
+					>
+						<DmcList as='div' className='flex-1/2'>
+							<DmcItem>
+								<DmcItemSection>
+									<DmcInput
+										dense
+										square
+										filled
+										underlined
+										placeholder='Добавить формат'
+										disabled={
+											isLoadingPrints ||
+											isLoadingFormats ||
+											isLoadingFormatPrints
+										}
+										value={newFormat}
+										onChange={handleChange}
+										onKeyPress={handleKeyPress}
+										hideMessage
+										className='w-full'
+									/>
+								</DmcItemSection>
+							</DmcItem>
+
+							{formats.map(item => (
+								<Container column={item}>
+									<DmcItemExpansion as='div' opened key={item} label={item}>
+										<List items={containers[item]} />
+									</DmcItemExpansion>
+								</Container>
+							))}
+						</DmcList>
+						<Container className='flex-1/2' column='.default'>
+							<List items={containers['.default']} />
+						</Container>
+					</DragDropProvider>
+				</div>
 			</DmcLoading>
 		</div>
 	)

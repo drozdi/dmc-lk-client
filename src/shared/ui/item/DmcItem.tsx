@@ -21,7 +21,15 @@ interface ItemProps {
 	disabled?: boolean
 	hoverable?: boolean
 	bordered?: boolean
-	color?: 'primary' | 'secondary'
+	color?:
+		| 'primary'
+		| 'secondary'
+		| 'accent'
+		| 'success'
+		| 'warning'
+		| 'info'
+		| 'danger'
+		| 'dark'
 	onClick?: (e: React.MouseEvent<HTMLElement>) => void
 	onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void
 	onKeyUp?: (e: React.KeyboardEvent<HTMLElement>) => void
@@ -39,6 +47,7 @@ export const DmcItem = memo(
 				children,
 				tabIndex = 0,
 				vertical,
+				color,
 				dense,
 				active,
 				activeClass,
@@ -76,6 +85,8 @@ export const DmcItem = memo(
 							'dmc-item--hoverable': isHoverable,
 							'dmc-item--vertical': vertical,
 							'dmc-item--bordered': bordered,
+							[`dmc-bg-${color}`]: color,
+							[activeClass]: active,
 						},
 						className
 					),
@@ -103,6 +114,7 @@ export const DmcItem = memo(
 				isHoverable,
 				isClickable,
 				isActionable,
+				color,
 			])
 
 			return render(

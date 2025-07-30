@@ -2,21 +2,33 @@ import { makeAutoObservable } from 'mobx'
 import { requestGetProducts } from '../api'
 class UsersStores {
 	isLoading: boolean = false
+	isLoaded: boolean = false
 	error?: string = undefined
-	products: Array<{
+	_products: Array<{
 		production_id: number
 		name_production: string
 	}> = []
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
 	}
-	async load() {
+	get products() {
+		this.load()
+		return this._products
+	}
+	async load(reloading: boolean = false) {
+		if (reloading) {
+			this.isLoaded = false
+			this._products = []
+		}
+		if (this.isLoaded) {
+			return
+		}
 		this.isLoading = true
 		this.error = undefined
 		try {
 			const res = await requestGetProducts()
-			this.products = res.data
+			this._products = res.data
+			this.isLoaded = true
 		} catch (error) {
 			this.error =
 				error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
@@ -26,4 +38,4 @@ class UsersStores {
 	}
 }
 
-export const usersStores = new UsersStores()
+export const usersStore = new UsersStores()

@@ -18,45 +18,44 @@ export async function requestLabelsList({
 	const res = await api.get(`/label/?size=${size}&number=${number}`)
 	return res.data.data
 }
-export async function requestLabelsJoinFormat({
-	format,
-	print,
-}: {
-	format?: string
-	print?: string
+export async function requestLabelsJoinFormat(data: {
+	production_id?: number | string
+	add_label_format?: string
+	statistics_print_format?: string
 }) {
-	const res = await api.post('/label/', {
-		add_label_format: format,
-		statistics_print_format: print,
-	})
+	const res = await api.post('/label/', data)
 	return res.data
 }
 export async function requestLabelsDetachFormat(id: number | number[]) {
 	const res = await api.delete('/label/', {
-		id_rel_label: Array.isArray(id) ? id : [id],
+		data: {
+			id_rel_label: [].concat(id),
+		},
 	})
 	return res.data
 }
-export async function requestLabelsAddFormat(format: string) {
+export async function requestLabelsAddFormat({
+	format,
+	production_id,
+}: {
+	format: string
+	production_id: number
+}) {
 	const res = await api.post('/label/new_format', {
 		add_label_format: format,
+		production_id,
 	})
 	return res.data
 }
 
 export async function requestLabelsUpdateJoined(
 	id: number,
-	{
-		format,
-		print,
-	}: {
-		format?: string
-		print?: string
+	data: {
+		production_id?: number | string
+		add_label_format?: string
+		statistics_print_format?: string
 	}
 ) {
-	const res = await api.post(`/label/${id}`, {
-		add_label_format: format,
-		statistics_print_format: print,
-	})
+	const res = await api.patch(`/label/${id}`, data)
 	return res.data
 }

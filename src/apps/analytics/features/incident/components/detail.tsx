@@ -1,33 +1,46 @@
 import { useEffect, useMemo, useState } from 'react'
+import { TbX } from 'react-icons/tb'
 import {
+	DmcBtn,
 	DmcItem,
 	DmcItemLabel,
 	DmcItemSection,
 	DmcList,
+	DmcLoading,
 } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
 export function Detail(props) {
+	const [isLoading, setIsLoading] = useState(false)
 	const [data, setData] = useState([])
-	const [production_id, setProduction_id] = useState(0)
+
+	const [{ name_production, production_id }, setProduction] = useState({
+		name_production: '',
+		production_id: '',
+	})
+
 	const [query, setQuery] = useState({
 		...props,
 		fields_name: [
 			...new Set([
 				...props.details_field,
 				'name_production',
+				'address_production',
 				'event_name',
 				'device_name',
+				'device_type',
 			]),
 		],
 		details_field: [
 			...new Set([...props.details_field, 'production_id', 'device_id']),
 		],
 	})
+
 	async function fetch() {
+		setIsLoading(true)
 		const res = await requestAnalyticsIncident(query)
 		setData(res.message)
-		console.log(res)
+		setIsLoading(false)
 	}
 	useEffect(() => {
 		fetch()
@@ -45,10 +58,10 @@ export function Detail(props) {
 							(res[item.device_id]?.total_counter || 0) + item.total_counter,
 					}
 				}
-				return Object.values(res).sort(
-					(a, b) => b.total_counter - a.total_counter
-				)
 			})
+			return Object.values(res).sort(
+				(a, b) => b.total_counter - a.total_counter
+			)
 		} else {
 			data.forEach(item => {
 				res[item.production_id] = {
@@ -65,23 +78,59 @@ export function Detail(props) {
 		return data
 	}, [data, production_id])
 
-	async function handleProduction(production_id) {}
+	async function handleProduction(production_id, name_production) {
+		setProduction({
+			name_production,
+			production_id,
+		})
+	}
 
 	return (
-		<DmcList as='div' className='p-6'>
-			{ddata.map((item, index) => (
-				<DmcItem
-					key={index}
-					onClick={() => handleProduction(item.production_id)}
-				>
-					<DmcItemSection>
-						<DmcItemLabel>{item.name_production}</DmcItemLabel>
-					</DmcItemSection>
-					<DmcItemSection side>
-						<DmcItemLabel>{item.total_counter}</DmcItemLabel>
-					</DmcItemSection>
-				</DmcItem>
-			))}
-		</DmcList>
+		<DmcLoading keepMounted active={isLoading}>
+			<div className='flex mt-3 gap-3 justify-center'>
+				{production_id && (
+					<DmcBtn
+						color='warning'
+						size='sm'
+						outline
+						onClick={() => setProduction(0, '')}
+						rightSection={<TbX />}
+					>
+						{name_production}
+					</DmcBtn>
+				)}
+			</div>
+			<DmcList as='div' className='p-6'>
+				{production_id
+					? ddata.map((item, index) => (
+							<DmcItem key={item.device_id}>
+								<DmcItemSection>
+									<DmcItemLabel>{item.device_name}</DmcItemLabel>
+								</DmcItemSection>
+								<DmcItemSection side>
+									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
+								</DmcItemSection>
+							</DmcItem>
+					  ))
+					: ddata.map((item, index) => (
+							<DmcItem
+								key={item.production_id}
+								onClick={() =>
+									handleProduction(item.production_id, item.name_production)
+								}
+							>
+								<DmcItemSection>
+									<DmcItemLabel>{item.name_production}</DmcItemLabel>
+								</DmcItemSection>
+								<DmcItemSection>
+									<DmcItemLabel>{item.address_production}</DmcItemLabel>
+								</DmcItemSection>
+								<DmcItemSection side>
+									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
+								</DmcItemSection>
+							</DmcItem>
+					  ))}
+			</DmcList>
+		</DmcLoading>
 	)
 }

@@ -12,11 +12,18 @@ interface ItemExpansionProps {
 	children?: React.ReactNode
 	className?: string
 	dense?: boolean
-	color?: string
+	color?:
+		| 'primary'
+		| 'secondary'
+		| 'accent'
+		| 'success'
+		| 'warning'
+		| 'info'
+		| 'danger'
+		| 'dark'
 	active?: boolean
 	disabled?: boolean
 	vertical?: boolean
-	hoverable?: boolean
 	activeClass?: string
 	tabIndex?: number
 	role?: string
@@ -42,8 +49,6 @@ export const DmcItemExpansion = memo(
 		disabled,
 		role,
 		onClick,
-		hoverable,
-		color,
 		leftSection,
 		rightSection,
 		label,

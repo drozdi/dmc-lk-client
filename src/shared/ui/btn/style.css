@@ -24,6 +24,9 @@
 .dmc-btn-loader {
 	@apply absolute top-0 left-0 w-full h-full rounded-s-[inherit];
 }
+.dmc-btn-loader {
+	@apply translate-y-1;
+}
 .dmc-btn::after {
 	@apply bg-transparent border border-current opacity-80;
 }
@@ -52,7 +55,7 @@
 		@apply translate-y-[calc(-100%-3*var(--spacing))];
 	}
 	.dmc-btn-loader {
-		@apply top-0;
+		@apply top-0 translate-y-0;
 	}
 }
 .dmc-btn-section {

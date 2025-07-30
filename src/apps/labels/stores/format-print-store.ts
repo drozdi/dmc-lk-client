@@ -1,45 +1,59 @@
 import { makeAutoObservable } from 'mobx'
-import { requestLabelsList, requestLabelsUpdateJoined } from '../api'
+import {
+	requestLabelsDetachFormat,
+	requestLabelsJoinFormat,
+	requestLabelsList,
+	requestLabelsUpdateJoined,
+} from '../api'
 
 class FormatPrintStore {
-	formatPrints: Array<{
+	private _formatPrints: Array<{
 		id: string
 		format: string
 		print: string
 	}> = []
 	isLoading = false
+	isLoaded = false
 	error?: string = undefined
+
 	constructor() {
 		makeAutoObservable(this)
-		//this.load()
 	}
-	async load() {
+	get formatPrints() {
+		this.load()
+		return this._formatPrints
+	}
+	async load(reloading: boolean = false) {
+		if (reloading) {
+			this.isLoaded = false
+			this._formatPrints = []
+		}
+		if (this.isLoaded) {
+			return
+		}
+
 		this.error = undefined
 		this.isLoading = true
 		try {
-			let number = 0
-			let res = {
-				response: [],
-			}
-			let newList: Array<{ id: string; format: string; print: string }> = []
-			do {
-				let res = await requestLabelsList({
-					size: 100,
-					number,
+			const res = await requestLabelsList({
+				size: 100,
+				number: 0,
+			})
+			this.isLoaded = true
+			this._formatPrints = Object.fromEntries(
+				Object.keys(res.response).map(key => {
+					return [
+						key,
+						res.response[key]
+							.map(item => ({
+								...item,
+								format: item.add_label_format,
+								print: item.statistics_print_format,
+							}))
+							.filter(item => item.format !== item.print),
+					]
 				})
-				newList = newList.concat(
-					res.response
-						.map(item => ({
-							id: item.id,
-							format: item.add_label_format,
-							print: item.statistics_print_format,
-						}))
-						.filter(item => item.format !== 'C14')
-				)
-				number++
-			} while (res.response.length === 100)
-			console.log('format-print', newList)
-			this.formatPrints = newList
+			)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
@@ -47,21 +61,41 @@ class FormatPrintStore {
 			this.isLoading = false
 		}
 	}
-	async add() {}
-	async update(
-		id: number,
-		data: {
-			format: string
-			print: string
-		}
-	) {
+	async add(data: Record<string, string>) {
 		this.error = undefined
 		this.isLoading = true
 		try {
-			const res = await requestLabelsUpdateJoined(id, data)
-			this.formatPrints = this.formatPrints.map(item =>
-				id === item.id ? {} : item
-			)
+			const res = await requestLabelsJoinFormat(data)
+			this.load(true)
+		} catch (error) {
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async delete(id: number) {
+		this.error = undefined
+		this.isLoading = true
+		try {
+			const res = await requestLabelsDetachFormat(id)
+			this.load(true)
+		} catch (error) {
+			this.error =
+				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
+		}
+	}
+	async update(id: number, data: Record<string, string>) {
+		this.error = undefined
+		this.isLoading = true
+		try {
+			const res = await requestLabelsUpdateJoined(id, {
+				...this._formatPrints[data.production_id].find(item => item.id === id),
+				...data,
+			})
+			this.load(true)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'

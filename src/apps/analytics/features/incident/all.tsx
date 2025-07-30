@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import {
@@ -10,16 +11,18 @@ import {
 	DmcLoading,
 } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
-import { fieldsStore } from '../../stores/fields-store'
 import { Detail } from './components/detail'
 
 export const AllIncident = observer(() => {
-	const { fields } = fieldsStore
+	const day = dayjs()
 	const [isLoading, setLoading] = useState(false)
 	const [data, setData] = useState([])
 	const [query, setQuery] = useState({
 		limit_page: 1000,
-		filterdate: ['2024-05-14', ''],
+		filterdate: [
+			day.month(day.month() - 3).format('YYYY-MM-DD'),
+			day.format('YYYY-MM-DD'),
+		],
 		data: [],
 		fields_name: [],
 		details_field: [],

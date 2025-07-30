@@ -1,7 +1,7 @@
 @reference "@style";
 
 .dmc-item {
-	@apply flex flex-nowrap relative min-h-12 gap-3 py-2 text-inherit cursor-default;
+	@apply flex flex-nowrap relative min-h-12 gap-3 py-2 cursor-default;
 	--padding-multiplier: 3;
 	padding-inline-start: calc(
 		var(--spacing, 0.25rem) * var(--padding-multiplier, 3) +

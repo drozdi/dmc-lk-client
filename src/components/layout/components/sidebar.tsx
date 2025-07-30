@@ -20,12 +20,12 @@ const navItems: NavItem[] = [
 		path: '/analytics/queries',
 	},
 	{
-		name: 'Инциденты',
-		path: '/analytics/incident',
+		name: 'Инциденты список',
+		path: '/analytics/incident/list',
 	},
 	{
-		name: 'Инциденты все',
-		path: '/analytics/incident/all',
+		name: 'Формируемые инциденты',
+		path: '/analytics/incident',
 	},
 	{
 		name: 'Магазин',
@@ -34,6 +34,10 @@ const navItems: NavItem[] = [
 	{
 		name: 'Labels',
 		path: '/labels',
+	},
+	{
+		name: 'Labels Count',
+		path: '/labels/count',
 	},
 	{
 		name: 'Пользователи',

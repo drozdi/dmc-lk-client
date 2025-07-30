@@ -1,17 +1,23 @@
+import { cls } from '../../utils'
 import { DmcSpinnerClock } from '../spinner'
-
 import './style.css'
 
 interface LoadingProps {
 	children: React.ReactNode
 	active?: boolean
 	keepMounted?: boolean
+	className?: string
 }
 
-export function DmcLoading({ children, active, keepMounted }: LoadingProps) {
+export function DmcLoading({
+	children,
+	className,
+	active,
+	keepMounted,
+}: LoadingProps) {
 	if (keepMounted) {
 		return (
-			<div className='dmc-loading-container'>
+			<div className={cls('dmc-loading-container', className)}>
 				{children}
 				{active && (
 					<div className='dmc-loading'>

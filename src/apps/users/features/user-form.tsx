@@ -12,7 +12,7 @@ import {
 	DmcTabs,
 } from '../../../shared/ui'
 import { requestGetUser, requestUpdateUser } from '../api'
-import { usersStores } from '../stores/users-stores'
+import { usersStore } from '../stores/users-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
@@ -39,7 +39,7 @@ interface UserFormProps {
 export function UserForm({ id, className }: UserFormProps) {
 	const [_isLoading, setIsLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string | null>(null)
-	const { products } = usersStores
+	const { products } = usersStore
 
 	const {
 		register,

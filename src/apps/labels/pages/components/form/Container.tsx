@@ -1,17 +1,14 @@
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/react'
-import React from 'react'
-import { DmcList } from '../../../../shared/ui'
-
-interface ListProps {
-	children: React.ReactNode
-	id: string
+interface ContainerProps {
 	className?: string
+	column: string
+	children: React.ReactNode
 }
 
-export function List({ children, id, className }: ListProps) {
+export function Container({ className, column, children }: ContainerProps) {
 	const { isDropTarget, ref } = useDroppable({
-		id,
+		id: column,
 		type: 'column',
 		accept: ['item', 'column'],
 		collisionPriority: CollisionPriority.Low,
@@ -19,8 +16,8 @@ export function List({ children, id, className }: ListProps) {
 	const style = isDropTarget ? { background: '#00000030' } : undefined
 
 	return (
-		<DmcList className={className} ref={ref} style={style}>
+		<div className={className} ref={ref} style={style}>
 			{children}
-		</DmcList>
+		</div>
 	)
 }

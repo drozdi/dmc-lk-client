@@ -18,7 +18,6 @@ export const ChangeProduct = observer(() => {
 		userStore.setCurrentProductId(target.value)
 		setChange(false)
 	}
-	console.log(currentProductId)
 	return (
 		<>
 			{change ? (
