@@ -66,7 +66,7 @@ class FormatPrintStore {
 		this.isLoading = true
 		try {
 			const res = await requestLabelsJoinFormat(data)
-			this.load(true)
+			await this.load(true)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
@@ -79,7 +79,7 @@ class FormatPrintStore {
 		this.isLoading = true
 		try {
 			const res = await requestLabelsDetachFormat(id)
-			this.load(true)
+			await this.load(true)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
@@ -95,7 +95,7 @@ class FormatPrintStore {
 				...this._formatPrints[data.production_id].find(item => item.id === id),
 				...data,
 			})
-			this.load(true)
+			await this.load(true)
 		} catch (error) {
 			this.error =
 				error.response?.data?.detail || error.message || 'Неизвестная ошибка'

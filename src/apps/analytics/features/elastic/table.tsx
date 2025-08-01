@@ -5,9 +5,10 @@ import {
 } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useRef } from 'react'
-import { TbColumnInsertRight, TbColumnRemove } from 'react-icons/tb'
+import { TbColumnRemove } from 'react-icons/tb'
 import {
 	DmcBtn,
+	DmcBtnRemove,
 	DmcInput,
 	DmcLoading,
 	DmcMarkupTable,
@@ -47,14 +48,20 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 			{
 				accessorKey: 'id',
 				header: '#',
+				type: 'main',
 			},
 			...template.company.select_field.map(item => ({
 				accessorKey: item,
 				header: fields?.[item]?.label ?? item,
+				type: 'field',
 			})),
 		],
 		[template, fields]
 	)
+
+	const canEdit = (column: { accessorKey: string; type: 'field' | 'main' }) => {
+		return column.type !== 'main'
+	}
 
 	const table = useReactTable({
 		columns,
@@ -89,6 +96,9 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	}
 
 	const handleAddField = (select: string) => {
+		if (!select) {
+			return
+		}
 		template.company.select_field.push(select)
 		elasticStore.saveTemp({ ...template })
 		selectRef.current?.reset?.()
@@ -153,8 +163,27 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 
 	return (
 		<div className={className}>
-			<div className='flex justify-between items-start'>
-				<div className='flex gap-0 items-start justify-end'>
+			<div className='flex gap-3 justify-between'>
+				<div className='flex gap-0'>
+					<DmcSelect
+						filled
+						dense
+						square
+						underlined
+						hideMessage
+						value=''
+						onChange={({ target }) => handleAddField(target.value)}
+						ref={selectRef}
+					>
+						<option disabled value=''>
+							Добавить поле
+						</option>
+						{variantFields.map(item => (
+							<option key={item.value} value={item.value}>
+								{item.label}
+							</option>
+						))}
+					</DmcSelect>
 					<DmcInput
 						value={date.date_from}
 						label='С'
@@ -165,6 +194,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						square
 						filled
 						underlined
+						hideMessage
 					/>
 					<DmcInput
 						value={date.date_to}
@@ -176,9 +206,10 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						square
 						filled
 						underlined
+						hideMessage
 					/>
 				</div>
-				<div className='flex gap-3 justify-end'>
+				<div className='flex gap-3'>
 					<DmcBtn color='success' size='sm' onClick={handleSave}>
 						Сохранить
 					</DmcBtn>
@@ -186,88 +217,66 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						Применить
 					</DmcBtn>
 				</div>
-				<div
-					className='w-8 flex-none justify-end group relative overflow-visible'
-					key='actions'
-				>
-					<button className='border-0 p-3 bg-info'>
-						<TbColumnInsertRight />
-					</button>
-					<div className='absolute right-0 p-3 mt-2 w-72 bg-surface rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-10'>
-						<DmcSelect
-							filled
-							dense
-							underlined
-							onChange={({ target }) => handleAddField(target.value)}
-							ref={selectRef}
-						>
-							{variantFields.map(item => (
-								<option key={item.value} value={item.value}>
-									{item.label}
-								</option>
-							))}
-						</DmcSelect>
-					</div>
-				</div>
 			</div>
 			<DmcLoading active={isLoading} keepMounted>
 				<DmcMarkupTable rowBorder striped>
 					<DmcMarkupTable.Thead>
-						{table.getHeaderGroups().map(headerGroup => (
-							<DmcMarkupTable.Tr key={headerGroup.id}>
+						{table.getHeaderGroups().map((headerGroup, index) => (
+							<DmcMarkupTable.Tr key={headerGroup.id + '-' + index}>
 								{headerGroup.headers.map((header, index) => (
 									<DmcMarkupTable.Th
 										className='group relative overflow-visible'
-										key={header.id}
+										key={header.id + '-' + index}
 										colSpan={header.colSpan}
 									>
-										<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 cle'>
-											<div className='flex gap-1 justify-between items-start'>
-												<ActionForm
-													value={
-														whereItem(header.id)?.single_action_list || 'and'
-													}
-													onChange={single_action_list =>
-														handleChangeActionField(
-															header.id,
-															single_action_list
-														)
+										{canEdit(header.column.columnDef) && (
+											<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 min-w-48'>
+												<div className='flex gap-1 justify-between items-start'>
+													<ActionForm
+														value={
+															whereItem(header.id)?.single_action_list || 'and'
+														}
+														onChange={single_action_list =>
+															handleChangeActionField(
+																header.id,
+																single_action_list
+															)
+														}
+													/>
+													<DmcBtnRemove
+														onClick={() => handleRemoveField(header.id)}
+														title='Удалить поле'
+													>
+														<TbColumnRemove />
+													</DmcBtnRemove>
+												</div>
+												<SignForm
+													value={whereItem(header.id)?.sing_action || '='}
+													onChange={sing_action =>
+														handleChangeSignField(header.id, sing_action)
 													}
 												/>
-												<button
-													className='p-3 bg-warning rounded py-1 cursor-pointer'
-													onClick={() => handleRemoveField(header.id)}
-													title='Удалить поле'
-												>
-													<TbColumnRemove />
-												</button>
+												{whereItem(header.id)?.sing_action === 'in' ||
+												whereItem(header.id)?.sing_action === 'not_in' ? (
+													<InForm
+														values={whereItem(header.id)?.search_value}
+														onChange={values =>
+															handleChangeInField(header.id, values)
+														}
+													/>
+												) : (
+													<DmcInput
+														filled
+														dense
+														square
+														underlined
+														onChange={({ target }) =>
+															handleChangeValueField(header.id, target.value)
+														}
+													/>
+												)}
 											</div>
-											<SignForm
-												value={whereItem(header.id)?.sing_action || '='}
-												onChange={sing_action =>
-													handleChangeSignField(header.id, sing_action)
-												}
-											/>
-											{whereItem(header.id)?.sing_action === 'in' ||
-											whereItem(header.id)?.sing_action === 'not_in' ? (
-												<InForm
-													values={whereItem(header.id)?.search_value}
-													onChange={values =>
-														handleChangeInField(header.id, values)
-													}
-												/>
-											) : (
-												<DmcInput
-													filled
-													dense
-													square
-													underlined
-													onChange={({ target }) =>
-														handleChangeValueField(header.id, target.value)
-													}
-												/>
-											)}
-										</div>
+										)}
 
 										{header.isPlaceholder
 											? null

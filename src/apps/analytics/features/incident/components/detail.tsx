@@ -30,10 +30,18 @@ export function Detail(props) {
 				'event_name',
 				'device_name',
 				'device_type',
+				'node_name',
+				'place_name',
 			]),
 		],
 		details_field: [
-			...new Set([...props.details_field, 'production_id', 'device_id']),
+			...new Set([
+				...props.details_field,
+				'production_id',
+				'device_id',
+				'node_id',
+				'place_id',
+			]),
 		],
 	})
 
@@ -95,13 +103,15 @@ export function Detail(props) {
 						onClick={() => setProduction(0, '')}
 						rightSection={<TbX />}
 					>
-						{name_production}
+						Плозадка: {name_production}
 					</DmcBtn>
 				)}
 			</div>
 			<DmcList as='div' className='p-6'>
-				{production_id
-					? ddata.map((item, index) => (
+				{production_id ? (
+					<>
+						<DmcItemLabel header>Устройства</DmcItemLabel>
+						{ddata.map((item, index) => (
 							<DmcItem key={item.device_id}>
 								<DmcItemSection>
 									<DmcItemLabel>{item.device_name}</DmcItemLabel>
@@ -110,8 +120,12 @@ export function Detail(props) {
 									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
 								</DmcItemSection>
 							</DmcItem>
-					  ))
-					: ddata.map((item, index) => (
+						))}
+					</>
+				) : (
+					<>
+						<DmcItemLabel header>Площадки</DmcItemLabel>
+						{ddata.map((item, index) => (
 							<DmcItem
 								key={item.production_id}
 								onClick={() =>
@@ -128,7 +142,9 @@ export function Detail(props) {
 									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
 								</DmcItemSection>
 							</DmcItem>
-					  ))}
+						))}
+					</>
+				)}
 			</DmcList>
 		</DmcLoading>
 	)
