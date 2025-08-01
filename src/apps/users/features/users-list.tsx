@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link as LinkTo } from 'react-router'
+import { useQuery } from '../../../shared/hooks'
 import {
 	DmcBtn,
 	DmcLink,
@@ -13,22 +14,17 @@ interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
+	const { isLoading, error, request } = useQuery(
+		requestGetUsers,
+		'Ошибка при загрузке пользователей'
+	)
 	const [list, setList] = useState<IUsersUser[]>([])
-	const [isLoading, setIsLoading] = useState(false)
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)
-	const [error, setError] = useState<Error | string | null>(null)
 
 	const fetchUsers = async () => {
-		setIsLoading(true)
-		try {
-			const res = await requestGetUsers({ size, number })
-			setList(res.user.request)
-		} catch (error) {
-			setError(error.message || 'Ошибка при загрузке пользователей')
-		} finally {
-			setIsLoading(false)
-		}
+		const res = await request({ size, number })
+		setList(res.user.request)
 	}
 
 	useEffect(() => {

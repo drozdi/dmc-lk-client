@@ -11,14 +11,15 @@ interface AccordionTabProps {
 	id?: string
 	className?: string
 	children?: React.ReactNode
-	value: string
+	value?: string
 	multiple?: boolean
 	border?: boolean
 	filled?: boolean
 	square?: boolean
 	separated?: boolean
 	name?: string | string[]
-	onChange: (event: React.ChangeEvent, value: string) => void
+	keepMounted?: boolean
+	onChange?: (event: React.ChangeEvent, value: string) => void
 }
 
 /**
@@ -32,6 +33,7 @@ interface AccordionTabProps {
  * @param {boolean} props.filled - флаг, указывающий на то, заполнен ли компонент
  * @param {boolean} props.square - флаг, указывающий на то, имеет ли компонент квадратную форму
  * @param {boolean} props.separated - флаг, указывающий на то, разделены ли элементы
+ * @param {boolean} props.keepMounted - флаг, указывающий на то, нужно ли сохранять элемент при изменении состояния
  * @param {Function} props.onChange - функция, которая будет вызвана при изменении состояния
  * @param {number|string|array} props.value - значение компонента
  * @param {string} props.name - имя компонента
@@ -49,6 +51,7 @@ export function DmcAccordion({
 	onChange,
 	value: propsValue,
 	name,
+	keepMounted,
 	...props
 }: AccordionTabProps) {
 	const uid = uuid(id)
@@ -82,6 +85,7 @@ export function DmcAccordion({
 	const context = useMemo(() => {
 		return {
 			value: current,
+			keepMounted,
 			isActive: (value: string) => {
 				if (multiple && Array.isArray(current)) {
 					return current.includes(value)
@@ -114,13 +118,13 @@ export function DmcAccordion({
 			},
 			onKeyDown: scopedKeydownHandler({
 				parentSelector: '.dmc-accordion',
-				siblingSelector: 'button, [role="button"]',
+				siblingSelector: '.dmc-accordion-header',
 				loop: true,
 				activateOnFocus: !multiple,
 				orientation: 'xy',
 			}),
 		}
-	}, [uid, current, multiple, handleChange])
+	}, [uid, current, multiple, keepMounted, handleChange])
 
 	useLayoutEffect(() => {
 		let newValue

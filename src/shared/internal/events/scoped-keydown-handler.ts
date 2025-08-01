@@ -85,6 +85,7 @@ export function scopedKeydownHandler({
 		const elements = Array.from(
 			target.closest(parentSelector).querySelectorAll(siblingSelector) || []
 		)
+
 		const current = elements.findIndex(el => target === el)
 		const nextIndex = getNextIndex(current, elements, loop)
 		const previousIndex = getPreviousIndex(current, elements, loop)

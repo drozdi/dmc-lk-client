@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { TbX } from 'react-icons/tb'
+import { useQuery } from '../../../../../shared/hooks'
 import {
 	DmcBtn,
 	DmcItem,
@@ -11,7 +12,7 @@ import {
 import { requestAnalyticsIncident } from '../../../api'
 
 export function Detail(props) {
-	const [isLoading, setIsLoading] = useState(false)
+	const { isLoading, request } = useQuery(requestAnalyticsIncident)
 	const [data, setData] = useState([])
 
 	const [{ name_production, production_id }, setProduction] = useState({
@@ -37,10 +38,8 @@ export function Detail(props) {
 	})
 
 	async function fetch() {
-		setIsLoading(true)
-		const res = await requestAnalyticsIncident(query)
+		const res = await request(query)
 		setData(res.message)
-		setIsLoading(false)
 	}
 	useEffect(() => {
 		fetch()

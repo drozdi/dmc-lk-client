@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
+import { useQuery } from '../../../../shared/hooks'
 import {
 	DmcBtn,
 	DmcItem,
@@ -22,10 +23,26 @@ interface ListQueriesProps {
 }
 
 export function ListQueries({ className }: ListQueriesProps) {
-	const [list, setList] = useState([])
-	const [isLoading, setIsLoading] = useState<boolean>(false)
-	const [error, setError] = useState<string>()
+	const {
+		isLoading: isLoadingList,
+		error: errorList,
+		request: requestList,
+	} = useQuery(requestAnalyticsGetQueries)
+	const {
+		isLoading: isLoadingRemove,
+		error: errorRemove,
+		request: requestRemove,
+	} = useQuery(requestAnalyticsRemoveQuery)
+	const isLoading = useMemo<boolean>(
+		() => isLoadingList || isLoadingRemove,
+		[isLoadingList, isLoadingRemove]
+	)
+	const error = useMemo<string>(
+		() => errorList || errorRemove,
+		[errorList, errorRemove]
+	)
 
+	const [list, setList] = useState([])
 	const [size, setSize] = useState(15)
 	const [number, setNumber] = useState(0)
 	const [{ isNext, isPrev }, setState] = useState<{
@@ -36,24 +53,15 @@ export function ListQueries({ className }: ListQueriesProps) {
 	})
 
 	const fetchList = async () => {
-		setIsLoading(true)
-		setError('')
-		try {
-			const res = await requestAnalyticsGetQueries({
-				size,
-				number,
-			})
-			setState({
-				isNext: res.request.length >= size,
-				isPrev: number > 1,
-			})
-			setList(res.request)
-		} catch (error) {
-			setError(error.response?.data?.detail || error.message || 'Ошибка')
-			setList([])
-		} finally {
-			setIsLoading(false)
-		}
+		const res = await requestList({
+			size,
+			number,
+		})
+		setState({
+			isNext: res.request.length >= size,
+			isPrev: number > 1,
+		})
+		setList(res.request)
 	}
 	const handleRemove = async (event: React.MouseEvent, item) => {
 		event?.stopPropagation()
@@ -61,16 +69,8 @@ export function ListQueries({ className }: ListQueriesProps) {
 		if (!confirm(`Точно хотите удалмть "${item.name_query}"?`)) {
 			return
 		}
-		setIsLoading(true)
-		setError('')
-		try {
-			await requestAnalyticsRemoveQuery(item.id)
-			await fetchList()
-		} catch (error) {
-			setError(error.response?.data?.detail || error.message || 'Ошибка')
-		} finally {
-			setIsLoading(false)
-		}
+		await requestRemove(item.id)
+		await fetchList()
 	}
 
 	useEffect(() => {

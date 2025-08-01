@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
 	Cell,
 	Legend,
@@ -23,13 +23,8 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		d?: IAnalyticsResponse
 		p?: IAnalyticsResponse
 	}>({})
-	const [errors, setErrors] = useState<{
-		filterdate_from?: string
-		filterdate_to?: string
-		step?: string
-		event?: string
-	}>({})
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
+
 	async function sendRequest(event: IAnalyticsQuery['event']) {
 		return await request({ ...query, event })
 	}

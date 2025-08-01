@@ -3,7 +3,7 @@ import { api } from '../../../shared/api'
 export async function requestLabelsCountReset(params: {
 	production_id: number
 }) {
-	const res = await api.post('/count_label/reset/', { params })
+	const res = await api.get('/count_label/reset/', { params })
 	return res.data
 }
 
@@ -11,10 +11,10 @@ export async function requestLabelsCountHistory({
 	size = 100,
 	number = 0,
 }: {
-	size: number
-	number: number
-}) {
-	const res = await api.post('/count_label/reset/', {
+	size?: number
+	number?: number
+} = {}) {
+	const res = await api.get('/count_label/history/', {
 		params: { size, number },
 	})
 	return res.data

@@ -11,6 +11,7 @@ interface AccordionTabProps {
 	className?: string
 	children?: React.ReactNode
 	disabled?: boolean
+	keepMounted?: boolean
 	value: string
 }
 
@@ -20,6 +21,7 @@ interface AccordionTabProps {
  * @param {Object} props - Свойства компонента.
  * @param {string} [props.id] - Уникальный идентификатор вкладки.
  * @param {boolean} [props.active] - Флаг, указывающий, активна ли вкладка.
+ * @param {boolean} [props.keepMounted] - Флаг, указывающий, нужно ли сохранять вкладки в DOM.
  * @param {string} [props.className] - Дополнительные CSS-классы для вкладки.
  * @param {ReactNode} props.children - Дочерние элементы вкладки.
  * @param {boolean} [props.disabled] - Флаг, указывающий, отключена ли вкладка.
@@ -33,6 +35,7 @@ export function DmcAccordionTab({
 	children,
 	disabled,
 	value,
+	keepMounted,
 	...props
 }: AccordionTabProps) {
 	const ctx = useDmcAccordionContext()
@@ -44,6 +47,7 @@ export function DmcAccordionTab({
 		return {
 			value,
 			disabled,
+			keepMounted: keepMounted || ctx?.keepMounted || false,
 			active: isActive ?? expanded,
 			getPanelId: () => ctx?.getPanelId(value) ?? `${uid}-panel`,
 			getHeaderId: () => ctx?.getHeaderId(value) ?? `${uid}-header`,
@@ -56,7 +60,7 @@ export function DmcAccordionTab({
 				ctx || setExpanded(v => !v)
 			},
 		}
-	}, [value, disabled, isActive, expanded, uid, ctx])
+	}, [value, disabled, isActive, expanded, uid, ctx, keepMounted])
 
 	return (
 		<div

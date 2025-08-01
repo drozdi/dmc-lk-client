@@ -2,6 +2,7 @@ import { createSafeContext } from '../../internal/utils'
 
 interface AccordionContext {
 	value: string | string[] | undefined
+	keepMounted?: boolean
 	isActive: (value: string) => boolean
 	getHeaderId: (value: string) => string
 	getPanelId: (value: string) => string

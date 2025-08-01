@@ -1,12 +1,12 @@
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/react'
+import { Children, cloneElement } from 'react'
 interface ContainerProps {
-	className?: string
 	column: string
 	children: React.ReactNode
 }
 
-export function Container({ className, column, children }: ContainerProps) {
+export function GroupContainer({ column, children, ...props }: ContainerProps) {
 	const { isDropTarget, ref } = useDroppable({
 		id: column,
 		type: 'column',
@@ -14,10 +14,10 @@ export function Container({ className, column, children }: ContainerProps) {
 		collisionPriority: CollisionPriority.Low,
 	})
 	const style = isDropTarget ? { background: '#00000030' } : undefined
-
-	return (
-		<div className={className} ref={ref} style={style}>
-			{children}
-		</div>
-	)
+	Children.only(children)
+	return cloneElement(children, {
+		...props,
+		style,
+		ref,
+	})
 }

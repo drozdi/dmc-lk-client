@@ -27,6 +27,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	const { fields, list } = fieldsStore
 	const { template, data, isNext, isPrev, limit, date, isLoading } =
 		elasticStore
+
 	const selectRef = useRef()
 
 	const variantFields = useMemo<
@@ -148,7 +149,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		if (elasticStore.id) {
 			elasticStore.reset()
 		}
-	}, [])
+	}, [elasticStore.id])
 
 	return (
 		<div className={className}>

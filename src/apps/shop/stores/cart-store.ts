@@ -7,13 +7,17 @@ import {
 	updateItemCart,
 } from '../api/api'
 class CartStore {
-	list = []
+	_list = []
 	error = null
 	opened = false
 	isLoading = false
+	isLoaded = false
 	constructor() {
 		makeAutoObservable(this)
+	}
+	get list() {
 		this.load()
+		return this._list
 	}
 	open() {
 		this.opened = true
@@ -25,8 +29,8 @@ class CartStore {
 		this.opened = !this.opened
 	}
 	get totalPrice() {
-		if (this.list.length) {
-			return this.list.reduce(
+		if (this._list.length) {
+			return this._list.reduce(
 				(acc, item) => acc + item.price * item.count_product,
 				0
 			)
@@ -34,15 +38,23 @@ class CartStore {
 			return 0
 		}
 	}
-	private async load() {
+	private async load(reloding: boolean = false) {
+		if (reloding) {
+			this.isLoaded = false
+			this._list = []
+		}
+		if (this.isLoaded) {
+			return
+		}
 		this.isLoading = true
 		try {
 			const data = await getCart()
-			this.list = data?.request || []
-			for (let i in this.list) {
-				this.list[i] = {
-					...this.list[i],
-					...(await getProductByCode(this.list[i].product_code)),
+			this.isLoaded = true
+			this._list = data?.request || []
+			for (let i in this._list) {
+				this._list[i] = {
+					...this._list[i],
+					...(await getProductByCode(this._list[i].product_code)),
 				}
 			}
 		} catch (e) {
@@ -60,21 +72,23 @@ class CartStore {
 				count_product: 1,
 				...product,
 			})
-			this.list.push(response)
+			this._list.push(response)
 		} catch (e) {
 			console.error(e)
 		}
 	}
 	async removeFromCart(rItem) {
 		await removeItemCart(this.getId(rItem))
-		this.list = this.list.filter(item => this.getId(item) !== this.getId(rItem))
+		this._list = this._list.filter(
+			item => this.getId(item) !== this.getId(rItem)
+		)
 	}
 	async setCountProduct(id, count_product) {
 		if (count_product > 0) {
 			const updatedItem = await updateItemCart(id, {
 				count_product,
 			})
-			this.list = this.list.map(item =>
+			this._list = this._list.map(item =>
 				this.getId(item) === this.getId(updatedItem) ? updatedItem : item
 			)
 		} else {
@@ -83,12 +97,12 @@ class CartStore {
 	}
 	getCountProduct(id) {
 		return (
-			this.list.find(item => this.getId(item) === this.getId(id))
+			this._list.find(item => this.getId(item) === this.getId(id))
 				.count_product || 0
 		)
 	}
 	getProduct(id) {
-		return this.list.find(item => this.getId(item) === this.getId(id))
+		return this._list.find(item => this.getId(item) === this.getId(id))
 	}
 }
 

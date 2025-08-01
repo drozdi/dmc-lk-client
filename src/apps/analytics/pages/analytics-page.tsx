@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DmcFullscreen, DmcInput } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
@@ -34,10 +34,6 @@ export function AnalyticsPage() {
 			console.error(error)
 		}
 	}
-
-	useEffect(() => {
-		console.log(query)
-	}, [query])
 
 	return (
 		<div>

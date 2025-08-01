@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
 import { Template } from '../../../components/context'
+import { useQuery } from '../../../shared/hooks'
 import {
 	DmcBtn,
 	DmcInput,
@@ -37,9 +38,17 @@ interface UserFormProps {
 }
 
 export function UserForm({ id, className }: UserFormProps) {
-	const [_isLoading, setIsLoading] = useState<boolean>(false)
-	const [error, setError] = useState<string | null>(null)
 	const { products } = usersStore
+	const {
+		isLoading: isLoadingGet,
+		error: errorGet,
+		request: requestGet,
+	} = useQuery(requestGetUser, 'Пользователь не найден')
+	const {
+		isLoading: isLoadingUpdate,
+		error: errorUpdate,
+		request: requestUpdate,
+	} = useQuery(requestUpdateUser)
 
 	const {
 		register,
@@ -62,27 +71,21 @@ export function UserForm({ id, className }: UserFormProps) {
 		resolver: yupResolver(fieldsSchema),
 	})
 
-	const isLoading = useMemo(
-		() => isLoadingForm || _isLoading,
-		[isLoadingForm, _isLoading]
+	const isLoading = useMemo<boolean>(
+		() => isLoadingForm || isLoadingGet || isLoadingUpdate,
+		[isLoadingForm, isLoadingGet, isLoadingUpdate]
+	)
+	const error = useMemo<string>(
+		() => errorGet || errorUpdate,
+		[errorGet, errorUpdate]
 	)
 
-	const navigate = useNavigate()
-
 	async function handleSave(formData: IUsersUser) {
-		try {
-			await requestUpdateUser(id, formData)
-		} catch (e) {
-			setError(e.message)
-		}
+		await requestUpdate(id, formData)
 	}
 	async function handleSaveNavigate(formData: IUsersUser) {
-		try {
-			await requestUpdateUser(id, formData)
-			navigate('/users')
-		} catch (e) {
-			setError(e.message)
-		}
+		await requestUpdate(id, formData)
+		useNavigate()('/users')
 	}
 
 	const selectProductions = watch('id_production')
@@ -92,19 +95,9 @@ export function UserForm({ id, className }: UserFormProps) {
 			if (!id) {
 				return
 			}
-			setIsLoading(true)
-			setError('')
-			try {
-				const user = await requestGetUser(id)
-				user.id_production = (user.id_production || []).map(item =>
-					String(item)
-				)
-				reset(user)
-			} catch (e) {
-				setError('Пользователь не найден')
-			} finally {
-				setIsLoading(false)
-			}
+			const user = await requestGet(id)
+			user.id_production = (user.id_production || []).map(item => String(item))
+			reset(user)
 		}
 		fetchUser()
 	}, [id])

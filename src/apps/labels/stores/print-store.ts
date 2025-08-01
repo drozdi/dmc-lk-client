@@ -8,7 +8,6 @@ class PrintStore {
 	error?: string = undefined
 	constructor() {
 		makeAutoObservable(this)
-		this.load()
 	}
 	get prints() {
 		this.load()
@@ -26,6 +25,7 @@ class PrintStore {
 		this.isLoading = true
 		try {
 			const res = await requestLabelsAllPrint()
+			this.isLoaded = true
 			this._prints = res.data
 		} catch (error) {
 			this.error =

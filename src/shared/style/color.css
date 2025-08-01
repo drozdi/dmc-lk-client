@@ -22,3 +22,27 @@
 .text-dark {
 	color: var(--color-dark);
 }
+.dmc-bg-primary {
+	@apply dmc-bg-primary;
+}
+.dmc-bg-secondary {
+	@apply dmc-bg-secondary;
+}
+.dmc-bg-accent {
+	@apply dmc-bg-accent;
+}
+.dmc-bg-success {
+	@apply dmc-bg-success;
+}
+.dmc-bg-warning {
+	@apply dmc-bg-warning;
+}
+.dmc-bg-info {
+	@apply dmc-bg-info;
+}
+.dmc-bg-danger {
+	@apply dmc-bg-danger;
+}
+.dmc-bg-danger {
+	@apply dmc-bg-danger;
+}

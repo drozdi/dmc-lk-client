@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { useQuery } from '../../../../shared/hooks'
 import {
 	DmcBtn,
 	DmcInput,
@@ -15,7 +16,7 @@ import { Detail } from './components/detail'
 
 export const AllIncident = observer(() => {
 	const day = dayjs()
-	const [isLoading, setLoading] = useState(false)
+	const { isLoading, request } = useQuery(requestAnalyticsIncident)
 	const [data, setData] = useState([])
 	const [query, setQuery] = useState({
 		limit_page: 1000,
@@ -42,14 +43,8 @@ export const AllIncident = observer(() => {
 	}
 
 	async function fetch() {
-		setLoading(true)
-		try {
-			const res = await requestAnalyticsIncident(query)
-			setData(res?.message)
-		} catch (error) {
-		} finally {
-			setLoading(false)
-		}
+		const res = await request(query)
+		setData(res?.message)
 	}
 
 	return (

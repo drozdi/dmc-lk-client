@@ -36,7 +36,7 @@
 	grid-template-rows: minmax(min-content, auto) 1fr;
 }
 .dmc-accordion-tab--expanded .dmc-accordion-chevron {
-	transform: rotate(90deg);
+	@apply rotate-90;
 }
 
 .dmc-accordion-tab--disabled {

@@ -66,7 +66,7 @@ api.interceptors.response.use(
 				console.error(refreshError)
 				// Если не удалось обновить - разлогиниваем
 				clearTokens()
-				//window.location.href = '/auth/sign-in'
+				window.location.href = '/auth/sign-in'
 				return Promise.reject(error)
 			}
 		}
