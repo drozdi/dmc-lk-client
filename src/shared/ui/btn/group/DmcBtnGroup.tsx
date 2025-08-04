@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { cls } from '../../../utils'
-import { XBtnGroupProvider } from './XBtnGroupContext'
+import { DmcBtnGroupProvider } from './DmcBtnGroupContext'
 import './style.css'
 
 import { scopedKeydownHandler } from '../../../internal/events/scoped-keydown-handler'
@@ -21,7 +21,7 @@ interface BtnGroupProps {
 	name?: string
 	disabled?: boolean
 }
-export function BtnGroup({
+export function DmcBtnGroup({
 	children,
 	className,
 	selectable,
@@ -97,7 +97,7 @@ export function BtnGroup({
 
 	const context = useMemo(
 		() => ({
-			btnProps: {
+			props: {
 				...props,
 				onKeyDown: scopedKeydownHandler({
 					parentSelector: '[role="group"]',
@@ -112,10 +112,10 @@ export function BtnGroup({
 			multiple,
 			value: propsValue,
 			onChange: handleClick,
-			isDisabled: value => {
+			isDisabled: (value: any): boolean | undefined => {
 				return disabled
 			},
-			isActive: value => {
+			isActive: (value: any): boolean | undefined => {
 				if (switchable) {
 					return current === value
 				}
@@ -150,18 +150,18 @@ export function BtnGroup({
 
 	return (
 		<div
-			className={cls('mdc-btn-group', className, {
-				'mdc-btn-group--vertical': vertical,
-				'mdc-btn-group--separator': !pills && !props.round && separator,
-				'mdc-btn-group--grow': grow,
-				'mdc-btn-group--pills': pills,
-				'mdc-btn-group--round': props.round,
+			className={cls('dmc-btn-group', className, {
+				'dmc-btn-group--vertical': vertical,
+				'dmc-btn-group--separator': !pills && !props.round && separator,
+				'dmc-btn-group--grow': grow,
+				'dmc-btn-group--pills': pills,
+				'dmc-btn-group--round': props.round,
 				[`justify-${align}`]: !vertical && align,
 				[`items-${align}`]: vertical && align,
 			})}
 			role='group'
 		>
-			<XBtnGroupProvider value={context}>{children}</XBtnGroupProvider>
+			<DmcBtnGroupProvider value={context}>{children}</DmcBtnGroupProvider>
 		</div>
 	)
 }

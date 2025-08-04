@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import { render } from '../../internal/render'
 import { Sections } from '../../internal/sections'
 import { cls } from '../../utils'
+import { DmcIcon } from '../icon'
 import { DmcSpinner } from '../spinner'
+import { DmcBtnGroup, useDmcBtnGroupContext } from './group'
+
 import './style.css'
 
 interface BtnProps {
@@ -27,9 +30,9 @@ interface BtnProps {
 	block?: boolean
 	square?: boolean
 	round?: boolean
+	value?: string | number
 	rounded?: boolean
 	loading?: boolean
-	icon?: boolean
 	active?: boolean
 	disabled?: boolean
 	leftSection?: React.ReactElement
@@ -37,33 +40,42 @@ interface BtnProps {
 	[key: string]: any
 }
 
-export const DmcBtn = ({
-	active,
-	children,
-	className,
-	color,
-	size,
-	flat,
-	text,
-	tonal,
-	plain,
-	outline,
-	block,
-	square,
-	round,
-	rounded,
-	loading,
-	icon,
-	leftSection,
-	rightSection,
-	...props
-}: BtnProps) => {
+export const DmcBtn = (_props: BtnProps) => {
+	const ctx = useDmcBtnGroupContext()
+	const {
+		children,
+		className,
+		color,
+		size,
+		flat,
+		text,
+		tonal,
+		plain,
+		outline,
+		block,
+		square,
+		round,
+		rounded,
+		loading,
+		leftSection,
+		rightSection,
+		...props
+	} = { ...ctx?.props, ..._props }
+
+	if (ctx) {
+		props.onClick = (event, value) => {
+			ctx.onChange?.(event, props.value)
+			_props.onClick?.(event, value)
+		}
+		props.active = ctx.isActive?.(props.value) ?? _props.active
+		props.disabled = ctx.isDisabled?.(props.value) ?? _props.disabled
+	}
+
 	const isIcon = useMemo(
 		() =>
-			icon &&
-			((!leftSection != !rightSection && !children) ||
-				(!leftSection && !rightSection && children)),
-		[children, leftSection, rightSection, icon]
+			(!leftSection != !rightSection && !children) ||
+			(!leftSection && !rightSection && children?.type === DmcIcon),
+		[children, leftSection, rightSection]
 	)
 	return render('button', {
 		...props,
@@ -71,7 +83,7 @@ export const DmcBtn = ({
 			'dmc-btn',
 			{
 				'ndc-btn--disabled': props.disabled,
-				'dmc-btn--active': active,
+				'dmc-btn--active': props.active,
 				'dmc-btn--flat': flat,
 				'dmc-btn--text': text,
 				'dmc-btn--tonal': tonal,
@@ -110,3 +122,5 @@ export const DmcBtn = ({
 			),
 	})
 }
+
+DmcBtn.Group = DmcBtnGroup

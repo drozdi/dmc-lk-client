@@ -1,10 +1,11 @@
 import dayjs from 'dayjs'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import {
 	CartesianGrid,
 	Legend,
 	Line,
 	LineChart,
+	ReferenceArea,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -13,9 +14,15 @@ import {
 
 import { DmcBtn, DmcLoading, DmcSelect } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
-import { mapEvent } from '../entites/constants'
+import { mapEvent, mapEventColor } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
+
+const initialState = {
+	refAreaLeft: '',
+	refAreaRight: '',
+	animation: true,
+}
 
 export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
@@ -115,62 +122,93 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		setQuery(props)
 	}, [props])
 
-	const stepLow = useCallback(
-		(index: number) => {
-			const d = dayjs(labels[index])
-			let step: ChartAnalyticProps['step'] = query.step
-			let filterdate_from: ChartAnalyticProps['filterdate_from'] =
-				query.filterdate_from
-			let filterdate_to: ChartAnalyticProps['filterdate_to'] =
-				query.filterdate_to
+	const stepLow = (from, to) => {
+		const dFrom = dayjs(from)
+		const dTo = dayjs(to)
 
-			switch (query.step) {
-				case 'y':
-					step = 'mon'
-					filterdate_from = d.year(d.year() - 1).format('YYYY-MM-DD')
-					filterdate_to = d.format('YYYY-MM-DD')
-					break
-				case 'mon':
-					step = 'd'
-					filterdate_from = d.month(d.month() - 1).format('YYYY-MM-DD')
-					filterdate_to = d.format('YYYY-MM-DD')
-					break
-				case 'd':
-					step = 'h'
-					filterdate_from = d.date(d.date() - 1).format('YYYY-MM-DD HH:mm:ss')
-					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
-					break
-				case 'h':
-					step = 'm'
-					filterdate_from = d.hour(d.hour() - 1).format('YYYY-MM-DD HH:mm:ss')
-					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
-					break
-				case 'm':
-					step = 's'
-					filterdate_from = d
-						.minute(d.minute() - 1)
-						.format('YYYY-MM-DD HH:mm:ss')
-					filterdate_to = d.format('YYYY-MM-DD HH:mm:ss')
-					break
-			}
+		let d = dTo.diff(dFrom) / 1000 / 60 / 60 / 24
 
+		if (d > 60) {
 			setQuery({
-				filterdate_from,
-				filterdate_to,
-				step,
+				...query,
+				step: 'mon',
+				filterdate_from: dFrom.format('YYYY-MM-DD'),
+				filterdate_to: dTo.format('YYYY-MM-DD'),
 			})
-		},
-		[labels, query]
-	)
+		} else if (d > 7) {
+			setQuery({
+				...query,
+				step: 'd',
+				filterdate_from: dFrom.format('YYYY-MM-DD'),
+				filterdate_to: dTo.format('YYYY-MM-DD'),
+			})
+		} else {
+			d *= 24
+			if (d > 24) {
+				setQuery({
+					...query,
+					step: 'h',
+					filterdate_from: dFrom.format('YYYY-MM-DD HH:mm'),
+					filterdate_to: dTo.format('YYYY-MM-DD HH:mm'),
+				})
+			} else {
+				d *= 60
+				if (d > 60) {
+					setQuery({
+						...query,
+						step: 'm',
+						filterdate_from: dFrom.format('YYYY-MM-DD HH:mm:ss'),
+						filterdate_to: dTo.format('YYYY-MM-DD HH:mm:ss'),
+					})
+				} else {
+					d *= 60
+					setQuery({
+						...query,
+						step: 's',
+						filterdate_from: dFrom.format('YYYY-MM-DD HH:mm:ss'),
+						filterdate_to: dTo.format('YYYY-MM-DD HH:mm:ss'),
+					})
+				}
+			}
+		}
+	}
 
-	const handleMouseDown = (...args) => {
-		//console.log('handleMouseDown', args)
+	const [state, setState] = useState<{
+		refAreaLeft: string | number
+		refAreaRight: string | number
+		animation: boolean
+	}>(initialState)
+	const { refAreaLeft, refAreaRight } = state
+
+	const handleMouseDown = event => {
+		setState(prevState => ({ ...prevState, refAreaLeft: event.activeLabel }))
 	}
-	const handleMouseMove = (...args) => {
-		//console.log('handleMouseMove', args)
+	const handleMouseMove = event => {
+		state.refAreaLeft &&
+			setState(prevState => ({ ...prevState, refAreaRight: event.activeLabel }))
 	}
-	const handleMouseUp = (...args) => {
-		//console.log('handleMouseUp', args)
+	const handleMouseUp = event => {
+		let { refAreaLeft, refAreaRight } = state
+
+		if (refAreaLeft === refAreaRight || refAreaRight === '') {
+			setState(prevState => ({
+				...prevState,
+				refAreaLeft: '',
+				refAreaRight: '',
+			}))
+			return
+		}
+
+		if (refAreaLeft > refAreaRight) {
+			;[refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft]
+		}
+
+		stepLow(refAreaLeft, refAreaRight)
+		setState(prevState => ({
+			...prevState,
+			refAreaLeft: '',
+			refAreaRight: '',
+		}))
 	}
 
 	return (
@@ -203,7 +241,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 					Сбросить
 				</DmcBtn>
 			</div>
-			<div className='w-full aspect-square max-h-1/2 max-w-1/2'>
+			<div className='w-full aspect-square max-h-full max-w-1/2'>
 				<DmcLoading active={isLoading}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
@@ -224,23 +262,30 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 									name={mapEvent.d}
 									type='monotone'
 									dataKey='d'
-									stroke='#35a2eb'
+									stroke={mapEventColor.d}
 									label={mapEvent.d}
 								/>
 								<Line
 									name={mapEvent.i}
 									type='monotone'
 									dataKey='i'
-									stroke='#ff6384'
+									stroke={mapEventColor.i}
 									label={mapEvent.i}
 								/>
 								<Line
 									name={mapEvent.v}
 									type='monotone'
 									dataKey='v'
-									stroke='#00ff84'
+									stroke={mapEventColor.v}
 									label={mapEvent.v}
 								/>
+								{refAreaLeft && refAreaRight ? (
+									<ReferenceArea
+										x1={refAreaLeft}
+										x2={refAreaRight}
+										strokeOpacity={0.3}
+									/>
+								) : null}
 							</LineChart>
 						</ResponsiveContainer>
 					)}
@@ -249,10 +294,3 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		</div>
 	)
 })
-
-/**
- * v: '#00ff84',
- * i: '#ff6384',
- * d: '#35a2eb',
- * p: '#006384'
- * */

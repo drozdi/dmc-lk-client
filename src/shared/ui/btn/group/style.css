@@ -16,7 +16,7 @@
 }
 
 .dmc-btn-group--separator:not(.dmc-btn-group--vertical) {
-	@apply divide-dmc-2;
+	@apply divide-x-2;
 
 	> * {
 		border-color: --alpha(currentColor / 50%) !important;
@@ -43,7 +43,7 @@
 	}
 }
 .dmc-btn-group--vertical {
-	@apply fledmc-col;
+	@apply flex-col;
 }
 
 .dmc-btn-group--vertical:not(.dmc-btn-group--pills, .dmc-btn-group--round) > * {

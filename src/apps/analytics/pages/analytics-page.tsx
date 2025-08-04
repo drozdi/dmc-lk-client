@@ -1,13 +1,16 @@
+import dayjs from 'dayjs'
 import { useState } from 'react'
 import { DmcFullscreen, DmcInput } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 
+const dNow = dayjs()
+
 export function AnalyticsPage() {
 	const [query, setQuery] = useState<Omit<IAnalyticsQuery, 'step' | 'event'>>({
-		filterdate_from: '2024-05-24',
-		filterdate_to: '2024-07-24',
+		filterdate_from: dNow.month(dNow.month() - 2).format('YYYY-MM-DD'),
+		filterdate_to: dNow.format('YYYY-MM-DD'),
 	})
 	const [errors, setErrors] = useState<Record<string, string>>({})
 

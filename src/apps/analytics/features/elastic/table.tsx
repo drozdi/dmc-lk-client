@@ -3,8 +3,9 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from '@tanstack/react-table'
+import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import { TbColumnRemove } from 'react-icons/tb'
 import {
 	DmcBtn,
@@ -28,8 +29,6 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	const { fields, list } = fieldsStore
 	const { template, data, isNext, isPrev, limit, date, isLoading } =
 		elasticStore
-
-	const selectRef = useRef()
 
 	const variantFields = useMemo<
 		Array<{
@@ -101,7 +100,6 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		}
 		template.company.select_field.push(select)
 		elasticStore.saveTemp({ ...template })
-		selectRef.current?.reset?.()
 	}
 	const handleRemoveField = (select: string) => {
 		template.company.select_field = template.company.select_field.filter(
@@ -173,7 +171,6 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						hideMessage
 						value=''
 						onChange={({ target }) => handleAddField(target.value)}
-						ref={selectRef}
 					>
 						<option disabled value=''>
 							Добавить поле
@@ -185,7 +182,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						))}
 					</DmcSelect>
 					<DmcInput
-						value={date.date_from}
+						value={dayjs(date.date_from).format('YYYY-MM-DD')}
 						label='С'
 						type='date'
 						name='date_from'
@@ -197,7 +194,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						hideMessage
 					/>
 					<DmcInput
-						value={date.date_to}
+						value={dayjs(date.date_to).format('YYYY-MM-DD')}
 						label='по'
 						type='date'
 						name='date_to'
@@ -292,8 +289,8 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					<DmcMarkupTable.Tbody>
 						{table.getRowModel().rows.map(row => (
 							<DmcMarkupTable.Tr key={row.id}>
-								{row.getVisibleCells().map(cell => (
-									<DmcMarkupTable.Td key={cell.id}>
+								{row.getVisibleCells().map((cell, index) => (
+									<DmcMarkupTable.Td key={cell.id + '-' + index}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</DmcMarkupTable.Td>
 								))}

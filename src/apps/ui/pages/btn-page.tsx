@@ -183,7 +183,7 @@ export function BtnPage() {
 							},
 							leftSection: {
 								type: 'checkbox',
-								val: 'mdi-map-marker',
+								val: 'tb-meat',
 							},
 							rightSection: {
 								type: 'checkbox',

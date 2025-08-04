@@ -12,3 +12,10 @@ export const mapEvent: Record<string, string> = {
 	d: 'дефект',
 	p: 'печать',
 }
+
+export const mapEventColor: Record<string, string> = {
+	v: '#00ff84',
+	i: '#ff6384',
+	d: '#35a2eb',
+	p: '#006384',
+}

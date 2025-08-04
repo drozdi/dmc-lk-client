@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom'
 import { AccordionPage } from './pages/accordion-page'
+import { BtnGroupPage } from './pages/btn-group-page'
 import { BtnPage } from './pages/btn-page'
+import { IconPage } from './pages/icon-page'
 import { IndexPage } from './pages/index-page'
 import { InputPage } from './pages/input-page'
 import { LinkPage } from './pages/link-page'
@@ -19,8 +21,16 @@ export default function ({ path = '/ui' }: AppRouterProps = {}): object {
 				element: <IndexPage />,
 			},
 			{
+				path: 'icon',
+				element: <IconPage />,
+			},
+			{
 				path: 'btn',
 				element: <BtnPage />,
+			},
+			{
+				path: 'btn-group',
+				element: <BtnGroupPage />,
 			},
 			{
 				path: 'list',

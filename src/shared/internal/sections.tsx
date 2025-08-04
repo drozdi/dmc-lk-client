@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { DmcIcon } from '../ui/icon'
 import { cls } from '../utils/'
 import { render } from './render'
 
@@ -8,13 +9,16 @@ import { render } from './render'
  * @param {React.ReactElement} section - Секция
  * @returns {null | React.ReactElement} Преобразованная секция
  */
-
 const processSection = (section?: React.ReactNode) => {
 	return useMemo(() => {
 		if (!section) {
 			return null
 		}
-		return <span className='dmc-section dmc-section--side'>{section}</span>
+		return (
+			<span className='dmc-section dmc-section--side'>
+				{typeof section === 'string' ? <DmcIcon>{section}</DmcIcon> : section}
+			</span>
+		)
 	}, [section])
 }
 

@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
@@ -13,21 +14,16 @@ import {
 	DmcSelect,
 } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
-import {
-	requestAnalyticsGetQueries,
-	requestAnalyticsRemoveQuery,
-} from '../../api/queries'
+import { requestAnalyticsRemoveQuery } from '../../api/queries'
+import { elasticStore } from '../../stores/elastic-store'
 
 interface ListQueriesProps {
 	className?: string
 }
 
-export function ListQueries({ className }: ListQueriesProps) {
-	const {
-		isLoading: isLoadingList,
-		error: errorList,
-		request: requestList,
-	} = useQuery(requestAnalyticsGetQueries)
+export const ListQueries = observer(({ className }: ListQueriesProps) => {
+	const { list, isLoading: isLoadingList, error: errorList } = elasticStore
+
 	const {
 		isLoading: isLoadingRemove,
 		error: errorRemove,
@@ -42,7 +38,6 @@ export function ListQueries({ className }: ListQueriesProps) {
 		[errorList, errorRemove]
 	)
 
-	const [list, setList] = useState([])
 	const [size, setSize] = useState(15)
 	const [number, setNumber] = useState(0)
 	const [{ isNext, isPrev }, setState] = useState<{
@@ -151,4 +146,4 @@ export function ListQueries({ className }: ListQueriesProps) {
 			</div>
 		</div>
 	)
-}
+})

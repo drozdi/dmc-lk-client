@@ -3,6 +3,10 @@
 	@apply flex flex-wrap relative;
 }
 
+.dmc-sections {
+	@apply gap-1;
+}
+
 .dmc-sections--col,
 .dmc-section {
 	@apply flex-col;

@@ -1,5 +1,7 @@
 import { createElement as h } from 'react'
-import { cls } from '../../utils'
+import * as TbIcons from 'react-icons/tb'
+import { camelize, capitalize, cls } from '../../utils'
+import './style.css'
 
 interface IconProps {
 	children?: string
@@ -7,12 +9,24 @@ interface IconProps {
 	name?: string
 	color?: string
 	as?: string
+	size?: number | string
+	title?: string
 	[key: string]: any
 }
+
+const replace = (str: string) => {
+	return str.replace('mdi-', 'tb-')
+}
+const getIcon = (name: string) => {
+	return TbIcons?.[capitalize(camelize(name))] || ''
+}
+
 export function DmcIcon({
 	children,
 	className,
 	color,
+	size,
+	title,
 	as = 'i',
 	...props
 }: IconProps) {
@@ -22,14 +36,24 @@ export function DmcIcon({
 	color &&= color = ' text-' + color
 	color ||= ''
 
+	let name = replace(children)
+
+	if (!/^tb-/.test(name)) {
+		name = 'tb-' + name
+	}
+	if (name === 'tb-close') {
+		name = 'tb-x'
+	}
+
+	const Icon = getIcon(name)
 	return h(
 		as,
 		{
 			...props,
-			className: cls('mdc-icon', color, className),
+			className: cls('dmc-icon', color, name.split('-')[0], name, className),
 			role: 'presentation',
 			'aria-hidden': 'true',
 		},
-		children
+		Icon && <Icon size={size} title={title} />
 	)
 }

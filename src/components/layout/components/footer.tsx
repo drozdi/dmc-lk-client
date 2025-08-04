@@ -21,7 +21,9 @@ export function Footer() {
 				}`
 			)}
 		>
-			<TemplateSlot name='footer' />
+			<TemplateSlot name='footer'>
+				<div></div>
+			</TemplateSlot>
 			<DmcBtn color='dark' size='sm' onClick={() => navigate(-1)}>
 				Назад
 			</DmcBtn>

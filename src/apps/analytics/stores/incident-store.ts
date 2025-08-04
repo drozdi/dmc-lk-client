@@ -1,7 +1,11 @@
 import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsIncident } from '../api/incident'
 
+import dayjs from 'dayjs'
+
 const ANALYTICS_INCIDENT_KEY = 'analytics.incident.form'
+
+const dNow = dayjs()
 
 class IncidentStore {
 	isLoading: boolean = false
@@ -12,7 +16,10 @@ class IncidentStore {
 		fields: any[]
 		details: any[]
 	} = {
-		filterdate: ['2024-05-23', '2024-07-23'],
+		filterdate: [
+			dNow.month(dNow.month() - 3).format('YYYY-MM-DD'),
+			dNow.format('YYYY-MM-DD'),
+		],
 		data: [],
 		fields: [],
 		details: [],

@@ -1,0 +1,6 @@
+@reference "@style";
+
+.dmc-icon {
+	font-size: inherit;
+	@apply text-[inherit];
+}

@@ -149,6 +149,9 @@
 	}
 }
 
+.dmc-btn-content {
+	@apply gap-1;
+}
 .dmc-btn--xs {
 	@apply text-xs px-2 py-1;
 }
@@ -157,11 +160,14 @@
 }
 .dmc-btn--lg {
 	@apply text-lg px-6 py-3;
+	.dmc-btn-content {
+		@apply gap-2;
+	}
 }
 
 .dmc-btn--icon,
 .dmc-btn--round {
-	@apply px-0;
+	@apply px-1;
 }
 
 .dmc-btn--block {

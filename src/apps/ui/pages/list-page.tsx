@@ -68,13 +68,13 @@ export function ListPage() {
 					</DmcItem>
 					<DmcItem>
 						<DmcItemSection avatar>
-							<DmcIcon>home</DmcIcon>
+							<DmcIcon>mdi-home</DmcIcon>
 						</DmcItemSection>
 						<DmcItemSection>
 							<DmcItemLabel>Item 3</DmcItemLabel>
 						</DmcItemSection>
 						<DmcItemSection side>
-							<DmcIcon>home</DmcIcon>
+							<DmcIcon>mdi-home</DmcIcon>
 						</DmcItemSection>
 						<DmcItemSection side>
 							<DmcIcon>mdi-close</DmcIcon>
@@ -82,7 +82,7 @@ export function ListPage() {
 					</DmcItem>
 					<DmcItem to='/' target='_blank'>
 						<DmcItemSection side>
-							<DmcIcon>home</DmcIcon>
+							<DmcIcon>mdi-home</DmcIcon>
 						</DmcItemSection>
 						<DmcItemSection>
 							<DmcItemLabel overline>Item 1</DmcItemLabel>
@@ -90,12 +90,12 @@ export function ListPage() {
 							<DmcItemLabel caption>Description</DmcItemLabel>
 						</DmcItemSection>
 						<DmcItemSection side top>
-							<DmcIcon>x</DmcIcon>
+							<DmcIcon>mdi-x</DmcIcon>
 						</DmcItemSection>
 					</DmcItem>
 					<DmcItem to='https://ya.ru/' target='_blank' disabled>
 						<DmcItemSection side>
-							<DmcIcon>home</DmcIcon>
+							<DmcIcon>mdi-home</DmcIcon>
 						</DmcItemSection>
 						<DmcItemSection>Yandex</DmcItemSection>
 					</DmcItem>

@@ -5,8 +5,16 @@ const paths = [
 		name: 'DmcBtn',
 	},
 	{
+		path: 'btn-group',
+		name: 'DmcBtnGroup',
+	},
+	{
 		path: 'list',
 		name: 'DmcList',
+	},
+	{
+		path: 'icon',
+		name: 'DmcIcon',
 	},
 	{
 		path: 'link',

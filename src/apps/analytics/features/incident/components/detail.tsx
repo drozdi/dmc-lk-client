@@ -103,7 +103,7 @@ export function Detail(props) {
 						onClick={() => setProduction(0, '')}
 						rightSection={<TbX />}
 					>
-						Плозадка: {name_production}
+						Площадка: {name_production}
 					</DmcBtn>
 				)}
 			</div>

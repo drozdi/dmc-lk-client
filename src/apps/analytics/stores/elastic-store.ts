@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsElastic } from '../api/elastic'
 import {
 	requestAnalyticsAddQuery,
+	requestAnalyticsGetQueries,
 	requestAnalyticsUpdateQuery,
 } from '../api/queries'
 
@@ -9,15 +10,17 @@ const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 
 class ElasticStore {
 	isLoading = false
-	error = undefined
+	isLoaded = false
+	_list = []
+	error?: string = undefined
 
 	template: IAnalyticsElasticQuery = {
 		company: {
 			select_field: [],
 			list_where: [],
 			date_limit: {
-				date_from: '2024-05-23',
-				date_to: '2024-07-23',
+				date_from: '',
+				date_to: '',
 				date_rounding: undefined,
 			},
 		},
@@ -36,6 +39,11 @@ class ElasticStore {
 	}
 	setName(name: string) {
 		this.name = name
+	}
+
+	get list() {
+		this.loadList()
+		return this._list
 	}
 
 	get nextPage() {
@@ -81,6 +89,32 @@ class ElasticStore {
 		const data = localStorage.getItem(ANALYTICS_ELASTIC_KEY)
 		if (data) {
 			this.template = JSON.parse(data)
+		}
+	}
+
+	async loadList(reloading: boolean = false) {
+		if (reloading) {
+			this.isLoaded = false
+			this._list = []
+		}
+		if (this.isLoaded) {
+			return
+		}
+		this.isLoading = true
+		this.error = ''
+
+		try {
+			const res = await requestAnalyticsGetQueries({
+				size: 100,
+				number: 0,
+			})
+			this.isLoaded = true
+			this._list = res.request
+		} catch (error) {
+			this.error =
+				error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
+		} finally {
+			this.isLoading = false
 		}
 	}
 
@@ -175,7 +209,7 @@ class ElasticStore {
 			this.isLoading = false
 		}
 	}
-	async clear() {
+	clear() {
 		this.template = {
 			company: {
 				select_field: [],
