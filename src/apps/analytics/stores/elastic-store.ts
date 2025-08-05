@@ -84,6 +84,20 @@ class ElasticStore {
 		return this.template.company.date_limit
 	}
 
+	size = 15
+	number = 0
+	state = {
+		isNext: false,
+		isPrev: false,
+	}
+	setNumber(number: number) {
+		this.number = number
+		this.loadList(true)
+	}
+	setSize(size: number) {
+		this.size = size
+		this.loadList(true)
+	}
 	constructor() {
 		makeAutoObservable(this)
 		const data = localStorage.getItem(ANALYTICS_ELASTIC_KEY)
@@ -105,11 +119,16 @@ class ElasticStore {
 
 		try {
 			const res = await requestAnalyticsGetQueries({
-				size: 100,
-				number: 0,
+				size: this.size,
+				number: this.number,
 			})
 			this.isLoaded = true
 			this._list = res.request
+
+			this.state = {
+				isNext: res.request.length >= this.size,
+				isPrev: this.number > 1,
+			}
 		} catch (error) {
 			this.error =
 				error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'

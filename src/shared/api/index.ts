@@ -54,7 +54,7 @@ api.interceptors.response.use(
 			try {
 				// Пытаемся обновить токен
 				const response = await requestRefresh(getRefreshToken())
-
+				console.log(response)
 				const { access, refresh } = response.token
 
 				setAccessToken(access)
@@ -66,7 +66,7 @@ api.interceptors.response.use(
 				console.error(refreshError)
 				// Если не удалось обновить - разлогиниваем
 				clearTokens()
-				window.location.href = '/auth/sign-in'
+				//window.location.href = '/auth/sign-in'
 				return Promise.reject(error)
 			}
 		}

@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -37,7 +38,7 @@ interface UserFormProps {
 	className?: string
 }
 
-export function UserForm({ id, className }: UserFormProps) {
+export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { products } = usersStore
 	const {
 		isLoading: isLoadingGet,
@@ -259,4 +260,4 @@ export function UserForm({ id, className }: UserFormProps) {
 			</DmcLoading>
 		</div>
 	)
-}
+})

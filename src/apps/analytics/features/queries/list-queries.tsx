@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
 import { useQuery } from '../../../../shared/hooks'
@@ -22,8 +22,15 @@ interface ListQueriesProps {
 }
 
 export const ListQueries = observer(({ className }: ListQueriesProps) => {
-	const { list, isLoading: isLoadingList, error: errorList } = elasticStore
-
+	const {
+		list,
+		isLoading: isLoadingList,
+		error: errorList,
+		state,
+		size,
+		number,
+	} = elasticStore
+	const { isNext = false, isPrev = false } = state
 	const {
 		isLoading: isLoadingRemove,
 		error: errorRemove,
@@ -38,26 +45,6 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		[errorList, errorRemove]
 	)
 
-	const [size, setSize] = useState(15)
-	const [number, setNumber] = useState(0)
-	const [{ isNext, isPrev }, setState] = useState<{
-		[key: string]: boolean
-	}>({
-		isNext: false,
-		isPrev: false,
-	})
-
-	const fetchList = async () => {
-		const res = await requestList({
-			size,
-			number,
-		})
-		setState({
-			isNext: res.request.length >= size,
-			isPrev: number > 1,
-		})
-		setList(res.request)
-	}
 	const handleRemove = async (event: React.MouseEvent, item) => {
 		event?.stopPropagation()
 		event?.preventDefault()
@@ -65,12 +52,8 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 			return
 		}
 		await requestRemove(item.id)
-		await fetchList()
+		await elasticStore.loadList(true)
 	}
-
-	useEffect(() => {
-		fetchList()
-	}, [size, number])
 
 	return (
 		<div className={cls(className, 'flex flex-col gap-3')}>
@@ -116,7 +99,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 						color='secondary'
 						disabled={!isPrev}
 						loading={isLoading}
-						onClick={() => setNumber(v => v - 1)}
+						onClick={() => elasticStore.setNumber(number - 1)}
 					>
 						Предыдущая
 					</DmcBtn>
@@ -125,7 +108,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 						color='secondary'
 						disabled={!isNext}
 						loading={isLoading}
-						onClick={() => setNumber(v => v + 1)}
+						onClick={() => elasticStore.setNumber(number + 1)}
 					>
 						Следующая
 					</DmcBtn>
@@ -135,7 +118,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					filled
 					dense
 					underlined
-					onChange={({ target }) => setSize(target.value)}
+					onChange={({ target }) => elasticStore.setSize(target.value)}
 				>
 					<option value='15'>15</option>
 					<option value='30'>30</option>

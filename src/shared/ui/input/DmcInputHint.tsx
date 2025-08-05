@@ -21,7 +21,7 @@ export const DmcInputHint = ({
 		<p
 			id={uid}
 			{...props}
-			className={cls('dmc-input-message dmc-input-message--error', className)}
+			className={cls('dmc-input-message dmc-input-message--hint', className)}
 		>
 			{children}
 		</p>

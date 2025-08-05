@@ -1,12 +1,12 @@
 import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
-import { render } from '../../internal/render'
 import { cls, debounce } from '../../utils'
+import { DmcInputBase } from './DmcInputBase'
 import { DmcInputError } from './DmcInputError'
 import { DmcInputHint } from './DmcInputHint'
-import { DmcInputLabel } from './DmcInputLabel'
 import { DmcInputMessages } from './DmcInputMessages'
 import './style.css'
+import { processSection } from './utils'
 
 interface InputProps {
 	color?: string
@@ -63,14 +63,16 @@ export const DmcInput = forwardRef(
 			stackLabel,
 			id,
 			type = 'text',
-			label,
 			className,
 			required,
 			disabled,
+			before: propsBefore,
+			after: propsAfter,
 			value,
 			rules = [],
 			onBlur,
 			lazyRules,
+			labelColor,
 			hint,
 			hideHint,
 			hideMessage,
@@ -106,7 +108,10 @@ export const DmcInput = forwardRef(
 
 		const isError = !!errorMessage || (dirty && error)
 		const errorMes = errorMessage || errors[0] || ''
-		const modColor = isError ? 'negative' : color
+		const modColor = isError ? 'warning' : color
+
+		const before = processSection(propsBefore, 'dmc-input-before')
+		const after = processSection(propsAfter, 'dmc-input-after')
 		return (
 			<>
 				<div
@@ -125,31 +130,22 @@ export const DmcInput = forwardRef(
 						className
 					)}
 				>
-					<div className='dmc-input-container'>
-						<div className='dmc-input-underlay'></div>
-						<div className='dmc-input-outline'>
-							<div className='dmc-input-outline-start'></div>
-							<div className='dmc-input-outline-notch'>
-								<DmcInputLabel required={required}>{label}</DmcInputLabel>
-							</div>
-							<div className='dmc-input-outline-end'></div>
-						</div>
-						<div className='dmc-input-underlined'></div>
-						{render('input', {
-							...props,
-							ref: ref,
-							value: value,
-							required: required,
-							disabled: disabled,
-							type,
-							id: uid,
-							onBlur: handlerBlur,
-							className: 'dmc-input-native',
-						})}
-						<DmcInputLabel required={required} htmlFor={uid}>
-							{label}
-						</DmcInputLabel>
-					</div>
+					{before}
+
+					<DmcInputBase
+						{...props}
+						ref={ref}
+						value={value}
+						required={required}
+						disabled={disabled}
+						labelColor={labelColor || modColor}
+						type={type}
+						id={uid}
+						onBlur={handlerBlur}
+					/>
+
+					{after}
+
 					<DmcInputMessages
 						hideMessage={hideMessage}
 						hideHint={hideHint}

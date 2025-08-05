@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
 import {
 	DmcBtn,
@@ -46,6 +46,11 @@ export const AllIncident = observer(() => {
 		const res = await request(query)
 		setData(res?.message)
 	}
+	useEffect(() => {
+		if (query.filterdate.length) {
+			fetch()
+		}
+	}, [])
 
 	return (
 		<div>
