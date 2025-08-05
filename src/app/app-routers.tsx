@@ -13,7 +13,6 @@ import { VerificatinPage } from '../pages/verification-page'
 import analyticsRouers from '../apps/analytics/routers'
 import labelsRouers from '../apps/labels/routers'
 import shopRouers from '../apps/shop/routers'
-import uiRouters from '../apps/ui/routers'
 import usersRouers from '../apps/users/routers'
 
 const routes = () => [
@@ -63,7 +62,6 @@ const routes = () => [
 			shopRouers(),
 			usersRouers(),
 			labelsRouers(),
-			uiRouters(),
 		],
 	},
 ]
