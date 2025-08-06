@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import { useDisclosure } from '../../hooks'
+import { cls } from '../../utils/'
 import { DmcPopoverProvider } from './DmcPopoverContext'
 import { DmcPopoverDropdown } from './DmcPopoverDropdown'
 import { DmcPopoverTarget } from './DmcPopoverTarget'
@@ -8,6 +9,7 @@ import './style.css'
 interface PopoverProps {
 	as?: React.ElementType
 	position: 'top' | 'bottom' | 'left' | 'right'
+	className?: string
 	disabled?: boolean
 	children: React.ReactNode
 	autoClose?: boolean
@@ -22,6 +24,7 @@ export const DmcPopover = ({
 	onOpen,
 	onClose,
 	autoClose,
+	className,
 	...props
 }: PopoverProps) => {
 	const Tag = as
@@ -60,7 +63,7 @@ export const DmcPopover = ({
 
 	return (
 		<DmcPopoverProvider value={context}>
-			<Tag {...props} className='dmc-popover'>
+			<Tag {...props} className={cls('dmc-popover', className)}>
 				{children}
 			</Tag>
 		</DmcPopoverProvider>

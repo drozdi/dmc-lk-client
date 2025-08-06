@@ -80,14 +80,14 @@ const Sidebar: React.FC = () => {
 			onMouseEnter={() => !isExpanded && setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>
-			<div className='py-4 flex justify-center items-center'>
+			<div className='py-4 flex justify-center items-center z-10'>
 				<Logo
 					className={
-						isMobileOpen || isExpanded || isHovered ? '' : 'scale-[0.6]'
+						isMobileOpen || isExpanded || isHovered ? '-mt-18 -mb-20' : ''
 					}
 				/>
 			</div>
-			<div className='flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar'>
+			<div className='flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar z-20'>
 				<nav className='mb-6'>
 					<div className='flex flex-col'>{renderMenuItems(navItems)}</div>
 				</nav>

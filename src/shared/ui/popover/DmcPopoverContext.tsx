@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createSafeContext } from '../../internal/utils'
 
 interface IPopoverContext {
 	position: 'top' | 'bottom' | 'left' | 'right'
@@ -8,26 +8,7 @@ interface IPopoverContext {
 	onToggle: (event?: React.MouseEvent) => void
 }
 
-const DmcPopoverContext = createContext<IPopoverContext | null>(null)
-
-export const DmcPopoverProvider = ({
-	value,
-	children,
-}: {
-	value: IPopoverContext
-	children: React.ReactNode
-}) => {
-	return (
-		<DmcPopoverContext.Provider value={value}>
-			{children}
-		</DmcPopoverContext.Provider>
+export const [DmcPopoverProvider, useDmcPopover] =
+	createSafeContext<IPopoverContext>(
+		'Popover component was not found in the tree'
 	)
-}
-
-export const useDmcPopover = (): IPopoverContext => {
-	const context = useContext(DmcPopoverContext)
-	if (context === null) {
-		throw new Error('Popover component was not found in the tree')
-	}
-	return context
-}

@@ -1,21 +1,12 @@
+@reference "@style";
+
 .dmc-popover {
-	position: relative;
-	overflow: visible;
+	@apply relative overflow-visible;
 }
 
 .dmc-popover__dropdown {
-	position: absolute;
-	background: white;
-	display: flex;
-	justify-content: space-between;
-	text-wrap: nowrap;
-	padding: calc(2 * var(--spacing));
-	border: 1px solid var(--color-active);
-	border-radius: 4px;
-	top: 0;
-	right: 0;
-	z-index: 10;
+	@apply absolute p-2 border border-color rounded top-full right-0 z-10 truncate dmc-bg-surface transition ease-in-out duration-300;
 }
 .dmc-popover__dropdown:not(.dmc-popover__dropdown--open) {
-	display: none;
+	@apply hidden;
 }

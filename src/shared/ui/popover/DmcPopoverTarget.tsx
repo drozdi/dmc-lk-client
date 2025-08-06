@@ -1,5 +1,5 @@
 import { Children, cloneElement, memo } from 'react'
-import { usePopover } from './DmcPopoverContext'
+import { useDmcPopover } from './DmcPopoverContext'
 import './style.css'
 
 interface PopoverTargetProps {
@@ -7,7 +7,7 @@ interface PopoverTargetProps {
 }
 
 export const DmcPopoverTarget = memo(({ children }: PopoverTargetProps) => {
-	const ctx = usePopover()
+	const ctx = useDmcPopover()
 	return cloneElement(Children.only(children), {
 		onClick: (event: React.MouseEvent) => {
 			ctx.onToggle(event)

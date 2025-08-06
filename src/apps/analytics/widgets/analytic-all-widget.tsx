@@ -55,9 +55,10 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		if (data) {
 			for (const event in res) {
 				if (cuurent_production > 0) {
-					res[event].value = data[event].production.find(
-						item => item.production_id === cuurent_production
-					).all_label_prod
+					res[event].value =
+						data[event].production?.find(
+							item => item.production_id === cuurent_production
+						)?.all_label_prod || 0
 				} else {
 					res[event].value = data[event]?.sum_company
 				}
@@ -70,6 +71,8 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 			color,
 		}))
 	}, [data, cuurent_production])
+
+	//console.log(ddata)
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata])
 

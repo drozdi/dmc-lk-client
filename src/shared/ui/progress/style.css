@@ -1,3 +1,5 @@
+@reference "@style";
+
 .dmc-progress-bar {
 	position: relative;
 	width: 100%;

@@ -5,10 +5,11 @@ import {
 } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
-import { TbColumnRemove, TbXboxX } from 'react-icons/tb'
+import { TbXboxX } from 'react-icons/tb'
 import {
 	DmcBtn,
 	DmcBtnRemove,
+	DmcIcon,
 	DmcInput,
 	DmcLoading,
 	DmcMarkupTable,
@@ -266,32 +267,23 @@ export const TableIncident = observer(() => {
 						{table.getHeaderGroups().map(headerGroup => (
 							<DmcMarkupTable.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header, index) => (
-									<DmcMarkupTable.Th
-										className='group relative overflow-visible'
-										key={header.id}
-										colSpan={header.colSpan}
-									>
-										{canRemove(header.column.columnDef) && (
-											<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 cle'>
-												<div className='flex gap-1 justify-between items-start'>
-													<DmcBtnRemove
-														onClick={() =>
-															handleRemove(header.column.columnDef)
-														}
-														title='Удалить поле'
-													>
-														<TbColumnRemove />
-													</DmcBtnRemove>
-												</div>
-											</div>
-										)}
-
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-											  )}
+									<DmcMarkupTable.Th key={header.id} colSpan={header.colSpan}>
+										<div className='flex gap-2 justify-between items-center'>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+												  )}
+											{canRemove(header.column.columnDef) && (
+												<DmcBtnRemove
+													onClick={() => handleRemove(header.column.columnDef)}
+													title={`Удалить поле "${header.column.columnDef.header}"`}
+												>
+													<DmcIcon>tb-column-remove</DmcIcon>
+												</DmcBtnRemove>
+											)}
+										</div>
 									</DmcMarkupTable.Th>
 								))}
 							</DmcMarkupTable.Tr>

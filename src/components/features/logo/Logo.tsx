@@ -5,12 +5,11 @@ export function Logo({ className }: { className?: string }) {
 		<Link
 			to='/'
 			className={cls(
-				'leading-none text-center no-underline text-blue-700 dark:text-blue-300 transition-all ease-in-out duration-300',
+				'leading-none text-center no-underline transition-all ease-in-out duration-300',
 				className
 			)}
 		>
-			<h1 className='text-5xl'>DMC</h1>
-			<div className='text-sm line-h'>личный кабинет</div>
+			<img src='/assests/Logo_DMC_512.png' />
 		</Link>
 	)
 }

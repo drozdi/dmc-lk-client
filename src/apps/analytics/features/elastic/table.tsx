@@ -10,9 +10,11 @@ import { TbColumnRemove } from 'react-icons/tb'
 import {
 	DmcBtn,
 	DmcBtnRemove,
+	DmcIcon,
 	DmcInput,
 	DmcLoading,
 	DmcMarkupTable,
+	DmcPopover,
 	DmcSelect,
 } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
@@ -222,65 +224,77 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 							<DmcMarkupTable.Tr key={headerGroup.id + '-' + index}>
 								{headerGroup.headers.map((header, index) => (
 									<DmcMarkupTable.Th
-										className='group relative overflow-visible'
 										key={header.id + '-' + index}
 										colSpan={header.colSpan}
 									>
-										{canEdit(header.column.columnDef) && (
-											<div className='absolute right-0 p-3 mt-2 bg-surface rounded shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transform group-hover:translate-y-0 -translate-y-2 transition-all duration-300 z-50 min-w-48'>
-												<div className='flex gap-1 justify-between items-start'>
-													<ActionForm
-														value={
-															whereItem(header.id)?.single_action_list || 'and'
-														}
-														onChange={single_action_list =>
-															handleChangeActionField(
-																header.id,
-																single_action_list
-															)
-														}
-													/>
-													<DmcBtnRemove
-														onClick={() => handleRemoveField(header.id)}
-														title='Удалить поле'
-													>
-														<TbColumnRemove />
-													</DmcBtnRemove>
-												</div>
-												<SignForm
-													value={whereItem(header.id)?.sing_action || '='}
-													onChange={sing_action =>
-														handleChangeSignField(header.id, sing_action)
-													}
-												/>
-												{whereItem(header.id)?.sing_action === 'in' ||
-												whereItem(header.id)?.sing_action === 'not_in' ? (
-													<InForm
-														values={whereItem(header.id)?.search_value}
-														onChange={values =>
-															handleChangeInField(header.id, values)
-														}
-													/>
-												) : (
-													<DmcInput
-														filled
-														dense
-														square
-														underlined
-														onChange={({ target }) =>
-															handleChangeValueField(header.id, target.value)
-														}
-													/>
-												)}
-											</div>
-										)}
+										<div className='flex gap-2 justify-between items-center'>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+												  )}
 
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-											  )}
+											{canEdit(header.column.columnDef) && (
+												<DmcPopover className='float-right'>
+													<DmcPopover.Target>
+														<DmcBtn>
+															<DmcIcon>tb-settings</DmcIcon>
+														</DmcBtn>
+													</DmcPopover.Target>
+													<DmcPopover.Dropdown className='z-50 min-w-48'>
+														<div className='flex gap-1 justify-between items-start'>
+															<ActionForm
+																value={
+																	whereItem(header.id)?.single_action_list ||
+																	'and'
+																}
+																onChange={single_action_list =>
+																	handleChangeActionField(
+																		header.id,
+																		single_action_list
+																	)
+																}
+															/>
+															<DmcBtnRemove
+																onClick={() => handleRemoveField(header.id)}
+																title='Удалить поле'
+															>
+																<TbColumnRemove />
+															</DmcBtnRemove>
+														</div>
+														<SignForm
+															value={whereItem(header.id)?.sing_action || '='}
+															onChange={sing_action =>
+																handleChangeSignField(header.id, sing_action)
+															}
+														/>
+														{whereItem(header.id)?.sing_action === 'in' ||
+														whereItem(header.id)?.sing_action === 'not_in' ? (
+															<InForm
+																values={whereItem(header.id)?.search_value}
+																onChange={values =>
+																	handleChangeInField(header.id, values)
+																}
+															/>
+														) : (
+															<DmcInput
+																filled
+																dense
+																square
+																underlined
+																onChange={({ target }) =>
+																	handleChangeValueField(
+																		header.id,
+																		target.value
+																	)
+																} ///
+															/>
+														)}
+													</DmcPopover.Dropdown>
+												</DmcPopover>
+											)}
+										</div>
 									</DmcMarkupTable.Th>
 								))}
 							</DmcMarkupTable.Tr>
