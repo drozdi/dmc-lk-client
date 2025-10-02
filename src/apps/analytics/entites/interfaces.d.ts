@@ -1,4 +1,5 @@
 interface IAnalyticsQuery {
+	filterdate?: string[]
 	filterdate_from?: string
 	filterdate_to?: string
 	step?: 's' | 'm' | 'h' | 'd' | 'mon' | 'y'

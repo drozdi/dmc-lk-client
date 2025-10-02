@@ -2,13 +2,7 @@ import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { userStore } from '../../../components/stores/user-store'
 import { useQuery } from '../../../shared/hooks'
-import {
-	DmcAccordion,
-	DmcItemLabel,
-	DmcList,
-	DmcLoading,
-	DmcMessage,
-} from '../../../shared/ui'
+import { DmcAccordion, DmcItemLabel, DmcList, DmcLoading, DmcMessage } from '../../../shared/ui'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
 
@@ -76,9 +70,7 @@ export const LabelsCount = observer(() => {
 	function updateItem(res) {
 		for (const [, colections] of Object.entries(data)) {
 			const item = colections.find(
-				item =>
-					item.add_label_format === res.format_template &&
-					item.production_id === res.production_id
+				item => item.add_label_format === res.format_template && item.production_id === res.production_id
 			)
 			if (item) {
 				item.sum += res.count_label
@@ -91,16 +83,13 @@ export const LabelsCount = observer(() => {
 		fetch()
 	}, [])
 
-	const findIndex = (item, id) =>
-		item === id || (typeof item === 'object' && 'id' in item && item.id === id)
+	const findIndex = (item, id) => item === id || (typeof item === 'object' && 'id' in item && item.id === id)
 
 	function factoryHandleDragEnd(production_id) {
 		return async function handleDragEnd(event) {
 			const { source, target } = event.operation
 			const sourceIndex = data.not_distributed.findIndex(
-				item =>
-					item.production_id === production_id &&
-					item.add_label_format === source.id
+				item => item.production_id === production_id && item.add_label_format === source.id
 			)
 			if (sourceIndex === -1) {
 				return
@@ -114,10 +103,7 @@ export const LabelsCount = observer(() => {
 			})
 
 			data.distributed = data.distributed.map(item => {
-				if (
-					item.production_id === sourceLabel.production_id &&
-					item.add_label_format === target.id
-				) {
+				if (item.production_id === sourceLabel.production_id && item.add_label_format === target.id) {
 					return {
 						...item,
 						sum: item.sum + sourceLabel.sum,
@@ -132,36 +118,18 @@ export const LabelsCount = observer(() => {
 
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
+			{error && <DmcMessage className='mb-8' color='warning' square underlined='left' label={error} />}
 			<DmcLoading active={isLoading} keepMounted>
 				<DmcAccordion border separated multiple>
 					{ddata.map(item => (
-						<DmcAccordion.Tab
-							key={item.production_id}
-							value={`acc-${item.production_id}`}
-						>
+						<DmcAccordion.Tab key={item.production_id} value={`acc-${item.production_id}`}>
 							<DmcAccordion.Header>{item.name}</DmcAccordion.Header>
 							<DmcAccordion.Panel>
 								<DmcList separator>
-									<GroupProvider
-										onDragEnd={factoryHandleDragEnd(item.production_id)}
-									>
-										{item.distributed?.length > 0 && (
-											<DmcItemLabel header>Сгрупированые</DmcItemLabel>
-										)}
+									<GroupProvider onDragEnd={factoryHandleDragEnd(item.production_id)}>
+										{item.distributed?.length > 0 && <DmcItemLabel header>Сгрупированые</DmcItemLabel>}
 										{item.distributed.map(item => (
-											<GroupContainer
-												key={item.add_label_format}
-												column={item.add_label_format}
-											>
+											<GroupContainer key={item.add_label_format} column={item.add_label_format}>
 												<ReportItem
 													item={item}
 													dangerLimits={dangerLimits}
@@ -171,15 +139,9 @@ export const LabelsCount = observer(() => {
 											</GroupContainer>
 										))}
 
-										{item.notDistributed?.length > 0 && (
-											<DmcItemLabel header>Без группы</DmcItemLabel>
-										)}
+										{item.notDistributed?.length > 0 && <DmcItemLabel header>Без группы</DmcItemLabel>}
 										{item.notDistributed.map(item => (
-											<GroupItem
-												key={item.add_label_format}
-												id={item.add_label_format}
-												data={item}
-											>
+											<GroupItem key={item.add_label_format} id={item.add_label_format} data={item}>
 												<ReportItem
 													groupable
 													item={item}

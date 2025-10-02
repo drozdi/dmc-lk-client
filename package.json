@@ -19,7 +19,7 @@
 		"@tanstack/react-table": "^8.21.3",
 		"axios": "^1.10.0",
 		"chart.js": "^4.5.0",
-		"dayjs": "^1.11.13",
+		"dayjs": "^1.11.18",
 		"mobx": "^6.13.7",
 		"mobx-react-lite": "^4.1.0",
 		"react": "^19.1.0",

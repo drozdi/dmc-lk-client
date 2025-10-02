@@ -16,7 +16,7 @@ export async function requestAnalytics(params: IAnalyticsQuery) {
 	return res.data
 }
 
-export function useAnalytics() {
+export function useAnalytics(query?: IAnalyticsQuery = {}) {
 	const { request, isLoading, error } = useQuery(requestAnalytics)
 
 	return {
@@ -27,6 +27,7 @@ export function useAnalytics() {
 				filterdate: [params.filterdate_from, params.filterdate_to || ''],
 				step: params.step,
 				event: params.event,
+				...query,
 			})
 		},
 	}

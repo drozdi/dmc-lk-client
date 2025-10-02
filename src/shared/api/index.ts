@@ -1,12 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { PRODUCT_ID_KEY, URL_API } from '../constants'
-import {
-	clearTokens,
-	getAccessToken,
-	getRefreshToken,
-	setAccessToken,
-	setRefreshToken,
-} from './token-service'
+import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from './token-service'
 
 export const api = axios.create({
 	baseURL: URL_API,
@@ -54,8 +48,8 @@ api.interceptors.response.use(
 			try {
 				// Пытаемся обновить токен
 				const response = await requestRefresh(getRefreshToken())
-				console.log(response)
-				const { access, refresh } = response.token
+				console.log(response.data)
+				const { access, refresh } = response.data.token
 
 				setAccessToken(access)
 				setRefreshToken(refresh)
@@ -75,10 +69,7 @@ api.interceptors.response.use(
 	}
 )
 
-export async function requestLogin(credentials: {
-	email: string
-	password: string
-}) {
+export async function requestLogin(credentials: { email: string; password: string }) {
 	const res = await api.post('/registration/authorization', credentials)
 	return res.data
 }

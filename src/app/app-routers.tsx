@@ -4,6 +4,7 @@ import { MainLayout } from '../components/layout/MainLayout'
 
 import { ProtectedRoute } from '../components/features/router/protected-route'
 
+import { MainPage } from '../pages/main-page'
 import { PersonalPage } from '../pages/personal-page'
 import { SignInPage } from '../pages/sign-in-page'
 import { SignOutPage } from '../pages/sign-out-page'
@@ -52,7 +53,7 @@ const routes = () => [
 		children: [
 			{
 				path: '',
-				element: 'Hello World!',
+				element: <MainPage />,
 			},
 			{
 				path: '/lk',
