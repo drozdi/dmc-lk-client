@@ -4,10 +4,11 @@ import { DmcChevron } from '../icon'
 import { useDmcAccordionTabContext } from './DmcAccordionTabContext'
 import './style.css'
 
-interface AccordionHeaderProps {
+interface AccordionHeaderProps extends SectionsProps {
 	children?: React.ReactNode
 	className?: string
 	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+	align?: 'left' | 'right'
 	leftSection?: React.ReactNode
 	rightSection?: React.ReactNode
 }
@@ -22,21 +23,8 @@ interface AccordionHeaderProps {
  * @param {React.ReactNode} props.rightSection - правый раздел
  * @returns {React.ReactElement} элемент XAccordionHeader
  */
-export function DmcAccordionHeader({
-	className,
-	children,
-	onClick,
-	...props
-}: AccordionHeaderProps) {
-	const {
-		value,
-		active,
-		disabled,
-		getHeaderId,
-		getPanelId,
-		onKeyDown,
-		onToggleExpanded,
-	} = useDmcAccordionTabContext()
+export function DmcAccordionHeader({ className, children, onClick, align = 'right', ...props }: AccordionHeaderProps) {
+	const { value, active, disabled, getHeaderId, getPanelId, onKeyDown, onToggleExpanded } = useDmcAccordionTabContext()
 
 	const handleClick = event => {
 		if (disabled) {
@@ -54,7 +42,9 @@ export function DmcAccordionHeader({
 	return (
 		<Sections
 			as='button'
-			rightSection={<DmcChevron className='dmc-accordion-chevron' />}
+			{...{
+				[`${align}Section`]: <DmcChevron className='dmc-accordion-chevron' />,
+			}}
 			{...props}
 			id={getHeaderId(value)}
 			className={cls('dmc-accordion-header', className)}

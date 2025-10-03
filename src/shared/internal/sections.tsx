@@ -22,15 +22,6 @@ const processSection = (section?: React.ReactNode) => {
 	}, [section])
 }
 
-interface SectionsProps {
-	className?: string | Function
-	classBody?: string
-	children?: React.ReactNode
-	leftSection?: React.ReactNode
-	rightSection?: React.ReactNode
-	[key: string]: any
-}
-
 /**
 * Компонент для создания гибкой структуры с возможностью размещения элементов в колонки.
 
@@ -43,23 +34,14 @@ interface SectionsProps {
 * @param {object} props - свойства
 * @returns {React.ReactElement} элемент Sections
 */
-export function Sections({
-	className,
-	classBody,
-	children,
-	leftSection,
-	rightSection,
-	...props
-}: SectionsProps) {
+export function Sections({ className, classBody, children, leftSection, rightSection, ...props }: SectionsProps) {
 	return render('div', {
 		...props,
 		className: cls('dmc-sections', className),
 		children: (
 			<>
 				{processSection(leftSection)}
-				{children && (
-					<span className={cls('dmc-section', classBody)}>{children}</span>
-				)}
+				{children && <span className={cls('dmc-section', classBody)}>{children}</span>}
 				{processSection(rightSection)}
 			</>
 		),
