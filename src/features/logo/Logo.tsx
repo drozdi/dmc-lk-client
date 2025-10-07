@@ -1,12 +1,18 @@
-import { Link } from 'react-router'
-import { cls } from '../../shared/utils'
+import { Box } from '@mantine/core'
+import { useNavigate } from 'react-router-dom'
+
 export function Logo({ className }: { className?: string }) {
+	const navigate = useNavigate()
 	return (
-		<Link
-			to='/'
-			className={cls('leading-none text-center no-underline transition-all ease-in-out duration-300', className)}
+		<Box
+			component='a'
+			href='/'
+			onClick={event => {
+				event.preventDefault()
+				navigate('/')
+			}}
 		>
 			<img src='/assests/Logo_DMC_512.png' />
-		</Link>
+		</Box>
 	)
 }

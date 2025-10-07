@@ -2,9 +2,9 @@ import { Button, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { setAccessToken } from '../../../shared/api/token-service'
-import { DmcInput } from '../../../shared/ui'
-import { authStore } from '../../../stores/auth-store'
+import { setAccessToken } from '../../shared/api/token-service'
+import { DmcInput } from '../../shared/ui'
+import { authStore } from '../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
 	const { isLoading, error } = authStore

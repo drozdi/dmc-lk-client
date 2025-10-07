@@ -1,14 +1,15 @@
-import { Button, Notification } from '@mantine/core'
+import { Button, NavLink, Notification } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { Link as LinkTo } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useQuery } from '../../../shared/hooks'
-import { DmcLink, DmcSelect, Loading } from '../../../shared/ui'
+import { DmcSelect, Loading } from '../../../shared/ui'
 import { requestGetUsers } from '../api'
 
 interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
+	const navigate = useNavigate()
 	const { isLoading, error, request } = useQuery(requestGetUsers, 'Ошибка при загрузке пользователей')
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
@@ -28,10 +29,11 @@ export function UsersList({ className }: UsersListProps) {
 			<Loading active={isLoading} keepMounted>
 				{error && <Notification color='red'>{error}</Notification>}
 				{list.map(item => (
-					<DmcLink
-						as={LinkTo}
+					<NavLink
+						onClick={() => {
+							navigate(`/users/${item.id}`)
+						}}
 						key={item.id}
-						to={`/users/${item.id}`}
 						label={[item.last_name, item.first_name, item.father_name].join(' ')}
 					/>
 				))}

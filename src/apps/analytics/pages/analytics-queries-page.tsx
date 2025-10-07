@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
-import { Template } from '../../../components/context'
+import { Template } from '../../../layout/context'
 import { ListQueries } from '../features/queries/list-queries'
 
 export function AnalyticsQueriesPage() {

@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { DmcInput } from '../../../shared/ui'
-import { authStore } from '../../../stores/auth-store'
+import { DmcInput } from '../../shared/ui'
+import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Заполните имя'),

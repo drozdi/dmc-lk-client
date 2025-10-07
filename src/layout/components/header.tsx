@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { TbMenu4, TbX } from 'react-icons/tb'
 import { ShopCartBtn } from '../../apps/shop/features/shop-cart-btn'
-import { useSidebar } from '../../components/context/sidebar'
-import { InOutBtn } from '../../components/features/auth/in-out-btn'
-import { ChangeProduct } from '../../components/features/lk/change-product'
-import { PersonalLink } from '../../components/features/lk/personal-link'
-import { ThemeToggleBtn } from './theme-toggle-btn'
+import { InOutBtn } from '../../features/auth/in-out-btn'
+import { ChangeProduct } from '../../features/lk/change-product'
+import { PersonalLink } from '../../features/lk/personal-link'
+import { useSidebar } from '../context/sidebar'
 
 const Header: React.FC = () => {
 	const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar()
@@ -52,7 +51,6 @@ const Header: React.FC = () => {
 						<PersonalLink />
 						<InOutBtn />
 						<ShopCartBtn />
-						<ThemeToggleBtn />
 					</div>
 				</div>
 			</div>

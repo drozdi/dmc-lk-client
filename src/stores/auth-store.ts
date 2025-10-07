@@ -7,6 +7,7 @@ import {
 	setAccessToken,
 	setRefreshToken,
 } from '../shared/api/token-service'
+import { notification } from '../shared/notification'
 
 class AuthStore {
 	error = null
@@ -67,8 +68,11 @@ class AuthStore {
 			setAccessToken(token.access)
 			setRefreshToken(token.refresh)
 			this.isAuthenticated = true
+			return true
 		} catch (error) {
+			console.error(error)
 			this.error = error?.response?.data?.detail || error?.message || 'Ошибка входа'
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}

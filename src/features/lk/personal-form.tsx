@@ -5,9 +5,9 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { Template } from '../../../components/context'
-import { DmcInput } from '../../../shared/ui'
-import { userStore } from '../../../stores/user-store'
+import { Template } from '../../layout/context'
+import { DmcInput } from '../../shared/ui'
+import { userStore } from '../../stores/user-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),

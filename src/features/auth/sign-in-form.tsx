@@ -1,27 +1,28 @@
-import { Button, Notification } from '@mantine/core'
+import { Box, Button, PasswordInput, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DmcInput, Loading } from '../../../shared/ui'
-import { authStore } from '../../../stores/auth-store'
+import { Loading } from '../../shared/ui'
+import { authStore } from '../../stores/auth-store'
 
-export const SignInForm = observer(() => {
+export const SignInForm = observer(props => {
 	const [email, setEmail] = useState<string>('')
 	const [password, setPassword] = useState<string>('')
-	const { isLoading, error } = authStore
+	const { isLoading } = authStore
 	const navigate = useNavigate()
 	const handleSubmit = async (e: SubmitEvent) => {
 		e.preventDefault()
-		await authStore.login(email, password)
-		navigate('/')
+		const res = await authStore.login(email, password)
+		if (true === res) {
+			navigate('/')
+		}
 	}
 
 	return (
-		<>
-			{error && <Notification color='red'>{error}</Notification>}
-			<form name='signIn' className='mt-8 space-y-3' onSubmit={handleSubmit}>
+		<Box {...props}>
+			<Stack component='form' name='signIn' onSubmit={handleSubmit}>
 				<Loading active={isLoading} keepMounted>
-					<DmcInput
+					<TextInput
 						label='Email'
 						placeholder='Email'
 						id='email-address'
@@ -29,13 +30,10 @@ export const SignInForm = observer(() => {
 						type='email'
 						autoComplete='email'
 						required
-						stackLabel
-						filled
-						underlined
 						value={email}
 						onChange={e => setEmail(e.target.value)}
 					/>
-					<DmcInput
+					<PasswordInput
 						label='Пароль'
 						placeholder='Пароль'
 						id='email-address'
@@ -43,9 +41,6 @@ export const SignInForm = observer(() => {
 						type='password'
 						autoComplete='current-password'
 						required
-						stackLabel
-						filled
-						underlined
 						value={password}
 						onChange={e => setPassword(e.target.value)}
 					/>
@@ -53,7 +48,7 @@ export const SignInForm = observer(() => {
 				<Button type='submit' fullWidth loading={isLoading}>
 					Войти
 				</Button>
-			</form>
-		</>
+			</Stack>
+		</Box>
 	)
 })

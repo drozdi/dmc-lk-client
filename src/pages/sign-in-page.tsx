@@ -1,10 +1,14 @@
-import { SignInForm } from '../components/features/auth/sign-in-form'
+import { Stack, Text, Title } from '@mantine/core'
+import { SignInForm } from '../features/auth/sign-in-form'
+
 export function SignInPage() {
 	return (
-		<>
-			<h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Авторизуйтесь</h2>
+		<Stack>
+			<Title ta='center' order={1}>
+				Авторизуйтесь
+			</Title>
 			<SignInForm />
-			<small>Прямая регистрация новых пользователей закрыта. Обратитесь к админастратору.</small>
-		</>
+			<Text>Прямая регистрация новых пользователей закрыта. Обратитесь к админастратору.</Text>
+		</Stack>
 	)
 }

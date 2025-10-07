@@ -1,8 +1,8 @@
 import { Navigate, useRoutes } from 'react-router'
 import { AuthLayout } from '../layout/AuthLayout'
-import { MainLayout } from '../layout/MainLayout'
+import { MainLayout_ } from '../layout/MainLayout'
 
-import { ProtectedRoute } from '../components/features/router/protected-route'
+import { ProtectedRoute } from '../features/router/protected-route'
 
 import { MainPage } from '../pages/main-page'
 import { PersonalPage } from '../pages/personal-page'
@@ -47,7 +47,7 @@ const routes = () => [
 		path: '/',
 		element: (
 			<ProtectedRoute>
-				<MainLayout />
+				<MainLayout_ />
 			</ProtectedRoute>
 		),
 		children: [

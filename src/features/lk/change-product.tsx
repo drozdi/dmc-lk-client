@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
-import { userStore } from '../../../stores/user-store'
+import { userStore } from '../../stores/user-store'
 
-import { DmcSelect } from '../../../shared/ui'
+import { DmcSelect } from '../../shared/ui'
 
 export const ChangeProduct = observer(() => {
 	const { products, currentProductId } = userStore

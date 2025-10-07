@@ -1,8 +1,8 @@
 import { Button } from '@mantine/core'
 import { useNavigate } from 'react-router'
-import { useSidebar } from '../../components/context'
-import { TemplateSlot } from '../../components/context/template'
 import { cls } from '../../shared/utils'
+import { useSidebar } from '../context'
+import { TemplateSlot } from '../context/template'
 
 export function Footer() {
 	const navigate = useNavigate()

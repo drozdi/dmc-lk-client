@@ -1,13 +1,4 @@
-import {
-	cloneElement,
-	createContext,
-	isValidElement,
-	useContext,
-	useEffect,
-	useId,
-	useMemo,
-	useState,
-} from 'react'
+import { cloneElement, createContext, isValidElement, useContext, useEffect, useId, useMemo, useState } from 'react'
 
 type TemplateManagerStateType = Record<string, any>
 type TemplateManagerContextType = {
@@ -17,9 +8,7 @@ type TemplateManagerContextType = {
 }
 
 // Создаем контекст для менеджера шаблонов
-const TemplateManagerContext = createContext<TemplateManagerContextType | null>(
-	null
-)
+const TemplateManagerContext = createContext<TemplateManagerContextType | null>(null)
 
 /**
  * Провайдер для управления шаблонами
@@ -58,11 +47,7 @@ export function TemplateProvider({ children }: { children: React.ReactNode }) {
 		[templates]
 	)
 
-	return (
-		<TemplateManagerContext.Provider value={contextValue}>
-			{children}
-		</TemplateManagerContext.Provider>
-	)
+	return <TemplateManagerContext.Provider value={contextValue}>{children}</TemplateManagerContext.Provider>
 }
 
 export function Template({ slot, children }: { slot: string; children: any }) {
@@ -96,14 +81,7 @@ export function Template({ slot, children }: { slot: string; children: any }) {
  * @param {string} props.name - Имя слота
  * @param {string} props.children - Дочерние элементы
  */
-export function TemplateSlot({
-	name,
-	children,
-	...props
-}: {
-	name: string
-	children?: any
-}) {
+export function TemplateSlot({ name, children, ...props }: { name: string; children?: any }) {
 	const manager = useContext(TemplateManagerContext)
 
 	if (!manager) {
@@ -126,9 +104,7 @@ export function useTemplateManager() {
 	const context = useContext(TemplateManagerContext)
 
 	if (!context) {
-		throw new Error(
-			'useTemplateManager должен использоваться внутри TemplateProvider'
-		)
+		throw new Error('useTemplateManager должен использоваться внутри TemplateProvider')
 	}
 
 	return {

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { TbLogin, TbLogout } from 'react-icons/tb'
-import { Link } from '../../../layout/components/link'
-import { authStore } from '../../../stores/auth-store'
+import { Link } from '../../layout/components/link'
+import { authStore } from '../../stores/auth-store'
 
 export const InOutBtn = observer(() => {
 	return (

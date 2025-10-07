@@ -1,8 +1,6 @@
+import { NavLink } from '@mantine/core'
 import { useCallback } from 'react'
-import { useLocation } from 'react-router'
-import { useSidebar } from '../../components/context/sidebar'
-import { Logo } from '../../features/logo/Logo'
-import { DmcLink } from '../../shared/ui'
+import { useLocation, useNavigate } from 'react-router'
 type NavItem = {
 	name: string
 	icon?: React.ReactNode
@@ -45,35 +43,14 @@ const navItems: NavItem[] = [
 	},
 ]
 
-const Sidebar: React.FC = () => {
-	const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar()
+export const Sidebar = () => {
 	const location = useLocation()
+	const navigate = useNavigate()
 
 	// const isActive = (path: string) => location.pathname === path;
 	const isActive = useCallback((path: string) => location.pathname === path, [location.pathname])
 
-	const renderMenuItems = (items: NavItem[]) =>
-		items.map((nav, index) => <DmcLink key={nav.path} to={nav.path} label={nav.name} active={isActive(nav.path)} />)
-
-	return (
-		<aside
-			className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 border-color bg-surface h-screen transition-all duration-300 ease-in-out z-50 border-r
-        ${isExpanded || isMobileOpen ? 'w-[290px]' : isHovered ? 'w-[290px]' : 'w-[90px]'}
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0`}
-			onMouseEnter={() => !isExpanded && setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}
-		>
-			<div className='py-4 flex justify-center items-center z-10'>
-				<Logo className={isMobileOpen || isExpanded || isHovered ? '-mt-18 -mb-20' : ''} />
-			</div>
-			<div className='flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar z-20'>
-				<nav className='mb-6'>
-					<div className='flex flex-col'>{renderMenuItems(navItems)}</div>
-				</nav>
-			</div>
-		</aside>
-	)
+	return navItems.map((nav, index) => (
+		<NavLink key={nav.path} onClick={() => navigate(nav.path)} label={nav.name} active={isActive(nav.path)} />
+	))
 }
-
-export default Sidebar
