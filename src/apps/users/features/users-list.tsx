@@ -1,23 +1,15 @@
+import { Button, Notification } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { Link as LinkTo } from 'react-router'
 import { useQuery } from '../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcLink,
-	DmcLoading,
-	DmcMessage,
-	DmcSelect,
-} from '../../../shared/ui'
+import { DmcLink, DmcSelect, Loading } from '../../../shared/ui'
 import { requestGetUsers } from '../api'
 
 interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
-	const { isLoading, error, request } = useQuery(
-		requestGetUsers,
-		'Ошибка при загрузке пользователей'
-	)
+	const { isLoading, error, request } = useQuery(requestGetUsers, 'Ошибка при загрузке пользователей')
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)
@@ -33,35 +25,21 @@ export function UsersList({ className }: UsersListProps) {
 
 	return (
 		<div className={className}>
-			<DmcLoading active={isLoading} keepMounted>
-				{error && (
-					<DmcMessage
-						className='mb-8'
-						color='warning'
-						square
-						underlined='left'
-						label={error}
-					/>
-				)}
+			<Loading active={isLoading} keepMounted>
+				{error && <Notification color='red'>{error}</Notification>}
 				{list.map(item => (
 					<DmcLink
 						as={LinkTo}
 						key={item.id}
 						to={`/users/${item.id}`}
-						label={[item.last_name, item.first_name, item.father_name].join(
-							' '
-						)}
+						label={[item.last_name, item.first_name, item.father_name].join(' ')}
 					/>
 				))}
-			</DmcLoading>
+			</Loading>
 			<div className='mt-3 flex justify-between items-start gap-3'>
 				<div className='flex justify-start items-start gap-3'>
-					<DmcBtn disabled={number != 1} color='secondary' size='sm'>
-						Предыдущая
-					</DmcBtn>
-					<DmcBtn disabled={list.length < size} color='secondary' size='sm'>
-						Следующая
-					</DmcBtn>
+					<Button disabled={number != 1}>Предыдущая</Button>
+					<Button disabled={list.length < size}>Следующая</Button>
 				</div>
 				<div>
 					<DmcSelect

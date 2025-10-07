@@ -1,18 +1,10 @@
+import { ActionIcon, Button, Notification, Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
 import { useQuery } from '../../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcItem,
-	DmcItemLabel,
-	DmcItemSection,
-	DmcList,
-	DmcLoading,
-	DmcMessage,
-	DmcSelect,
-} from '../../../../shared/ui'
+import { DmcItem, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
 import { requestAnalyticsRemoveQuery } from '../../api/queries'
 import { elasticStore } from '../../stores/elastic-store'
@@ -22,28 +14,15 @@ interface ListQueriesProps {
 }
 
 export const ListQueries = observer(({ className }: ListQueriesProps) => {
-	const {
-		list,
-		isLoading: isLoadingList,
-		error: errorList,
-		state,
-		size,
-		number,
-	} = elasticStore
+	const { list, isLoading: isLoadingList, error: errorList, state, size, number } = elasticStore
 	const { isNext = false, isPrev = false } = state
 	const {
 		isLoading: isLoadingRemove,
 		error: errorRemove,
 		request: requestRemove,
 	} = useQuery(requestAnalyticsRemoveQuery)
-	const isLoading = useMemo<boolean>(
-		() => isLoadingList || isLoadingRemove,
-		[isLoadingList, isLoadingRemove]
-	)
-	const error = useMemo<string>(
-		() => errorList || errorRemove,
-		[errorList, errorRemove]
-	)
+	const isLoading = useMemo<boolean>(() => isLoadingList || isLoadingRemove, [isLoadingList, isLoadingRemove])
+	const error = useMemo<string>(() => errorList || errorRemove, [errorList, errorRemove])
 
 	const handleRemove = async (event: React.MouseEvent, item) => {
 		event?.stopPropagation()
@@ -57,16 +36,8 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 
 	return (
 		<div className={cls(className, 'flex flex-col gap-3')}>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<DmcLoading active={isLoading} keepMounted>
+			{error && <Notification color='red'>{error}</Notification>}
+			<Loading active={isLoading} keepMounted>
 				<DmcList separator>
 					{list.map(item => (
 						<DmcItem
@@ -80,52 +51,28 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 								<DmcItemLabel>{item.name_query}</DmcItemLabel>
 							</DmcItemSection>
 							<DmcItemSection side>
-								<DmcBtn
-									color='warning'
-									title='Удалить'
-									onClick={e => handleRemove(e, item)}
-								>
+								<ActionIcon color='red' title='Удалить' onClick={e => handleRemove(e, item)}>
 									<TbCircleMinus />
-								</DmcBtn>
+								</ActionIcon>
 							</DmcItemSection>
 						</DmcItem>
 					))}
 				</DmcList>
-			</DmcLoading>
+			</Loading>
 			<div className='flex justify-between items-center gap-3'>
 				<div className='flex items-center gap-3'>
-					<DmcBtn
-						size='sm'
-						color='secondary'
-						disabled={!isPrev}
-						loading={isLoading}
-						onClick={() => elasticStore.setNumber(number - 1)}
-					>
+					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.setNumber(number - 1)}>
 						Предыдущая
-					</DmcBtn>
-					<DmcBtn
-						size='sm'
-						color='secondary'
-						disabled={!isNext}
-						loading={isLoading}
-						onClick={() => elasticStore.setNumber(number + 1)}
-					>
+					</Button>
+					<Button disabled={!isNext} loading={isLoading} onClick={() => elasticStore.setNumber(number + 1)}>
 						Следующая
-					</DmcBtn>
+					</Button>
 				</div>
-				<DmcSelect
-					defaultValue={size}
-					filled
-					dense
-					underlined
+				<Select
+					value={size}
 					onChange={({ target }) => elasticStore.setSize(target.value)}
-				>
-					<option value='15'>15</option>
-					<option value='30'>30</option>
-					<option value='50'>50</option>
-					<option value='75'>75</option>
-					<option value='100'>100</option>
-				</DmcSelect>
+					data={['15', '30', '50', '75', '100']}
+				/>
 			</div>
 		</div>
 	)

@@ -12,7 +12,8 @@ import {
 	YAxis,
 } from 'recharts'
 
-import { DmcBtn, DmcLoading, DmcSelect } from '../../../shared/ui'
+import { AspectRatio, Button, Group, Select, Stack } from '@mantine/core'
+import { ExpandablePanel } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
 import { mapEvent, mapEventColor } from '../entites/constants'
 
@@ -49,15 +50,11 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		if (data) {
 			for (const event in mapEvent) {
 				data[event]?.production?.forEach(item => {
-					if (
-						productions.findIndex(
-							production => production.production_id === item.production_id
-						) === -1
-					) {
+					if (productions.findIndex(production => production.value === String(item.production_id)) === -1) {
 						productions.push({
-							name: item.name,
+							value: String(item.production_id),
+							label: item.name,
 							address: item.address,
-							production_id: item.production_id,
 						})
 					}
 				})
@@ -65,6 +62,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		}
 		return productions
 	}, [data])
+
 	// Извлекаем список дат
 	const labels = useMemo<string[]>(() => {
 		let res: string[] = []
@@ -80,17 +78,15 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
 		const initialData = Object.fromEntries(
-			labels.map(item => [
-				item,
-				Object.fromEntries(Object.keys(mapEvent).map(item => [item, 0])),
-			])
+			labels.map(item => [item, Object.fromEntries(Object.keys(mapEvent).map(item => [item, 0]))])
 		)
+		const currProduction = Number(cuurent_production || 0)
 		for (const event in mapEvent) {
 			if (!data?.[event]?.production) {
 				continue
 			}
 			for (const p of data[event].production) {
-				if (cuurent_production > 0 && p.production_id !== cuurent_production) {
+				if (currProduction > 0 && p.production_id !== currProduction) {
 					continue
 				}
 				;(p.data as any[]).forEach(item => {
@@ -184,8 +180,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		setState(prevState => ({ ...prevState, refAreaLeft: event.activeLabel }))
 	}
 	const handleMouseMove = event => {
-		state.refAreaLeft &&
-			setState(prevState => ({ ...prevState, refAreaRight: event.activeLabel }))
+		state.refAreaLeft && setState(prevState => ({ ...prevState, refAreaRight: event.activeLabel }))
 	}
 	const handleMouseUp = event => {
 		let { refAreaLeft, refAreaRight } = state
@@ -211,38 +206,30 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		}))
 	}
 
+	const title = useMemo(() => {
+		return (
+			dayjs(query.filterdate_from).format('YYYY-MM-DD') + ' - ' + dayjs(query.filterdate_to || '').format('YYYY-MM-DD')
+		)
+	}, [query])
+
 	return (
-		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
-			<h2 className='mb-3 w-full text-left'>ChartAnalytic</h2>
-			<div className='flex w-full gap-0 justify-end'>
-				<DmcSelect
-					label='Площадка'
-					name='production_id'
-					value={String(cuurent_production)}
-					onChange={(e: React.ChangeEvent) =>
-						setCurrentProduction(parseInt(e.target.value, 10))
-					}
-					dense
-					square
-					filled
-					underlined
-					hideMessage
-				>
-					<option value='0' selected>
-						Все площадки
-					</option>
-					{productions.map(item => (
-						<option key={item.production_id} value={item.production_id}>
-							{item.name}
-						</option>
-					))}
-				</DmcSelect>
-				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
-					Сбросить
-				</DmcBtn>
-			</div>
-			<div className='w-full aspect-square max-h-full max-w-1/2'>
-				<DmcLoading active={isLoading}>
+		<ExpandablePanel title={title} loading={isLoading}>
+			<Stack h='100%'>
+				<Group gap='0' grow>
+					<Select
+						defaultValue={String(cuurent_production)}
+						checkIconPosition='right'
+						onChange={setCurrentProduction}
+						data={[
+							{
+								value: '0',
+								label: 'Все площадки',
+							},
+						].concat(productions)}
+					/>
+					<Button onClick={reset}>Сбросить</Button>
+				</Group>
+				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
@@ -258,39 +245,17 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 								<YAxis />
 								<Tooltip />
 								<Legend />
-								<Line
-									name={mapEvent.d}
-									type='monotone'
-									dataKey='d'
-									stroke={mapEventColor.d}
-									label={mapEvent.d}
-								/>
-								<Line
-									name={mapEvent.i}
-									type='monotone'
-									dataKey='i'
-									stroke={mapEventColor.i}
-									label={mapEvent.i}
-								/>
-								<Line
-									name={mapEvent.v}
-									type='monotone'
-									dataKey='v'
-									stroke={mapEventColor.v}
-									label={mapEvent.v}
-								/>
+								<Line name={mapEvent.d} type='monotone' dataKey='d' stroke={mapEventColor.d} label={mapEvent.d} />
+								<Line name={mapEvent.i} type='monotone' dataKey='i' stroke={mapEventColor.i} label={mapEvent.i} />
+								<Line name={mapEvent.v} type='monotone' dataKey='v' stroke={mapEventColor.v} label={mapEvent.v} />
 								{refAreaLeft && refAreaRight ? (
-									<ReferenceArea
-										x1={refAreaLeft}
-										x2={refAreaRight}
-										strokeOpacity={0.3}
-									/>
+									<ReferenceArea x1={refAreaLeft} x2={refAreaRight} strokeOpacity={0.3} />
 								) : null}
 							</LineChart>
 						</ResponsiveContainer>
 					)}
-				</DmcLoading>
-			</div>
-		</div>
+				</AspectRatio>
+			</Stack>
+		</ExpandablePanel>
 	)
 })

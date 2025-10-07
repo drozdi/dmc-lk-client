@@ -1,6 +1,6 @@
 import { Navigate, useRoutes } from 'react-router'
-import { AuthLayout } from '../components/layout/AuthLayout'
-import { MainLayout } from '../components/layout/MainLayout'
+import { AuthLayout } from '../layout/AuthLayout'
+import { MainLayout } from '../layout/MainLayout'
 
 import { ProtectedRoute } from '../components/features/router/protected-route'
 

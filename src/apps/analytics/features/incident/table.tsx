@@ -1,31 +1,14 @@
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from '@tanstack/react-table'
+import { Button, Group, Select, Stack, Table, Text, TextInput } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
 import { TbXboxX } from 'react-icons/tb'
-import {
-	DmcBtn,
-	DmcBtnRemove,
-	DmcIcon,
-	DmcInput,
-	DmcLoading,
-	DmcMarkupTable,
-	DmcSelect,
-} from '../../../../shared/ui'
+import { ButtonRemove, Icon, Loading } from '../../../../shared/ui'
 import { fieldsStore } from '../../stores/fields-store'
 import { incidentStore } from '../../stores/incident-store'
 
-const _variantDetails = [
-	'production_id',
-	'taskid',
-	'device_id',
-	'event_id',
-	'node_id',
-	'place_id',
-]
+const _variantDetails = ['production_id', 'taskid', 'device_id', 'event_id', 'node_id', 'place_id']
 
 export const TableIncident = observer(() => {
 	const { fields, list } = fieldsStore
@@ -39,10 +22,7 @@ export const TableIncident = observer(() => {
 	>(
 		() =>
 			_variantDetails
-				.filter(
-					item =>
-						template.details.findIndex(col => col.accessorKey === item) === -1
-				)
+				.filter(item => template.details.findIndex(col => col.accessorKey === item) === -1)
 				.map(item => ({
 					value: item,
 					label: fields?.[item]?.label ?? item,
@@ -58,10 +38,7 @@ export const TableIncident = observer(() => {
 		() =>
 			list
 				.filter(item => !_variantDetails.includes(item))
-				.filter(
-					item =>
-						template.fields.findIndex(col => col.accessorKey === item) === -1
-				)
+				.filter(item => template.fields.findIndex(col => col.accessorKey === item) === -1)
 				.map(item => ({
 					value: item,
 					label: fields?.[item]?.label ?? item,
@@ -111,26 +88,16 @@ export const TableIncident = observer(() => {
 		})
 		incidentStore.saveTemp({ ...template })
 	}
-	const canRemove = (column: {
-		accessorKey: string
-		type: 'detail' | 'field' | 'main'
-	}) => {
+	const canRemove = (column: { accessorKey: string; type: 'detail' | 'field' | 'main' }) => {
 		return column.type !== 'main'
 	}
-	const handleRemove = (column: {
-		accessorKey: string
-		type: 'detail' | 'field' | 'main'
-	}) => {
+	const handleRemove = (column: { accessorKey: string; type: 'detail' | 'field' | 'main' }) => {
 		switch (column.type) {
 			case 'field':
-				template.fields = template.fields.filter(
-					item => item.accessorKey !== column.accessorKey
-				)
+				template.fields = template.fields.filter(item => item.accessorKey !== column.accessorKey)
 				break
 			case 'detail':
-				template.details = template.details.filter(
-					item => item.accessorKey !== column.accessorKey
-				)
+				template.details = template.details.filter(item => item.accessorKey !== column.accessorKey)
 				break
 		}
 		incidentStore.saveTemp({ ...template })
@@ -164,14 +131,10 @@ export const TableIncident = observer(() => {
 	}
 
 	return (
-		<>
+		<Stack gap='xs'>
 			<ul className='list-none mb-3'>
 				<li>
-					<DmcInput
-						filled
-						dense
-						square
-						underlined
+					<TextInput
 						placeholder='Ошибка'
 						value={value}
 						onChange={({ target }) => setValue(target.value)}
@@ -181,141 +144,72 @@ export const TableIncident = observer(() => {
 				{template.data.map(item => (
 					<li className='flex justify-between items-start' key={item}>
 						{item}{' '}
-						<DmcBtnRemove
-							size='xs'
-							onClick={() => handleRemoveItem(item)}
-							title='Удалить ошибку'
-						>
+						<ButtonRemove onClick={() => handleRemoveItem(item)} title='Удалить ошибку'>
 							<TbXboxX />
-						</DmcBtnRemove>
+						</ButtonRemove>
 					</li>
 				))}
 			</ul>
-			<div className='flex justify-between'>
-				<DmcSelect
-					filled
-					dense
-					square
-					underlined
-					hideMessage
-					value=''
-					onChange={({ target }) => handleAddDetail(target.value)}
-				>
-					<option disabled value=''>
-						Групировать поля
-					</option>
-					{variantDetails.map(item => (
-						<option key={item.value} value={item.value}>
-							{item.label}
-						</option>
-					))}
-				</DmcSelect>
-				<DmcSelect
-					filled
-					dense
-					square
-					underlined
-					hideMessage
-					value=''
-					onChange={({ target }) => handleAddField(target.value)}
-				>
-					<option disabled value=''>
-						Показывать поля
-					</option>
-					{variantFields.map(item => (
-						<option key={item.value} value={item.value}>
-							{item.label}
-						</option>
-					))}
-				</DmcSelect>
-				<DmcInput
-					label='С'
-					type='date'
-					name='date_from'
-					dense
-					square
-					filled
-					underlined
-					hideMessage
-					value={template.filterdate?.[0] || ''}
-					onChange={({ target }) => handleDate(0, target.value)}
-				/>
-				<DmcInput
-					label='по'
-					type='date'
-					name='date_to'
-					dense
-					square
-					filled
-					underlined
-					hideMessage
-					value={template.filterdate?.[1] || ''}
-					onChange={({ target }) => handleDate(1, target.value)}
-				/>
-				<DmcBtn
-					color='info'
-					size='sm'
-					square
-					onClick={() => incidentStore.send()}
-				>
-					Применить
-				</DmcBtn>
-			</div>
-			<DmcLoading active={isLoading} keepMounted>
-				<DmcMarkupTable rowBorder striped>
-					<DmcMarkupTable.Thead>
+			<Group gap='xs' justify='space-between'>
+				<Select placeholder='Групировать поля' value='' onChange={handleAddDetail} data={variantDetails} />
+				<Select placeholder='Показывать поля' value='' onChange={handleAddField} data={variantFields} />
+				<Group gap='xs'>
+					<Text>С</Text>
+					<DatePickerInput
+						name='date_from'
+						value={template.filterdate?.[0] || ''}
+						onChange={value => handleDate(0, value)}
+					/>
+					<Text>по</Text>
+					<DatePickerInput
+						name='date_to'
+						value={template.filterdate?.[1] || ''}
+						onChange={value => handleDate(1, value)}
+					/>
+				</Group>
+				<Button onClick={() => incidentStore.send()}>Применить</Button>
+			</Group>
+			<Loading active={isLoading} keepMounted>
+				<Table rowBorder striped>
+					<Table.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
-							<DmcMarkupTable.Tr key={headerGroup.id}>
+							<Table.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header, index) => (
-									<DmcMarkupTable.Th key={header.id} colSpan={header.colSpan}>
-										<div className='flex gap-2 justify-between items-center'>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext()
-												  )}
+									<Table.Th key={header.id} colSpan={header.colSpan}>
+										<Group justify='space-between'>
+											{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
 											{canRemove(header.column.columnDef) && (
-												<DmcBtnRemove
+												<ButtonRemove
 													onClick={() => handleRemove(header.column.columnDef)}
 													title={`Удалить поле "${header.column.columnDef.header}"`}
 												>
-													<DmcIcon>tb-column-remove</DmcIcon>
-												</DmcBtnRemove>
+													<Icon>tb-column-remove</Icon>
+												</ButtonRemove>
 											)}
-										</div>
-									</DmcMarkupTable.Th>
+										</Group>
+									</Table.Th>
 								))}
-							</DmcMarkupTable.Tr>
+							</Table.Tr>
 						))}
-					</DmcMarkupTable.Thead>
-					<DmcMarkupTable.Tbody>
+					</Table.Thead>
+					<Table.Tbody>
 						{table.getRowModel().rows.map(row => (
-							<DmcMarkupTable.Tr key={row.id}>
+							<Table.Tr key={row.id}>
 								{row.getVisibleCells().map(cell => (
-									<DmcMarkupTable.Td key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</DmcMarkupTable.Td>
+									<Table.Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Table.Td>
 								))}
-							</DmcMarkupTable.Tr>
+							</Table.Tr>
 						))}
-					</DmcMarkupTable.Tbody>
-				</DmcMarkupTable>
-			</DmcLoading>
-			<div className='flex gap-3 justify-end mt-3 items-start'>
-				<DmcSelect
-					dense
-					filled
-					value={limit}
-					onChange={({ target }) => incidentStore.setLimit(target.value)}
-				>
-					<option value={15}>15</option>
-					<option value={30}>30</option>
-					<option value={50}>50</option>
-					<option value={75}>75</option>
-					<option value={100}>100</option>
-				</DmcSelect>
-			</div>
-		</>
+					</Table.Tbody>
+				</Table>
+			</Loading>
+			<Group justify='end'>
+				<Select
+					value={String(limit)}
+					onChange={value => incidentStore.setLimit(value)}
+					data={['15', '30', '50', '75', '100']}
+				/>
+			</Group>
+		</Stack>
 	)
 })

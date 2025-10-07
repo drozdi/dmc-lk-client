@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Button, Notification, Tabs } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
@@ -6,24 +7,14 @@ import { useNavigate } from 'react-router'
 import * as yup from 'yup'
 import { Template } from '../../../components/context'
 import { useQuery } from '../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcInput,
-	DmcLoading,
-	DmcMessage,
-	DmcTabs,
-} from '../../../shared/ui'
+import { DmcInput, Loading } from '../../../shared/ui'
 import { requestGetUser, requestUpdateUser } from '../api'
 import { usersStore } from '../stores/users-store'
-
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
 	last_name: yup.string().required('Укажите фамилию'),
 	father_name: yup.string().required('Укажите отчество'),
-	email: yup
-		.string()
-		.email('Введите корректный email')
-		.required('Укажите email'),
+	email: yup.string().email('Введите корректный email').required('Укажите email'),
 	phone: yup
 		.string()
 		.matches(
@@ -45,11 +36,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		error: errorGet,
 		request: requestGet,
 	} = useQuery(requestGetUser, 'Пользователь не найден')
-	const {
-		isLoading: isLoadingUpdate,
-		error: errorUpdate,
-		request: requestUpdate,
-	} = useQuery(requestUpdateUser)
+	const { isLoading: isLoadingUpdate, error: errorUpdate, request: requestUpdate } = useQuery(requestUpdateUser)
 
 	const {
 		register,
@@ -76,10 +63,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		() => isLoadingForm || isLoadingGet || isLoadingUpdate,
 		[isLoadingForm, isLoadingGet, isLoadingUpdate]
 	)
-	const error = useMemo<string>(
-		() => errorGet || errorUpdate,
-		[errorGet, errorUpdate]
-	)
+	const error = useMemo<string>(() => errorGet || errorUpdate, [errorGet, errorUpdate])
 
 	async function handleSave(formData: IUsersUser) {
 		await requestUpdate(id, formData)
@@ -105,159 +89,128 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 
 	return (
 		<div className={className}>
-			<DmcLoading active={isLoading} keepMounted>
-				{error && (
-					<DmcMessage
-						className='mb-8'
-						color='warning'
-						square
-						underlined='left'
-						label={error}
-					/>
-				)}
+			<Loading active={isLoading} keepMounted>
+				{error && <Notification color='red'>{error}</Notification>}
 				<form name='registration' className='space-y-1'>
-					<DmcTabs>
-						<DmcTabs.List grow>
-							<DmcTabs.Tab value='tab-general'>Общие</DmcTabs.Tab>
-							<DmcTabs.Tab value='tab-product'>Площадки</DmcTabs.Tab>
-						</DmcTabs.List>
-						<DmcTabs.Panels className='pb-3'>
-							<DmcTabs.Panel value='tab-general'>
-								<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
-									<div className='flex-1'>
-										<DmcInput
-											label='Фамилия'
-											placeholder='Фамилия'
-											id='registration_last_name'
-											type='text'
-											dense
-											square
-											required
-											stackLabel
-											filled
-											underlined
-											errorMessage={errors?.last_name?.message}
-											{...register('last_name')}
-										/>
-										<DmcInput
-											label='Имя'
-											placeholder='Имя'
-											id='registration_first_name'
-											type='text'
-											dense
-											square
-											required
-											stackLabel
-											filled
-											underlined
-											errorMessage={errors?.first_name?.message}
-											{...register('first_name')}
-										/>
-										<DmcInput
-											label='Отчество'
-											placeholder='Отчество'
-											id='registration_father_name'
-											type='text'
-											dense
-											square
-											required
-											stackLabel
-											filled
-											underlined
-											errorMessage={errors?.father_name?.message}
-											{...register('father_name')}
-										/>
-									</div>
-									<div className='flex-1'>
-										<label className='flex justify-between mb-3'>
-											Активный
-											<input {...register('is_active')} type='checkbox' />
-										</label>
-										<label className='flex justify-between mb-3'>
-											Суперпользователь
-											<input {...register('is_superuser')} type='checkbox' />
-										</label>
-										<DmcInput
-											label='Email'
-											placeholder='Email'
-											id='registration_email'
-											type='email'
-											dense
-											square
-											required
-											stackLabel
-											filled
-											underlined
-											errorMessage={errors?.email?.message}
-											{...register('email')}
-										/>
-										<DmcInput
-											label='Телефон'
-											placeholder='Телефон'
-											id='registration_phone'
-											type='phone'
-											dense
-											square
-											required
-											stackLabel
-											filled
-											underlined
-											errorMessage={errors?.phone?.message}
-											{...register('phone')}
-										/>
-									</div>
+					<Tabs>
+						<Tabs.List grow>
+							<Tabs.Tab value='tab-general'>Общие</Tabs.Tab>
+							<Tabs.Tab value='tab-product'>Площадки</Tabs.Tab>
+						</Tabs.List>
+
+						<Tabs.Panel value='tab-general'>
+							<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
+								<div className='flex-1'>
+									<DmcInput
+										label='Фамилия'
+										placeholder='Фамилия'
+										id='registration_last_name'
+										type='text'
+										dense
+										square
+										required
+										stackLabel
+										filled
+										underlined
+										errorMessage={errors?.last_name?.message}
+										{...register('last_name')}
+									/>
+									<DmcInput
+										label='Имя'
+										placeholder='Имя'
+										id='registration_first_name'
+										type='text'
+										dense
+										square
+										required
+										stackLabel
+										filled
+										underlined
+										errorMessage={errors?.first_name?.message}
+										{...register('first_name')}
+									/>
+									<DmcInput
+										label='Отчество'
+										placeholder='Отчество'
+										id='registration_father_name'
+										type='text'
+										dense
+										square
+										required
+										stackLabel
+										filled
+										underlined
+										errorMessage={errors?.father_name?.message}
+										{...register('father_name')}
+									/>
 								</div>
-							</DmcTabs.Panel>
-							<DmcTabs.Panel value='tab-product'>
-								{products.map(product => (
-									<label
-										key={product.production_id}
-										className='block flex justify-between mt-3 border-b border-color'
-									>
-										<span>{product.name_production}</span>
-										<input
-											type='checkbox'
-											value={`${product.production_id}`}
-											{...register('id_production')}
-											checked={selectProductions.includes(
-												`${product.production_id}`
-											)}
-										/>
+								<div className='flex-1'>
+									<label className='flex justify-between mb-3'>
+										Активный
+										<input {...register('is_active')} type='checkbox' />
 									</label>
-								))}
-							</DmcTabs.Panel>
-						</DmcTabs.Panels>
-					</DmcTabs>
+									<label className='flex justify-between mb-3'>
+										Суперпользователь
+										<input {...register('is_superuser')} type='checkbox' />
+									</label>
+									<DmcInput
+										label='Email'
+										placeholder='Email'
+										id='registration_email'
+										type='email'
+										dense
+										square
+										required
+										stackLabel
+										filled
+										underlined
+										errorMessage={errors?.email?.message}
+										{...register('email')}
+									/>
+									<DmcInput
+										label='Телефон'
+										placeholder='Телефон'
+										id='registration_phone'
+										type='phone'
+										dense
+										square
+										required
+										stackLabel
+										filled
+										underlined
+										errorMessage={errors?.phone?.message}
+										{...register('phone')}
+									/>
+								</div>
+							</div>
+						</Tabs.Panel>
+						<Tabs.Panel value='tab-product'>
+							{products.map(product => (
+								<label key={product.production_id} className='block flex justify-between mt-3 border-b border-color'>
+									<span>{product.name_production}</span>
+									<input
+										type='checkbox'
+										value={`${product.production_id}`}
+										{...register('id_production')}
+										checked={selectProductions.includes(`${product.production_id}`)}
+									/>
+								</label>
+							))}
+						</Tabs.Panel>
+					</Tabs>
 
 					<Template slot='footer'>
 						<div className='flex gap-3 justify-start items-start'>
-							<DmcBtn
-								type='button'
-								color='success'
-								size='sm'
-								onClick={handleSubmit(handleSaveNavigate)}
-								loading={isLoading}
-								disabled={!isValid}
-								label='Сохранить'
-							>
+							<Button color='green' onClick={handleSubmit(handleSaveNavigate)} loading={isLoading} disabled={!isValid}>
 								Сохранить
-							</DmcBtn>
-
-							<DmcBtn
-								type='button'
-								color='primary'
-								size='sm'
-								onClick={handleSubmit(handleSave)}
-								loading={isLoading}
-								disabled={!isValid}
-								label='Применить'
-							>
+							</Button>
+							<Button onClick={handleSubmit(handleSave)} loading={isLoading} disabled={!isValid}>
 								Применить
-							</DmcBtn>
+							</Button>
 						</div>
 					</Template>
 				</form>
-			</DmcLoading>
+			</Loading>
 		</div>
 	)
 })

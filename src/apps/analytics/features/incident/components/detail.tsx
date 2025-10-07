@@ -1,14 +1,8 @@
+import { Button } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
 import { TbX } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcItem,
-	DmcItemLabel,
-	DmcItemSection,
-	DmcList,
-	DmcLoading,
-} from '../../../../../shared/ui'
+import { DmcItem, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
 export function Detail(props) {
@@ -34,15 +28,7 @@ export function Detail(props) {
 				'place_name',
 			]),
 		],
-		details_field: [
-			...new Set([
-				...props.details_field,
-				'production_id',
-				'device_id',
-				'node_id',
-				'place_id',
-			]),
-		],
+		details_field: [...new Set([...props.details_field, 'production_id', 'device_id', 'node_id', 'place_id'])],
 	})
 
 	async function fetch() {
@@ -61,25 +47,19 @@ export function Detail(props) {
 				if (item.production_id == production_id) {
 					res[item.device_id] = {
 						...item,
-						total_counter:
-							(res[item.device_id]?.total_counter || 0) + item.total_counter,
+						total_counter: (res[item.device_id]?.total_counter || 0) + item.total_counter,
 					}
 				}
 			})
-			return Object.values(res).sort(
-				(a, b) => b.total_counter - a.total_counter
-			)
+			return Object.values(res).sort((a, b) => b.total_counter - a.total_counter)
 		} else {
 			data.forEach(item => {
 				res[item.production_id] = {
 					...item,
-					total_counter:
-						(res[item.production_id]?.total_counter || 0) + item.total_counter,
+					total_counter: (res[item.production_id]?.total_counter || 0) + item.total_counter,
 				}
 			})
-			return Object.values(res).sort(
-				(a, b) => b.total_counter - a.total_counter
-			)
+			return Object.values(res).sort((a, b) => b.total_counter - a.total_counter)
 		}
 
 		return data
@@ -93,18 +73,12 @@ export function Detail(props) {
 	}
 
 	return (
-		<DmcLoading keepMounted active={isLoading}>
+		<Loading keepMounted active={isLoading}>
 			<div className='flex mt-3 gap-3 justify-center'>
 				{production_id && (
-					<DmcBtn
-						color='warning'
-						size='sm'
-						outline
-						onClick={() => setProduction(0, '')}
-						rightSection={<TbX />}
-					>
+					<Button color='red' variant='outline' onClick={() => setProduction(0, '')} rightSection={<TbX />}>
 						Площадка: {name_production}
-					</DmcBtn>
+					</Button>
 				)}
 			</div>
 			<DmcList as='div' className='p-6'>
@@ -128,9 +102,7 @@ export function Detail(props) {
 						{ddata.map((item, index) => (
 							<DmcItem
 								key={item.production_id}
-								onClick={() =>
-									handleProduction(item.production_id, item.name_production)
-								}
+								onClick={() => handleProduction(item.production_id, item.name_production)}
 							>
 								<DmcItemSection>
 									<DmcItemLabel>{item.name_production}</DmcItemLabel>
@@ -146,6 +118,6 @@ export function Detail(props) {
 					</>
 				)}
 			</DmcList>
-		</DmcLoading>
+		</Loading>
 	)
 }

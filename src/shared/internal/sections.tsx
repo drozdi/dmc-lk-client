@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { DmcIcon } from '../ui/icon'
+import { Icon } from '../ui/icon'
 import { cls } from '../utils/'
 import { render } from './render'
 
@@ -16,7 +16,7 @@ const processSection = (section?: React.ReactNode) => {
 		}
 		return (
 			<span className='dmc-section dmc-section--side'>
-				{typeof section === 'string' ? <DmcIcon>{section}</DmcIcon> : section}
+				{typeof section === 'string' ? <Icon>{section}</Icon> : section}
 			</span>
 		)
 	}, [section])

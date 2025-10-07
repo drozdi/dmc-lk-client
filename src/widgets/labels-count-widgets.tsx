@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { Accordion, Group, Table, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
@@ -9,13 +9,10 @@ import { GroupContainer } from '../apps/labels/features/components/group/contain
 import { GroupItem } from '../apps/labels/features/components/group/item'
 import { GroupProvider } from '../apps/labels/features/components/group/provider'
 import { formatPrintStore } from '../apps/labels/stores/format-print-store'
-import { useProduction } from '../components/stores/hooks/use-production'
 import { useQuery } from '../shared/hooks'
-import { DmcAccordion, DmcItemLabel, DmcMarkupTable } from '../shared/ui'
+import { useProduction } from '../stores/hooks/use-production'
 
-const dNow = dayjs('2025-05-02')
-
-export const LabelsCountWidget = observer(() => {
+export const LabelsCountWidget = observer(props => {
 	const labelsFormat = useLabelFormat()
 	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
@@ -23,7 +20,7 @@ export const LabelsCountWidget = observer(() => {
 		not_distributed: [],
 	})
 	const reqAnalytics = useAnalytics({
-		filterdate: [dNow.day(dNow.day() - 7).format('YYYY-MM-DD'), dNow.format('YYYY-MM-DD')],
+		...props,
 		step: 'd',
 		event: 'p',
 	})
@@ -33,6 +30,7 @@ export const LabelsCountWidget = observer(() => {
 		setCountP((await reqAnalytics.request({})).message)
 		setData((await reqLabelsCount.request()).data)
 	}
+
 	const res = useMemo(() => {
 		const res = {}
 		for (let prod in labelsFormat) {
@@ -148,67 +146,71 @@ export const LabelsCountWidget = observer(() => {
 	}
 
 	return (
-		<DmcAccordion>
-			<DmcAccordion.Tab value='main'>
-				<DmcAccordion.Header classBody='!flex-row !justify-between'>
-					<DmcItemLabel>Площадка</DmcItemLabel>
-					<div className='flex gap-4'>
-						<DmcItemLabel>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</DmcItemLabel>
-						<DmcItemLabel>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</DmcItemLabel>
-					</div>
-				</DmcAccordion.Header>
-				<DmcAccordion.Panel>
-					<DmcAccordion border separated>
+		<Accordion chevronPosition='left'>
+			<Accordion.Item value='main'>
+				<Accordion.Control>
+					<Group justify='space-between'>
+						<Text>Площадка</Text>
+						<Group justify='space-between' miw='50%'>
+							<Text>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</Text>
+							<Text miw='50%'>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</Text>
+						</Group>
+					</Group>
+				</Accordion.Control>
+				<Accordion.Panel>
+					<Accordion variant='contained' chevronPosition='left'>
 						{Object.values(res).map(production => {
 							return (
-								<DmcAccordion.Tab key={production.production_id} value={'acc-' + production.production_id}>
-									<DmcAccordion.Header classBody='!flex-row !justify-between'>
-										<DmcItemLabel>
-											{production.production_name} ({production.production_id})
-										</DmcItemLabel>
-										<div className='flex gap-4'>
-											<DmcItemLabel>расход: {production.minus}</DmcItemLabel>
-											<DmcItemLabel>остаток: {production.total}</DmcItemLabel>
-										</div>
-									</DmcAccordion.Header>
-									<DmcAccordion.Panel>
-										<DmcMarkupTable layout='fixed' border rowBorder dense colBorder hover>
-											<DmcMarkupTable.Thead>
-												<DmcMarkupTable.Tr>
-													<DmcMarkupTable.Th className='w-4'></DmcMarkupTable.Th>
-													<DmcMarkupTable.Th>Этикетка</DmcMarkupTable.Th>
-													<DmcMarkupTable.Th>Расход</DmcMarkupTable.Th>
-													<DmcMarkupTable.Th>Остаток</DmcMarkupTable.Th>
-												</DmcMarkupTable.Tr>
-											</DmcMarkupTable.Thead>
+								<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
+									<Accordion.Control classBody='!flex-row !justify-between'>
+										<Group justify='space-between'>
+											<Text>
+												{production.production_name} ({production.production_id})
+											</Text>
+											<Group justify='space-between' miw='50%'>
+												<Text>расход: {production.minus}</Text>
+												<Text miw='50%'>остаток: {production.total}</Text>
+											</Group>
+										</Group>
+									</Accordion.Control>
+									<Accordion.Panel>
+										<Table layout='fixed' withTableBorder withRowBorders withColumnBorders highlightOnHover>
+											<Table.Thead>
+												<Table.Tr>
+													<Table.Th w='1rem'></Table.Th>
+													<Table.Th>Этикетка</Table.Th>
+													<Table.Th>Расход</Table.Th>
+													<Table.Th>Остаток</Table.Th>
+												</Table.Tr>
+											</Table.Thead>
 											<GroupProvider onDragEnd={factoryHandleDragEnd(Number(production.production_id))}>
-												<DmcMarkupTable.Tbody>
+												<Table.Tbody>
 													{Object.entries(production.labels).map(([label, { total, minus, container }]) => {
 														const Wrap = container ? GroupContainer : GroupItem
 														const props = container ? { column: label } : { id: label, data: label }
 														return (
 															<Wrap {...props}>
-																<DmcMarkupTable.Tr key={production.production_id + label}>
-																	<DmcMarkupTable.Td className='!pl-1 cursor-pointer'>
+																<Table.Tr key={production.production_id + label}>
+																	<Table.Td className='!pl-1 cursor-pointer'>
 																		{container === false && <TbList />}
-																	</DmcMarkupTable.Td>
-																	<DmcMarkupTable.Td>{label}</DmcMarkupTable.Td>
-																	<DmcMarkupTable.Td>{minus}</DmcMarkupTable.Td>
-																	<DmcMarkupTable.Td>{total}</DmcMarkupTable.Td>
-																</DmcMarkupTable.Tr>
+																	</Table.Td>
+																	<Table.Td>{label}</Table.Td>
+																	<Table.Td>{minus}</Table.Td>
+																	<Table.Td>{total}</Table.Td>
+																</Table.Tr>
 															</Wrap>
 														)
 													})}
-												</DmcMarkupTable.Tbody>
+												</Table.Tbody>
 											</GroupProvider>
-										</DmcMarkupTable>
-									</DmcAccordion.Panel>
-								</DmcAccordion.Tab>
+										</Table>
+									</Accordion.Panel>
+								</Accordion.Item>
 							)
 						})}
-					</DmcAccordion>
-				</DmcAccordion.Panel>
-			</DmcAccordion.Tab>
-		</DmcAccordion>
+					</Accordion>
+				</Accordion.Panel>
+			</Accordion.Item>
+		</Accordion>
 	)
 })

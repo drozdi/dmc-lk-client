@@ -1,15 +1,8 @@
+import { Accordion, Notification } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '../../../shared/hooks'
-import {
-	DmcAccordion,
-	DmcItem,
-	DmcItemLabel,
-	DmcItemSection,
-	DmcList,
-	DmcLoading,
-	DmcMessage,
-} from '../../../shared/ui'
+import { DmcItem, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../shared/ui'
 import { requestLabelsCountHistory } from '../api'
 
 export const LabelsHistory = () => {
@@ -31,43 +24,31 @@ export const LabelsHistory = () => {
 	}, [])
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<DmcLoading active={isLoading} keepMounted>
-				<DmcAccordion border separated multiple>
+			{error && <Notification color='red'>{error}</Notification>}
+			<Loading active={isLoading} keepMounted>
+				<Accordion variant='contained'>
 					{ddata.map(item => (
-						<DmcAccordion.Tab
-							key={item.production_id}
-							value={item.production_id}
-						>
-							<DmcAccordion.Header>{item.name_production}</DmcAccordion.Header>
-							<DmcAccordion.Panel>
+						<Accordion.Item key={item.production_id} value={String(item.production_id)}>
+							<Accordion.Control>{item.name_production}</Accordion.Control>
+							<Accordion.Panel>
 								<DmcList dense separator>
 									{item.items.map(item => (
 										<DmcItem key={item.id}>
 											<DmcItemSection>
 												<DmcItemLabel>{item.place_name}</DmcItemLabel>
 												<DmcItemLabel caption>
-													{dayjs(item.date_applic).format('HH:mm DD-MM-YYYY')} -{' '}
-													{item.format_template}
+													{dayjs(item.date_applic).format('HH:mm DD-MM-YYYY')} - {item.format_template}
 												</DmcItemLabel>
 											</DmcItemSection>
 											<DmcItemSection side>{item.count_label}</DmcItemSection>
 										</DmcItem>
 									))}
 								</DmcList>
-							</DmcAccordion.Panel>
-						</DmcAccordion.Tab>
+							</Accordion.Panel>
+						</Accordion.Item>
 					))}
-				</DmcAccordion>
-			</DmcLoading>
+				</Accordion>
+			</Loading>
 		</>
 	)
 }

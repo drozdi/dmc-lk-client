@@ -1,21 +1,19 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Button, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { Template } from '../../../components/context'
-import { DmcBtn, DmcInput, DmcLoading, DmcMessage } from '../../../shared/ui'
-import { userStore } from '../../stores/user-store'
+import { DmcInput } from '../../../shared/ui'
+import { userStore } from '../../../stores/user-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Укажите имя'),
 	last_name: yup.string().required('Укажите фамилию'),
 	father_name: yup.string().required('Укажите отчество'),
-	email: yup
-		.string()
-		.email('Введите корректный email')
-		.required('Укажите email'),
+	email: yup.string().email('Введите корректный email').required('Укажите email'),
 	phone: yup
 		.string()
 		.matches(
@@ -72,16 +70,8 @@ export const PersonalForm = observer(() => {
 
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<DmcLoading active={isLoading} keepMounted>
+			{error && <Notification color='red'>{error}</Notification>}
+			<Loading active={isLoading} keepMounted>
 				<form name='registration' className='space-y-1'>
 					<DmcInput
 						label='Имя'
@@ -158,45 +148,26 @@ export const PersonalForm = observer(() => {
 					<Template slot='footer'>
 						<div className='flex flex-row flex-wrap gap-3 justify-between'>
 							<div className='flex flex-row gap-3'>
-								<DmcBtn
-									type='button'
-									color='success'
-									size='sm'
+								<Button
+									color='green'
 									onClick={handleSubmit(handleSaveNavigate)}
 									loading={isLoading}
 									disabled={!isValid}
-									label='Сохранить'
 								>
 									Сохранить
-								</DmcBtn>
+								</Button>
 
-								<DmcBtn
-									type='button'
-									color='primary'
-									size='sm'
-									onClick={handleSubmit(handleSave)}
-									loading={isLoading}
-									disabled={!isValid}
-									label='Применить'
-								>
+								<Button onClick={handleSubmit(handleSave)} loading={isLoading} disabled={!isValid}>
 									Применить
-								</DmcBtn>
+								</Button>
 							</div>
-							<DmcBtn
-								type='button'
-								color='danger'
-								size='sm'
-								onClick={handleRemove}
-								loading={isLoading}
-								disabled={!isValid}
-								label='Удалить'
-							>
+							<Button color='red' onClick={handleRemove} loading={isLoading} disabled={!isValid}>
 								Удалить
-							</DmcBtn>
+							</Button>
 						</div>
 					</Template>
 				</form>
-			</DmcLoading>
+			</Loading>
 		</>
 	)
 })

@@ -1,8 +1,9 @@
+import { Button, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DmcBtn, DmcInput, DmcLoading, DmcMessage } from '../../../shared/ui'
-import { authStore } from '../../stores/auth-store'
+import { DmcInput, Loading } from '../../../shared/ui'
+import { authStore } from '../../../stores/auth-store'
 
 export const SignInForm = observer(() => {
 	const [email, setEmail] = useState<string>('')
@@ -17,17 +18,9 @@ export const SignInForm = observer(() => {
 
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
+			{error && <Notification color='red'>{error}</Notification>}
 			<form name='signIn' className='mt-8 space-y-3' onSubmit={handleSubmit}>
-				<DmcLoading active={isLoading} keepMounted>
+				<Loading active={isLoading} keepMounted>
 					<DmcInput
 						label='Email'
 						placeholder='Email'
@@ -56,10 +49,10 @@ export const SignInForm = observer(() => {
 						value={password}
 						onChange={e => setPassword(e.target.value)}
 					/>
-				</DmcLoading>
-				<DmcBtn type='submit' color='primary' block loading={isLoading}>
+				</Loading>
+				<Button type='submit' fullWidth loading={isLoading}>
 					Войти
-				</DmcBtn>
+				</Button>
 			</form>
 		</>
 	)

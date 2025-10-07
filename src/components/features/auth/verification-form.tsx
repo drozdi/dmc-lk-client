@@ -1,9 +1,10 @@
+import { Button, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { setAccessToken } from '../../../shared/api/token-service'
-import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
-import { authStore } from '../../stores/auth-store'
+import { DmcInput } from '../../../shared/ui'
+import { authStore } from '../../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
 	const { isLoading, error } = authStore
@@ -22,15 +23,7 @@ export const VerificationForm = observer(() => {
 	}
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
+			{error && <Notification color='red'>{error}</Notification>}
 			<form name='verification' className='space-y-3' onSubmit={handleSubmit}>
 				<DmcInput
 					label='Код'
@@ -47,9 +40,9 @@ export const VerificationForm = observer(() => {
 					underlined
 				/>
 
-				<DmcBtn type='submit' color='primary' block loading={isLoading}>
+				<Button type='submit' fullWidth loading={isLoading}>
 					Продолжить
-				</DmcBtn>
+				</Button>
 			</form>
 		</>
 	)

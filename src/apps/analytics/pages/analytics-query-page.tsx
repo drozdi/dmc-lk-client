@@ -1,8 +1,9 @@
+import { Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { useQuery } from '../../../shared/hooks'
-import { DmcLoading, DmcSelect } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 import { requestAnalyticsGetQuery } from '../api'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
@@ -28,21 +29,17 @@ export const AnalyticsQueryPage = observer(() => {
 
 	return (
 		<>
-			<DmcSelect
-				filled
-				underlined
-				value={id_query}
-				onChange={({ target }) => goTo(target.value)}
-			>
-				{list.map(({ id, name_query }) => (
-					<option key={id} value={id}>
-						{name_query}
-					</option>
-				))}
-			</DmcSelect>
-			<DmcLoading active={isLoading} keepMounted>
+			<Select
+				value={String(id_query)}
+				onChange={value => goTo(value)}
+				data={list.map(({ id, name_query }) => ({
+					value: String(id),
+					label: name_query,
+				}))}
+			/>
+			<Loading active={isLoading} keepMounted mt='xs'>
 				<TableElastic />
-			</DmcLoading>
+			</Loading>
 		</>
 	)
 })

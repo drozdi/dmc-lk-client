@@ -39,5 +39,5 @@ export function useLabelFormat(production_id?: integer | string) {
 		} else {
 			return res
 		}
-	}, [res.production_id])
+	}, [res, production_id])
 }

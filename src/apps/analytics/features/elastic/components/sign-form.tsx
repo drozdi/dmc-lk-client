@@ -1,26 +1,11 @@
-import { DmcSelect } from '../../../../../shared/ui'
-export function SignForm({
-	value = '',
-	onChange,
-}: {
-	value?: string
-	onChange?: (value: string) => void
-}) {
+import { Select } from '@mantine/core'
+
+export function SignForm({ value = '', onChange }: { value?: string; onChange?: (value: string) => void }) {
 	return (
-		<DmcSelect
-			underlined
-			dense
-			filled
-			value={value}
-			onChange={({ target }) => onChange?.(target.value)}
-		>
-			<option value='='>=</option>
-			<option value='>='>{'>='}</option>
-			<option value='<='>{'<='}</option>
-			<option value='!='>!=</option>
-			<option value='in'>in</option>
-			<option value='not_in'>not_in</option>
-			<option value='like'>like</option>
-		</DmcSelect>
+		<Select
+			value={String(value)}
+			onChange={value => onChange?.(value)}
+			data={['=', '>=', '<=', '!=', 'in', 'not_in', 'like']}
+		/>
 	)
 }

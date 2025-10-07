@@ -1,12 +1,7 @@
 import { forwardRef, useRef, useState } from 'react'
-import { TbCirclePlus, TbList } from 'react-icons/tb'
+import { TbList } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcInput,
-	DmcItem,
-	DmcItemSection,
-} from '../../../../../shared/ui'
+import { ButtonIcon, DmcInput, DmcItem, DmcItemSection } from '../../../../../shared/ui'
 import { requestLabelsCountAdd } from '../../../api'
 export const ReportItem = forwardRef(
 	(
@@ -53,13 +48,7 @@ export const ReportItem = forwardRef(
 		return (
 			<DmcItem
 				{...props}
-				color={
-					item.sum < dangerLimits
-						? item.sum < warningLimits
-							? 'warning'
-							: 'danger'
-						: ''
-				}
+				color={item.sum < dangerLimits ? (item.sum < warningLimits ? 'warning' : 'danger') : ''}
 				ref={ref}
 			>
 				{groupable && (
@@ -88,14 +77,9 @@ export const ReportItem = forwardRef(
 
 				<DmcItemSection side>{item.sum}</DmcItemSection>
 				<DmcItemSection side>
-					<DmcBtn
-						size='sm'
-						color='info'
-						loading={isLoading}
-						onClick={() => setEditMode(true)}
-					>
-						<TbCirclePlus />
-					</DmcBtn>
+					<ButtonIcon loading={isLoading} onClick={() => setEditMode(true)}>
+						tb-circle-plus
+					</ButtonIcon>
 				</DmcItemSection>
 			</DmcItem>
 		)

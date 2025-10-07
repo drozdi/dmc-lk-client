@@ -1,27 +1,27 @@
+import { Group, Text } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { DmcFullscreen, DmcInput } from '../../../shared/ui'
 import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 
-const dNow = dayjs()
+const dNow = dayjs('2025-08-02')
 
 export function AnalyticsPage() {
 	const [query, setQuery] = useState<Omit<IAnalyticsQuery, 'step' | 'event'>>({
-		filterdate_from: dNow.month(dNow.month() - 2).format('YYYY-MM-DD'),
+		filterdate_from: dNow.month(dNow.month() - 6).format('YYYY-MM-DD'),
 		filterdate_to: dNow.format('YYYY-MM-DD'),
 	})
 	const [errors, setErrors] = useState<Record<string, string>>({})
-
-	const handleChange = ({ target }: React.ChangeEvent) => {
+	const handleChange = (name: string, value: any) => {
 		setErrors({})
 		setQuery(v => ({
 			...v,
-			[target.name]: target.value,
+			[name]: value,
 		}))
+		validate()
 	}
-
 	function validate() {
 		try {
 			if (!query.filterdate_from && !query.filterdate_to) {
@@ -40,43 +40,27 @@ export function AnalyticsPage() {
 
 	return (
 		<div>
-			<div className='flex gap-0 justify-center'>
-				<DmcInput
-					value={query.filterdate_from}
-					label='С'
-					type='date'
+			<Group justify='center'>
+				<Text>C</Text>
+				<DatePickerInput
 					name='filterdate_from'
-					onChange={handleChange}
-					dense
-					square
-					filled
-					underlined
-					errorMessage={errors?.filterdate_from}
+					value={query.filterdate_from}
+					onChange={value => handleChange('filterdate_from', value)}
+					error={errors?.filterdate_from}
 				/>
-				<DmcInput
-					value={query.filterdate_to}
-					label='по'
-					type='date'
+				<Text>по</Text>
+				<DatePickerInput
 					name='filterdate_to'
-					onChange={handleChange}
-					dense
-					square
-					filled
-					underlined
-					errorMessage={errors?.filterdate_to}
+					value={query.filterdate_to}
+					onChange={value => handleChange('filterdate_to', value)}
+					error={errors?.filterdate_to}
 				/>
-			</div>
+			</Group>
 
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl'>
-				<DmcFullscreen>
-					<AnalyticEventWidget {...query} step='mon' />
-				</DmcFullscreen>
-				<DmcFullscreen>
-					<AnalyticAllWidget {...query} step='mon' />
-				</DmcFullscreen>
-				<DmcFullscreen>
-					<AnalyticTypeWidget {...query} step='mon' />
-				</DmcFullscreen>
+				<AnalyticEventWidget {...query} step='mon' />
+				<AnalyticAllWidget {...query} step='mon' />
+				<AnalyticTypeWidget {...query} step='mon' />
 			</div>
 		</div>
 	)

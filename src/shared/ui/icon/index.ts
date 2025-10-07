@@ -1,2 +1,1 @@
-export * from './DmcChevron'
-export * from './DmcIcon'
+export * from './Icon'

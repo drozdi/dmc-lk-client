@@ -1,15 +1,8 @@
+import { AspectRatio, Button, Checkbox, Group, Select, Stack } from '@mantine/core'
+import dayjs from 'dayjs'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Cell,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from 'recharts'
-import { DmcBtn, DmcLoading, DmcSelect } from '../../../shared/ui'
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { ExpandablePanel } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
 import { useAnalytics } from '../api/api'
 
@@ -32,13 +25,11 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	// Извлекаем список площадок
 	const productions = useMemo<IProductionAnalytics[]>(() => {
 		if (data) {
-			return ((data?.production as Array<IProductionAnalytics>) || []).map(
-				item => ({
-					address: item.address,
-					name: item.name,
-					production_id: item.production_id,
-				})
-			)
+			return ((data?.production as Array<IProductionAnalytics>) || []).map(item => ({
+				address: item.address,
+				label: item.name,
+				value: String(item.production_id),
+			}))
 		}
 		return []
 	}, [data])
@@ -71,6 +62,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 			value: number
 			color: string
 		}> = []
+		const currProduction = Number(cuurent_production || 0)
 
 		if (data) {
 			labels.forEach(label => {
@@ -80,10 +72,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					color: randomColor(),
 				}
 				data.production.forEach(production => {
-					if (
-						cuurent_production > 0 &&
-						cuurent_production !== production.production_id
-					) {
+					if (currProduction > 0 && currProduction !== production.production_id) {
 						return
 					}
 					production.data.forEach(item => {
@@ -111,46 +100,31 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		setQuery(props)
 	}, [props])
 
+	const title = useMemo(() => {
+		return (
+			dayjs(query.filterdate_from).format('YYYY-MM-DD') + ' - ' + dayjs(query.filterdate_to || '').format('YYYY-MM-DD')
+		)
+	}, [query])
+
 	return (
-		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
-			<h2 className='mb-3 w-full text-left'>Напечатано</h2>
-			<div className='flex w-full gap-0 items-start justify-end'>
-				<label className='flex'>
-					<input
-						type='checkbox'
-						checked={filterGap}
-						onChange={e => setFilterGap(e.target.checked)}
+		<ExpandablePanel loading={isLoading} title={title}>
+			<Stack h='100%'>
+				<Group gap='0'>
+					<Checkbox onChange={e => setFilterGap(e.target.checked)} checked={filterGap} label='Группировать по G' />
+					<Select
+						defaultValue={String(cuurent_production)}
+						checkIconPosition='right'
+						onChange={setCurrentProduction}
+						data={[
+							{
+								value: '0',
+								label: 'Все площадки',
+							},
+						].concat(productions)}
 					/>
-					<div className='ml-3'>Группировать по G</div>
-				</label>
-				<DmcSelect
-					label='Площадка'
-					name='production_id'
-					value={String(cuurent_production)}
-					onChange={(e: React.ChangeEvent) =>
-						setCurrentProduction(parseInt(e.target.value, 10))
-					}
-					dense
-					square
-					filled
-					underlined
-					hideMessage
-				>
-					<option value='0' selected>
-						Все площадки
-					</option>
-					{productions.map(item => (
-						<option key={item.production_id} value={item.production_id}>
-							{item.name}
-						</option>
-					))}
-				</DmcSelect>
-				<DmcBtn className='flex-none' color='primary' square onClick={reset}>
-					Сбросить
-				</DmcBtn>
-			</div>
-			<div className='w-full aspect-square max-h-1/2 max-w-1/2'>
-				<DmcLoading active={isLoading}>
+					<Button onClick={reset}>Сбросить</Button>
+				</Group>
+				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
@@ -168,8 +142,8 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 							</BarChart>
 						</ResponsiveContainer>
 					)}
-				</DmcLoading>
-			</div>
-		</div>
+				</AspectRatio>
+			</Stack>
+		</ExpandablePanel>
 	)
 })

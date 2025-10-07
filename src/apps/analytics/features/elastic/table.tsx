@@ -1,22 +1,10 @@
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from '@tanstack/react-table'
-import dayjs from 'dayjs'
+import { Button, Group, Popover, Select, Stack, Table, Text, TextInput } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
 import { TbColumnRemove } from 'react-icons/tb'
-import {
-	DmcBtn,
-	DmcBtnRemove,
-	DmcIcon,
-	DmcInput,
-	DmcLoading,
-	DmcMarkupTable,
-	DmcPopover,
-	DmcSelect,
-} from '../../../../shared/ui'
+import { ButtonIcon, ButtonRemove, Loading } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
 import { fieldsStore } from '../../stores/fields-store'
 import { ActionForm } from './components/action-form'
@@ -29,8 +17,7 @@ interface TableElasticProps {
 
 export const TableElastic = observer(({ className }: TableElasticProps) => {
 	const { fields, list } = fieldsStore
-	const { template, data, isNext, isPrev, limit, date, isLoading } =
-		elasticStore
+	const { template, data, isNext, isPrev, limit, date, isLoading } = elasticStore
 
 	const variantFields = useMemo<
 		Array<{
@@ -39,7 +26,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		}>
 	>(() => {
 		return list.map(item => ({
-			value: item,
+			value: String(item),
 			label: fields?.[item]?.label ?? item,
 		}))
 	}, [fields, list])
@@ -70,8 +57,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		getCoreRowModel: getCoreRowModel(),
 	})
 
-	const whereItem = (select: string) =>
-		template.company.list_where?.find(item => item.name_field_table === select)
+	const whereItem = (select: string) => template.company.list_where?.find(item => item.name_field_table === select)
 
 	const whereItemAppend = (
 		select: string,
@@ -79,9 +65,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		value: string | string[] = '',
 		action: 'and' | 'or' | 'not' = 'and'
 	) => {
-		const index = template.company.list_where?.findIndex(
-			item => item.name_field_table === select
-		)
+		const index = template.company.list_where?.findIndex(item => item.name_field_table === select)
 		let where = {
 			name_field_table: select,
 			sing_action: sign,
@@ -104,26 +88,16 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		elasticStore.saveTemp({ ...template })
 	}
 	const handleRemoveField = (select: string) => {
-		template.company.select_field = template.company.select_field.filter(
-			item => item !== select
-		)
-		template.company.list_where = template.company.list_where.filter(
-			item => item.name_field_table !== select
-		)
+		template.company.select_field = template.company.select_field.filter(item => item !== select)
+		template.company.list_where = template.company.list_where.filter(item => item.name_field_table !== select)
 		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeActionField = (
-		select: string,
-		action: 'and' | 'or' | 'not'
-	) => {
+	const handleChangeActionField = (select: string, action: 'and' | 'or' | 'not') => {
 		const where = whereItemAppend(select, '=', '', action)
 		where.single_action_list = action
 		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeSignField = (
-		select: string,
-		sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like'
-	) => {
+	const handleChangeSignField = (select: string, sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like') => {
 		const where = whereItemAppend(select, sign)
 		where.sing_action = sign
 		where.search_value = ''
@@ -139,9 +113,9 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		where.search_value = value
 		elasticStore.saveTemp({ ...template })
 	}
-	const handleDateChange = ({ target }: React.ChangeEvent) => {
+	const handleDateChange = (name: string, value: any) => {
 		elasticStore.setDate({
-			[target.name]: target.value,
+			[name]: value,
 		})
 	}
 
@@ -163,190 +137,126 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 
 	return (
 		<div className={className}>
-			<div className='flex gap-3 justify-between'>
-				<div className='flex gap-0'>
-					<DmcSelect
-						filled
-						dense
-						square
-						underlined
-						hideMessage
-						value=''
-						onChange={({ target }) => handleAddField(target.value)}
-					>
-						<option disabled value=''>
-							Добавить поле
-						</option>
-						{variantFields.map(item => (
-							<option key={item.value} value={item.value}>
-								{item.label}
-							</option>
-						))}
-					</DmcSelect>
-					<DmcInput
-						value={dayjs(date.date_from).format('YYYY-MM-DD')}
-						label='С'
-						type='date'
-						name='date_from'
-						onChange={handleDateChange}
-						dense
-						square
-						filled
-						underlined
-						hideMessage
+			<Group justify='space-between'>
+				<Group>
+					<Select
+						value={''}
+						onChange={value => handleAddField(value)}
+						placeholder='Добавить поле'
+						data={variantFields}
 					/>
-					<DmcInput
-						value={dayjs(date.date_to).format('YYYY-MM-DD')}
-						label='по'
-						type='date'
-						name='date_to'
-						onChange={handleDateChange}
-						dense
-						square
-						filled
-						underlined
-						hideMessage
-					/>
-				</div>
-				<div className='flex gap-3'>
-					<DmcBtn color='success' size='sm' onClick={handleSave}>
+					<Group>
+						<Text>С</Text>
+						<DatePickerInput
+							name='date_from'
+							value={date.date_from}
+							onChange={value => handleDateChange('date_from', value)}
+						/>
+						<Text>по</Text>
+						<DatePickerInput
+							name='date_to'
+							value={date.date_to}
+							onChange={value => handleDateChange('date_to', value)}
+						/>
+					</Group>
+				</Group>
+				<Group>
+					<Button color='green' onClick={handleSave}>
 						Сохранить
-					</DmcBtn>
-					<DmcBtn color='info' size='sm' onClick={handleApply}>
-						Применить
-					</DmcBtn>
-				</div>
-			</div>
-			<DmcLoading active={isLoading} keepMounted>
-				<DmcMarkupTable rowBorder striped>
-					<DmcMarkupTable.Thead>
+					</Button>
+					<Button onClick={handleApply}>Применить</Button>
+				</Group>
+			</Group>
+			<Loading active={isLoading} keepMounted>
+				<Table striped>
+					<Table.Thead>
 						{table.getHeaderGroups().map((headerGroup, index) => (
-							<DmcMarkupTable.Tr key={headerGroup.id + '-' + index}>
+							<Table.Tr key={headerGroup.id + '-' + index}>
 								{headerGroup.headers.map((header, index) => (
-									<DmcMarkupTable.Th
-										key={header.id + '-' + index}
-										colSpan={header.colSpan}
-									>
-										<div className='flex gap-2 justify-between items-center'>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext()
-												  )}
-
+									<Table.Th key={header.id + '-' + index} colSpan={header.colSpan}>
+										<div
+											style={{
+												display: 'flex',
+												justifyContent: 'space-between',
+											}}
+										>
+											<Text>
+												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+											</Text>
 											{canEdit(header.column.columnDef) && (
-												<DmcPopover className='float-right'>
-													<DmcPopover.Target>
-														<DmcBtn>
-															<DmcIcon>tb-settings</DmcIcon>
-														</DmcBtn>
-													</DmcPopover.Target>
-													<DmcPopover.Dropdown className='z-50 min-w-48'>
-														<div className='flex gap-1 justify-between items-start'>
-															<ActionForm
-																value={
-																	whereItem(header.id)?.single_action_list ||
-																	'and'
-																}
-																onChange={single_action_list =>
-																	handleChangeActionField(
-																		header.id,
-																		single_action_list
-																	)
-																}
+												<Popover>
+													<Popover.Target>
+														<ButtonIcon>tb-settings</ButtonIcon>
+													</Popover.Target>
+													<Popover.Dropdown w='18rem'>
+														<Stack gap='xs'>
+															<Group gap='xs' justify='space-between'>
+																<div>
+																	<ActionForm
+																		value={whereItem(header.id)?.single_action_list || 'and'}
+																		onChange={single_action_list =>
+																			handleChangeActionField(header.id, single_action_list)
+																		}
+																	/>
+																</div>
+																<ButtonRemove onClick={() => handleRemoveField(header.id)} title='Удалить поле'>
+																	<TbColumnRemove />
+																</ButtonRemove>
+															</Group>
+
+															<SignForm
+																value={whereItem(header.id)?.sing_action || '='}
+																onChange={sing_action => handleChangeSignField(header.id, sing_action)}
 															/>
-															<DmcBtnRemove
-																onClick={() => handleRemoveField(header.id)}
-																title='Удалить поле'
-															>
-																<TbColumnRemove />
-															</DmcBtnRemove>
-														</div>
-														<SignForm
-															value={whereItem(header.id)?.sing_action || '='}
-															onChange={sing_action =>
-																handleChangeSignField(header.id, sing_action)
-															}
-														/>
-														{whereItem(header.id)?.sing_action === 'in' ||
-														whereItem(header.id)?.sing_action === 'not_in' ? (
-															<InForm
-																values={whereItem(header.id)?.search_value}
-																onChange={values =>
-																	handleChangeInField(header.id, values)
-																}
-															/>
-														) : (
-															<DmcInput
-																filled
-																dense
-																square
-																underlined
-																onChange={({ target }) =>
-																	handleChangeValueField(
-																		header.id,
-																		target.value
-																	)
-																} ///
-															/>
-														)}
-													</DmcPopover.Dropdown>
-												</DmcPopover>
+															{whereItem(header.id)?.sing_action === 'in' ||
+															whereItem(header.id)?.sing_action === 'not_in' ? (
+																<InForm
+																	values={whereItem(header.id)?.search_value}
+																	onChange={values => handleChangeInField(header.id, values)}
+																/>
+															) : (
+																<TextInput
+																	onChange={({ target }) => handleChangeValueField(header.id, target.value)} ///
+																/>
+															)}
+														</Stack>
+													</Popover.Dropdown>
+												</Popover>
 											)}
 										</div>
-									</DmcMarkupTable.Th>
+									</Table.Th>
 								))}
-							</DmcMarkupTable.Tr>
+							</Table.Tr>
 						))}
-					</DmcMarkupTable.Thead>
-					<DmcMarkupTable.Tbody>
+					</Table.Thead>
+					<Table.Tbody>
 						{table.getRowModel().rows.map(row => (
-							<DmcMarkupTable.Tr key={row.id}>
+							<Table.Tr key={row.id}>
 								{row.getVisibleCells().map((cell, index) => (
-									<DmcMarkupTable.Td key={cell.id + '-' + index}>
+									<Table.Td key={cell.id + '-' + index}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
-									</DmcMarkupTable.Td>
+									</Table.Td>
 								))}
-							</DmcMarkupTable.Tr>
+							</Table.Tr>
 						))}
-					</DmcMarkupTable.Tbody>
-				</DmcMarkupTable>
-			</DmcLoading>
-			<div className='flex gap-3 justify-between mt-3 items-start'>
-				<div className='flex gap-3 justify-end'>
-					<DmcBtn
-						color='secondary'
-						size='sm'
-						disabled={!isPrev}
-						loading={isLoading}
-						onClick={() => elasticStore.prev()}
-					>
+					</Table.Tbody>
+				</Table>
+			</Loading>
+			<Group justify='space-between' mt='xs'>
+				<Group>
+					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.prev()}>
 						Предыдущая
-					</DmcBtn>
-					<DmcBtn
-						color='secondary'
-						size='sm'
-						disabled={!isNext}
-						loading={isLoading}
-						onClick={() => elasticStore.next()}
-					>
+					</Button>
+					<Button disabled={!isNext} loading={isLoading} onClick={() => elasticStore.next()}>
 						Следующая
-					</DmcBtn>
-				</div>
-				<DmcSelect
-					dense
-					filled
-					value={limit}
-					onChange={({ target }) => elasticStore.setLimit(target.value)}
-				>
-					<option value={15}>15</option>
-					<option value={30}>30</option>
-					<option value={50}>50</option>
-					<option value={75}>75</option>
-					<option value={100}>100</option>
-				</DmcSelect>
-			</div>
+					</Button>
+				</Group>
+				<Select
+					value={String(limit)}
+					data={['15', '30', '50', '75', '100']}
+					onChange={value => elasticStore.setLimit(value)}
+				/>
+			</Group>
 		</div>
 	)
 })

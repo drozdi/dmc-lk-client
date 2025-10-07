@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { DmcLoading } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 import { getProducts } from '../api/api'
 import { cartStore } from '../stores/cart-store'
 import { GroupView } from './view/group-view'
@@ -47,7 +47,7 @@ export const ShopGroup = observer(({ groupId }: ShopGroupProps) => {
 	}
 
 	return (
-		<DmcLoading active={isLoading} keepMounted>
+		<Loading active={isLoading} keepMounted>
 			<div className='grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-6'>
 				{groupId && (
 					<GroupView
@@ -62,20 +62,12 @@ export const ShopGroup = observer(({ groupId }: ShopGroupProps) => {
 					/>
 				)}
 				{((groups as Array<IShopGroup>) || []).map((item: IShopGroup) => (
-					<GroupView
-						key={item.group_code}
-						item={item}
-						onClick={() => handleClickGroup(item)}
-					/>
+					<GroupView key={item.group_code} item={item} onClick={() => handleClickGroup(item)} />
 				))}
 				{products.map((item: IShopProduct) => (
-					<ProductView
-						key={item.product_code}
-						item={item}
-						onAddCart={() => handleAddCart(item)}
-					/>
+					<ProductView key={item.product_code} item={item} onAddCart={() => handleAddCart(item)} />
 				))}
 			</div>
-		</DmcLoading>
+		</Loading>
 	)
 })

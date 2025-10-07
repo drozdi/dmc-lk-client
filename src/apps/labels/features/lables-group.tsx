@@ -1,19 +1,10 @@
+import { Notification, Select, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
-import {
-	DmcInput,
-	DmcItem,
-	DmcItemExpansion,
-	DmcItemLabel,
-	DmcItemSection,
-	DmcList,
-	DmcLoading,
-	DmcMessage,
-	DmcSelect,
-} from '../../../shared/ui'
+import { DmcItem, DmcItemExpansion, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../shared/ui'
 
-import { userStore } from '../../../components/stores/user-store'
+import { userStore } from '../../../stores/user-store'
 
 import { formatPrintStore } from '../stores/format-print-store'
 import { formatStore } from '../stores/format-store'
@@ -25,36 +16,15 @@ import { GroupProvider } from './components/group/provider'
 
 export const LabelsGroup = observer(() => {
 	const { products } = userStore
-	const {
-		prints: _prints,
-		isLoading: isLoadingPrints,
-		error: errorPrints,
-	} = printStore
-	const {
-		formats: _formats,
-		isLoading: isLoadingFormats,
-		error: errorFormats,
-	} = formatStore
-	const {
-		formatPrints: _formatPrints,
-		isLoading: isLoadingFormatPrints,
-		error: errorFormatPrints,
-	} = formatPrintStore
+	const { prints: _prints, isLoading: isLoadingPrints, error: errorPrints } = printStore
+	const { formats: _formats, isLoading: isLoadingFormats, error: errorFormats } = formatStore
+	const { formatPrints: _formatPrints, isLoading: isLoadingFormatPrints, error: errorFormatPrints } = formatPrintStore
 
 	const [production_id, setProduction_id] = useState()
 
-	const prints = useMemo(
-		() => _prints[production_id] || [],
-		[_prints, production_id]
-	)
-	const formats = useMemo(
-		() => _formats[production_id] || [],
-		[_formats, production_id]
-	)
-	const formatPrints = useMemo(
-		() => _formatPrints[production_id] || [],
-		[_formatPrints, production_id]
-	)
+	const prints = useMemo(() => _prints[production_id] || [], [_prints, production_id])
+	const formats = useMemo(() => _formats[production_id] || [], [_formats, production_id])
+	const formatPrints = useMemo(() => _formatPrints[production_id] || [], [_formatPrints, production_id])
 	const error = useMemo(
 		() => errorPrints || errorFormats || errorFormatPrints,
 		[errorPrints, errorFormats, errorFormatPrints]
@@ -71,8 +41,7 @@ export const LabelsGroup = observer(() => {
 			}>
 		>
 	>(() => {
-		const con =
-			Object.fromEntries((formats || []).map(item => [item, []])) || {}
+		const con = Object.fromEntries((formats || []).map(item => [item, []])) || {}
 		con['.default'] = (prints || []).map(item => ({
 			print: item,
 			id: item,
@@ -102,8 +71,7 @@ export const LabelsGroup = observer(() => {
 		}
 	}, [products, production_id])
 
-	const findIndex = (item, id) =>
-		item === id || (typeof item === 'object' && 'id' in item && item.id === id)
+	const findIndex = (item, id) => item === id || (typeof item === 'object' && 'id' in item && item.id === id)
 
 	const handleDragEnd = event => {
 		const { source, target } = event.operation
@@ -137,19 +105,13 @@ export const LabelsGroup = observer(() => {
 
 		if (containers[sourceParent][sourceIndex]._id && target.id === '.default') {
 			formatPrintStore.delete(containers[sourceParent][sourceIndex]._id)
-		} else if (
-			sourceParent !== target.id &&
-			containers[sourceParent][sourceIndex]._id
-		) {
+		} else if (sourceParent !== target.id && containers[sourceParent][sourceIndex]._id) {
 			formatPrintStore.update(containers[sourceParent][sourceIndex]._id, {
 				production_id,
 				add_label_format: target.id,
 				statistics_print_format: containers[sourceParent][sourceIndex].print,
 			})
-		} else if (
-			target.id !== '.default' &&
-			!containers[sourceParent][sourceIndex]._id
-		) {
+		} else if (target.id !== '.default' && !containers[sourceParent][sourceIndex]._id) {
 			formatPrintStore.add({
 				production_id,
 				add_label_format: target.id,
@@ -172,56 +134,32 @@ export const LabelsGroup = observer(() => {
 	}
 
 	return (
-		<div className=''>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<div className='flex gap-3'>
-				<DmcSelect
-					dense
-					filled
-					value={production_id}
-					onChange={({ target }) => setProduction_id(target.value)}
-				>
-					{products.map(product => (
-						<option key={product.production_id} value={product.production_id}>
-							{product.name_production} ({product.production_id})
-						</option>
-					))}
-				</DmcSelect>
-			</div>
+		<Stack gap='xs'>
+			{error && <Notification color='red'>{error}</Notification>}
+			<Select
+				w='100%'
+				checkIconPosition='right'
+				value={String(production_id)}
+				onChange={setProduction_id}
+				data={products.map(product => ({
+					value: String(product.production_id),
+					label: `${product.name_production} (${product.production_id})`,
+				}))}
+			/>
 
-			<DmcLoading
-				active={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints}
-				keepMounted
-			>
+			<Loading active={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints} keepMounted>
 				<div className='flex gap-3'>
 					<GroupProvider onDragEnd={handleDragEnd}>
 						<DmcList as='div' className='flex-1/2'>
 							<DmcItem>
 								<DmcItemSection>
-									<DmcInput
-										dense
-										square
-										filled
-										underlined
+									<TextInput
+										w='100%'
 										placeholder='Добавить формат'
-										disabled={
-											isLoadingPrints ||
-											isLoadingFormats ||
-											isLoadingFormatPrints
-										}
+										disabled={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints}
 										value={newFormat}
 										onChange={handleChange}
 										onKeyPress={handleKeyPress}
-										hideMessage
-										className='w-full'
 									/>
 								</DmcItemSection>
 							</DmcItem>
@@ -265,7 +203,7 @@ export const LabelsGroup = observer(() => {
 						</GroupContainer>
 					</GroupProvider>
 				</div>
-			</DmcLoading>
-		</div>
+			</Loading>
+		</Stack>
 	)
 })

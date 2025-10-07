@@ -1,16 +1,10 @@
+import { Button, Group, Text } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
-import {
-	DmcBtn,
-	DmcInput,
-	DmcItem,
-	DmcItemExpansion,
-	DmcItemLabel,
-	DmcList,
-	DmcLoading,
-} from '../../../../shared/ui'
+import { DmcItem, DmcItemExpansion, DmcItemLabel, DmcList, Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { Detail } from './components/detail'
 
@@ -20,10 +14,7 @@ export const AllIncident = observer(() => {
 	const [data, setData] = useState([])
 	const [query, setQuery] = useState({
 		limit_page: 1000,
-		filterdate: [
-			day.month(day.month() - 3).format('YYYY-MM-DD'),
-			day.format('YYYY-MM-DD'),
-		],
+		filterdate: [day.month(day.month() - 3).format('YYYY-MM-DD'), day.format('YYYY-MM-DD')],
 		data: [],
 		fields_name: [],
 		details_field: [],
@@ -54,45 +45,28 @@ export const AllIncident = observer(() => {
 
 	return (
 		<div>
-			<div className='flex gap-3 justify-end items-start'>
-				<div className='flex gap-0 items-start justify-end'>
-					<DmcInput
-						label='С'
-						type='date'
+			<Group justify='end'>
+				<Group justify='end' gap='xs'>
+					<Text>С</Text>
+					<DatePickerInput
 						name='filterdate_from'
-						dense
-						square
-						filled
-						underlined
 						value={query.filterdate?.[0] || ''}
-						onChange={({ target }) => handleDate(0, target.value)}
+						onChange={value => handleDate(0, value)}
 					/>
-					<DmcInput
-						label='по'
-						type='date'
+					<Text>по</Text>
+					<DatePickerInput
 						name='filterdate_to'
-						dense
-						square
-						filled
-						underlined
 						value={query.filterdate?.[1] || ''}
-						onChange={({ target }) => handleDate(1, target.value)}
+						onChange={value => handleDate(1, value)}
 					/>
-				</div>
-				<DmcBtn color='info' onClick={() => fetch()}>
-					Применить
-				</DmcBtn>
-			</div>
-			<DmcLoading active={isLoading} keepMounted>
+				</Group>
+				<Button onClick={() => fetch()}>Применить</Button>
+			</Group>
+			<Loading active={isLoading} keepMounted>
 				<DmcList as='div' separator>
 					{data.length ? (
 						data.map((item, index) => (
-							<DmcItemExpansion
-								as='div'
-								key={item.data}
-								label={item.data}
-								rightSection={item.total_counter}
-							>
+							<DmcItemExpansion as='div' key={item.data} label={item.data} rightSection={item.total_counter}>
 								<Detail {...query} data={[item.data]} />
 							</DmcItemExpansion>
 						))
@@ -102,7 +76,7 @@ export const AllIncident = observer(() => {
 						</DmcItem>
 					)}
 				</DmcList>
-			</DmcLoading>
+			</Loading>
 		</div>
 	)
 })

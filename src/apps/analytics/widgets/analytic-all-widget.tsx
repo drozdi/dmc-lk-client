@@ -1,22 +1,17 @@
+import { AspectRatio, Select, Stack } from '@mantine/core'
+import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
-import {
-	Cell,
-	Legend,
-	Pie,
-	PieChart,
-	ResponsiveContainer,
-	Tooltip,
-} from 'recharts'
-import { DmcLoading, DmcSelect } from '../../../shared/ui'
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { ExpandablePanel } from '../../../shared/ui'
 import { useAnalytics } from '../api/api'
-import { mapEvent } from '../entites/constants'
+import { mapEvent, mapEventColor } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
 export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 	//return ''
 	const { isLoading, request } = useAnalytics()
-	const [cuurent_production, setCurrentProduction] = useState(0)
+	const [cuurent_production, setCurrentProduction] = useState('0')
 	const [data, setData] = useState<{
 		v?: IAnalyticsResponse
 		i?: IAnalyticsResponse
@@ -32,33 +27,30 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 	// Извлекаем список площадок
 	const productions = useMemo<IProductionAnalytics[]>(() => {
 		if (data) {
-			return (
-				((data?.v || data?.i || data?.d || data?.p)
-					?.production as Array<IProductionAnalytics>) || []
-			).map(item => ({
-				address: item.address,
-				name: item.name,
-				production_id: item.production_id,
-			}))
+			return (((data?.v || data?.i || data?.d || data?.p)?.production as Array<IProductionAnalytics>) || []).map(
+				item => ({
+					value: String(item.production_id),
+					label: item.name,
+					address: item.address,
+				})
+			)
 		}
 		return []
 	}, [data])
-
 	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
 		const res = {
-			v: { value: 0, color: '#00ff84' },
-			d: { value: 0, color: '#35a2eb' },
-			i: { value: 0, color: '#ff6384' },
+			v: { value: 0, color: mapEventColor.v },
+			d: { value: 0, color: mapEventColor.d },
+			i: { value: 0, color: mapEventColor.i },
 		}
+		const currProduction = Number(cuurent_production) || 0
 
 		if (data) {
 			for (const event in res) {
-				if (cuurent_production > 0) {
+				if (currProduction > 0) {
 					res[event].value =
-						data[event].production?.find(
-							item => item.production_id === cuurent_production
-						)?.all_label_prod || 0
+						data[event].production?.find(item => item.production_id === currProduction)?.all_label_prod || 0
 				} else {
 					res[event].value = data[event]?.sum_company
 				}
@@ -71,9 +63,6 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 			color,
 		}))
 	}, [data, cuurent_production])
-
-	//console.log(ddata)
-
 	const isEmpty = useMemo(() => !ddata.length, [ddata])
 
 	useEffect(() => {
@@ -91,50 +80,50 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 		setQuery(props)
 	}, [props])
 
+	const title = useMemo(() => {
+		return (
+			dayjs(query.filterdate_from).format('YYYY-MM-DD') + ' - ' + dayjs(query.filterdate_to || '').format('YYYY-MM-DD')
+		)
+	}, [query])
+
 	return (
-		<div className='flex flex-col items-center justify-start gap-3 max-w-full max-h-full'>
-			<h2 className='mb-3 flex-none text-left w-full'>Все</h2>
-			<div className='flex flex-none w-full gap-0 items-start justify-end'>
-				<DmcSelect
-					label='Площадка'
-					name='production_id'
-					value={String(cuurent_production)}
-					onChange={(e: React.ChangeEvent) =>
-						setCurrentProduction(parseInt(e.target.value, 10))
-					}
-					dense
-					square
-					filled
-					underlined
-					hideMessage
-				>
-					<option value='0' selected>
-						Все площадки
-					</option>
-					{productions.map(item => (
-						<option key={item.production_id} value={item.production_id}>
-							{item.name}
-						</option>
-					))}
-				</DmcSelect>
-			</div>
-			<div className='w-full aspect-square max-h-1/2 max-w-1/2'>
-				<DmcLoading active={isLoading}>
+		<ExpandablePanel loading={isLoading} title={title}>
+			<Stack h='100%'>
+				<div>
+					<Select
+						defaultValue={String(cuurent_production)}
+						checkIconPosition='right'
+						onChange={setCurrentProduction}
+						data={[
+							{
+								value: '0',
+								label: 'Все площадки',
+							},
+						].concat(productions)}
+					/>
+				</div>
+
+				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
 						<span>Данные ненашлись!</span>
 					) : (
 						<ResponsiveContainer>
 							<PieChart>
 								<Tooltip />
-								<Legend />
-								<Pie
-									data={ddata}
-									cx='50%'
-									cy='50%'
-									label
-									fill='#8884d8'
-									dataKey='value'
-								>
+								<Legend
+									formatter={(_: string, entry: any) => {
+										const { color, name, value } = entry.payload
+										return (
+											<span style={{ color }}>
+												{name} - {value}
+											</span>
+										)
+									}}
+									layout='vertical'
+									verticalAlign='middle'
+									align='left'
+								/>
+								<Pie data={ddata} cx='50%' cy='50%' fill='#8884d8' dataKey='value'>
 									{ddata.map((entry, index) => (
 										<Cell key={`cell-${entry.name}`} fill={entry.color} />
 									))}
@@ -142,8 +131,8 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 							</PieChart>
 						</ResponsiveContainer>
 					)}
-				</DmcLoading>
-			</div>
-		</div>
+				</AspectRatio>
+			</Stack>
+		</ExpandablePanel>
 	)
 }

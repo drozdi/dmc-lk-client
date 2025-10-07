@@ -1,19 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Button, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { DmcBtn, DmcInput, DmcMessage } from '../../../shared/ui'
-import { authStore } from '../../stores/auth-store'
+import { DmcInput } from '../../../shared/ui'
+import { authStore } from '../../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Заполните имя'),
 	last_name: yup.string().required('Заполните фамилию'),
 	father_name: yup.string().required('Заполните отчество'),
-	email: yup
-		.string()
-		.email('Введите корректный email')
-		.required('Заполните email'),
+	email: yup.string().email('Введите корректный email').required('Заполните email'),
 	phone: yup
 		.string()
 		.matches(
@@ -76,20 +74,8 @@ export const SignUpForm = observer(() => {
 
 	return (
 		<>
-			{error && (
-				<DmcMessage
-					className='mb-8'
-					color='warning'
-					square
-					underlined='left'
-					label={error}
-				/>
-			)}
-			<form
-				name='signUp'
-				className='space-y-1'
-				onSubmit={handleSubmit(sendFormData)}
-			>
+			{error && <Notification color='red'>{error}</Notification>}
+			<form name='signUp' className='space-y-1' onSubmit={handleSubmit(sendFormData)}>
 				<DmcInput
 					label='Имя'
 					placeholder='Имя'
@@ -191,9 +177,9 @@ export const SignUpForm = observer(() => {
 					{...register('re_password')}
 				/>
 
-				<DmcBtn type='submit' color='primary' block loading={isLoading}>
+				<Button type='submit' fullWidth loading={isLoading}>
 					Войти
-				</DmcBtn>
+				</Button>
 			</form>
 		</>
 	)

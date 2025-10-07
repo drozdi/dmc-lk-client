@@ -1,1 +1,1 @@
-export * from './DmcLoading'
+export * from './Loading'

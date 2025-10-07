@@ -1,8 +1,9 @@
+import { Accordion, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { userStore } from '../../../components/stores/user-store'
 import { useQuery } from '../../../shared/hooks'
-import { DmcAccordion, DmcItemLabel, DmcList, DmcLoading, DmcMessage } from '../../../shared/ui'
+import { DmcItemLabel, DmcList, Loading } from '../../../shared/ui'
+import { userStore } from '../../../stores/user-store'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
 
@@ -118,13 +119,13 @@ export const LabelsCount = observer(() => {
 
 	return (
 		<>
-			{error && <DmcMessage className='mb-8' color='warning' square underlined='left' label={error} />}
-			<DmcLoading active={isLoading} keepMounted>
-				<DmcAccordion border separated multiple>
+			{error && <Notification color='red'>{error}</Notification>}
+			<Loading active={isLoading} keepMounted>
+				<Accordion variant='contained'>
 					{ddata.map(item => (
-						<DmcAccordion.Tab key={item.production_id} value={`acc-${item.production_id}`}>
-							<DmcAccordion.Header>{item.name}</DmcAccordion.Header>
-							<DmcAccordion.Panel>
+						<Accordion.Item key={item.production_id} value={`acc-${item.production_id}`}>
+							<Accordion.Control>{item.name}</Accordion.Control>
+							<Accordion.Panel>
 								<DmcList separator>
 									<GroupProvider onDragEnd={factoryHandleDragEnd(item.production_id)}>
 										{item.distributed?.length > 0 && <DmcItemLabel header>Сгрупированые</DmcItemLabel>}
@@ -153,11 +154,11 @@ export const LabelsCount = observer(() => {
 										))}
 									</GroupProvider>
 								</DmcList>
-							</DmcAccordion.Panel>
-						</DmcAccordion.Tab>
+							</Accordion.Panel>
+						</Accordion.Item>
 					))}
-				</DmcAccordion>
-			</DmcLoading>
+				</Accordion>
+			</Loading>
 		</>
 	)
 })

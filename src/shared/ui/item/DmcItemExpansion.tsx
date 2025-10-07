@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { useDisclosure } from '../../hooks/use-disclosure'
 import { cls } from '../../utils'
 import { DmcCollapse } from '../collapse'
-import { DmcChevron } from '../icon'
+import { Icon } from '../icon'
 import { DmcItem } from './DmcItem'
 import { DmcItemLabel } from './DmcItemLabel'
 import { DmcItemSection } from './DmcItemSection'
@@ -12,15 +12,7 @@ interface ItemExpansionProps {
 	children?: React.ReactNode
 	className?: string
 	dense?: boolean
-	color?:
-		| 'primary'
-		| 'secondary'
-		| 'accent'
-		| 'success'
-		| 'warning'
-		| 'info'
-		| 'danger'
-		| 'dark'
+	color?: 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'info' | 'danger' | 'dark'
 	active?: boolean
 	disabled?: boolean
 	vertical?: boolean
@@ -85,7 +77,7 @@ export const DmcItemExpansion = memo(
 					</DmcItemSection>
 					{rightSection && <DmcItemSection side>{rightSection}</DmcItemSection>}
 					<DmcItemSection side>
-						<DmcChevron className='dmc-item__chevron' />
+						<Icon className='dmc-item__chevron'>tb-chevron-down</Icon>
 					</DmcItemSection>
 				</DmcItem>
 				<DmcCollapse className='dmc-list-items' active={opened}>

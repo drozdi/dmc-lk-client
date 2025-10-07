@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { DmcLoading } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
 export const AnalyticsElasticPage = observer(() => {
@@ -11,8 +11,8 @@ export const AnalyticsElasticPage = observer(() => {
 		setIsLoading(false)
 	}, [])
 	return (
-		<DmcLoading active={isLoading}>
+		<Loading active={isLoading}>
 			<TableElastic />
-		</DmcLoading>
+		</Loading>
 	)
 })

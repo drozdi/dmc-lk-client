@@ -1,5 +1,5 @@
 import { TbUserCircle } from 'react-icons/tb'
-import { Link } from '../../layout/components/link'
+import { Link } from '../../../layout/components/link'
 
 export function PersonalLink() {
 	return (
