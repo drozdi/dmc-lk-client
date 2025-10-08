@@ -1,57 +1,52 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Notification } from '@mantine/core'
+import { Button, Group, Stack, TextInput } from '@mantine/core'
+import { isEmail, isNotEmpty, matches, useForm } from '@mantine/form'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import * as yup from 'yup'
 import { Template } from '../../layout/context'
-import { DmcInput } from '../../shared/ui'
+import { Loading } from '../../shared/ui'
 import { userStore } from '../../stores/user-store'
 
-const fieldsSchema = yup.object().shape({
-	first_name: yup.string().required('Укажите имя'),
-	last_name: yup.string().required('Укажите фамилию'),
-	father_name: yup.string().required('Укажите отчество'),
-	email: yup.string().email('Введите корректный email').required('Укажите email'),
-	phone: yup
-		.string()
-		.matches(
-			/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
-			'Неверный номер телефона'
-		)
-		.required('Укажите телефон'),
-})
-
 export const PersonalForm = observer(() => {
-	const { isLoading, error, user } = userStore
-	console.log(user)
-	const {
-		register,
-		handleSubmit,
-		reset,
-		formState: { errors, isValid },
-	} = useForm<IUser>({
-		mode: 'onChange',
-		defaultValues: {
-			first_name: user?.first_name,
-			last_name: user?.last_name,
-			father_name: user?.father_name,
-			email: user?.email,
-			phone: user?.phone,
+	const formRef = useRef<HTMLFormElement>(null)
+	const { isLoading } = userStore
+
+	const form = useForm({
+		mode: 'uncontrolled',
+		name: 'personalForm',
+		initialValues: {
+			first_name: userStore.userData?.first_name || '',
+			last_name: userStore.userData?.last_name || '',
+			father_name: userStore.userData?.father_name || '',
+			email: userStore.userData?.email || '',
+			phone: userStore.userData?.phone || '',
 		},
-		resolver: yupResolver(fieldsSchema),
+		validate: {
+			first_name: isNotEmpty('Укажите имя'),
+			last_name: isNotEmpty('Укажите фамилию'),
+			father_name: isNotEmpty('Укажите отчество'),
+			email: isEmail('Введите корректный email'),
+			phone: matches(
+				/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+				'Неверный номер телефона'
+			),
+		},
+		onValuesChange: values => {
+			userStore.setUserData(values)
+		},
 	})
 
 	const navigate = useNavigate()
 
 	async function handleSave(formData: IUser) {
-		await userStore.update(formData)
+		console.log(formData)
+		//await userStore.update(formData)
 	}
 	async function handleSaveNavigate(formData: IUser) {
+		console.log(formData)
 		try {
-			await userStore.update(formData)
-			navigate('/')
+			//await userStore.update(formData)
+			//navigate('/')
 		} catch (e) {}
 	}
 	async function handleRemove() {
@@ -60,114 +55,59 @@ export const PersonalForm = observer(() => {
 		}
 		try {
 			//await userStore.remove()
-			navigate('/')
+			//navigate('/')
 		} catch (e) {}
 	}
 
+	const isValid = true
+
+	const haSubmit = () => {
+		formRef.current?.requestSubmit()
+		/*console.log(form.isValid())
+		console.log(form.getValues())*/
+	}
+
 	useEffect(() => {
-		reset(user)
-	}, [user])
+		//form.setValues(userData)
+	}, [])
 
 	return (
-		<>
-			{error && <Notification color='red'>{error}</Notification>}
-			<Loading active={isLoading} keepMounted>
-				<form name='registration' className='space-y-1'>
-					<DmcInput
-						label='Имя'
-						placeholder='Имя'
-						id='registration_first_name'
-						type='text'
-						dense
-						square
-						required
-						stackLabel
-						filled
-						underlined
-						errorMessage={errors?.first_name?.message}
-						{...register('first_name')}
-					/>
-					<DmcInput
-						label='Фамилия'
-						placeholder='Фамилия'
-						id='registration_last_name'
-						type='text'
-						dense
-						square
-						required
-						stackLabel
-						filled
-						underlined
-						errorMessage={errors?.last_name?.message}
-						{...register('last_name')}
-					/>
-					<DmcInput
-						label='Отчество'
-						placeholder='Отчество'
-						id='registration_father_name'
-						type='text'
-						dense
-						square
-						required
-						stackLabel
-						filled
-						underlined
-						errorMessage={errors?.father_name?.message}
-						{...register('father_name')}
-					/>
-					<DmcInput
-						label='Email'
-						placeholder='Email'
-						id='registration_email'
-						type='email'
-						dense
-						square
-						required
-						stackLabel
-						filled
-						underlined
-						errorMessage={errors?.email?.message}
-						{...register('email')}
-					/>
+		<Loading active={isLoading} keepMounted>
+			<Stack component='form' onSubmit={form.onSubmit(handleSave)} ref={formRef}>
+				<TextInput placeholder='Имя' size='md' type='text' variant='underline' {...form.getInputProps('first_name')} />
+				<TextInput
+					placeholder='Фамилия'
+					type='text'
+					size='md'
+					variant='underline'
+					{...form.getInputProps('last_name')}
+				/>
+				<TextInput
+					placeholder='Отчество'
+					type='text'
+					size='md'
+					variant='underline'
+					{...form.getInputProps('father_name')}
+				/>
+				<TextInput placeholder='Email' type='email' size='md' variant='underline' {...form.getInputProps('email')} />
+				<TextInput placeholder='Телефон' type='phone' size='md' variant='underline' {...form.getInputProps('phone')} />
 
-					<DmcInput
-						label='Телефон'
-						placeholder='Телефон'
-						id='registration_phone'
-						type='phone'
-						dense
-						square
-						required
-						stackLabel
-						filled
-						underlined
-						errorMessage={errors?.phone?.message}
-						{...register('phone')}
-					/>
-
-					<Template slot='footer'>
-						<div className='flex flex-row flex-wrap gap-3 justify-between'>
-							<div className='flex flex-row gap-3'>
-								<Button
-									color='green'
-									onClick={handleSubmit(handleSaveNavigate)}
-									loading={isLoading}
-									disabled={!isValid}
-								>
-									Сохранить
-								</Button>
-
-								<Button onClick={handleSubmit(handleSave)} loading={isLoading} disabled={!isValid}>
-									Применить
-								</Button>
-							</div>
-							<Button color='red' onClick={handleRemove} loading={isLoading} disabled={!isValid}>
-								Удалить
+				<Template slot='footer'>
+					<Group justify='space-between'>
+						<Group>
+							<Button color='green' onClick={haSubmit} loading={isLoading} disabled={!isValid}>
+								Сохранить
 							</Button>
-						</div>
-					</Template>
-				</form>
-			</Loading>
-		</>
+							<Button loading={isLoading} disabled={!isValid}>
+								Применить
+							</Button>
+						</Group>
+						<Button color='red' loading={isLoading} disabled={!isValid}>
+							Удалить
+						</Button>
+					</Group>
+				</Template>
+			</Stack>
+		</Loading>
 	)
 })

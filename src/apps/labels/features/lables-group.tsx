@@ -14,21 +14,22 @@ import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
 
+import { useQueryError, useQueryLoading } from '../../../shared/hooks'
+
 export const LabelsGroup = observer(() => {
+	const error = useQueryError(printStore, formatStore, formatPrintStore)
+	const isLoading = useQueryLoading(printStore, formatStore, formatPrintStore)
+
 	const { products } = userStore
-	const { prints: _prints, isLoading: isLoadingPrints, error: errorPrints } = printStore
-	const { formats: _formats, isLoading: isLoadingFormats, error: errorFormats } = formatStore
-	const { formatPrints: _formatPrints, isLoading: isLoadingFormatPrints, error: errorFormatPrints } = formatPrintStore
+	const { prints: _prints } = printStore
+	const { formats: _formats } = formatStore
+	const { formatPrints: _formatPrints } = formatPrintStore
 
 	const [production_id, setProduction_id] = useState()
 
 	const prints = useMemo(() => _prints[production_id] || [], [_prints, production_id])
 	const formats = useMemo(() => _formats[production_id] || [], [_formats, production_id])
 	const formatPrints = useMemo(() => _formatPrints[production_id] || [], [_formatPrints, production_id])
-	const error = useMemo(
-		() => errorPrints || errorFormats || errorFormatPrints,
-		[errorPrints, errorFormats, errorFormatPrints]
-	)
 
 	const containers = useMemo<
 		Record<
@@ -147,7 +148,7 @@ export const LabelsGroup = observer(() => {
 				}))}
 			/>
 
-			<Loading active={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints} keepMounted>
+			<Loading active={isLoading} keepMounted>
 				<div className='flex gap-3'>
 					<GroupProvider onDragEnd={handleDragEnd}>
 						<DmcList as='div' className='flex-1/2'>
@@ -156,7 +157,7 @@ export const LabelsGroup = observer(() => {
 									<TextInput
 										w='100%'
 										placeholder='Добавить формат'
-										disabled={isLoadingPrints || isLoadingFormats || isLoadingFormatPrints}
+										disabled={isLoading}
 										value={newFormat}
 										onChange={handleChange}
 										onKeyPress={handleKeyPress}

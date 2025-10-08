@@ -3,8 +3,8 @@ import { LabelsCount } from '../features/lables-count'
 import { LabelsHistory } from '../features/lables-history'
 export function LabelsCountPage() {
 	return (
-		<Tabs>
-			<Tabs.List grow defaultValue='item-count'>
+		<Tabs defaultValue='item-count'>
+			<Tabs.List grow>
 				<Tabs.Tab value='item-count'>Текущее состояние</Tabs.Tab>
 				<Tabs.Tab value='item-history'>История</Tabs.Tab>
 			</Tabs.List>

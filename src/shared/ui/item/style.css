@@ -3,13 +3,8 @@
 .dmc-item {
 	@apply flex flex-nowrap relative min-h-12 gap-3 py-2 cursor-default;
 	--padding-multiplier: 3;
-	padding-inline-start: calc(
-		var(--spacing, 0.25rem) * var(--padding-multiplier, 3) +
-			var(--indent-padding, 0rem)
-	);
-	padding-inline-end: calc(
-		var(--spacing, 0.25rem) * var(--padding-multiplier, 3)
-	);
+	padding-inline-start: calc(var(--spacing, 0.25rem) * var(--padding-multiplier, 3) + var(--indent-padding, 0rem));
+	padding-inline-end: calc(var(--spacing, 0.25rem) * var(--padding-multiplier, 3));
 }
 .dmc-item,
 .dmc-item::before,
@@ -54,11 +49,7 @@
 	@apply absolute top-0 left-0 w-full h-full bg-current opacity-0;
 	content: ' ';
 }
-.dmc-item--hoverable:not(
-		.dmc-item--disabled,
-		:has(input:disabled),
-		:disabled
-	):hover::before {
+.dmc-item--hoverable:not(.dmc-item--disabled, :has(input:disabled), :disabled):hover::before {
 	@apply opacity-15;
 }
 

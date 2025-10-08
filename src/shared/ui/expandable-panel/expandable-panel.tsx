@@ -6,6 +6,7 @@ export function ExpandablePanel({
 	title,
 	loading = false,
 	children,
+	...otherProps
 }: {
 	title: string
 	loading?: boolean
@@ -23,6 +24,7 @@ export function ExpandablePanel({
 		<Paper
 			shadow='md'
 			p='md'
+			{...otherProps}
 			style={{
 				// Стили меняются в зависимости от состояния
 				position: isExpanded ? 'fixed' : 'relative',

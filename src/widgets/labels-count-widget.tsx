@@ -4,15 +4,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
 import { useAnalytics } from '../apps/analytics/api'
 import { requestLabelsCount } from '../apps/labels/api'
-import { useLabelFormat } from '../apps/labels/entites/hooks'
 import { GroupContainer } from '../apps/labels/features/components/group/container'
 import { GroupItem } from '../apps/labels/features/components/group/item'
 import { GroupProvider } from '../apps/labels/features/components/group/provider'
 import { formatPrintStore } from '../apps/labels/stores/format-print-store'
+import { useLabelFormat } from '../apps/labels/stores/hooks'
 import { useQuery } from '../shared/hooks'
+import { ExpandablePanel } from '../shared/ui'
 import { useProduction } from '../stores/hooks/use-production'
 
 export const LabelsCountWidget = observer(props => {
+	console.log(props)
 	const labelsFormat = useLabelFormat()
 	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
@@ -103,7 +105,6 @@ export const LabelsCountWidget = observer(props => {
 				production.minus = Object.values(production.labels).reduce((acc, item) => acc + item.minus, 0)
 			}
 		})
-		console.log(res)
 		return res
 	}, [labelsFormat, data, countP])
 
@@ -146,71 +147,73 @@ export const LabelsCountWidget = observer(props => {
 	}
 
 	return (
-		<Accordion chevronPosition='left'>
-			<Accordion.Item value='main'>
-				<Accordion.Control>
-					<Group justify='space-between'>
-						<Text>Площадка</Text>
-						<Group justify='space-between' miw='50%'>
-							<Text>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</Text>
-							<Text miw='50%'>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</Text>
+		<ExpandablePanel loading={reqAnalytics.isLoading || reqLabelsCount.isLoading} title={''}>
+			<Accordion variant='unstyled'>
+				<Accordion.Item value='main'>
+					<Accordion.Control>
+						<Group justify='space-between'>
+							<Text>Площадка</Text>
+							<Group justify='space-between' miw='50%'>
+								<Text>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</Text>
+								<Text miw='50%'>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</Text>
+							</Group>
 						</Group>
-					</Group>
-				</Accordion.Control>
-				<Accordion.Panel>
-					<Accordion variant='contained' chevronPosition='left'>
-						{Object.values(res).map(production => {
-							return (
-								<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
-									<Accordion.Control classBody='!flex-row !justify-between'>
-										<Group justify='space-between'>
-											<Text>
-												{production.production_name} ({production.production_id})
-											</Text>
-											<Group justify='space-between' miw='50%'>
-												<Text>расход: {production.minus}</Text>
-												<Text miw='50%'>остаток: {production.total}</Text>
+					</Accordion.Control>
+					<Accordion.Panel>
+						<Accordion variant='contained' chevronPosition='left'>
+							{Object.values(res).map(production => {
+								return (
+									<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
+										<Accordion.Control classBody='!flex-row !justify-between'>
+											<Group justify='space-between'>
+												<Text>
+													{production.production_name} ({production.production_id})
+												</Text>
+												<Group justify='space-between' miw='50%'>
+													<Text>расход: {production.minus}</Text>
+													<Text miw='50%'>остаток: {production.total}</Text>
+												</Group>
 											</Group>
-										</Group>
-									</Accordion.Control>
-									<Accordion.Panel>
-										<Table layout='fixed' withTableBorder withRowBorders withColumnBorders highlightOnHover>
-											<Table.Thead>
-												<Table.Tr>
-													<Table.Th w='1rem'></Table.Th>
-													<Table.Th>Этикетка</Table.Th>
-													<Table.Th>Расход</Table.Th>
-													<Table.Th>Остаток</Table.Th>
-												</Table.Tr>
-											</Table.Thead>
-											<GroupProvider onDragEnd={factoryHandleDragEnd(Number(production.production_id))}>
-												<Table.Tbody>
-													{Object.entries(production.labels).map(([label, { total, minus, container }]) => {
-														const Wrap = container ? GroupContainer : GroupItem
-														const props = container ? { column: label } : { id: label, data: label }
-														return (
-															<Wrap {...props}>
-																<Table.Tr key={production.production_id + label}>
-																	<Table.Td className='!pl-1 cursor-pointer'>
-																		{container === false && <TbList />}
-																	</Table.Td>
-																	<Table.Td>{label}</Table.Td>
-																	<Table.Td>{minus}</Table.Td>
-																	<Table.Td>{total}</Table.Td>
-																</Table.Tr>
-															</Wrap>
-														)
-													})}
-												</Table.Tbody>
-											</GroupProvider>
-										</Table>
-									</Accordion.Panel>
-								</Accordion.Item>
-							)
-						})}
-					</Accordion>
-				</Accordion.Panel>
-			</Accordion.Item>
-		</Accordion>
+										</Accordion.Control>
+										<Accordion.Panel>
+											<Table layout='fixed' withTableBorder withRowBorders withColumnBorders highlightOnHover>
+												<Table.Thead>
+													<Table.Tr>
+														<Table.Th w='1rem'></Table.Th>
+														<Table.Th>Этикетка</Table.Th>
+														<Table.Th>Расход</Table.Th>
+														<Table.Th>Остаток</Table.Th>
+													</Table.Tr>
+												</Table.Thead>
+												<GroupProvider onDragEnd={factoryHandleDragEnd(Number(production.production_id))}>
+													<Table.Tbody>
+														{Object.entries(production.labels).map(([label, { total, minus, container }]) => {
+															const Wrap = container ? GroupContainer : GroupItem
+															const props = container ? { column: label } : { id: label, data: label }
+															return (
+																<Wrap {...props}>
+																	<Table.Tr key={production.production_id + label}>
+																		<Table.Td className='!pl-1 cursor-pointer'>
+																			{container === false && <TbList />}
+																		</Table.Td>
+																		<Table.Td>{label}</Table.Td>
+																		<Table.Td>{minus}</Table.Td>
+																		<Table.Td>{total}</Table.Td>
+																	</Table.Tr>
+																</Wrap>
+															)
+														})}
+													</Table.Tbody>
+												</GroupProvider>
+											</Table>
+										</Accordion.Panel>
+									</Accordion.Item>
+								)
+							})}
+						</Accordion>
+					</Accordion.Panel>
+				</Accordion.Item>
+			</Accordion>
+		</ExpandablePanel>
 	)
 })

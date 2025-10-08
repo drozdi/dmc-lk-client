@@ -55,8 +55,7 @@ class FormatPrintStore {
 				})
 			)
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -68,8 +67,7 @@ class FormatPrintStore {
 			const res = await requestLabelsJoinFormat(data)
 			await this.load(true)
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -81,8 +79,7 @@ class FormatPrintStore {
 			const res = await requestLabelsDetachFormat(id)
 			await this.load(true)
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -97,8 +94,7 @@ class FormatPrintStore {
 			})
 			await this.load(true)
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

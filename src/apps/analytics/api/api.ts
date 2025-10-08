@@ -24,7 +24,10 @@ export function useAnalytics(query?: IAnalyticsQuery = {}) {
 		error,
 		request: async (params: IAnalyticsQuery) => {
 			return await request({
-				filterdate: [params.filterdate_from, params.filterdate_to || ''],
+				filterdate: [
+					params.filterdate_from || query.filterdate_from,
+					params.filterdate_to || query.filterdate_to || '',
+				],
 				step: params.step,
 				event: params.event,
 				...query,

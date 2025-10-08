@@ -1,13 +1,11 @@
-import { makeAutoObservable } from 'mobx'
-
-import { requestGetUser, requestRemoveUser, requestUpdateUser } from '../shared/api'
-
+import { makeAutoObservable, runInAction } from 'mobx'
 import { requestGetProducts } from '../apps/users/api'
-
+import { requestGetUser, requestRemoveUser, requestUpdateUser } from '../shared/api'
 import { PRODUCT_ID_KEY } from '../shared/constants'
+import { notification } from '../shared/notification'
 
 class UserStore {
-	user: IUser | null = null
+	userData: IUser
 	isLoading = false
 	error: string | null = null
 	products: any[] = []
@@ -21,17 +19,23 @@ class UserStore {
 			localStorage.setItem(PRODUCT_ID_KEY, id)
 		}
 	}
+	setUserData(data: IUser) {
+		runInAction(() => {
+			this.userData = { ...this.userData, ...data }
+		})
+	}
+
 	async fetch() {
 		try {
 			const response = await requestGetUser()
-			this.user = response.data.user
+			this.userData = response.data.user
 			const products = await requestGetProducts()
 			this.products = products.data
 			if (!this.currentProductId) {
 				this.setCurrentProductId(this.products[0].production_id)
 			}
 		} catch (error) {
-			this.error = error?.response?.data?.detail || error?.message || 'Ошибка загрузки'
+			this.error = error.response?.data?.detail || error.message || 'Ошибка загрузки'
 		} finally {
 			this.isLoading = false
 		}
@@ -41,9 +45,10 @@ class UserStore {
 		this.error = null
 		try {
 			const response = await requestUpdateUser(userData)
-			this.user = response.data
+			this.userData = response.data
 		} catch (error) {
-			this.error = error?.response?.data?.detail || error?.message || 'Ошибка регистрации'
+			this.error = error.response?.data?.detail || error.message || 'Ошибка обновления'
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}
@@ -55,14 +60,15 @@ class UserStore {
 		try {
 			const response = await requestRemoveUser()
 		} catch (error) {
-			this.error = error?.response?.data?.detail || error?.message || 'Ошибка удаления'
+			this.error = error.response?.data?.detail || error.message || 'Ошибка удаления'
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}
 		return null
 	}
 	reset() {
-		this.user = null
+		this.userData = null
 		this.products = []
 	}
 }

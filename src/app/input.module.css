@@ -1,15 +1,12 @@
 .input {
 	&[data-variant='underline'] {
-		border-bottom: 2px solid;
+		--input-bg: var(--mantine-color-gray-1);
+		border-bottom: 3px solid;
 		border-radius: 0;
-		padding-left: 0;
-		padding-right: 0;
+		border-color: var(--mantine-color-gray-3);
 
-		@mixin light {
-			border-color: var(--mantine-color-gray-3);
-		}
-
-		@mixin dark {
+		[data-mantine-color-scheme='dark'] & {
+			--input-bg: var(--mantine-color-dark-5);
 			border-color: var(--mantine-color-dark-3);
 		}
 

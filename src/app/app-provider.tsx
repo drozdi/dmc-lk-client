@@ -1,10 +1,10 @@
 import { DatesProvider } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import { Link } from 'react-router'
-import { SidebarProvider, TemplateProvider } from '../layout/context'
+import { TemplateProvider } from '../layout/context'
 import { RenderProvider } from '../shared/internal/render'
 
-import { createTheme, Drawer, Group, Input, MantineProvider, Stack, Tabs } from '@mantine/core'
+import { createTheme, Drawer, Group, Input, MantineProvider, SimpleGrid, Stack, Tabs } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import inputClasses from './input.module.css'
@@ -51,6 +51,12 @@ const theme = createTheme({
 				gap: 'xs',
 			},
 		}),
+		SimpleGrid: SimpleGrid.extend({
+			defaultProps: {
+				spacing: 'xs',
+				verticalSpacing: 'xs',
+			},
+		}),
 		Input: Input.extend({
 			classNames: inputClasses,
 		}),
@@ -59,14 +65,12 @@ const theme = createTheme({
 
 export function AppProvider({ children }: AppProviderProps) {
 	return (
-		<MantineProvider theme={theme}>
+		<MantineProvider withCssVariables theme={theme}>
 			<DatesProvider settings={{ locale: 'ru' }}>
 				<Notifications />
 				<ModalsProvider>
 					<RenderProvider render={({ as, to }: { to?: string; as?: any }) => (!!to ? Link : as)}>
-						<SidebarProvider>
-							<TemplateProvider>{children}</TemplateProvider>
-						</SidebarProvider>
+						<TemplateProvider>{children}</TemplateProvider>
 					</RenderProvider>
 				</ModalsProvider>
 			</DatesProvider>

@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { formatPrintStore } from '../../stores/format-print-store'
-import { formatStore } from '../../stores/format-store'
-import { printStore } from '../../stores/print-store'
+import { formatPrintStore } from '../format-print-store'
+import { formatStore } from '../format-store'
+import { printStore } from '../print-store'
+
 export function useLabelFormat(production_id?: integer | string) {
 	const res = useMemo(() => {
 		let productions: string[] = []
