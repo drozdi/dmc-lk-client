@@ -1,5 +1,5 @@
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 export interface SpinnerBaseProps {
 	children?: React.ReactNode
@@ -23,13 +23,7 @@ export function SpinnerBase({
 }: SpinnerBaseProps) {
 	return (
 		<svg
-			className={cls(
-				'dmc-spinner',
-				{
-					[`text-${color}`]: color,
-				},
-				className
-			)}
+			className={cls(classes.spinner, className)}
 			width={size}
 			height={size}
 			viewBox={viewBox}

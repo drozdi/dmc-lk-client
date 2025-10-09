@@ -39,14 +39,8 @@ export function DmcProgressRoot({
 		'aria-valuemax': 100,
 		'aria-valuenow': indeterminate === true ? void 0 : value,
 	}
-	const normalizedValue = useMemo(
-		() => Math.max(0, Math.min(100, parseFloat(value))),
-		[value]
-	)
-	const normalizedBuffer = useMemo(
-		() => Math.max(0, Math.min(100, parseFloat(buffer))),
-		[buffer]
-	)
+	const normalizedValue = useMemo(() => Math.max(0, Math.min(100, parseFloat(value))), [value])
+	const normalizedBuffer = useMemo(() => Math.max(0, Math.min(100, parseFloat(buffer))), [buffer])
 	const valueAttrs = useMemo(
 		() => ({
 			style: { width: value && !indeterminate ? `${normalizedValue}%` : '' },
@@ -76,12 +70,8 @@ export function DmcProgressRoot({
 		>
 			<div {...trackAttrs} className='dmc-progress-bar__track'></div>
 			<div {...valueAttrs} className='dmc-progress-bar__value'></div>
-			{!indeterminate && children && (
-				<div className='dmc-progress-bar__label'>{children}</div>
-			)}
-			{!indeterminate && !children && label && (
-				<div className='dmc-progress-bar__label'>{value}%</div>
-			)}
+			{!indeterminate && children && <div className='dmc-progress-bar__label'>{children}</div>}
+			{!indeterminate && !children && label && <div className='dmc-progress-bar__label'>{value}%</div>}
 		</div>
 	)
 
@@ -97,14 +87,8 @@ export function DmcProgressRoot({
 		[normalizedValue, circumference]
 	)
 
-	const diameter = useMemo(
-		() => (radius / (1 - thickness / size)) * 2,
-		[thickness, size, radius]
-	)
-	const strokeWidth = useMemo(
-		() => (thickness / size) * diameter,
-		[thickness, size, diameter]
-	)
+	const diameter = useMemo(() => (radius / (1 - thickness / size)) * 2, [thickness, size, radius])
+	const strokeWidth = useMemo(() => (thickness / size) * diameter, [thickness, size, diameter])
 
 	const progressCircle = () => (
 		<div
@@ -143,9 +127,7 @@ export function DmcProgressRoot({
 					r={radius}
 					strokeWidth={strokeWidth}
 					strokeDasharray={circumference}
-					strokeDashoffset={
-						(reverse ? '-' : '') + (!indeterminate ? strokeDashOffsetBuffer : 0)
-					}
+					strokeDashoffset={(reverse ? '-' : '') + (!indeterminate ? strokeDashOffsetBuffer : 0)}
 				/>
 
 				<circle
@@ -159,12 +141,8 @@ export function DmcProgressRoot({
 					strokeDashoffset={(reverse ? '-' : '') + strokeDashOffset}
 				/>
 			</svg>
-			{children && (
-				<div className='dmc-progress-circular__label'>{children}</div>
-			)}
-			{!indeterminate && !children && label && (
-				<div className='dmc-progress-circular__label'>{value}%</div>
-			)}
+			{children && <div className='dmc-progress-circular__label'>{children}</div>}
+			{!indeterminate && !children && label && <div className='dmc-progress-circular__label'>{value}%</div>}
 		</div>
 	)
 

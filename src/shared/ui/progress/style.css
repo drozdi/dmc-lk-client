@@ -111,13 +111,11 @@
 }
 
 .dmc-progress-bar--indeterminate .dmc-progress-bar__value::before {
-	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite
-		x-linear-progress-indeterminate;
+	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite x-linear-progress-indeterminate;
 }
 
 .dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
-	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite
-		x-linear-progress-indeterminate-short;
+	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite x-linear-progress-indeterminate-short;
 	animation-delay: 1.15s;
 }
 
@@ -128,30 +126,23 @@
 	right: 0px;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--animation
-	.dmc-progress-bar__value::after {
+.dmc-progress-bar--reverse.dmc-progress-bar--animation .dmc-progress-bar__value::after {
 	animation: 1s linear infinite x-linear-progress-stripes-reverse;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate
-	.dmc-progress-bar__value::before,
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate
-	.dmc-progress-bar__value::after {
+.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before,
+.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
 	left: auto;
 	right: 0px;
 	content: '';
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate
-	.dmc-progress-bar__value::before {
-	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite
-		x-linear-progress-indeterminate-reverse;
+.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before {
+	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite x-linear-progress-indeterminate-reverse;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate
-	.dmc-progress-bar__value::after {
-	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite
-		x-linear-progress-indeterminate-short-reverse;
+.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite x-linear-progress-indeterminate-short-reverse;
 	animation-delay: 1.15s;
 }
 @keyframes x-linear-progress-stripes {
@@ -273,8 +264,7 @@
 	}
 
 	.dmc-progress-circular__overlay {
-		animation: 2s ease-in-out infinite x-progress-circular-dash,
-			2s linear infinite x-progress-circular-rotate;
+		animation: 2s ease-in-out infinite x-progress-circular-dash, 2s linear infinite x-progress-circular-rotate;
 		stroke-dasharray: 25, 200;
 		stroke-dashoffset: 0;
 		stroke-linecap: round;

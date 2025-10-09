@@ -1,4 +1,5 @@
 import { SpinnerBase } from './SpinnerBase'
+import classes from './style.module.css'
 
 interface SpinnerProps {
 	size?: string
@@ -7,9 +8,9 @@ interface SpinnerProps {
 }
 export function Spinner({ size = '1em', thickness = 5, color }: SpinnerProps) {
 	return (
-		<SpinnerBase className='dmc-spinner--mat' size={size} color={color} viewBox='25 25 50 50'>
+		<SpinnerBase className={classes.spinner_mat} size={size} color={color} viewBox='25 25 50 50'>
 			<circle
-				className='dmc-spinner__path'
+				className={classes.spinner__path}
 				cx='50'
 				cy='50'
 				r='20'
