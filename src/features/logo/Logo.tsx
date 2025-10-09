@@ -1,4 +1,4 @@
-import { Box } from '@mantine/core'
+import { Box, Image } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 
 export function Logo({ className }: { className?: string }) {
@@ -11,8 +11,9 @@ export function Logo({ className }: { className?: string }) {
 				event.preventDefault()
 				navigate('/')
 			}}
+			maw='100%'
 		>
-			<img src='/assests/Logo_DMC_512.png' />
+			<Image w='100%' src='/assests/Logo_DMC_512.png' />
 		</Box>
 	)
 }

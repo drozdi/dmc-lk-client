@@ -180,7 +180,7 @@ const theme = createTheme({
 
 export function AppProvider({ children }: AppProviderProps) {
 	return (
-		<MantineProvider withCssVariables theme={theme}>
+		<MantineProvider theme={theme}>
 			<DatesProvider settings={{ locale: 'ru' }}>
 				<Notifications />
 				<ModalsProvider>

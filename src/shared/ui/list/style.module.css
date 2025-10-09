@@ -18,10 +18,8 @@
 .list_bordered {
 	border: 1px solid var(--mantine-color-default-border);
 }
-.list_separator {
-	.dmc-item:not(:first-child) {
-		border-top: 1px solid var(--mantine-color-default-border);
-	}
+.list_separator > *:not(:first-child) {
+	border-top: 1px solid var(--mantine-color-default-border);
 }
 
 .list_striped > *:nth-of-type(odd) {
