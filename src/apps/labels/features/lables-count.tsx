@@ -2,7 +2,7 @@ import { Accordion, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '../../../shared/hooks'
-import { DmcList, ItemLabel, Loading } from '../../../shared/ui'
+import { ItemLabel, List, Loading } from '../../../shared/ui'
 import { userStore } from '../../../stores/user-store'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
@@ -126,7 +126,7 @@ export const LabelsCount = observer(() => {
 						<Accordion.Item key={item.production_id} value={`acc-${item.production_id}`}>
 							<Accordion.Control>{item.name}</Accordion.Control>
 							<Accordion.Panel>
-								<DmcList separator>
+								<List separator>
 									<GroupProvider onDragEnd={factoryHandleDragEnd(item.production_id)}>
 										{item.distributed?.length > 0 && <ItemLabel header>Сгрупированые</ItemLabel>}
 										{item.distributed.map(item => (
@@ -153,7 +153,7 @@ export const LabelsCount = observer(() => {
 											</GroupItem>
 										))}
 									</GroupProvider>
-								</DmcList>
+								</List>
 							</Accordion.Panel>
 						</Accordion.Item>
 					))}

@@ -2,7 +2,7 @@ import { Accordion, Notification } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '../../../shared/hooks'
-import { DmcItem, DmcList, ItemLabel, ItemSection, Loading } from '../../../shared/ui'
+import { Item, ItemLabel, ItemSection, List, Loading } from '../../../shared/ui'
 import { requestLabelsCountHistory } from '../api'
 
 export const LabelsHistory = () => {
@@ -31,9 +31,9 @@ export const LabelsHistory = () => {
 						<Accordion.Item key={item.production_id} value={String(item.production_id)}>
 							<Accordion.Control>{item.name_production}</Accordion.Control>
 							<Accordion.Panel>
-								<DmcList dense separator>
+								<List dense separator>
 									{item.items.map(item => (
-										<DmcItem key={item.id}>
+										<Item key={item.id}>
 											<ItemSection>
 												<ItemLabel>{item.place_name}</ItemLabel>
 												<ItemLabel caption>
@@ -41,9 +41,9 @@ export const LabelsHistory = () => {
 												</ItemLabel>
 											</ItemSection>
 											<ItemSection side>{item.count_label}</ItemSection>
-										</DmcItem>
+										</Item>
 									))}
-								</DmcList>
+								</List>
 							</Accordion.Panel>
 						</Accordion.Item>
 					))}

@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
 import { useQuery } from '../../../../shared/hooks'
-import { DmcItem, DmcList, ItemLabel, ItemSection, Loading } from '../../../../shared/ui'
+import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
 import { requestAnalyticsRemoveQuery } from '../../api/queries'
 import { elasticStore } from '../../stores/elastic-store'
@@ -38,15 +38,9 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		<div className={cls(className, 'flex flex-col gap-3')}>
 			{error && <Notification color='red'>{error}</Notification>}
 			<Loading active={isLoading} keepMounted>
-				<DmcList separator>
+				<List separator>
 					{list.map(item => (
-						<DmcItem
-							key={item.id}
-							className='cursor-pointer'
-							as={LinkRouter}
-							to={`/analytics/query/${item.id}`}
-							hoverable
-						>
+						<Item key={item.id} className='cursor-pointer' as={LinkRouter} to={`/analytics/query/${item.id}`} hoverable>
 							<ItemSection>
 								<ItemLabel>{item.name_query}</ItemLabel>
 							</ItemSection>
@@ -55,9 +49,9 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 									<TbCircleMinus />
 								</ActionIcon>
 							</ItemSection>
-						</DmcItem>
+						</Item>
 					))}
-				</DmcList>
+				</List>
 			</Loading>
 			<Group justify='space-between'>
 				<Group>

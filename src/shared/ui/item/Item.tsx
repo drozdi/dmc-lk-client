@@ -1,9 +1,9 @@
-import { UnstyledButton } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useMergedRef } from '@mantine/hooks'
 import { forwardRef, memo, useMemo, useRef } from 'react'
 import { cls } from '../../utils'
+import { useListContext } from '../list/ListContext'
 import classes from './style.module.css'
-
 const clickableTag = ['a', 'label', 'button']
 const disRoleTag = ['label']
 const disDisabledTag = ['div', 'span', 'a', 'label']
@@ -30,7 +30,7 @@ interface ItemProps {
 	[key: string]: any
 }
 
-export const DmcItem = memo(
+export const Item = memo(
 	forwardRef(
 		(
 			{
@@ -50,6 +50,7 @@ export const DmcItem = memo(
 			}: ItemProps,
 			ref
 		) => {
+			const ctx = useListContext()
 			const elementRef = useRef<HTMLElement>(null)
 			const handleRef = useMergedRef(ref, elementRef)
 			const isActionable = useMemo(() => {
@@ -70,7 +71,7 @@ export const DmcItem = memo(
 							[classes.item_vertical]: vertical,
 							[classes.item_active]: active,
 							[classes.item_clickable]: isClickable,
-							[classes.item_dense]: dense,
+							[classes.item_dense]: ctx?.dense || dense,
 							[classes.item_disabled]: disabled,
 							[classes.item_hoverable]: isHoverable,
 							[classes.item_bordered]: bordered,
@@ -94,7 +95,7 @@ export const DmcItem = memo(
 			}, [disabled, tabIndex, role, dense, active, className, activeClass, isHoverable, isClickable, isActionable])
 
 			return (
-				<UnstyledButton
+				<Box
 					component={props.component || 'li'}
 					{...props}
 					{...attrs}
@@ -107,7 +108,7 @@ export const DmcItem = memo(
 					}}
 				>
 					{children}
-				</UnstyledButton>
+				</Box>
 			)
 		}
 	)

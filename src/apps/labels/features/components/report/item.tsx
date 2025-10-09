@@ -2,7 +2,7 @@ import { TextInput } from '@mantine/core'
 import { forwardRef, useRef, useState } from 'react'
 import { TbList } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import { ButtonIcon, DmcItem, ItemSection } from '../../../../../shared/ui'
+import { ButtonIcon, Item, ItemSection } from '../../../../../shared/ui'
 import { requestLabelsCountAdd } from '../../../api'
 
 export const ReportItem = forwardRef(
@@ -48,7 +48,7 @@ export const ReportItem = forwardRef(
 			}
 		}
 		return (
-			<DmcItem
+			<Item
 				component='div'
 				{...props}
 				color={item.sum < dangerLimits ? (item.sum < warningLimits ? 'warning' : 'danger') : ''}
@@ -80,7 +80,7 @@ export const ReportItem = forwardRef(
 						tb-circle-plus
 					</ButtonIcon>
 				</ItemSection>
-			</DmcItem>
+			</Item>
 		)
 	}
 )

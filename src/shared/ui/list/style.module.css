@@ -1,0 +1,36 @@
+@reference "@style";
+
+.list {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	--indent-padding: 0rem;
+}
+.list_visible {
+	overflow: visible;
+}
+.list-items {
+	--parent-padding: var(--indent-padding, 0rem);
+}
+.list-items .list {
+	--indent-padding: calc(var(--parent-padding, 0rem) + var(--spacing, 0.25rem) * var(--padding-multiplier, 3));
+}
+.list_bordered {
+	border: 1px solid var(--mantine-color-default-border);
+}
+.list_separator {
+	.dmc-item:not(:first-child) {
+		border-top: 1px solid var(--mantine-color-default-border);
+	}
+}
+
+.list_striped > *:nth-of-type(odd) {
+	background-color: var(--mantine-color-gray-0);
+}
+
+.list_striped > *:nth-of-type(odd) {
+	background-color: var(--mantine-color-gray-0);
+	[data-mantine-color-scheme='dark'] & {
+		background-color: var(--mantine-color-dark-6);
+	}
+}

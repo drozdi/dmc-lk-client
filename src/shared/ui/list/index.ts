@@ -1,1 +1,1 @@
-export * from './DmcList'
+export * from './List'
