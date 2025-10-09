@@ -1,5 +1,4 @@
 export * from './button'
-export * from './collapse'
 export * from './expandable-panel'
 export * from './icon'
 export * from './item'

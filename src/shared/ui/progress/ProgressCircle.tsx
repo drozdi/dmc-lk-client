@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 interface ProgressCircleProps {
 	children?: React.ReactNode
@@ -15,7 +15,7 @@ interface ProgressCircleProps {
 	reverse?: boolean
 }
 
-export function DmcProgressCircleRoot({
+export function ProgressCircleRoot({
 	children,
 	className,
 	value,
@@ -36,14 +36,8 @@ export function DmcProgressCircleRoot({
 
 	const radius = useMemo(() => size / 2 - thickness / 2, [size, thickness])
 	const circumference = useMemo(() => 2 * Math.PI * radius, [radius])
-	const normalizedValue = useMemo(
-		() => Math.max(0, Math.min(100, parseFloat(value))),
-		[value]
-	)
-	const normalizedBuffer = useMemo(
-		() => Math.max(0, Math.min(100, parseFloat(buffer))),
-		[buffer]
-	)
+	const normalizedValue = useMemo(() => Math.max(0, Math.min(100, parseFloat(value))), [value])
+	const normalizedBuffer = useMemo(() => Math.max(0, Math.min(100, parseFloat(buffer))), [buffer])
 	const strokeDashOffset = useMemo(
 		() => ((100 - normalizedValue) / 100) * circumference,
 		[normalizedValue, circumference]
@@ -53,14 +47,8 @@ export function DmcProgressCircleRoot({
 		[normalizedBuffer, circumference]
 	)
 
-	const diameter = useMemo(
-		() => (radius / (1 - thickness / size)) * 2,
-		[thickness, size, radius]
-	)
-	const strokeWidth = useMemo(
-		() => (thickness / size) * diameter,
-		[thickness, size, diameter]
-	)
+	const diameter = useMemo(() => (radius / (1 - thickness / size)) * 2, [thickness, size, radius])
+	const strokeWidth = useMemo(() => (thickness / size) * diameter, [thickness, size, diameter])
 
 	return (
 		<div
@@ -69,11 +57,15 @@ export function DmcProgressCircleRoot({
 				width: diameter,
 				height: diameter,
 			}}
-			className={cls('dmc-progress-circular', className, {
-				'dmc-progress-circular--indeterminate': indeterminate,
-				'dmc-progress-circular--reverse': reverse,
-				[`text-${color}`]: color,
-			})}
+			className={cls(
+				classes.progress_circular,
+				{
+					[classes.progress_circular_indeterminate]: indeterminate,
+					[classes.progress_circular_reverse]: reverse,
+					[`text-${color}`]: color,
+				},
+				className
+			)}
 		>
 			<svg
 				style={{
@@ -92,20 +84,18 @@ export function DmcProgressCircleRoot({
 					</linearGradient>
 				</defs>
 				<circle
-					className='dmc-progress-circular__underlay'
+					className={classes.progress_circular__underlay}
 					fill='transparent'
 					cx='50%'
 					cy='50%'
 					r={radius}
 					strokeWidth={strokeWidth}
 					strokeDasharray={circumference}
-					strokeDashoffset={
-						(reverse ? '-' : '') + (!indeterminate ? strokeDashOffsetBuffer : 0)
-					}
+					strokeDashoffset={(reverse ? '-' : '') + (!indeterminate ? strokeDashOffsetBuffer : 0)}
 				/>
 
 				<circle
-					className={cls('dmc-progress-circular__overlay')}
+					className={classes.progress_circular__overlay}
 					fill='transparent'
 					cx='50%'
 					cy='50%'
@@ -115,14 +105,10 @@ export function DmcProgressCircleRoot({
 					strokeDashoffset={(reverse ? '-' : '') + strokeDashOffset}
 				/>
 			</svg>
-			{children && (
-				<div className='dmc-progress-circular__label'>{children}</div>
-			)}
-			{!indeterminate && !children && label && (
-				<div className='dmc-progress-circular__label'>{value}%</div>
-			)}
+			{children && <div className={classes.progress_circular__label}>{children}</div>}
+			{!indeterminate && !children && label && <div className={classes.progress_circular__label}>{value}%</div>}
 		</div>
 	)
 }
 
-export const DmcProgressCircle = memo(DmcProgressCircleRoot)
+export const ProgressCircle = memo(ProgressCircleRoot)

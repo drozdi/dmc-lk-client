@@ -2,7 +2,7 @@ import { TextInput } from '@mantine/core'
 import { forwardRef, useRef, useState } from 'react'
 import { TbList } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import { ButtonIcon, DmcItem, DmcItemSection } from '../../../../../shared/ui'
+import { ButtonIcon, DmcItem, ItemSection } from '../../../../../shared/ui'
 import { requestLabelsCountAdd } from '../../../api'
 
 export const ReportItem = forwardRef(
@@ -55,13 +55,13 @@ export const ReportItem = forwardRef(
 				ref={ref}
 			>
 				{groupable && (
-					<DmcItemSection side>
+					<ItemSection side>
 						<TbList />
-					</DmcItemSection>
+					</ItemSection>
 				)}
-				<DmcItemSection>{item.add_label_format}</DmcItemSection>
+				<ItemSection>{item.add_label_format}</ItemSection>
 				{editMode && (
-					<DmcItemSection>
+					<ItemSection>
 						<TextInput
 							ref={inputRef}
 							type='number'
@@ -71,15 +71,15 @@ export const ReportItem = forwardRef(
 							onKeyPress={handleKeyPress}
 							onBlur={() => handleSave()}
 						/>
-					</DmcItemSection>
+					</ItemSection>
 				)}
 
-				<DmcItemSection side>{item.sum}</DmcItemSection>
-				<DmcItemSection side>
+				<ItemSection side>{item.sum}</ItemSection>
+				<ItemSection side>
 					<ButtonIcon loading={isLoading} onClick={() => setEditMode(true)}>
 						tb-circle-plus
 					</ButtonIcon>
-				</DmcItemSection>
+				</ItemSection>
 			</DmcItem>
 		)
 	}

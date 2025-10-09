@@ -1,10 +1,10 @@
-import { Button, Group, Text } from '@mantine/core'
+import { Accordion, Button, Center, Group, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
-import { DmcItem, DmcItemExpansion, DmcItemLabel, DmcList, Loading } from '../../../../shared/ui'
+import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { Detail } from './components/detail'
 
@@ -63,19 +63,22 @@ export const AllIncident = observer(() => {
 				<Button onClick={() => fetch()}>Применить</Button>
 			</Group>
 			<Loading active={isLoading} keepMounted>
-				<DmcList as='div' separator>
-					{data.length ? (
-						data.map((item, index) => (
-							<DmcItemExpansion as='div' key={item.data} label={item.data} rightSection={item.total_counter}>
-								<Detail {...query} data={[item.data]} />
-							</DmcItemExpansion>
-						))
-					) : (
-						<DmcItem>
-							<DmcItemLabel>пусто</DmcItemLabel>
-						</DmcItem>
-					)}
-				</DmcList>
+				{data.length ? (
+					<Accordion multiple chevronPosition='left'>
+						{data.map((item, index) => (
+							<Accordion.Item key={item.data} value={'tab' + item.data}>
+								<Accordion.Control icon={item.total_counter}>{item.data}</Accordion.Control>
+								<Accordion.Panel>
+									<Detail {...query} data={[item.data]} />
+								</Accordion.Panel>
+							</Accordion.Item>
+						))}
+					</Accordion>
+				) : (
+					<Center w='100%' h='10rem' fz='h1'>
+						пусто
+					</Center>
+				)}
 			</Loading>
 		</div>
 	)

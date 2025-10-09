@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 interface ProgressBarProps {
 	children?: React.ReactNode
@@ -17,7 +17,7 @@ interface ProgressBarProps {
 	size?: number
 }
 
-export function DmcProgressBarRoot({
+export function ProgressBarRoot({
 	children,
 	className,
 	value,
@@ -52,25 +52,25 @@ export function DmcProgressBarRoot({
 	return (
 		<div
 			{...attrs}
-			className={cls('dmc-progress-bar', className, {
-				'dmc-progress-bar--stripe': !indeterminate && stripe,
-				'dmc-progress-bar--animation': !indeterminate && animation,
-				'dmc-progress-bar--indeterminate': indeterminate,
-				'dmc-progress-bar--reverse': reverse,
-				[`text-${color}`]: color,
-			})}
+			className={cls(
+				classes.progress_bar,
+				{
+					[classes.progress_bar_stripe]: !indeterminate && stripe,
+					[classes.progress_bar_animation]: !indeterminate && animation,
+					[classes.progress_bar_indeterminate]: indeterminate,
+					[classes.progress_bar_reverse]: reverse,
+					[`text-${color}`]: color,
+				},
+				className
+			)}
 			style={{ height: thickness }}
 		>
-			<div {...trackAttrs} className='dmc-progress-bar__track'></div>
-			<div {...valueAttrs} className='dmc-progress-bar__value'></div>
-			{!indeterminate && children && (
-				<div className='dmc-progress-bar__label'>{children}</div>
-			)}
-			{!indeterminate && !children && label && (
-				<div className='dmc-progress-bar__label'>{value}%</div>
-			)}
+			<div {...trackAttrs} className={classes.progress_bar__track}></div>
+			<div {...valueAttrs} className={classes.progress_bar__value}></div>
+			{!indeterminate && children && <div className={classes.progress_bar__label}>{children}</div>}
+			{!indeterminate && !children && label && <div className={classes.progress_bar__label}>{value}%</div>}
 		</div>
 	)
 }
 
-export const DmcProgressBar = memo(DmcProgressBarRoot)
+export const ProgressBar = memo(ProgressBarRoot)

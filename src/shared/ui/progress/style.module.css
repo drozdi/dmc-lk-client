@@ -1,6 +1,6 @@
 @reference "@style";
 
-.dmc-progress-bar {
+.progress_bar {
 	position: relative;
 	width: 100%;
 	overflow: hidden;
@@ -8,9 +8,9 @@
 	min-height: 2px;
 }
 
-.dmc-progress-bar__track,
-.dmc-progress-bar__value,
-.dmc-progress-bar__label {
+.progress_bar__track,
+.progress_bar__value,
+.progress_bar__label {
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -20,19 +20,19 @@
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dmc-progress-bar__track {
+.progress_bar__track {
 	z-index: -10;
 	width: 100%;
 	background-color: color-mix(in srgb, currentColor 20%, transparent);
 }
 
-.dmc-progress-bar__value {
+.progress_bar__value {
 	background-color: color-mix(in srgb, currentColor 50%, transparent);
 }
 
-.dmc-progress-bar.text-gradient {
-	.dmc-progress-bar__track,
-	.dmc-progress-bar__value {
+.progress_bar.text-gradient {
+	.progress_bar__track,
+	.progress_bar__value {
 		background: linear-gradient(
 			45deg,
 			var(--color-primary),
@@ -42,15 +42,15 @@
 			var(--color-secondary)
 		);
 	}
-	.dmc-progress-bar__track {
+	.progress_bar__track {
 		opacity: 0.2;
 	}
-	.dmc-progress-bar__value {
+	.progress_bar__value {
 		opacity: 0.5;
 	}
 }
 
-.dmc-progress-bar__label {
+.progress_bar__label {
 	z-index: 10;
 	display: flex;
 	width: 100%;
@@ -58,7 +58,7 @@
 	justify-content: center;
 }
 
-.dmc-progress-bar--stripe .dmc-progress-bar__value::after {
+.progress_bar_stripe .progress_bar__value::after {
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -78,18 +78,18 @@
 	);
 }
 
-.dmc-progress-bar--animation .dmc-progress-bar__value::after {
+.progress_bar_animation .progress_bar__value::after {
 	animation: 1s linear infinite x-linear-progress-stripes;
 }
 
-.dmc-progress-bar--indeterminate .dmc-progress-bar__value {
+.progress_bar_indeterminate .progress_bar__value {
 	position: static;
 	height: 0px;
 	width: 100%;
 }
 
-.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before,
-.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+.progress_bar_indeterminate .progress_bar__value::before,
+.progress_bar_indeterminate .progress_bar__value::after {
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -98,8 +98,8 @@
 	content: '';
 }
 
-.text-gradient.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before,
-.text-gradient.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+.text-gradient.progress_bar_indeterminate .progress_bar__value::before,
+.text-gradient.progress_bar_indeterminate .progress_bar__value::after {
 	background: linear-gradient(
 		45deg,
 		var(--color-primary),
@@ -110,38 +110,38 @@
 	);
 }
 
-.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before {
+.progress_bar_indeterminate .progress_bar__value::before {
 	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite x-linear-progress-indeterminate;
 }
 
-.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+.progress_bar_indeterminate .progress_bar__value::after {
 	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite x-linear-progress-indeterminate-short;
 	animation-delay: 1.15s;
 }
 
-.dmc-progress-bar--reverse .dmc-progress-bar__track,
-.dmc-progress-bar--reverse .dmc-progress-bar__value,
-.dmc-progress-bar--reverse .dmc-progress-bar__label {
+.progress_bar_reverse .progress_bar__track,
+.progress_bar_reverse .progress_bar__value,
+.progress_bar_reverse .progress_bar__label {
 	left: auto;
 	right: 0px;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--animation .dmc-progress-bar__value::after {
+.progress_bar_reverse.progress_bar_animation .progress_bar__value::after {
 	animation: 1s linear infinite x-linear-progress-stripes-reverse;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before,
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+.progress_bar_reverse.progress_bar_indeterminate .progress_bar__value::before,
+.progress_bar_reverse.progress_bar_indeterminate .progress_bar__value::after {
 	left: auto;
 	right: 0px;
 	content: '';
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::before {
+.progress_bar_reverse.progress_bar_indeterminate .progress_bar__value::before {
 	animation: 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite x-linear-progress-indeterminate-reverse;
 }
 
-.dmc-progress-bar--reverse.dmc-progress-bar--indeterminate .dmc-progress-bar__value::after {
+.progress_bar_reverse.progress_bar_indeterminate .progress_bar__value::after {
 	animation: 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite x-linear-progress-indeterminate-short-reverse;
 	animation-delay: 1.15s;
 }
@@ -212,7 +212,7 @@
 	}
 }
 
-.dmc-progress-circular {
+.progress_circular {
 	align-items: center;
 	display: inline-flex;
 	justify-content: center;
@@ -231,39 +231,39 @@
 		z-index: 0;
 	}
 
-	.dmc-progress-circular__content {
+	.progress_circular__content {
 		align-items: center;
 		display: flex;
 		justify-content: center;
 	}
 
-	.dmc-progress-circular__underlay {
+	.progress_circular__underlay {
 		color: color-mix(in srgb, currentColor 20%, transparent);
 		stroke: currentColor;
 		z-index: 1;
 	}
 
-	.dmc-progress-circular__overlay {
+	.progress_circular__overlay {
 		stroke: currentColor;
 		transition: all 0.2s ease-in-out, stroke-width 0s;
 		z-index: 2;
 	}
 }
 
-.dmc-progress-circular.text-gradient {
-	.dmc-progress-circular__overlay {
+.progress_circular.text-gradient {
+	.progress_circular__overlay {
 		stroke: url(#gradient);
 	}
 }
 
-.dmc-progress-circular--indeterminate {
+.progress_circular_indeterminate {
 	> svg {
 		animation: 2s linear infinite x-progress-circular-rotate;
 		transform-origin: center center;
 		transition: all 0.2s ease-in-out;
 	}
 
-	.dmc-progress-circular__overlay {
+	.progress_circular__overlay {
 		animation: 2s ease-in-out infinite x-progress-circular-dash, 2s linear infinite x-progress-circular-rotate;
 		stroke-dasharray: 25, 200;
 		stroke-dashoffset: 0;
@@ -272,12 +272,12 @@
 		transform: rotate(-90deg);
 	}
 }
-.dmc-progress-circular--indeterminate.dmc-progress-circular--reverse {
+.progress_circular_indeterminate.progress_circular_reverse {
 	> svg {
 		animation: 2s linear infinite x-progress-circular-rotate-reverse;
 	}
 
-	.dmc-progress-circular__overlay {
+	.progress_circular__overlay {
 		animation: 2s ease-in-out infinite x-progress-circular-dash-reverse,
 			2s linear infinite x-progress-circular-rotate-reverse;
 		transform: rotate(-90deg);

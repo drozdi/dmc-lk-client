@@ -2,7 +2,7 @@ import { Accordion, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '../../../shared/hooks'
-import { DmcItemLabel, DmcList, Loading } from '../../../shared/ui'
+import { DmcList, ItemLabel, Loading } from '../../../shared/ui'
 import { userStore } from '../../../stores/user-store'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
@@ -128,7 +128,7 @@ export const LabelsCount = observer(() => {
 							<Accordion.Panel>
 								<DmcList separator>
 									<GroupProvider onDragEnd={factoryHandleDragEnd(item.production_id)}>
-										{item.distributed?.length > 0 && <DmcItemLabel header>Сгрупированые</DmcItemLabel>}
+										{item.distributed?.length > 0 && <ItemLabel header>Сгрупированые</ItemLabel>}
 										{item.distributed.map(item => (
 											<GroupContainer key={item.add_label_format} column={item.add_label_format}>
 												<ReportItem
@@ -140,7 +140,7 @@ export const LabelsCount = observer(() => {
 											</GroupContainer>
 										))}
 
-										{item.notDistributed?.length > 0 && <DmcItemLabel header>Без группы</DmcItemLabel>}
+										{item.notDistributed?.length > 0 && <ItemLabel header>Без группы</ItemLabel>}
 										{item.notDistributed.map(item => (
 											<GroupItem key={item.add_label_format} id={item.add_label_format} data={item}>
 												<ReportItem

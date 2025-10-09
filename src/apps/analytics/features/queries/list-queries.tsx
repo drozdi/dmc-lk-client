@@ -1,10 +1,10 @@
-import { ActionIcon, Button, Notification, Select } from '@mantine/core'
+import { ActionIcon, Button, Group, Notification, Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
 import { useQuery } from '../../../../shared/hooks'
-import { DmcItem, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../../shared/ui'
+import { DmcItem, DmcList, ItemLabel, ItemSection, Loading } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
 import { requestAnalyticsRemoveQuery } from '../../api/queries'
 import { elasticStore } from '../../stores/elastic-store'
@@ -47,33 +47,33 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 							to={`/analytics/query/${item.id}`}
 							hoverable
 						>
-							<DmcItemSection>
-								<DmcItemLabel>{item.name_query}</DmcItemLabel>
-							</DmcItemSection>
-							<DmcItemSection side>
+							<ItemSection>
+								<ItemLabel>{item.name_query}</ItemLabel>
+							</ItemSection>
+							<ItemSection side>
 								<ActionIcon color='red' title='Удалить' onClick={e => handleRemove(e, item)}>
 									<TbCircleMinus />
 								</ActionIcon>
-							</DmcItemSection>
+							</ItemSection>
 						</DmcItem>
 					))}
 				</DmcList>
 			</Loading>
-			<div className='flex justify-between items-center gap-3'>
-				<div className='flex items-center gap-3'>
+			<Group justify='space-between'>
+				<Group>
 					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.setNumber(number - 1)}>
 						Предыдущая
 					</Button>
 					<Button disabled={!isNext} loading={isLoading} onClick={() => elasticStore.setNumber(number + 1)}>
 						Следующая
 					</Button>
-				</div>
+				</Group>
 				<Select
-					value={size}
+					value={String(size)}
 					onChange={({ target }) => elasticStore.setSize(target.value)}
 					data={['15', '30', '50', '75', '100']}
 				/>
-			</div>
+			</Group>
 		</div>
 	)
 })

@@ -1,3 +1,3 @@
-export * from './DmcProgress'
-export * from './DmcProgressBar'
-export * from './DmcProgressCircle'
+export * from './Progress'
+export * from './ProgressBar'
+export * from './ProgressCircle'

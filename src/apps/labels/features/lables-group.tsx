@@ -2,7 +2,7 @@ import { Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/co
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
-import { DmcItemLabel, Loading } from '../../../shared/ui'
+import { ItemLabel, Loading } from '../../../shared/ui'
 
 import { userStore } from '../../../stores/user-store'
 
@@ -181,7 +181,7 @@ export const LabelsGroup = observer(() => {
 															<TbList />
 														</Table.Td>
 														<Table.Td>
-															<DmcItemLabel>{item.id}</DmcItemLabel>
+															<ItemLabel>{item.id}</ItemLabel>
 														</Table.Td>
 													</Table.Tr>
 												</GroupItem>
@@ -205,7 +205,7 @@ export const LabelsGroup = observer(() => {
 													<TbList />
 												</Table.Td>
 												<Table.Td>
-													<DmcItemLabel>{item.id}</DmcItemLabel>
+													<ItemLabel>{item.id}</ItemLabel>
 												</Table.Td>
 											</Table.Tr>
 										</GroupItem>

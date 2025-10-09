@@ -1,8 +1,8 @@
-import { Button } from '@mantine/core'
+import { Button, Group, Table } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
 import { TbX } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import { DmcItem, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../../../shared/ui'
+import { Loading } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
 export function Detail(props) {
@@ -33,7 +33,7 @@ export function Detail(props) {
 
 	async function fetch() {
 		const res = await request(query)
-		setData(res.message)
+		setData(res?.message || [])
 	}
 	useEffect(() => {
 		fetch()
@@ -74,50 +74,51 @@ export function Detail(props) {
 
 	return (
 		<Loading keepMounted active={isLoading}>
-			<div className='flex mt-3 gap-3 justify-center'>
+			<Group justify='center'>
 				{production_id && (
 					<Button color='red' variant='outline' onClick={() => setProduction(0, '')} rightSection={<TbX />}>
 						Площадка: {name_production}
 					</Button>
 				)}
-			</div>
-			<DmcList as='div' className='p-6'>
-				{production_id ? (
-					<>
-						<DmcItemLabel header>Устройства</DmcItemLabel>
-						{ddata.map((item, index) => (
-							<DmcItem key={item.device_id}>
-								<DmcItemSection>
-									<DmcItemLabel>{item.device_name}</DmcItemLabel>
-								</DmcItemSection>
-								<DmcItemSection side>
-									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
-								</DmcItemSection>
-							</DmcItem>
-						))}
-					</>
-				) : (
-					<>
-						<DmcItemLabel header>Площадки</DmcItemLabel>
-						{ddata.map((item, index) => (
-							<DmcItem
-								key={item.production_id}
-								onClick={() => handleProduction(item.production_id, item.name_production)}
-							>
-								<DmcItemSection>
-									<DmcItemLabel>{item.name_production}</DmcItemLabel>
-								</DmcItemSection>
-								<DmcItemSection>
-									<DmcItemLabel>{item.address_production}</DmcItemLabel>
-								</DmcItemSection>
-								<DmcItemSection side>
-									<DmcItemLabel>{item.total_counter}</DmcItemLabel>
-								</DmcItemSection>
-							</DmcItem>
-						))}
-					</>
-				)}
-			</DmcList>
+			</Group>
+			<Table>
+				<Table.Tbody>
+					{production_id ? (
+						<>
+							<Table.Tr>
+								<Table.Th colSpan={2} ta='center'>
+									Устройства
+								</Table.Th>
+							</Table.Tr>
+
+							{ddata.map((item, index) => (
+								<Table.Tr key={item.device_id}>
+									<Table.Td>{item.device_name}</Table.Td>
+									<Table.Td>{item.total_counter}</Table.Td>
+								</Table.Tr>
+							))}
+						</>
+					) : (
+						<>
+							<Table.Tr>
+								<Table.Th colSpan={3} ta='center'>
+									Площадки
+								</Table.Th>
+							</Table.Tr>
+							{ddata.map((item, index) => (
+								<Table.Tr
+									key={item.production_id}
+									onClick={() => handleProduction(item.production_id, item.name_production)}
+								>
+									<Table.Td>{item.name_production}</Table.Td>
+									<Table.Td>{item.address_production}</Table.Td>
+									<Table.Td>{item.total_counter}</Table.Td>
+								</Table.Tr>
+							))}
+						</>
+					)}
+				</Table.Tbody>
+			</Table>
 		</Loading>
 	)
 }

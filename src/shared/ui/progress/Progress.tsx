@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 interface ProgressProps {
 	children?: React.ReactNode
@@ -18,7 +18,7 @@ interface ProgressProps {
 	reverse?: boolean
 }
 
-export function DmcProgressRoot({
+export function ProgressRoot({
 	children,
 	className,
 	type = 'bar',
@@ -57,21 +57,25 @@ export function DmcProgressRoot({
 	const progressBar = () => (
 		<div
 			{...attrs}
-			className={cls('dmc-progress-bar', className, {
-				'dmc-progress-bar--stripe': !indeterminate && stripe,
-				'dmc-progress-bar--animation': !indeterminate && animation,
-				'dmc-progress-bar--indeterminate': indeterminate,
-				'dmc-progress-bar--reverse': reverse,
-				[`text-${color}`]: color,
-			})}
+			className={cls(
+				classes.progress_bar,
+				{
+					[classes.progress_bar_stripe]: !indeterminate && stripe,
+					[classes.progress_bar_animation]: !indeterminate && animation,
+					[classes.progress_bar_indeterminate]: indeterminate,
+					[classes.progress_bar_reverse]: reverse,
+					[`text-${color}`]: color,
+				},
+				className
+			)}
 			style={{
 				height: 1 * thickness,
 			}}
 		>
-			<div {...trackAttrs} className='dmc-progress-bar__track'></div>
-			<div {...valueAttrs} className='dmc-progress-bar__value'></div>
-			{!indeterminate && children && <div className='dmc-progress-bar__label'>{children}</div>}
-			{!indeterminate && !children && label && <div className='dmc-progress-bar__label'>{value}%</div>}
+			<div {...trackAttrs} className={classes.progress_bar__track}></div>
+			<div {...valueAttrs} className={classes.progress_bar__value}></div>
+			{!indeterminate && children && <div className={classes.progress_bar__label}>{children}</div>}
+			{!indeterminate && !children && label && <div className={classes.progress_bar__label}>{value}%</div>}
 		</div>
 	)
 
@@ -97,11 +101,15 @@ export function DmcProgressRoot({
 				width: diameter,
 				height: diameter,
 			}}
-			className={cls('dmc-progress-circular', className, {
-				'dmc-progress-circular--indeterminate': indeterminate,
-				'dmc-progress-circular--reverse': reverse,
-				[`text-${color}`]: color,
-			})}
+			className={cls(
+				classes.progress_circular,
+				{
+					[classes.progress_circular_indeterminate]: indeterminate,
+					[classes.progress_circular_reverse]: reverse,
+					[`text-${color}`]: color,
+				},
+				className
+			)}
 		>
 			<svg
 				style={{
@@ -120,7 +128,7 @@ export function DmcProgressRoot({
 					</linearGradient>
 				</defs>
 				<circle
-					className='dmc-progress-circular__underlay'
+					className={classes.progress_circular__underlay}
 					fill='transparent'
 					cx='50%'
 					cy='50%'
@@ -131,7 +139,7 @@ export function DmcProgressRoot({
 				/>
 
 				<circle
-					className={cls('dmc-progress-circular__overlay')}
+					className={classes.progress_circular__overlay}
 					fill='transparent'
 					cx='50%'
 					cy='50%'
@@ -141,12 +149,12 @@ export function DmcProgressRoot({
 					strokeDashoffset={(reverse ? '-' : '') + strokeDashOffset}
 				/>
 			</svg>
-			{children && <div className='dmc-progress-circular__label'>{children}</div>}
-			{!indeterminate && !children && label && <div className='dmc-progress-circular__label'>{value}%</div>}
+			{children && <div className={classes.progress_circular__label}>{children}</div>}
+			{!indeterminate && !children && label && <div className={classes.progress_circular__label}>{value}%</div>}
 		</div>
 	)
 
 	return type === 'bar' ? progressBar() : progressCircle()
 }
 
-export const DmcProgress = memo(DmcProgressRoot)
+export const Progress = memo(ProgressRoot)

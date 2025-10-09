@@ -15,7 +15,7 @@ interface ItemSectionProps {
 	[key: string]: any
 }
 
-export const DmcItemSection = memo(
+export const ItemSection = memo(
 	({ children, className, side, top, end, noWrap, row, avatar, thumbnail, ...props }: ItemSectionProps) => {
 		const isSide = side || thumbnail || avatar
 		return (
