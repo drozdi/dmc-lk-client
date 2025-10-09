@@ -43,7 +43,7 @@ const navItems: NavItem[] = [
 	},
 ]
 
-export const Sidebar = () => {
+export const MainMenu = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 

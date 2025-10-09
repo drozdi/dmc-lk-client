@@ -51,7 +51,7 @@ export const ReportItem = forwardRef(
 			<Item
 				component='div'
 				{...props}
-				color={item.sum < dangerLimits ? (item.sum < warningLimits ? 'warning' : 'danger') : ''}
+				bg={item.sum < dangerLimits ? (item.sum < warningLimits ? 'red' : 'orange') : ''}
 				ref={ref}
 			>
 				{groupable && (

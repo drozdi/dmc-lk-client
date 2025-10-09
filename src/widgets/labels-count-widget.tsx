@@ -164,7 +164,7 @@ export const LabelsCountWidget = observer(props => {
 							{Object.values(res).map(production => {
 								return (
 									<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
-										<Accordion.Control classBody='!flex-row !justify-between'>
+										<Accordion.Control>
 											<Group justify='space-between'>
 												<Text>
 													{production.production_name} ({production.production_id})

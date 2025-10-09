@@ -40,7 +40,13 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 			<Loading active={isLoading} keepMounted>
 				<List separator>
 					{list.map(item => (
-						<Item key={item.id} className='cursor-pointer' as={LinkRouter} to={`/analytics/query/${item.id}`} hoverable>
+						<Item
+							key={item.id}
+							className='cursor-pointer'
+							component={LinkRouter}
+							to={`/analytics/query/${item.id}`}
+							hoverable
+						>
 							<ItemSection>
 								<ItemLabel>{item.name_query}</ItemLabel>
 							</ItemSection>

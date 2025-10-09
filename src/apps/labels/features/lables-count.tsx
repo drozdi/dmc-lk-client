@@ -6,12 +6,10 @@ import { ItemLabel, List, Loading } from '../../../shared/ui'
 import { userStore } from '../../../stores/user-store'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
-
-import { ReportItem } from './components/report/item'
-
 import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
+import { ReportItem } from './components/report/item'
 
 export const LabelsCount = observer(() => {
 	const { isLoading, error, request } = useQuery(requestLabelsCount)

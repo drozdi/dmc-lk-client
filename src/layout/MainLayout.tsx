@@ -1,9 +1,11 @@
 import { AppShell, Burger, Button, Container, Group, ScrollArea } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { InOutLink } from '../features/auth/in-out-link'
+import { ChangeProduct } from '../features/lk/change-product'
 import { PersonalLink } from '../features/lk/personal-link'
 import { Logo } from '../features/logo/Logo'
-import { Sidebar } from './components/sidebar'
+import { MainMenu } from './components/main-menu'
 import { ThemeBtn } from './components/theme-btn'
 import { TemplateSlot } from './context/template'
 
@@ -28,6 +30,8 @@ export function MainLayout() {
 					<Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
 					<Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom='sm' size='sm' />
 					<Group>
+						<ChangeProduct />
+						<InOutLink />
 						<PersonalLink />
 						<ThemeBtn />
 					</Group>
@@ -38,7 +42,7 @@ export function MainLayout() {
 					<Logo />
 				</AppShell.Section>
 				<AppShell.Section grow my='md' component={ScrollArea} px='md'>
-					<Sidebar />
+					<MainMenu />
 				</AppShell.Section>
 				<AppShell.Section p='md'>Navbar footer – always at the bottom</AppShell.Section>
 			</AppShell.Navbar>
@@ -47,7 +51,7 @@ export function MainLayout() {
 					<Outlet />
 				</Container>
 			</AppShell.Main>
-			<AppShell.Footer component={Group} justify='space-between' gap='xs' px='xs'>
+			<AppShell.Footer<Group> component={Group} justify='space-between' gap='xs' px='xs'>
 				<TemplateSlot name='footer'>
 					<div></div>
 				</TemplateSlot>

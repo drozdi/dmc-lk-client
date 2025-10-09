@@ -1,8 +1,6 @@
 import { DatesProvider } from '@mantine/dates'
 import 'dayjs/locale/ru'
-import { Link } from 'react-router'
 import { TemplateProvider } from '../layout/context'
-import { RenderProvider } from '../shared/internal/render'
 
 import { createTheme, Drawer, Flex, Group, Input, MantineProvider, SimpleGrid, Stack, Tabs } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
@@ -184,9 +182,7 @@ export function AppProvider({ children }: AppProviderProps) {
 			<DatesProvider settings={{ locale: 'ru' }}>
 				<Notifications />
 				<ModalsProvider>
-					<RenderProvider render={({ as, to }: { to?: string; as?: any }) => (!!to ? Link : as)}>
-						<TemplateProvider>{children}</TemplateProvider>
-					</RenderProvider>
+					<TemplateProvider>{children}</TemplateProvider>
 				</ModalsProvider>
 			</DatesProvider>
 		</MantineProvider>
