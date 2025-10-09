@@ -1,8 +1,7 @@
+import { Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
 import { userStore } from '../../stores/user-store'
-
-import { DmcSelect } from '../../shared/ui'
 
 export const ChangeProduct = observer(() => {
 	const { products, currentProductId } = userStore
@@ -11,20 +10,22 @@ export const ChangeProduct = observer(() => {
 		return products.find(product => product.production_id == currentProductId)?.name_production || ''
 	}, [products, currentProductId])
 
-	const handleChange = ({ target }: React.ChangeEvent) => {
-		userStore.setCurrentProductId(target.value)
+	const handleChange = value => {
+		userStore.setCurrentProductId(value)
 		setChange(false)
 	}
 	return (
 		<>
 			{change ? (
-				<DmcSelect dense filled value={String(currentProductId)} onChange={handleChange}>
-					{products.map(product => (
-						<option key={product.production_id} value={product.production_id}>
-							{product.name_production}
-						</option>
-					))}
-				</DmcSelect>
+				<Select
+					variant='filled'
+					value={String(currentProductId)}
+					onChange={handleChange}
+					data={products.map(product => ({
+						value: String(product.production_id),
+						label: product.name_production,
+					}))}
+				/>
 			) : (
 				<span className='cursor-pointer' onClick={() => setChange(true)}>
 					{currentName}

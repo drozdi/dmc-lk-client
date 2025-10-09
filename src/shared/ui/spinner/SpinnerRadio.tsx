@@ -1,18 +1,12 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerRadioProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function DmcSpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
+export function SpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 	return (
-		<DmcSpinnerBase
-			size={size}
-			color={color}
-			viewBox='0 0 100 100'
-			preserveAspectRatio='xMidYMid'
-			fill='currentColor'
-		>
+		<SpinnerBase size={size} color={color} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid' fill='currentColor'>
 			<g transform='scale(0.55)'>
 				<circle cx='30' cy='150' r='30' fill='currentColor'>
 					<animate
@@ -26,10 +20,7 @@ export function DmcSpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 						values='0;1;1'
 					></animate>
 				</circle>
-				<path
-					d='M90,150h30c0-49.7-40.3-90-90-90v30C63.1,90,90,116.9,90,150z'
-					fill='currentColor'
-				>
+				<path d='M90,150h30c0-49.7-40.3-90-90-90v30C63.1,90,90,116.9,90,150z' fill='currentColor'>
 					<animate
 						attributeName='opacity'
 						from='0'
@@ -41,10 +32,7 @@ export function DmcSpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 						values='0;1;1'
 					></animate>
 				</path>
-				<path
-					d='M150,150h30C180,67.2,112.8,0,30,0v30C96.3,30,150,83.7,150,150z'
-					fill='currentColor'
-				>
+				<path d='M150,150h30C180,67.2,112.8,0,30,0v30C96.3,30,150,83.7,150,150z' fill='currentColor'>
 					<animate
 						attributeName='opacity'
 						from='0'
@@ -57,6 +45,6 @@ export function DmcSpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 					></animate>
 				</path>
 			</g>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

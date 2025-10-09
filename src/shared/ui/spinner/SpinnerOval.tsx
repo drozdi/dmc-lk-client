@@ -1,24 +1,14 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerOvalProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function DmcSpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
+export function SpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
 	return (
-		<DmcSpinnerBase
-			size={size}
-			color={color}
-			viewBox='0 0 38 38'
-			stroke='currentColor'
-		>
-			<g
-				transform='translate(1 1)'
-				strokeWidth='2'
-				fill='none'
-				fillRule='evenodd'
-			>
+		<SpinnerBase size={size} color={color} viewBox='0 0 38 38' stroke='currentColor'>
+			<g transform='translate(1 1)' strokeWidth='2' fill='none' fillRule='evenodd'>
 				<circle strokeOpacity='.5' cx='18' cy='18' r='18'></circle>
 				<path d='M36 18c0-9.94-8.06-18-18-18'>
 					<animateTransform
@@ -31,6 +21,6 @@ export function DmcSpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
 					></animateTransform>
 				</path>
 			</g>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 interface ItemSectionProps {
 	children?: React.ReactNode
@@ -16,32 +16,25 @@ interface ItemSectionProps {
 }
 
 export const DmcItemSection = memo(
-	({
-		children,
-		className,
-		side,
-		top,
-		end,
-		noWrap,
-		row,
-		avatar,
-		thumbnail,
-		...props
-	}: ItemSectionProps) => {
+	({ children, className, side, top, end, noWrap, row, avatar, thumbnail, ...props }: ItemSectionProps) => {
 		const isSide = side || thumbnail || avatar
 		return (
 			<div
 				{...props}
-				className={cls('dmc-item__section', className, {
-					'dmc-item__section--main': !isSide,
-					'dmc-item__section--side': isSide,
-					'dmc-item__section--top': top,
-					'dmc-item__section--row': row,
-					'dmc-item__section--end': end,
-					'dmc-item__section--nowrap': noWrap,
-					'dmc-item__section--avatar': avatar,
-					'dmc-item__section--thumbnail': thumbnail,
-				})}
+				className={cls(
+					classes.section,
+					{
+						[classes.section_main]: !isSide,
+						[classes.section_side]: isSide,
+						[classes.section_top]: top,
+						[classes.section_row]: row,
+						[classes.section_end]: end,
+						[classes.section_nowrap]: noWrap,
+						[classes.section_avatar]: avatar,
+						[classes.section_thumbnail]: thumbnail,
+					},
+					className
+				)}
 			>
 				{children}
 			</div>

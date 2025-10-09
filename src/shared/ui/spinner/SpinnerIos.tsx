@@ -1,19 +1,13 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerIosProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function DmcSpinnerIos({ size = '1em', color }: SpinnerIosProps) {
+export function SpinnerIos({ size = '1em', color }: SpinnerIosProps) {
 	return (
-		<DmcSpinnerBase
-			size={size}
-			color={color}
-			viewBox='0 0 64 64'
-			fill='currentColor'
-			stroke='currentColor'
-		>
+		<SpinnerBase size={size} color={color} viewBox='0 0 64 64' fill='currentColor' stroke='currentColor'>
 			<g strokeWidth='4' strokeLinecap='round'>
 				<line y1='17' y2='29' transform='translate(32,32) rotate(180)'>
 					<animate
@@ -112,6 +106,6 @@ export function DmcSpinnerIos({ size = '1em', color }: SpinnerIosProps) {
 					></animate>
 				</line>
 			</g>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

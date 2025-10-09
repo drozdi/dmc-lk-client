@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 interface ItemLabelProps {
 	children: React.ReactNode
@@ -13,24 +13,20 @@ interface ItemLabelProps {
 }
 
 export const DmcItemLabel = memo(
-	({
-		children,
-		className,
-		overline,
-		caption,
-		header,
-		lines,
-		...props
-	}: ItemLabelProps) => {
+	({ children, className, overline, caption, header, lines, ...props }: ItemLabelProps) => {
 		return (
 			<div
 				{...props}
-				className={cls('dmc-item__label', className, {
-					'dmc-item__label--overline': overline,
-					'dmc-item__label--caption': caption,
-					'dmc-item__label--header': header,
-					'dmc-item__label--lines': lines,
-				})}
+				className={cls(
+					classes.label,
+					{
+						[classes.label_overline]: overline,
+						[classes.label_caption]: caption,
+						[classes.label_header]: header,
+						[classes.label_lines]: lines,
+					},
+					className
+				)}
 			>
 				{children}
 			</div>

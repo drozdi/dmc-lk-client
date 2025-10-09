@@ -1,10 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Notification } from '@mantine/core'
+import { Button, Notification, PasswordInput, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
-import { DmcInput } from '../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 const fieldsSchema = yup.object().shape({
@@ -76,104 +75,62 @@ export const SignUpForm = observer(() => {
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
 			<form name='signUp' className='space-y-1' onSubmit={handleSubmit(sendFormData)}>
-				<DmcInput
-					label='Имя'
+				<TextInput
 					placeholder='Имя'
 					id='registration_first_name'
 					type='text'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.first_name?.message}
+					error={errors?.first_name?.message}
 					{...register('first_name')}
 				/>
-				<DmcInput
-					label='Фамилия'
+				<TextInput
 					placeholder='Фамилия'
 					id='registration_last_name'
 					type='text'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.last_name?.message}
+					error={errors?.last_name?.message}
 					{...register('last_name')}
 				/>
-				<DmcInput
-					label='Отчество'
+				<TextInput
 					placeholder='Отчество'
 					id='registration_father_name'
 					type='text'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.father_name?.message}
+					error={errors?.father_name?.message}
 					{...register('father_name')}
 				/>
-				<DmcInput
-					label='Email'
+				<TextInput
 					placeholder='Email'
 					id='registration_email'
 					type='email'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.email?.message}
+					error={errors?.email?.message}
 					{...register('email')}
 				/>
 
-				<DmcInput
-					label='Телефон'
+				<TextInput
 					placeholder='Телефон'
 					id='registration_phone'
 					type='phone'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.phone?.message}
+					error={errors?.phone?.message}
 					{...register('phone')}
 				/>
 
-				<DmcInput
-					label='Пароль'
+				<PasswordInput
 					placeholder='Придумай пароль'
 					id='registration_password'
 					type='password'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.password?.message}
+					error={errors?.password?.message}
 					{...register('password')}
 				/>
-				<DmcInput
-					label='Повторноый пароль'
+				<PasswordInput
 					placeholder='Повтори пароль'
 					id='registration_re_password'
 					type='password'
-					dense
-					square
 					required
-					stackLabel
-					filled
-					underlined
-					errorMessage={errors?.re_password?.message}
+					error={errors?.re_password?.message}
 					{...register('re_password')}
 				/>
 

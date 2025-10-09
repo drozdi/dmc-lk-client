@@ -1,9 +1,8 @@
-import { Button, Notification } from '@mantine/core'
+import { Button, Notification, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { setAccessToken } from '../../shared/api/token-service'
-import { DmcInput } from '../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
@@ -25,19 +24,14 @@ export const VerificationForm = observer(() => {
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
 			<form name='verification' className='space-y-3' onSubmit={handleSubmit}>
-				<DmcInput
-					label='Код'
+				<TextInput
 					placeholder='Код'
 					id='link-code'
 					name='link'
 					type='text'
 					value={link}
 					onChange={e => setLink(e.target.value)}
-					square
 					required
-					stackLabel
-					filled
-					underlined
 				/>
 
 				<Button type='submit' fullWidth loading={isLoading}>

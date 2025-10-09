@@ -1,22 +1,13 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerProps {
 	size?: string
 	thickness?: number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function DmcSpinner({
-	size = '1em',
-	thickness = 5,
-	color,
-}: SpinnerProps) {
+export function Spinner({ size = '1em', thickness = 5, color }: SpinnerProps) {
 	return (
-		<DmcSpinnerBase
-			className='dmc-spinner--mat'
-			size={size}
-			color={color}
-			viewBox='25 25 50 50'
-		>
+		<SpinnerBase className='dmc-spinner--mat' size={size} color={color} viewBox='25 25 50 50'>
 			<circle
 				className='dmc-spinner__path'
 				cx='50'
@@ -27,6 +18,6 @@ export function DmcSpinner({
 				strokeWidth={thickness}
 				strokeMiterlimit='10'
 			></circle>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

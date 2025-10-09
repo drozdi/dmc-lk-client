@@ -1,21 +1,13 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerHourglassProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function DmcSpinnerHourglass({
-	size = '1em',
-	color,
-}: SpinnerHourglassProps) {
+export function SpinnerHourglass({ size = '1em', color }: SpinnerHourglassProps) {
 	return (
-		<DmcSpinnerBase
-			size={size}
-			color={color}
-			viewBox='0 0 100 100'
-			preserveAspectRatio='xMidYMid'
-		>
+		<SpinnerBase size={size} color={color} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'>
 			<g>
 				<path
 					fill='none'
@@ -89,6 +81,6 @@ export function DmcSpinnerHourglass({
 					keyTimes='0;0.7;1'
 				></animateTransform>
 			</g>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

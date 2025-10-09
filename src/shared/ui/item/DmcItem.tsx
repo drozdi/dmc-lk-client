@@ -1,15 +1,15 @@
+import { UnstyledButton } from '@mantine/core'
+import { useMergedRef } from '@mantine/hooks'
 import { forwardRef, memo, useMemo, useRef } from 'react'
-import { useForkRef } from '../../hooks'
-import { render } from '../../internal/render'
 import { cls } from '../../utils'
-import './style.css'
+import classes from './style.module.css'
 
 const clickableTag = ['a', 'label', 'button']
 const disRoleTag = ['label']
 const disDisabledTag = ['div', 'span', 'a', 'label']
 
 interface ItemProps {
-	as?: 'li'
+	component?: any
 	children?: React.ReactNode
 	className?: string
 	role?: string
@@ -21,15 +21,6 @@ interface ItemProps {
 	disabled?: boolean
 	hoverable?: boolean
 	bordered?: boolean
-	color?:
-		| 'primary'
-		| 'secondary'
-		| 'accent'
-		| 'success'
-		| 'warning'
-		| 'info'
-		| 'danger'
-		| 'dark'
 	onClick?: (e: React.MouseEvent<HTMLElement>) => void
 	onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void
 	onKeyUp?: (e: React.KeyboardEvent<HTMLElement>) => void
@@ -47,7 +38,6 @@ export const DmcItem = memo(
 				children,
 				tabIndex = 0,
 				vertical,
-				color,
 				dense,
 				active,
 				activeClass,
@@ -60,15 +50,14 @@ export const DmcItem = memo(
 			}: ItemProps,
 			ref
 		) => {
-			const elementRef = useRef()
-			const handleRef = useForkRef(ref, elementRef)
+			const elementRef = useRef<HTMLElement>(null)
+			const handleRef = useMergedRef(ref, elementRef)
 			const isActionable = useMemo(() => {
 				return (
-					clickableTag.includes(
-						elementRef.current?.nodeName.toLowerCase() ?? props.as
-					) || typeof onClick === 'function'
+					clickableTag.includes(elementRef.current?.nodeName.toLowerCase() ?? props.component) ||
+					typeof onClick === 'function'
 				)
-			}, [props.as, elementRef.current, onClick])
+			}, [props.component, elementRef.current, onClick])
 
 			const isClickable = !disabled && isActionable
 			const isHoverable = isClickable || hoverable
@@ -76,21 +65,20 @@ export const DmcItem = memo(
 			const attrs = useMemo(() => {
 				const attrs: Record<string, any> = {
 					className: cls(
-						'dmc-item',
+						classes.item,
 						{
-							'dmc-item--dense': dense,
-							'dmc-item--active': active,
-							'dmc-item--disabled': disabled,
-							'dmc-item--clickable': isClickable,
-							'dmc-item--hoverable': isHoverable,
-							'dmc-item--vertical': vertical,
-							'dmc-item--bordered': bordered,
-							[`dmc-bg-${color}`]: color,
+							[classes.item_vertical]: vertical,
+							[classes.item_active]: active,
+							[classes.item_clickable]: isClickable,
+							[classes.item_dense]: dense,
+							[classes.item_disabled]: disabled,
+							[classes.item_hoverable]: isHoverable,
+							[classes.item_bordered]: bordered,
 							[activeClass]: active,
 						},
 						className
 					),
-					role: disRoleTag.includes(props.as) ? undefined : role ?? 'listitem',
+					role: disRoleTag.includes(props.component) ? undefined : role ?? 'listitem',
 					disabled: disabled,
 				}
 				if (isActionable) {
@@ -99,39 +87,27 @@ export const DmcItem = memo(
 				if (isClickable) {
 					attrs.tabIndex = disabled ? -1 : tabIndex ?? -1
 				}
-				if (disDisabledTag.includes(props.as)) {
+				if (disDisabledTag.includes(props.component)) {
 					delete attrs.disabled
 				}
 				return attrs
-			}, [
-				disabled,
-				tabIndex,
-				role,
-				dense,
-				active,
-				className,
-				activeClass,
-				isHoverable,
-				isClickable,
-				isActionable,
-				color,
-			])
+			}, [disabled, tabIndex, role, dense, active, className, activeClass, isHoverable, isClickable, isActionable])
 
-			return render(
-				'li',
-				{
-					...props,
-					...attrs,
-					ref: handleRef,
-					onClick: (event: React.MouseEvent<HTMLElement>) => {
+			return (
+				<UnstyledButton
+					component={props.component || 'li'}
+					{...props}
+					{...attrs}
+					ref={handleRef}
+					onClick={(event: React.MouseEvent<HTMLElement>) => {
 						if (disabled) {
 							event.preventDefault()
 						}
 						onClick?.(event)
-					},
-					children,
-				},
-				{ active, disabled }
+					}}
+				>
+					{children}
+				</UnstyledButton>
 			)
 		}
 	)

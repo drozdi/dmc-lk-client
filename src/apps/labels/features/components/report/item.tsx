@@ -1,8 +1,10 @@
+import { TextInput } from '@mantine/core'
 import { forwardRef, useRef, useState } from 'react'
 import { TbList } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
-import { ButtonIcon, DmcInput, DmcItem, DmcItemSection } from '../../../../../shared/ui'
+import { ButtonIcon, DmcItem, DmcItemSection } from '../../../../../shared/ui'
 import { requestLabelsCountAdd } from '../../../api'
+
 export const ReportItem = forwardRef(
 	(
 		{
@@ -47,6 +49,7 @@ export const ReportItem = forwardRef(
 		}
 		return (
 			<DmcItem
+				component='div'
 				{...props}
 				color={item.sum < dangerLimits ? (item.sum < warningLimits ? 'warning' : 'danger') : ''}
 				ref={ref}
@@ -59,16 +62,12 @@ export const ReportItem = forwardRef(
 				<DmcItemSection>{item.add_label_format}</DmcItemSection>
 				{editMode && (
 					<DmcItemSection>
-						<DmcInput
+						<TextInput
 							ref={inputRef}
 							type='number'
-							className='w-full'
+							w='100%'
 							color='info'
-							filled
-							dense
 							autoFocus
-							hideMessage
-							hideHint
 							onKeyPress={handleKeyPress}
 							onBlur={() => handleSave()}
 						/>

@@ -1,18 +1,13 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerGridProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function DmcSpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
+export function SpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
 	return (
-		<DmcSpinnerBase
-			color={color}
-			size={size}
-			viewBox='0 0 105 105'
-			fill='currentColor'
-		>
+		<SpinnerBase color={color} size={size} viewBox='0 0 105 105' fill='currentColor'>
 			<circle cx='12.5' cy='12.5' r='12.5'>
 				<animate
 					attributeName='fill-opacity'
@@ -103,6 +98,6 @@ export function DmcSpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
 					repeatCount='indefinite'
 				></animate>
 			</circle>
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }

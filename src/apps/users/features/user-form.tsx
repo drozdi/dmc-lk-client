@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Notification, Tabs } from '@mantine/core'
+import { Button, Notification, Tabs, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router'
 import * as yup from 'yup'
 import { Template } from '../../../layout/context'
 import { useQuery } from '../../../shared/hooks'
-import { DmcInput, Loading } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 import { requestGetUser, requestUpdateUser } from '../api'
 import { usersStore } from '../stores/users-store'
 const fieldsSchema = yup.object().shape({
@@ -101,46 +101,28 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						<Tabs.Panel value='tab-general'>
 							<div className='flex flex-col-reverse gap-3 md:flex-row-reverse'>
 								<div className='flex-1'>
-									<DmcInput
-										label='Фамилия'
+									<TextInput
 										placeholder='Фамилия'
 										id='registration_last_name'
 										type='text'
-										dense
-										square
 										required
-										stackLabel
-										filled
-										underlined
-										errorMessage={errors?.last_name?.message}
+										error={errors?.last_name?.message}
 										{...register('last_name')}
 									/>
-									<DmcInput
-										label='Имя'
+									<TextInput
 										placeholder='Имя'
 										id='registration_first_name'
 										type='text'
-										dense
-										square
 										required
-										stackLabel
-										filled
-										underlined
-										errorMessage={errors?.first_name?.message}
+										error={errors?.first_name?.message}
 										{...register('first_name')}
 									/>
-									<DmcInput
-										label='Отчество'
+									<TextInput
 										placeholder='Отчество'
 										id='registration_father_name'
 										type='text'
-										dense
-										square
 										required
-										stackLabel
-										filled
-										underlined
-										errorMessage={errors?.father_name?.message}
+										error={errors?.father_name?.message}
 										{...register('father_name')}
 									/>
 								</div>
@@ -153,32 +135,20 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										Суперпользователь
 										<input {...register('is_superuser')} type='checkbox' />
 									</label>
-									<DmcInput
-										label='Email'
+									<TextInput
 										placeholder='Email'
 										id='registration_email'
 										type='email'
-										dense
-										square
 										required
-										stackLabel
-										filled
-										underlined
-										errorMessage={errors?.email?.message}
+										error={errors?.email?.message}
 										{...register('email')}
 									/>
-									<DmcInput
-										label='Телефон'
+									<TextInput
 										placeholder='Телефон'
 										id='registration_phone'
 										type='phone'
-										dense
-										square
 										required
-										stackLabel
-										filled
-										underlined
-										errorMessage={errors?.phone?.message}
+										error={errors?.phone?.message}
 										{...register('phone')}
 									/>
 								</div>

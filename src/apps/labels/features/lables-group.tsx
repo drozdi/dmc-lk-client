@@ -1,8 +1,8 @@
-import { Notification, Select, Stack, TextInput } from '@mantine/core'
+import { Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
-import { DmcItem, DmcItemExpansion, DmcItemLabel, DmcItemSection, DmcList, Loading } from '../../../shared/ui'
+import { DmcItemLabel, Loading } from '../../../shared/ui'
 
 import { userStore } from '../../../stores/user-store'
 
@@ -149,61 +149,72 @@ export const LabelsGroup = observer(() => {
 			/>
 
 			<Loading active={isLoading} keepMounted>
-				<div className='flex gap-3'>
-					<GroupProvider onDragEnd={handleDragEnd}>
-						<DmcList as='div' className='flex-1/2'>
-							<DmcItem>
-								<DmcItemSection>
-									<TextInput
-										w='100%'
-										placeholder='Добавить формат'
-										disabled={isLoading}
-										value={newFormat}
-										onChange={handleChange}
-										onKeyPress={handleKeyPress}
-									/>
-								</DmcItemSection>
-							</DmcItem>
-
+				<TextInput
+					w='100%'
+					placeholder='Добавить формат'
+					disabled={isLoading}
+					value={newFormat}
+					onChange={handleChange}
+					onKeyPress={handleKeyPress}
+				/>
+				<GroupProvider onDragEnd={handleDragEnd}>
+					<Flex>
+						<Stack
+							style={{
+								width: '49%',
+							}}
+						>
 							{formats.map(item => (
 								<GroupContainer key={item} column={item}>
-									<DmcItemExpansion as='div' opened label={item}>
-										<DmcList as='div'>
+									<Table>
+										<Table.Thead>
+											<Table.Tr>
+												<Table.Td></Table.Td>
+												<Table.Td>{item}</Table.Td>
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>
 											{(containers[item] || []).map(item => (
 												<GroupItem key={item.id} id={item.id} data={item}>
-													<DmcItem as='div'>
-														<DmcItemSection side>
+													<Table.Tr>
+														<Table.Td>
 															<TbList />
-														</DmcItemSection>
-														<DmcItemSection>
+														</Table.Td>
+														<Table.Td>
 															<DmcItemLabel>{item.id}</DmcItemLabel>
-														</DmcItemSection>
-													</DmcItem>
+														</Table.Td>
+													</Table.Tr>
 												</GroupItem>
 											))}
-										</DmcList>
-									</DmcItemExpansion>
+										</Table.Tbody>
+									</Table>
 								</GroupContainer>
 							))}
-						</DmcList>
-						<GroupContainer column='.default'>
-							<DmcList as='div' className='flex-1/2'>
-								{(containers['.default'] || []).map(item => (
-									<GroupItem key={item.id} id={item.id} data={item}>
-										<DmcItem as='div'>
-											<DmcItemSection side>
-												<TbList />
-											</DmcItemSection>
-											<DmcItemSection>
-												<DmcItemLabel>{item.id}</DmcItemLabel>
-											</DmcItemSection>
-										</DmcItem>
-									</GroupItem>
-								))}
-							</DmcList>
-						</GroupContainer>
-					</GroupProvider>
-				</div>
+						</Stack>
+						<Table
+							style={{
+								width: '49%',
+							}}
+						>
+							<GroupContainer column='.default'>
+								<Table.Tbody>
+									{(containers['.default'] || []).map(item => (
+										<GroupItem key={item.id} id={item.id} data={item}>
+											<Table.Tr>
+												<Table.Td>
+													<TbList />
+												</Table.Td>
+												<Table.Td>
+													<DmcItemLabel>{item.id}</DmcItemLabel>
+												</Table.Td>
+											</Table.Tr>
+										</GroupItem>
+									))}
+								</Table.Tbody>
+							</GroupContainer>
+						</Table>
+					</Flex>
+				</GroupProvider>
 			</Loading>
 		</Stack>
 	)

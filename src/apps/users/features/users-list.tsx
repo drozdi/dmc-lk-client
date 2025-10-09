@@ -1,8 +1,8 @@
-import { Button, NavLink, Notification } from '@mantine/core'
+import { Button, NavLink, Notification, Select } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useQuery } from '../../../shared/hooks'
-import { DmcSelect, Loading } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 import { requestGetUsers } from '../api'
 
 interface UsersListProps {
@@ -44,21 +44,14 @@ export function UsersList({ className }: UsersListProps) {
 					<Button disabled={list.length < size}>Следующая</Button>
 				</div>
 				<div>
-					<DmcSelect
-						dense
-						filled
-						value={size}
-						onChange={({ target }) => {
+					<Select
+						value={String(size)}
+						onChange={value => {
 							setNumber(0)
-							setSize(target.value)
+							setSize(value)
 						}}
-					>
-						<option value='15'>15</option>
-						<option value='30'>30</option>
-						<option value='50'>50</option>
-						<option value='75'>75</option>
-						<option value='100'>100</option>
-					</DmcSelect>
+						data={['15', '30', '50', '75', '100']}
+					/>
 				</div>
 			</div>
 		</div>

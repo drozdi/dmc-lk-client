@@ -1,28 +1,20 @@
-import { DmcSpinnerBase } from './DmcSpinnerBase'
+import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerClockProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function DmcSpinnerClock({ size = '1em', color }: SpinnerClockProps) {
+export function SpinnerClock({ size = '1em', color }: SpinnerClockProps) {
 	return (
-		<DmcSpinnerBase
+		<SpinnerBase
 			size={size}
 			color={color}
 			viewBox='0 0 100 100'
 			preserveAspectRatio='xMidYMid'
 			xmlns='http://www.w3.org/2000/svg'
 		>
-			<circle
-				cx='50'
-				cy='50'
-				r='48'
-				fill='none'
-				strokeWidth='4'
-				strokeMiterlimit='10'
-				stroke='currentColor'
-			></circle>
+			<circle cx='50' cy='50' r='48' fill='none' strokeWidth='4' strokeMiterlimit='10' stroke='currentColor'></circle>
 			<line
 				strokeLinecap='round'
 				strokeWidth='4'
@@ -61,6 +53,6 @@ export function DmcSpinnerClock({ size = '1em', color }: SpinnerClockProps) {
 					repeatCount='indefinite'
 				></animateTransform>
 			</line>{' '}
-		</DmcSpinnerBase>
+		</SpinnerBase>
 	)
 }
