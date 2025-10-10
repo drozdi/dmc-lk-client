@@ -1,6 +1,7 @@
-import { Button, NavLink, Notification, Select } from '@mantine/core'
+import { Button, Group, NavLink, Notification, Select } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { Template } from '../../../layout/context'
 import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'
 import { requestGetUsers } from '../api'
@@ -30,30 +31,30 @@ export function UsersList({ className }: UsersListProps) {
 				{error && <Notification color='red'>{error}</Notification>}
 				{list.map(item => (
 					<NavLink
-						onClick={() => {
+						onClick={event => {
+							event.preventDefault()
 							navigate(`/users/${item.id}`)
 						}}
+						href={`/users/${item.id}`}
 						key={item.id}
 						label={[item.last_name, item.first_name, item.father_name].join(' ')}
 					/>
 				))}
 			</Loading>
-			<div className='mt-3 flex justify-between items-start gap-3'>
-				<div className='flex justify-start items-start gap-3'>
+			<Template slot='footer'>
+				<Group>
 					<Button disabled={number != 1}>Предыдущая</Button>
 					<Button disabled={list.length < size}>Следующая</Button>
-				</div>
-				<div>
-					<Select
-						value={String(size)}
-						onChange={value => {
-							setNumber(0)
-							setSize(value)
-						}}
-						data={['15', '30', '50', '75', '100']}
-					/>
-				</div>
-			</div>
+				</Group>
+				<Select
+					value={String(size)}
+					onChange={value => {
+						setNumber(0)
+						setSize(value)
+					}}
+					data={['15', '30', '50', '75', '100']}
+				/>
+			</Template>
 		</div>
 	)
 }

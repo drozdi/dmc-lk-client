@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router'
+import { Template } from '../../../../layout/context'
 import { useQuery } from '../../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
 import { cls } from '../../../../shared/utils'
@@ -40,14 +41,8 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 			<Loading active={isLoading} keepMounted>
 				<List separator>
 					{list.map(item => (
-						<Item
-							key={item.id}
-							className='cursor-pointer'
-							component={LinkRouter}
-							to={`/analytics/query/${item.id}`}
-							hoverable
-						>
-							<ItemSection>
+						<Item dense key={item.id} component={LinkRouter} to={`/analytics/query/${item.id}`} hoverable>
+							<ItemSection row top>
 								<ItemLabel>{item.name_query}</ItemLabel>
 							</ItemSection>
 							<ItemSection side>
@@ -59,7 +54,11 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					))}
 				</List>
 			</Loading>
-			<Group justify='space-between'>
+
+			<Group justify='end'>
+				<Button onClick={() => navigate('/analytics/elastic')}>Добавить</Button>
+			</Group>
+			<Template slot='footer'>
 				<Group>
 					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.setNumber(number - 1)}>
 						Предыдущая
@@ -73,7 +72,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					onChange={({ target }) => elasticStore.setSize(target.value)}
 					data={['15', '30', '50', '75', '100']}
 				/>
-			</Group>
+			</Template>
 		</div>
 	)
 })

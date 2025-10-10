@@ -15,7 +15,6 @@ export function MainLayout() {
 	const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
 	return (
 		<AppShell
-			padding='md'
 			layout='alt'
 			header={{ height: { base: 60, md: 70, lg: 80 } }}
 			footer={{ height: 60 }}
@@ -38,26 +37,29 @@ export function MainLayout() {
 				</Group>
 			</AppShell.Header>
 			<AppShell.Navbar>
-				<AppShell.Section p='md'>
+				<AppShell.Section p='xs'>
+					<Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
 					<Logo />
 				</AppShell.Section>
-				<AppShell.Section grow my='md' component={ScrollArea} px='md'>
+				<AppShell.Section grow my='xs' component={ScrollArea} px='xs'>
 					<MainMenu />
 				</AppShell.Section>
-				<AppShell.Section p='md'>Navbar footer – always at the bottom</AppShell.Section>
+				<AppShell.Section p='xs'>Navbar footer – always at the bottom</AppShell.Section>
 			</AppShell.Navbar>
 			<AppShell.Main>
-				<Container size='xl'>
-					<Outlet />
-				</Container>
+				<ScrollArea h={`calc(100vh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px))`}>
+					<Container size='xl' p='md'>
+						<Outlet />
+					</Container>
+				</ScrollArea>
 			</AppShell.Main>
 			<AppShell.Footer<Group> component={Group} justify='space-between' gap='xs' px='xs'>
 				<TemplateSlot name='footer'>
 					<div></div>
+					<Button color='dark' size='sm' onClick={() => navigate(-1)}>
+						Назад
+					</Button>
 				</TemplateSlot>
-				<Button color='dark' size='sm' onClick={() => navigate(-1)}>
-					Назад
-				</Button>
 			</AppShell.Footer>
 		</AppShell>
 	)

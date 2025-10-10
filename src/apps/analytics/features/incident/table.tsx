@@ -170,7 +170,7 @@ export const TableIncident = observer(() => {
 				<Button onClick={() => incidentStore.send()}>Применить</Button>
 			</Group>
 			<Loading active={isLoading} keepMounted>
-				<Table rowBorder striped>
+				<Table withRowBorders striped>
 					<Table.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
 							<Table.Tr key={headerGroup.id}>

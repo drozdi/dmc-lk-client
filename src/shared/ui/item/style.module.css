@@ -25,6 +25,7 @@
 .item_vertical {
 	flex-direction: column;
 }
+.item:has(input:checked),
 .item_active {
 	color: var(--mantine-primary-color-filled, #0000ff);
 }

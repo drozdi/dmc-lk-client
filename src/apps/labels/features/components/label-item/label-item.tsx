@@ -1,11 +1,11 @@
-import { TextInput } from '@mantine/core'
+import { NumberInput } from '@mantine/core'
 import { forwardRef, useRef, useState } from 'react'
 import { TbList } from 'react-icons/tb'
 import { useQuery } from '../../../../../shared/hooks'
 import { ButtonIcon, Item, ItemSection } from '../../../../../shared/ui'
 import { requestLabelsCountAdd } from '../../../api'
 
-export const ReportItem = forwardRef(
+export const LabelItem = forwardRef(
 	(
 		{
 			item,
@@ -13,9 +13,13 @@ export const ReportItem = forwardRef(
 			dangerLimits,
 			onUpdate,
 			groupable,
+			editable,
+			bg,
 			...props
 		}: {
 			groupable?: boolean
+			editable?: boolean
+			bg?: string
 			item: {
 				add_label_format: string
 				sum: number
@@ -28,12 +32,12 @@ export const ReportItem = forwardRef(
 		ref
 	) => {
 		const { request, isLoading } = useQuery(requestLabelsCountAdd)
-		const inputRef = useRef()
+		const inputRef = useRef<HTMLElement>(null)
 		const [editMode, setEditMode] = useState<boolean>(false)
 		const handleSave = async () => {
-			if (inputRef.current.value) {
+			if (inputRef.current?.value) {
 				const res = await request({
-					count_label: inputRef.current?.value,
+					count_label: Number(inputRef.current?.value),
 					place_name: 'Пополнение этикеток',
 					label_format: item.add_label_format,
 					production_id: item.production_id,
@@ -51,8 +55,11 @@ export const ReportItem = forwardRef(
 			<Item
 				component='div'
 				{...props}
-				bg={item.sum < dangerLimits ? (item.sum < warningLimits ? 'red' : 'orange') : ''}
+				bg={bg ? bg : item.sum < dangerLimits ? (item.sum < warningLimits ? 'red' : 'orange') : ''}
 				ref={ref}
+				style={{
+					...(groupable ? { cursor: 'move' } : {}),
+				}}
 			>
 				{groupable && (
 					<ItemSection side>
@@ -60,11 +67,10 @@ export const ReportItem = forwardRef(
 					</ItemSection>
 				)}
 				<ItemSection>{item.add_label_format}</ItemSection>
-				{editMode && (
+				{editable && editMode && (
 					<ItemSection>
-						<TextInput
+						<NumberInput
 							ref={inputRef}
-							type='number'
 							w='100%'
 							color='info'
 							autoFocus
@@ -75,11 +81,13 @@ export const ReportItem = forwardRef(
 				)}
 
 				<ItemSection side>{item.sum}</ItemSection>
-				<ItemSection side>
-					<ButtonIcon loading={isLoading} onClick={() => setEditMode(true)}>
-						tb-circle-plus
-					</ButtonIcon>
-				</ItemSection>
+				{editable && (
+					<ItemSection side>
+						<ButtonIcon loading={isLoading} onClick={() => setEditMode(true)}>
+							tb-circle-plus
+						</ButtonIcon>
+					</ItemSection>
+				)}
 			</Item>
 		)
 	}

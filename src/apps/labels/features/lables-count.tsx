@@ -1,19 +1,23 @@
 import { Accordion, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '../../../shared/hooks'
+import { useQuery, useQueryError, useQueryLoading } from '../../../shared/hooks'
 import { ItemLabel, List, Loading } from '../../../shared/ui'
-import { userStore } from '../../../stores/user-store'
+import { useProduction } from '../../../stores/hooks/use-production'
 import { requestLabelsCount } from '../api'
 import { formatPrintStore } from '../stores/format-print-store'
 import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
-import { ReportItem } from './components/report/item'
+import { LabelItem } from './components/label-item/label-item'
 
 export const LabelsCount = observer(() => {
-	const { isLoading, error, request } = useQuery(requestLabelsCount)
-	const { products } = userStore
+	const { productionNameById } = useProduction()
+	const reqLabelsCount = useQuery(requestLabelsCount)
+
+	const error = useQueryError(formatPrintStore, reqLabelsCount)
+	const isLoading = useQueryLoading(formatPrintStore, reqLabelsCount)
+
 	const [dangerLimits, setDangerLimits] = useState(0)
 	const [warningLimits, setWarningLimits] = useState(-50)
 
@@ -21,49 +25,41 @@ export const LabelsCount = observer(() => {
 		distributed: [],
 		not_distributed: [],
 	})
-	const productionName = useCallback(
-		id => products.find(item => item?.production_id === id)?.name_production,
-		[products]
-	)
-	const filterProdaction = useCallback(item => {
-		return !!item?.production_id
-	}, [])
+
+	const filterProdaction = useCallback(item => !!item?.production_id, [])
 
 	const ddata = useMemo(() => {
 		const prod = {}
-		data.distributed.forEach(item => {
-			if (!filterProdaction(item)) {
-				return
+
+		function factoryBuild(type: string) {
+			return item => {
+				if (!filterProdaction(item)) {
+					return
+				}
+				const production_name = productionNameById(item.production_id)
+				if (!production_name) {
+					return
+				}
+				prod[item.production_id] = prod[item.production_id] || {
+					production_id: item.production_id,
+					production_name,
+					sum: 0,
+					distributed: [],
+					notDistributed: [],
+				}
+				prod[item.production_id].sum += item.sum
+				prod[item.production_id][type].push(item)
 			}
-			prod[item.production_id] = prod[item.production_id] || {
-				production_id: item.production_id,
-				name: productionName(item.production_id),
-				sum: 0,
-				distributed: [],
-				notDistributed: [],
-			}
-			prod[item.production_id].sum += item.sum
-			prod[item.production_id].distributed.push(item)
-		})
-		data.not_distributed.forEach(item => {
-			if (!filterProdaction(item)) {
-				return
-			}
-			prod[item.production_id] = prod[item.production_id] || {
-				production_id: item.production_id,
-				name: productionName(item.production_id),
-				sum: 0,
-				distributed: [],
-				notDistributed: [],
-			}
-			prod[item.production_id].sum += item.sum
-			prod[item.production_id].notDistributed.push(item)
-		})
+		}
+
+		data.distributed.forEach(factoryBuild('distributed'))
+		data.not_distributed.forEach(factoryBuild('notDistributed'))
+
 		return Object.values(prod)
-	}, [data, filterProdaction, productionName])
+	}, [data, filterProdaction, productionNameById])
 
 	async function fetch() {
-		const res = await request()
+		const res = await reqLabelsCount.request()
 		setData(res.data)
 	}
 	function updateItem(res) {
@@ -82,15 +78,13 @@ export const LabelsCount = observer(() => {
 		fetch()
 	}, [])
 
-	const findIndex = (item, id) => item === id || (typeof item === 'object' && 'id' in item && item.id === id)
-
 	function factoryHandleDragEnd(production_id) {
 		return async function handleDragEnd(event) {
 			const { source, target } = event.operation
 			const sourceIndex = data.not_distributed.findIndex(
 				item => item.production_id === production_id && item.add_label_format === source.id
 			)
-			if (sourceIndex === -1) {
+			if (sourceIndex === -1 || !target?.id) {
 				return
 			}
 			const sourceLabel = data.not_distributed.splice(sourceIndex, 1)[0]
@@ -122,14 +116,15 @@ export const LabelsCount = observer(() => {
 				<Accordion variant='contained'>
 					{ddata.map(item => (
 						<Accordion.Item key={item.production_id} value={`acc-${item.production_id}`}>
-							<Accordion.Control>{item.name}</Accordion.Control>
+							<Accordion.Control>{item.production_name}</Accordion.Control>
 							<Accordion.Panel>
-								<List separator>
+								<List dense separator>
 									<GroupProvider onDragEnd={factoryHandleDragEnd(item.production_id)}>
 										{item.distributed?.length > 0 && <ItemLabel header>Сгрупированые</ItemLabel>}
 										{item.distributed.map(item => (
 											<GroupContainer key={item.add_label_format} column={item.add_label_format}>
-												<ReportItem
+												<LabelItem
+													editable
 													item={item}
 													dangerLimits={dangerLimits}
 													warningLimits={warningLimits}
@@ -141,9 +136,10 @@ export const LabelsCount = observer(() => {
 										{item.notDistributed?.length > 0 && <ItemLabel header>Без группы</ItemLabel>}
 										{item.notDistributed.map(item => (
 											<GroupItem key={item.add_label_format} id={item.add_label_format} data={item}>
-												<ReportItem
-													groupable
+												<LabelItem
+													editable
 													item={item}
+													bg=''
 													dangerLimits={dangerLimits}
 													warningLimits={warningLimits}
 													onUpdate={updateItem}

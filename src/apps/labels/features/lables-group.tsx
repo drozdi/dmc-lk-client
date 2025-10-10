@@ -2,7 +2,7 @@ import { Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/co
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
-import { ItemLabel, Loading } from '../../../shared/ui'
+import { Loading } from '../../../shared/ui'
 
 import { userStore } from '../../../stores/user-store'
 
@@ -15,10 +15,13 @@ import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
 
 import { useQueryError, useQueryLoading } from '../../../shared/hooks'
+import { useLabelFormat } from '../stores/hooks'
 
 export const LabelsGroup = observer(() => {
 	const error = useQueryError(printStore, formatStore, formatPrintStore)
 	const isLoading = useQueryLoading(printStore, formatStore, formatPrintStore)
+
+	const ll = useLabelFormat()
 
 	const { products } = userStore
 	const { prints: _prints } = printStore
@@ -74,7 +77,7 @@ export const LabelsGroup = observer(() => {
 
 	const findIndex = (item, id) => item === id || (typeof item === 'object' && 'id' in item && item.id === id)
 
-	const handleDragEnd = event => {
+	const handleDragEnd = async event => {
 		const { source, target } = event.operation
 
 		let sourceIndex = -1
@@ -105,7 +108,9 @@ export const LabelsGroup = observer(() => {
 		}
 
 		if (containers[sourceParent][sourceIndex]._id && target.id === '.default') {
-			formatPrintStore.delete(containers[sourceParent][sourceIndex]._id)
+			await formatPrintStore.delete(containers[sourceParent][sourceIndex]._id)
+			printStore.load(true)
+			formatStore.load(true)
 		} else if (sourceParent !== target.id && containers[sourceParent][sourceIndex]._id) {
 			formatPrintStore.update(containers[sourceParent][sourceIndex]._id, {
 				production_id,
@@ -119,8 +124,6 @@ export const LabelsGroup = observer(() => {
 				statistics_print_format: containers[sourceParent][sourceIndex].print,
 			})
 		}
-
-		if (event.canceled || source.type !== 'column') return
 	}
 
 	const [newFormat, setNewFormat] = useState<string>('')
@@ -158,10 +161,10 @@ export const LabelsGroup = observer(() => {
 					onKeyPress={handleKeyPress}
 				/>
 				<GroupProvider onDragEnd={handleDragEnd}>
-					<Flex>
+					<Flex mt='xs'>
 						<Stack
 							style={{
-								width: '49%',
+								width: '50%',
 							}}
 						>
 							{formats.map(item => (
@@ -169,7 +172,7 @@ export const LabelsGroup = observer(() => {
 									<Table>
 										<Table.Thead>
 											<Table.Tr>
-												<Table.Td></Table.Td>
+												<Table.Td w='2rem'></Table.Td>
 												<Table.Td>{item}</Table.Td>
 											</Table.Tr>
 										</Table.Thead>
@@ -177,12 +180,10 @@ export const LabelsGroup = observer(() => {
 											{(containers[item] || []).map(item => (
 												<GroupItem key={item.id} id={item.id} data={item}>
 													<Table.Tr>
-														<Table.Td>
+														<Table.Td ta='center'>
 															<TbList />
 														</Table.Td>
-														<Table.Td>
-															<ItemLabel>{item.id}</ItemLabel>
-														</Table.Td>
+														<Table.Td>{item.id}</Table.Td>
 													</Table.Tr>
 												</GroupItem>
 											))}
@@ -191,28 +192,33 @@ export const LabelsGroup = observer(() => {
 								</GroupContainer>
 							))}
 						</Stack>
-						<Table
-							style={{
-								width: '49%',
-							}}
-						>
-							<GroupContainer column='.default'>
+
+						<GroupContainer column='.default'>
+							<Table
+								style={{
+									width: '50%',
+								}}
+							>
+								<Table.Thead>
+									<Table.Tr>
+										<Table.Td w='2rem'></Table.Td>
+										<Table.Td>Без группы</Table.Td>
+									</Table.Tr>
+								</Table.Thead>
 								<Table.Tbody>
 									{(containers['.default'] || []).map(item => (
 										<GroupItem key={item.id} id={item.id} data={item}>
 											<Table.Tr>
-												<Table.Td>
+												<Table.Td ta='center'>
 													<TbList />
 												</Table.Td>
-												<Table.Td>
-													<ItemLabel>{item.id}</ItemLabel>
-												</Table.Td>
+												<Table.Td>{item.id}</Table.Td>
 											</Table.Tr>
 										</GroupItem>
 									))}
 								</Table.Tbody>
-							</GroupContainer>
-						</Table>
+							</Table>
+						</GroupContainer>
 					</Flex>
 				</GroupProvider>
 			</Loading>

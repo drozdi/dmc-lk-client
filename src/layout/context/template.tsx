@@ -1,4 +1,4 @@
-import { cloneElement, createContext, isValidElement, useContext, useEffect, useId, useMemo, useState } from 'react'
+import { cloneElement, createContext, useContext, useEffect, useId, useMemo, useState } from 'react'
 
 type TemplateManagerStateType = Record<string, any>
 type TemplateManagerContextType = {
@@ -57,7 +57,7 @@ export function Template({ slot, children }: { slot: string; children: any }) {
 	useEffect(() => {
 		if (manager) {
 			// Регистрируем шаблон в менеджере
-			manager.register(slot, cloneElement(children, { key: uniqueId }))
+			manager.register(slot, cloneElement(<>{children}</>, { key: uniqueId }))
 		}
 
 		return () => {
@@ -81,7 +81,7 @@ export function Template({ slot, children }: { slot: string; children: any }) {
  * @param {string} props.name - Имя слота
  * @param {string} props.children - Дочерние элементы
  */
-export function TemplateSlot({ name, children, ...props }: { name: string; children?: any }) {
+export function TemplateSlot({ name, children }: { name: string; children?: any }) {
 	const manager = useContext(TemplateManagerContext)
 
 	if (!manager) {
@@ -93,7 +93,7 @@ export function TemplateSlot({ name, children, ...props }: { name: string; child
 
 	const element = slotTemplates ? slotTemplates : children ? [children] : []
 
-	return cloneElement(isValidElement(element) ? element : <>{element}</>, props)
+	return <>{element}</>
 }
 
 /**

@@ -1,14 +1,13 @@
 import { Button, Group, Stack, TextInput } from '@mantine/core'
 import { isEmail, isNotEmpty, matches, useForm } from '@mantine/form'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Template } from '../../layout/context'
 import { Loading } from '../../shared/ui'
 import { userStore } from '../../stores/user-store'
 
 export const PersonalForm = observer(() => {
-	const formRef = useRef<HTMLFormElement>(null)
 	const { isLoading } = userStore
 
 	const form = useForm({
@@ -40,13 +39,13 @@ export const PersonalForm = observer(() => {
 
 	async function handleSave(formData: IUser) {
 		console.log(formData)
-		//await userStore.update(formData)
+		// await userStore.update(formData)
 	}
 	async function handleSaveNavigate(formData: IUser) {
 		console.log(formData)
 		try {
-			//await userStore.update(formData)
-			//navigate('/')
+			// await userStore.update(formData)
+			// navigate('/')
 		} catch (e) {}
 	}
 	async function handleRemove() {
@@ -54,26 +53,20 @@ export const PersonalForm = observer(() => {
 			return
 		}
 		try {
-			//await userStore.remove()
-			//navigate('/')
+			// await userStore.remove()
+			// navigate('/')
 		} catch (e) {}
 	}
 
 	const isValid = true
 
-	const haSubmit = () => {
-		formRef.current?.requestSubmit()
-		/*console.log(form.isValid())
-		console.log(form.getValues())*/
-	}
-
 	useEffect(() => {
-		//form.setValues(userData)
+		// form.setValues(userData)
 	}, [])
 
 	return (
 		<Loading active={isLoading} keepMounted>
-			<Stack component='form' onSubmit={form.onSubmit(handleSave)} ref={formRef}>
+			<Stack component='form'>
 				<TextInput placeholder='Имя' size='md' type='text' variant='underline' {...form.getInputProps('first_name')} />
 				<TextInput
 					placeholder='Фамилия'
@@ -93,19 +86,17 @@ export const PersonalForm = observer(() => {
 				<TextInput placeholder='Телефон' type='phone' size='md' variant='underline' {...form.getInputProps('phone')} />
 
 				<Template slot='footer'>
-					<Group justify='space-between'>
-						<Group>
-							<Button color='green' onClick={haSubmit} loading={isLoading} disabled={!isValid}>
-								Сохранить
-							</Button>
-							<Button loading={isLoading} disabled={!isValid}>
-								Применить
-							</Button>
-						</Group>
-						<Button color='red' loading={isLoading} disabled={!isValid}>
-							Удалить
+					<Group>
+						<Button color='green' onClick={form.onSubmit(handleSaveNavigate)} loading={isLoading} disabled={!isValid}>
+							Сохранить
+						</Button>
+						<Button onClick={form.onSubmit(handleSave)} loading={isLoading} disabled={!isValid}>
+							Применить
 						</Button>
 					</Group>
+					<Button color='red' onClick={handleRemove} loading={isLoading} disabled={!isValid}>
+						Удалить
+					</Button>
 				</Template>
 			</Stack>
 		</Loading>

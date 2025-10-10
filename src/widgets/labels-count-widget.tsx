@@ -14,7 +14,6 @@ import { ExpandablePanel } from '../shared/ui'
 import { useProduction } from '../stores/hooks/use-production'
 
 export const LabelsCountWidget = observer(props => {
-	console.log(props)
 	const labelsFormat = useLabelFormat()
 	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
@@ -122,11 +121,6 @@ export const LabelsCountWidget = observer(props => {
 			// 	return
 			// }
 			const sourceLabel = data.not_distributed.splice(sourceIndex, 1)[0]
-			console.log({
-				production_id: sourceLabel.production_id,
-				add_label_format: target.id,
-				statistics_print_format: sourceLabel.add_label_format,
-			})
 
 			await formatPrintStore.add({
 				production_id: sourceLabel.production_id,
@@ -179,7 +173,7 @@ export const LabelsCountWidget = observer(props => {
 											<Table layout='fixed' withTableBorder withRowBorders withColumnBorders highlightOnHover>
 												<Table.Thead>
 													<Table.Tr>
-														<Table.Th w='1rem'></Table.Th>
+														<Table.Th w='2rem'></Table.Th>
 														<Table.Th>Этикетка</Table.Th>
 														<Table.Th>Расход</Table.Th>
 														<Table.Th>Остаток</Table.Th>
@@ -191,11 +185,9 @@ export const LabelsCountWidget = observer(props => {
 															const Wrap = container ? GroupContainer : GroupItem
 															const props = container ? { column: label } : { id: label, data: label }
 															return (
-																<Wrap {...props}>
-																	<Table.Tr key={production.production_id + label}>
-																		<Table.Td className='!pl-1 cursor-pointer'>
-																			{container === false && <TbList />}
-																		</Table.Td>
+																<Wrap key={production.production_id + label} {...props}>
+																	<Table.Tr>
+																		<Table.Td ta='center'>{container === false && <TbList />}</Table.Td>
 																		<Table.Td>{label}</Table.Td>
 																		<Table.Td>{minus}</Table.Td>
 																		<Table.Td>{total}</Table.Td>

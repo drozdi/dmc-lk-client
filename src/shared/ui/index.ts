@@ -1,6 +1,7 @@
 export * from './button'
 export * from './expandable-panel'
 export * from './icon'
+export * from './input'
 export * from './item'
 export * from './list'
 export * from './loading'

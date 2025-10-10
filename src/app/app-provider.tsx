@@ -2,10 +2,23 @@ import { DatesProvider } from '@mantine/dates'
 import 'dayjs/locale/ru'
 import { TemplateProvider } from '../layout/context'
 
-import { createTheme, Drawer, Flex, Group, Input, MantineProvider, SimpleGrid, Stack, Tabs } from '@mantine/core'
+import {
+	Checkbox,
+	createTheme,
+	Drawer,
+	Flex,
+	Group,
+	Input,
+	MantineProvider,
+	SimpleGrid,
+	Stack,
+	Switch,
+	Tabs,
+} from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
 import inputClasses from './input.module.css'
+import switchClasses from './switch.module.css'
 
 interface AppProviderProps {
 	children: React.ReactNode
@@ -145,6 +158,11 @@ const theme = createTheme({
 		TabsPanel: Tabs.Panel.extend({
 			defaultProps: { keepMounted: true, p: 'xs', pt: 'xs' },
 		}),
+		TabsTab: Tabs.Tab.extend({
+			defaultProps: {
+				fz: 'md',
+			},
+		}),
 		Flex: Flex.extend({
 			defaultProps: {
 				justify: 'space-between',
@@ -172,6 +190,18 @@ const theme = createTheme({
 		}),
 		Input: Input.extend({
 			classNames: inputClasses,
+		}),
+		Switch: Switch.extend({
+			classNames: switchClasses,
+			defaultProps: {
+				labelPosition: 'left',
+			},
+		}),
+		Checkbox: Checkbox.extend({
+			classNames: switchClasses,
+			defaultProps: {
+				labelPosition: 'left',
+			},
 		}),
 	},
 })

@@ -11,7 +11,7 @@ interface ContainerProps {
 export function GroupContainer({
 	column,
 	children,
-	hover = '#00000030',
+	hover = '#2096cc30',
 	color = '#fa8e007c',
 	...props
 }: ContainerProps) {
@@ -21,11 +21,10 @@ export function GroupContainer({
 		accept: ['item', 'column'],
 		collisionPriority: CollisionPriority.Low,
 	})
-	const style = isDropTarget ? { background: hover } : { background: color }
 	Children.only(children)
 	return cloneElement(children, {
 		...props,
-		style,
+		bg: isDropTarget ? hover : color,
 		ref,
 	})
 }

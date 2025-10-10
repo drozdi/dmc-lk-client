@@ -16,8 +16,12 @@ export function GroupItem({ children, id, data, ...props }: ItemProps) {
 	Children.only(children)
 	return cloneElement(children, {
 		...props,
-		className: '!cursor-move',
+		groupable: true,
 		ref,
 		'data-dragging': isDragging,
+		style: {
+			...props.style,
+			cursor: 'move',
+		},
 	})
 }

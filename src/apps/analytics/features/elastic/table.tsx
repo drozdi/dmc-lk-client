@@ -4,6 +4,7 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo } from 'react'
 import { TbColumnRemove } from 'react-icons/tb'
+import { Template } from '../../../../layout/context'
 import { ButtonIcon, ButtonRemove, Loading } from '../../../../shared/ui'
 import { elasticStore } from '../../stores/elastic-store'
 import { fieldsStore } from '../../stores/fields-store'
@@ -242,7 +243,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					</Table.Tbody>
 				</Table>
 			</Loading>
-			<Group justify='space-between' mt='xs'>
+			<Template slot='footer'>
 				<Group>
 					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.prev()}>
 						Предыдущая
@@ -256,7 +257,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					data={['15', '30', '50', '75', '100']}
 					onChange={value => elasticStore.setLimit(value)}
 				/>
-			</Group>
+			</Template>
 		</div>
 	)
 })

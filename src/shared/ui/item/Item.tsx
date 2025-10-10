@@ -96,7 +96,7 @@ export const Item = memo(
 
 			return (
 				<Box
-					component={props.component || 'li'}
+					component='li'
 					{...props}
 					{...attrs}
 					ref={handleRef}
