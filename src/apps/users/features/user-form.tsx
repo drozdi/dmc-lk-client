@@ -14,6 +14,12 @@ interface UserFormProps {
 	className?: string
 }
 
+const countryMasks = {
+	ru: '+7 (000) 000-00-00',
+	kz: '+7 (000) 000-00-00',
+	by: '+375 (00) 000-00-00',
+}
+
 export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { products } = usersStore
 	const naigate = useNavigate()
@@ -56,7 +62,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const isLoading = useQueryLoading(reqUserGet, reqUserUpdate)
 
 	async function handleSave(formData: IUsersUser) {
-		console.log(formData)
 		await reqUserUpdate.request(id, formData)
 	}
 	async function handleSaveNavigate(formData: IUsersUser) {
@@ -78,7 +83,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		reqUserGet.request(id).then(_ => {
 			const user = { is_active: true, is_superuser: false, ..._ }
 			user.id_production = (user.id_production || []).map(item => String(item))
-			console.log(user)
 			form.setValues({
 				...user,
 			})
@@ -91,9 +95,9 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const isValid = true
 
 	return (
-		<div className={className}>
+		<>
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Loading active={isLoading} keepMounted>
-				{error && <Notification color='red'>{error}</Notification>}
 				<form>
 					<Tabs defaultValue='tab-general'>
 						<Tabs.List grow>
@@ -178,6 +182,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 					</Template>
 				</form>
 			</Loading>
-		</div>
+		</>
 	)
 })

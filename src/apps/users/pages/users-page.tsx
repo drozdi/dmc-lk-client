@@ -1,9 +1,12 @@
+import { Text } from '@mantine/core'
 import { UsersList } from '../features/users-list'
 
 export function UsersPage() {
 	return (
 		<>
-			<h2 className='text-2xl text-center'>Пользователи</h2>
+			<Text fz='h2' ta='center'>
+				Пользователи
+			</Text>
 			<UsersList className='mt-3' />
 		</>
 	)

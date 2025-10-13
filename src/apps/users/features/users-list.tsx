@@ -26,9 +26,8 @@ export function UsersList({ className }: UsersListProps) {
 	}, [number, size])
 
 	return (
-		<div className={className}>
+		<>
 			<Loading active={isLoading} keepMounted>
-				{error && <Notification color='red'>{error}</Notification>}
 				{list.map(item => (
 					<NavLink
 						onClick={event => {
@@ -41,6 +40,7 @@ export function UsersList({ className }: UsersListProps) {
 					/>
 				))}
 			</Loading>
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Template slot='footer'>
 				<Group>
 					<Button disabled={number != 1}>Предыдущая</Button>
@@ -55,6 +55,6 @@ export function UsersList({ className }: UsersListProps) {
 					data={['15', '30', '50', '75', '100']}
 				/>
 			</Template>
-		</div>
+		</>
 	)
 }

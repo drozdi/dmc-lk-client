@@ -89,19 +89,17 @@ export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
 	return (
 		<ExpandablePanel loading={isLoading} title={title}>
 			<Stack h='100%'>
-				<div>
-					<Select
-						defaultValue={String(cuurent_production)}
-						checkIconPosition='right'
-						onChange={setCurrentProduction}
-						data={[
-							{
-								value: '0',
-								label: 'Все площадки',
-							},
-						].concat(productions)}
-					/>
-				</div>
+				<Select
+					defaultValue={String(cuurent_production)}
+					checkIconPosition='right'
+					onChange={setCurrentProduction}
+					data={[
+						{
+							value: '0',
+							label: 'Все площадки',
+						},
+					].concat(productions)}
+				/>
 
 				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (

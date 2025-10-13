@@ -2,8 +2,8 @@ import { Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/co
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
+import { Template } from '../../../layout/context'
 import { Loading } from '../../../shared/ui'
-
 import { userStore } from '../../../stores/user-store'
 
 import { formatPrintStore } from '../stores/format-print-store'
@@ -139,7 +139,7 @@ export const LabelsGroup = observer(() => {
 
 	return (
 		<Stack gap='xs'>
-			{error && <Notification color='red'>{error}</Notification>}
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Select
 				w='100%'
 				checkIconPosition='right'

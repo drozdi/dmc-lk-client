@@ -1,6 +1,7 @@
 import { Accordion, Notification } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
+import { Template } from '../../../layout/context'
 import { useQuery } from '../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../shared/ui'
 import { requestLabelsCountHistory } from '../api'
@@ -24,7 +25,7 @@ export const LabelsHistory = () => {
 	}, [])
 	return (
 		<>
-			{error && <Notification color='red'>{error}</Notification>}
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Loading active={isLoading} keepMounted>
 				<Accordion variant='contained'>
 					{ddata.map(item => (

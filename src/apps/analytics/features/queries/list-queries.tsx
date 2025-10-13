@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Notification, Select } from '@mantine/core'
+import { ActionIcon, Button, Group, Notification, Select, Stack } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
@@ -6,7 +6,6 @@ import { Link as LinkRouter } from 'react-router'
 import { Template } from '../../../../layout/context'
 import { useQuery } from '../../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
-import { cls } from '../../../../shared/utils'
 import { requestAnalyticsRemoveQuery } from '../../api/queries'
 import { elasticStore } from '../../stores/elastic-store'
 
@@ -36,8 +35,8 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 	}
 
 	return (
-		<div className={cls(className, 'flex flex-col gap-3')}>
-			{error && <Notification color='red'>{error}</Notification>}
+		<Stack>
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Loading active={isLoading} keepMounted>
 				<List separator>
 					{list.map(item => (
@@ -73,6 +72,6 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					data={['15', '30', '50', '75', '100']}
 				/>
 			</Template>
-		</div>
+		</Stack>
 	)
 })

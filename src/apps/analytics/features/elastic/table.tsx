@@ -137,7 +137,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	}, [elasticStore.id])
 
 	return (
-		<div className={className}>
+		<>
 			<Group justify='space-between'>
 				<Group>
 					<Select
@@ -175,12 +175,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 							<Table.Tr key={headerGroup.id + '-' + index}>
 								{headerGroup.headers.map((header, index) => (
 									<Table.Th key={header.id + '-' + index} colSpan={header.colSpan}>
-										<div
-											style={{
-												display: 'flex',
-												justifyContent: 'space-between',
-											}}
-										>
+										<Group justify='space-between'>
 											<Text>
 												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
 											</Text>
@@ -192,14 +187,13 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 													<Popover.Dropdown w='18rem'>
 														<Stack gap='xs'>
 															<Group gap='xs' justify='space-between'>
-																<div>
-																	<ActionForm
-																		value={whereItem(header.id)?.single_action_list || 'and'}
-																		onChange={single_action_list =>
-																			handleChangeActionField(header.id, single_action_list)
-																		}
-																	/>
-																</div>
+																<ActionForm
+																	value={whereItem(header.id)?.single_action_list || 'and'}
+																	onChange={single_action_list =>
+																		handleChangeActionField(header.id, single_action_list)
+																	}
+																/>
+
 																<ButtonRemove onClick={() => handleRemoveField(header.id)} title='Удалить поле'>
 																	<TbColumnRemove />
 																</ButtonRemove>
@@ -224,7 +218,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 													</Popover.Dropdown>
 												</Popover>
 											)}
-										</div>
+										</Group>
 									</Table.Th>
 								))}
 							</Table.Tr>
@@ -258,6 +252,6 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					onChange={value => elasticStore.setLimit(value)}
 				/>
 			</Template>
-		</div>
+		</>
 	)
 })

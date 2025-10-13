@@ -49,6 +49,7 @@ export function MainLayout() {
 			<AppShell.Main>
 				<ScrollArea h={`calc(100vh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px))`}>
 					<Container size='xl' p='md'>
+						<TemplateSlot name='notification' />
 						<Outlet />
 					</Container>
 				</ScrollArea>

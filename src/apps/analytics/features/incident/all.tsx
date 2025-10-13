@@ -44,7 +44,7 @@ export const AllIncident = observer(() => {
 	}, [])
 
 	return (
-		<div>
+		<>
 			<Group justify='end'>
 				<Group justify='end' gap='xs'>
 					<Text>С</Text>
@@ -80,6 +80,6 @@ export const AllIncident = observer(() => {
 					</Center>
 				)}
 			</Loading>
-		</div>
+		</>
 	)
 })

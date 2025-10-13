@@ -24,10 +24,7 @@ export const ShopCart = observer(({ className }) => {
 		>
 			<div className='flex items-center justify-between'>
 				<h3 className='text-2xl font-medium text-gray-700'>Your cart</h3>
-				<button
-					onClick={() => cartStore.close()}
-					className='text-gray-600 focus:outline-none cursor-pointer'
-				>
+				<button onClick={() => cartStore.close()} className='text-gray-600 focus:outline-none cursor-pointer'>
 					<TbX size='1.5rem' />
 				</button>
 			</div>
@@ -43,11 +40,7 @@ export const ShopCart = observer(({ className }) => {
 
 			<div className='mt-8'>
 				<form className='flex items-center justify-center'>
-					<input
-						className='form-input w-48'
-						type='text'
-						placeholder='Add promocode'
-					/>
+					<input className='form-input w-48' type='text' placeholder='Add promocode' />
 					<button className='ml-3 flex items-center px-3 py-2 bg-blue-600 text-white text-sm uppercase font-medium rounded hover:bg-blue-500 focus:outline-none focus:bg-blue-500'>
 						<span>Apply</span>
 					</button>

@@ -1,30 +1,79 @@
-import { InputBase } from '@mantine/core'
-import { IMaskInput } from 'react-imask'
-export function PhoneInput({ onChange, ...props }) {
+import { Group, Input, Select } from '@mantine/core'
+import { AsYouType, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { useEffect, useState } from 'react'
+
+const countryMasks = {
+	ru: '+7 000 000 00 00',
+	kz: '+7 000 000 00 00',
+	by: '+375 00 000 00 00',
+}
+
+const countries = [
+	{ value: 'ru', label: '🇷🇺 Россия', code: '+7' },
+	{ value: 'kz', label: '🇰🇿 Казахстан', code: '+7' },
+	{ value: 'by', label: '🇧🇾 Беларусь', code: '+375' },
+]
+
+export function PhoneInput({ variant, value, defaultValue, onChange, ...props }) {
+	const detectCountryFromNumber = (phoneNumber: string, def: string | null = null) => {
+		if (!phoneNumber) return def
+		try {
+			const phoneData = parsePhoneNumberFromString(phoneNumber)
+			if (phoneData && phoneData.country) {
+				return phoneData.country.toLowerCase()
+			}
+		} catch (error) {
+			console.error('Не удалось определить страну:', error)
+		}
+
+		return def
+	}
+
+	const [phone, setPhone] = useState<string>(defaultValue || value || '')
+	const [country, setCountry] = useState<string>(detectCountryFromNumber(phone, 'ru'))
+
+	const handlePhoneChange = (value: string) => {
+		setPhone(value)
+		onChange?.(value)
+		const newCountry = detectCountryFromNumber(value)
+		if (newCountry && countries.find(c => c.value === newCountry)) {
+			setCountry(newCountry)
+		}
+	}
+
+	const formatPhoneNumber = (value: string, countryCode: string) => {
+		if (!value) return ''
+		const formatter = new AsYouType(countryCode.toUpperCase() as any)
+		return formatter.input(value)
+	}
+
+	const formattedPhone = formatPhoneNumber(phone, country)
+
+	useEffect(() => {
+		handlePhoneChange(defaultValue)
+	}, [defaultValue])
+
 	return (
-		<InputBase
-			component={IMaskInput}
-			type='phone'
-			mask='+7 (000) 000-00-00'
-			placeholder='+7 (999) 999-99-99'
-			{...props}
-			onAccept={(value, mask) => {
-				onChange?.(value.replace(/[^0-9]/g, ''))
-			}}
-			prepare={(value, masked) => {
-				// Заменяем начало строки на +7
-				if (value.startsWith('7') || value.startsWith('8')) {
-					return `+7${value.slice(1)}`
-				}
-				return value.replace(/[^0-9]/g, '')
-			}}
-			blocks={{
-				'0': {
-					mask: '0',
-					definitionSymbol: '0',
-					placeholderChar: '0',
-				},
-			}}
-		/>
+		<Input.Wrapper>
+			<Group gap='0'>
+				<Select
+					value={country}
+					onChange={setCountry}
+					data={countries}
+					style={{ width: 120 }}
+					variant={variant}
+					placeholder='Выберите страну'
+				/>
+				<Input
+					{...props}
+					value={formattedPhone}
+					placeholder={countryMasks[country] || props.placeholder}
+					variant={variant}
+					onChange={({ target }) => handlePhoneChange(target.value)}
+					style={{ flex: 1 }}
+					type='tel'
+				/>
+			</Group>
+		</Input.Wrapper>
 	)
 }

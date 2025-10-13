@@ -1,6 +1,7 @@
 import { Accordion, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Template } from '../../../layout/context'
 import { useQuery, useQueryError, useQueryLoading } from '../../../shared/hooks'
 import { ItemLabel, List, Loading } from '../../../shared/ui'
 import { useProduction } from '../../../stores/hooks/use-production'
@@ -111,7 +112,7 @@ export const LabelsCount = observer(() => {
 
 	return (
 		<>
-			{error && <Notification color='red'>{error}</Notification>}
+			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Loading active={isLoading} keepMounted>
 				<Accordion variant='contained'>
 					{ddata.map(item => (
