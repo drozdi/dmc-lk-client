@@ -100,3 +100,11 @@ export async function requestUpdateUser(userData: IUser) {
 	const res = await api.patch('/user_profile/', userData)
 	return res.data
 }
+
+export async function requestUpdatePassword(oldPassword: string, newPassword: string) {
+	const res = await api.post('/user_profile/reset_password/', {
+		password: newPassword,
+		old_password: oldPassword,
+	})
+	return res.data
+}

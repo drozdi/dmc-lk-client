@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { requestGetProducts } from '../api'
+import { requestUsersProducts } from '../api'
 class UsersStores implements IQuery, Record<string, any> {
 	isLoading: boolean = false
 	isLoaded: boolean = false
@@ -26,7 +26,7 @@ class UsersStores implements IQuery, Record<string, any> {
 		this.isLoading = true
 		this.error = undefined
 		try {
-			const res = await requestGetProducts()
+			const res = await requestUsersProducts()
 			this._products = res.data
 			this.isLoaded = true
 		} catch (error) {

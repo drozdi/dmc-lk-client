@@ -6,7 +6,7 @@ import { Link as LinkRouter } from 'react-router-dom'
 import { Template } from '../../../../layout/context'
 import { useQuery } from '../../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
-import { requestAnalyticsRemoveQuery } from '../../api/queries'
+import { requestAnalyticsQueriesDelete } from '../../api/queries'
 import { elasticStore } from '../../stores/elastic-store'
 
 interface ListQueriesProps {
@@ -20,7 +20,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		isLoading: isLoadingRemove,
 		error: errorRemove,
 		request: requestRemove,
-	} = useQuery(requestAnalyticsRemoveQuery)
+	} = useQuery(requestAnalyticsQueriesDelete)
 	const isLoading = useMemo<boolean>(() => isLoadingList || isLoadingRemove, [isLoadingList, isLoadingRemove])
 	const error = useMemo<string>(() => errorList || errorRemove, [errorList, errorRemove])
 
@@ -55,7 +55,9 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 			</Loading>
 
 			<Group justify='end'>
-				<Button onClick={() => navigate('/analytics/elastic')}>Добавить</Button>
+				<Button component={LinkRouter} to='/analytics/elastic'>
+					Добавить
+				</Button>
 			</Group>
 			<Template slot='footer'>
 				<Group>

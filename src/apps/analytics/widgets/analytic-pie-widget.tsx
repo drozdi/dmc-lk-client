@@ -8,7 +8,7 @@ import { mapEvent, mapEventColor } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
-export const AnalyticAllWidget = (props: ChartAnalyticProps) => {
+export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	//return ''
 	const { isLoading, request } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState('0')

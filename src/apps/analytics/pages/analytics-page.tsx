@@ -2,8 +2,8 @@ import { Group, SimpleGrid, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import dayjs from 'dayjs'
 import { useState } from 'react'
-import { AnalyticAllWidget } from '../widgets/analytic-all-widget'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
+import { AnalyticPieWidget } from '../widgets/analytic-pie-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 
 const dNow = dayjs('2025-08-02')
@@ -59,7 +59,7 @@ export function AnalyticsPage() {
 
 			<SimpleGrid cols={2}>
 				<AnalyticEventWidget {...query} step='mon' />
-				<AnalyticAllWidget {...query} step='mon' />
+				<AnalyticPieWidget {...query} step='mon' />
 				<AnalyticTypeWidget {...query} step='mon' />
 			</SimpleGrid>
 		</>

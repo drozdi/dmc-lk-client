@@ -1,4 +1,4 @@
-import { Button, Group, LoadingOverlay, Paper, Text } from '@mantine/core'
+import { Box, Button, Group, LoadingOverlay, Paper, Text } from '@mantine/core'
 import { useState } from 'react'
 import { TbArrowsMaximize, TbArrowsMinimize } from 'react-icons/tb'
 
@@ -32,7 +32,7 @@ export function ExpandablePanel({
 				left: isExpanded ? 0 : 'auto',
 				width: isExpanded ? '100vw' : '100%',
 				height: isExpanded ? '100vh' : 'auto',
-				zIndex: isExpanded ? 1000 : 1,
+				zIndex: isExpanded ? 'calc(var(--mantine-z-index-app) + 10)' : 1,
 				overflow: 'auto',
 			}}
 		>
@@ -51,7 +51,9 @@ export function ExpandablePanel({
 			</Group>
 
 			{/* Содержимое компонента */}
-			<div>{children}</div>
+			<Box mih={loading ? 300 : undefined} miw={loading ? 300 : undefined}>
+				{children}
+			</Box>
 		</Paper>
 	)
 }

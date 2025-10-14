@@ -8,7 +8,7 @@ interface LoadingProps extends BoxProps {
 
 export function Loading({ children, active, keepMounted, ...props }: LoadingProps) {
 	return (
-		<Box pos='relative' {...props}>
+		<Box pos='relative' miw={active ? 300 : undefined} mih={active ? 300 : undefined} {...props}>
 			<LoadingOverlay
 				visible={active}
 				zIndex={1000}

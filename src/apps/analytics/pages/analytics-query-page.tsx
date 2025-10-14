@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'
-import { requestAnalyticsGetQuery } from '../api'
+import { requestAnalyticsQueriesGet } from '../api'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
 
@@ -12,7 +12,7 @@ export const AnalyticsQueryPage = observer(() => {
 	const { list } = elasticStore
 	const navigate = useNavigate()
 
-	const { isLoading, request } = useQuery(requestAnalyticsGetQuery)
+	const { isLoading, request } = useQuery(requestAnalyticsQueriesGet)
 	const { id_query } = useParams()
 	const fetcQuery = async () => {
 		const { id, name_query, ...template } = await request(id_query)

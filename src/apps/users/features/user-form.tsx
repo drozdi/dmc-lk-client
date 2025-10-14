@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout/context'
 import { useQuery, useQueryError, useQueryLoading } from '../../../shared/hooks'
 import { Item, ItemSection, List, Loading, PhoneInput } from '../../../shared/ui'
-import { requestGetUser, requestUpdateUser } from '../api'
+import { requestUsersGet, requestUsersUpdate } from '../api'
 import { usersStore } from '../stores/users-store'
 
 interface UserFormProps {
@@ -14,17 +14,11 @@ interface UserFormProps {
 	className?: string
 }
 
-const countryMasks = {
-	ru: '+7 (000) 000-00-00',
-	kz: '+7 (000) 000-00-00',
-	by: '+375 (00) 000-00-00',
-}
-
 export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { products } = usersStore
 	const naigate = useNavigate()
-	const reqUserGet = useQuery(requestGetUser, 'Пользователь не найден')
-	const reqUserUpdate = useQuery(requestUpdateUser)
+	const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
+	const reqUserUpdate = useQuery(requestUsersUpdate)
 
 	const form = useForm({
 		mode: 'uncontrolled',

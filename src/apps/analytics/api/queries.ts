@@ -1,6 +1,6 @@
 import { api } from '../../../shared/api'
 
-export async function requestAnalyticsGetQueries({
+export async function requestAnalyticsQueriesList({
 	size = 100,
 	number = 0,
 }: {
@@ -16,33 +16,20 @@ export async function requestAnalyticsGetQueries({
 	return res.data.data
 }
 
-export async function requestAnalyticsGetQuery(id: number) {
+export async function requestAnalyticsQueriesGet(id: number) {
 	const res = await api.get(`/query_users/query_id/?id_query=${id}`)
 	return res.data.data
 }
 
-export async function requestAnalyticsUpdateQuery(
-	id: number,
-	name: string,
-	data: IAnalyticsElasticQuery
-) {
-	const res = await api.patch(
-		`/query_users/?id_record=${id}&name_query=${name}`,
-		data
-	)
+export async function requestAnalyticsQueriesUpdate(id: number, name: string, data: IAnalyticsElasticQuery) {
+	const res = await api.patch(`/query_users/?id_record=${id}&name_query=${name}`, data)
 	return res.data
 }
-export async function requestAnalyticsRemoveQuery(id: number) {
+export async function requestAnalyticsQueriesDelete(id: number) {
 	const res = await api.delete(`/query_users/?id_record=${id}`)
 	return res.data
 }
-export async function requestAnalyticsAddQuery(
-	name: string,
-	data: IAnalyticsElasticQuery
-) {
-	const res = await api.post(
-		`/query_users/save_query/?name_query=${name}`,
-		data
-	)
+export async function requestAnalyticsQueriesAdd(name: string, data: IAnalyticsElasticQuery) {
+	const res = await api.post(`/query_users/save_query/?name_query=${name}`, data)
 	return res.data
 }

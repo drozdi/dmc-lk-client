@@ -1,10 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsElastic } from '../api/elastic'
-import {
-	requestAnalyticsAddQuery,
-	requestAnalyticsGetQueries,
-	requestAnalyticsUpdateQuery,
-} from '../api/queries'
+import { requestAnalyticsQueriesAdd, requestAnalyticsQueriesList, requestAnalyticsQueriesUpdate } from '../api/queries'
 
 const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 
@@ -118,7 +114,7 @@ class ElasticStore {
 		this.error = ''
 
 		try {
-			const res = await requestAnalyticsGetQueries({
+			const res = await requestAnalyticsQueriesList({
 				size: this.size,
 				number: this.number,
 			})
@@ -130,8 +126,7 @@ class ElasticStore {
 				isPrev: this.number > 1,
 			}
 		} catch (error) {
-			this.error =
-				error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
+			this.error = error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -182,8 +177,7 @@ class ElasticStore {
 			this.data = res.data.message
 			return res.data
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
@@ -213,17 +207,12 @@ class ElasticStore {
 		try {
 			let res
 			if (this.id) {
-				res = await requestAnalyticsUpdateQuery(
-					this.id,
-					this.name,
-					this.template
-				)
+				res = await requestAnalyticsQueriesUpdate(this.id, this.name, this.template)
 			} else {
-				res = await requestAnalyticsAddQuery(this.name, this.template)
+				res = await requestAnalyticsQueriesAdd(this.name, this.template)
 			}
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

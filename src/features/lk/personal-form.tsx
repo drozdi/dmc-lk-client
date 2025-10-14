@@ -1,5 +1,5 @@
-import { Button, Group, Stack, TextInput } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { Button, Divider, Group, PasswordInput, Stack, TextInput } from '@mantine/core'
+import { isNotEmpty, matches, useForm } from '@mantine/form'
 import { yupResolver } from 'mantine-form-yup-resolver'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
@@ -42,6 +42,24 @@ export const PersonalForm = observer(() => {
 		},
 	})
 
+	const formPassword = useForm({
+		mode: 'uncontrolled',
+		name: 'passwordForm',
+		initialValues: {
+			oldPassword: '',
+			newPassword: '',
+			re_password: '',
+		},
+		validate: {
+			oldPassword: isNotEmpty('Введите пароль'),
+			newPassword: matches(
+				/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/,
+				'Допустимые символы: буквы, цифры и спец. символы @#$%^&*'
+			),
+			re_password: (value, values) => (value !== values.newPassword ? 'Пароли должны совпадать!' : null),
+		},
+	})
+
 	const navigate = useNavigate()
 
 	async function handleSave(formData: IUser) {
@@ -57,6 +75,16 @@ export const PersonalForm = observer(() => {
 		}
 		// await userStore.remove()
 		// navigate('/')
+	}
+	async function handleChangePassword({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) {
+		const res = await userStore.updatePassword(oldPassword, newPassword)
+		if (res) {
+			formPassword.setValues({
+				oldPassword: '',
+				newPassword: '',
+				re_password: '',
+			})
+		}
 	}
 
 	const isValid = true
@@ -92,7 +120,29 @@ export const PersonalForm = observer(() => {
 					size='md'
 					{...form.getInputProps('phone')}
 				/>
+				<Divider />
+				<PasswordInput
+					placeholder='Старый пароль'
+					size='md'
+					variant='underline'
+					{...formPassword.getInputProps('oldPassword')}
+				/>
+				<PasswordInput
+					placeholder='Новый пароль'
+					size='md'
+					variant='underline'
+					{...formPassword.getInputProps('newPassword')}
+				/>
+				<PasswordInput
+					placeholder='Повтори пароль'
+					size='md'
+					variant='underline'
+					{...formPassword.getInputProps('re_password')}
+				/>
 
+				<Group justify='end'>
+					<Button onClick={formPassword.onSubmit(handleChangePassword)}>Обновить пароль</Button>
+				</Group>
 				<Template slot='footer'>
 					<Group>
 						<Button color='green' onClick={form.onSubmit(handleSaveNavigate)} loading={isLoading} disabled={!isValid}>

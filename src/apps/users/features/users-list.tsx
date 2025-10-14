@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout/context'
 import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'
-import { requestGetUsers } from '../api'
+import { requestUsersList } from '../api'
 
 interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
 	const navigate = useNavigate()
-	const { isLoading, error, request } = useQuery(requestGetUsers, 'Ошибка при загрузке пользователей')
+	const { isLoading, error, request } = useQuery(requestUsersList, 'Ошибка при загрузке пользователей')
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)

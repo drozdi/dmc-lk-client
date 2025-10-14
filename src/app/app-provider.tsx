@@ -124,12 +124,26 @@ const theme = createTheme({
 		// 	'#1d1d1d',
 		// ],
 	},
+	breakpoints: {
+		xs: '30em',
+		sm: '48em',
+		md: '64em',
+		lg: '74em',
+		xl: '90em',
+	},
 	fontSizes: {
 		xs: '0.75rem', // 12px
 		sm: '0.875rem', // 14px
 		md: '1rem', // 16px
 		lg: '1.125rem', // 18px
 		xl: '1.25rem', // 20px
+	},
+	lineHeights: {
+		xs: 'calc(1 / 0.75)',
+		sm: 'calc(1.25 / 0.875)',
+		md: 'calc(1.5 / 1)',
+		lg: 'calc(1.75 / 1.125)',
+		xl: 'calc(1.75 / 1.25)',
 	},
 	spacing: {
 		base: '0.25rem',
@@ -220,7 +234,6 @@ const theme = createTheme({
 				offset: '0.5rem',
 				position: 'right',
 				closeOnClickOutside: false,
-				withCloseButton: false,
 				overlayProps: {
 					opacity: 0.1,
 				},

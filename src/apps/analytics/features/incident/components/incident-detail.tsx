@@ -5,7 +5,7 @@ import { useQuery } from '../../../../../shared/hooks'
 import { Loading } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
-export function Detail(props) {
+export function IncidentDetail(props) {
 	const { isLoading, request } = useQuery(requestAnalyticsIncident)
 	const [data, setData] = useState([])
 
@@ -81,7 +81,7 @@ export function Detail(props) {
 					</Button>
 				)}
 			</Group>
-			<Table>
+			<Table highlightOnHover={!Boolean(production_id)}>
 				<Table.Tbody>
 					{production_id ? (
 						<>
@@ -107,6 +107,7 @@ export function Detail(props) {
 							</Table.Tr>
 							{ddata.map((item, index) => (
 								<Table.Tr
+									className='cursor-pointer'
 									key={item.production_id}
 									onClick={() => handleProduction(item.production_id, item.name_production)}
 								>

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
 import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
-import { Detail } from './components/detail'
+import { IncidentDetail } from './components/incident-detail'
 
 export const AllIncident = observer(() => {
 	const day = dayjs()
@@ -62,14 +62,14 @@ export const AllIncident = observer(() => {
 				</Group>
 				<Button onClick={() => fetch()}>Применить</Button>
 			</Group>
-			<Loading active={isLoading} keepMounted>
+			<Loading mt='xs' active={isLoading} keepMounted>
 				{data.length ? (
 					<Accordion multiple chevronPosition='left'>
 						{data.map((item, index) => (
 							<Accordion.Item key={item.data} value={'tab' + item.data}>
 								<Accordion.Control icon={item.total_counter}>{item.data}</Accordion.Control>
 								<Accordion.Panel>
-									<Detail {...query} data={[item.data]} />
+									<IncidentDetail {...query} data={[item.data]} />
 								</Accordion.Panel>
 							</Accordion.Item>
 						))}
