@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom'
 import { LabelsCountPage } from './pages/lables-count-page'
 import { LabelsPage } from './pages/lables-page'
 

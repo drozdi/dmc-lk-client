@@ -1,4 +1,4 @@
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { ShopGroup } from '../features/shop-group'
 
 export function ShopGroupPage() {

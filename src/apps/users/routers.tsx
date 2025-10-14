@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom'
 import { UserPage } from './pages/user-page'
 import { UsersPage } from './pages/users-page'
 

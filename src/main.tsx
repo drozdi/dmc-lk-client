@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import { AppLoader } from './app/app-loader'
 import { AppProvider } from './app/app-provider'
 import { AppRouters } from './app/app-routers'

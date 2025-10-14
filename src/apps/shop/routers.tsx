@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom'
 import { ShopGroupPage } from './pages/shop-group-page'
 
 export default function ({ path = '/shop' }: AppRouterProps = {}): object {

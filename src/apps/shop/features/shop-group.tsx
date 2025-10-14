@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Loading } from '../../../shared/ui'
 import { getProducts } from '../api/api'
 import { cartStore } from '../stores/cart-store'

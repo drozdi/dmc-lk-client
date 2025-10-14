@@ -1,4 +1,4 @@
-import { Navigate, useRoutes } from 'react-router'
+import { Navigate, useRoutes } from 'react-router-dom'
 import { AuthLayout } from '../layout/AuthLayout'
 import { MainLayout } from '../layout/MainLayout'
 

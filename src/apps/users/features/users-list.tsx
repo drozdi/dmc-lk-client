@@ -1,6 +1,6 @@
 import { Button, Group, NavLink, Notification, Select } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout/context'
 import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'

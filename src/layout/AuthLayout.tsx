@@ -1,5 +1,5 @@
 import { Center } from '@mantine/core'
-import { Outlet } from 'react-router'
+import { Outlet } from 'react-router-dom'
 
 export function AuthLayout() {
 	return (

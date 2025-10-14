@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { Navigate } from 'react-router'
+import { Navigate } from 'react-router-dom'
 import { authStore } from '../../stores/auth-store'
 
 interface ProtectedRouteProps {

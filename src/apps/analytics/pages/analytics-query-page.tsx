@@ -1,7 +1,7 @@
 import { Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'
 import { requestAnalyticsGetQuery } from '../api'

@@ -1,6 +1,6 @@
 import { NavLink } from '@mantine/core'
 import { useCallback } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router-dom'
 type NavItem = {
 	name: string
 	icon?: React.ReactNode

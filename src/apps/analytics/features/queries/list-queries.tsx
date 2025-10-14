@@ -2,7 +2,7 @@ import { ActionIcon, Button, Group, Notification, Select, Stack } from '@mantine
 import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
-import { Link as LinkRouter } from 'react-router'
+import { Link as LinkRouter } from 'react-router-dom'
 import { Template } from '../../../../layout/context'
 import { useQuery } from '../../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
