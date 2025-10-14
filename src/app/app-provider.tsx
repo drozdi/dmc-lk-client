@@ -234,9 +234,6 @@ const theme = createTheme({
 				offset: '0.5rem',
 				position: 'right',
 				closeOnClickOutside: false,
-				overlayProps: {
-					opacity: 0.1,
-				},
 			},
 		}),
 		TabsList: Tabs.List.extend({

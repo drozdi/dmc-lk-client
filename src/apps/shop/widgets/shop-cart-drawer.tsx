@@ -4,7 +4,7 @@ import { TbArrowNarrowRight } from 'react-icons/tb'
 import { ProductCartView } from '../features/view/product-cart-view'
 import { cartStore } from '../stores/cart-store'
 
-export const ShopCart = observer(() => {
+export const ShopCartDrawer = observer(() => {
 	const { opened, list } = cartStore
 
 	const handleIncrease = item => {

@@ -2,7 +2,7 @@ import { AppShell, Burger, Button, Container, Group, ScrollArea } from '@mantine
 import { useDisclosure } from '@mantine/hooks'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ShopCartBtn } from '../apps/shop/features/shop-cart-btn'
-import { ShopCart } from '../apps/shop/widgets/shop-cart'
+import { ShopCartDrawer } from '../apps/shop/widgets/shop-cart-drawer'
 import { InOutLink } from '../features/auth/in-out-link'
 import { ChangeProduct } from '../features/lk/change-product'
 import { PersonalLink } from '../features/lk/personal-link'
@@ -67,7 +67,7 @@ export function MainLayout() {
 					</TemplateSlot>
 				</AppShell.Footer>
 			</AppShell>
-			<ShopCart />
+			<ShopCartDrawer />
 		</>
 	)
 }
