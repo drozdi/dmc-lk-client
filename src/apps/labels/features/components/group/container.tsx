@@ -15,7 +15,7 @@ export function GroupContainer({
 	color = '#fa8e007c',
 	...props
 }: ContainerProps) {
-	const { isDropTarget, ref } = useDroppable({
+	const { isDropTarget, ref, droppable } = useDroppable({
 		id: column,
 		type: 'column',
 		accept: ['item', 'column'],

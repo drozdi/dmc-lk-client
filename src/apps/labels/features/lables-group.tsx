@@ -15,13 +15,10 @@ import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
 
 import { useQueryError, useQueryLoading } from '../../../shared/hooks'
-import { useLabelFormat } from '../stores/hooks'
 
 export const LabelsGroup = observer(() => {
 	const error = useQueryError(printStore, formatStore, formatPrintStore)
 	const isLoading = useQueryLoading(printStore, formatStore, formatPrintStore)
-
-	const ll = useLabelFormat()
 
 	const { products } = userStore
 	const { prints: _prints } = printStore

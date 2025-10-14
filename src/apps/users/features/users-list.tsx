@@ -27,7 +27,7 @@ export function UsersList({ className }: UsersListProps) {
 
 	return (
 		<>
-			<Loading active={isLoading} keepMounted>
+			<Loading mt='xs' active={isLoading} keepMounted>
 				{list.map(item => (
 					<NavLink
 						onClick={event => {

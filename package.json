@@ -42,6 +42,7 @@
 		"embla-carousel": "^8.6.0",
 		"embla-carousel-react": "^8.6.0",
 		"libphonenumber-js": "^1.12.24",
+		"mantine-form-yup-resolver": "^2.0.0",
 		"mobx": "^6.13.7",
 		"mobx-react-lite": "^4.1.0",
 		"react": "^19.1.0",
@@ -52,8 +53,8 @@
 		"react-international-phone": "^4.6.0",
 		"react-router-dom": "^7.6.3",
 		"recharts": "^3.2.1",
-		"tailwindcss": "^4.1.14",
-		"yup": "^1.6.1"
+		"tailwind-preset-mantine": "^3.0.0",
+		"yup": "^1.7.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.30.1",
@@ -66,8 +67,10 @@
 		"eslint-plugin-react-refresh": "^0.4.20",
 		"globals": "^16.3.0",
 		"postcss": "^8.5.6",
+		"postcss-css-variables": "^0.19.0",
 		"postcss-preset-mantine": "^1.18.0",
 		"postcss-simple-vars": "^7.0.1",
+		"tailwindcss": "^4.1.14",
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.35.1",
 		"vite": "^7.0.4"

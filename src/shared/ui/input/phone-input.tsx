@@ -14,7 +14,7 @@ const countries = [
 	{ value: 'by', label: '🇧🇾 Беларусь', code: '+375' },
 ]
 
-export function PhoneInput({ variant, value, defaultValue, onChange, ...props }) {
+export function PhoneInput({ variant, value, defaultValue, onChange, size, ...props }) {
 	const detectCountryFromNumber = (phoneNumber: string, def: string | null = null) => {
 		if (!phoneNumber) return def
 		try {
@@ -60,8 +60,9 @@ export function PhoneInput({ variant, value, defaultValue, onChange, ...props })
 					value={country}
 					onChange={setCountry}
 					data={countries}
-					style={{ width: 120 }}
+					style={{ width: size === 'md' ? 150 : 120 }}
 					variant={variant}
+					size={size}
 					placeholder='Выберите страну'
 				/>
 				<Input
@@ -69,6 +70,7 @@ export function PhoneInput({ variant, value, defaultValue, onChange, ...props })
 					value={formattedPhone}
 					placeholder={countryMasks[country] || props.placeholder}
 					variant={variant}
+					size={size}
 					onChange={({ target }) => handlePhoneChange(target.value)}
 					style={{ flex: 1 }}
 					type='tel'

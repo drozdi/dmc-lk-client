@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { requestGetProducts } from '../api'
-class UsersStores {
+class UsersStores implements IQuery, Record<string, any> {
 	isLoading: boolean = false
 	isLoaded: boolean = false
 	error?: string = undefined
@@ -30,8 +30,7 @@ class UsersStores {
 			this._products = res.data
 			this.isLoaded = true
 		} catch (error) {
-			this.error =
-				error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
+			this.error = error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

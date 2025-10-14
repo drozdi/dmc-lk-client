@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { requestLabelsAllPrint } from '../api'
 
-class PrintStore {
+class PrintStore implements IQuery, Record<string, any> {
 	_prints: string[] = []
 	isLoading = false
 	isLoaded = false
@@ -28,8 +28,7 @@ class PrintStore {
 			this.isLoaded = true
 			this._prints = res.data
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

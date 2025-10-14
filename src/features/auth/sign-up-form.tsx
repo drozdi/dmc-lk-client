@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import { Button, Notification, PasswordInput, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
+import { yupResolver } from 'mantine-form-yup-resolver'
 import { observer } from 'mobx-react-lite'
-import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { authStore } from '../../stores/auth-store'
@@ -45,22 +45,17 @@ const fieldsSchema = yup.object().shape({
  */
 
 export const SignUpForm = observer(() => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors, isValid },
-	} = useForm({
-		mode: 'onChange',
-		defaultValues: {
+	const form = useForm({
+		mode: 'uncontrolled',
+		name: 'signUp',
+		initialValues: {
 			first_name: '',
 			last_name: '',
+			father_name: '',
 			email: '',
 			phone: '',
-			father_name: '',
-			password: '',
-			re_password: '',
 		},
-		resolver: yupResolver(fieldsSchema),
+		validate: yupResolver(fieldsSchema),
 	})
 	const { isLoading, error } = authStore
 	const navigate = useNavigate()
@@ -74,67 +69,18 @@ export const SignUpForm = observer(() => {
 	return (
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
-			<form name='signUp' className='space-y-1' onSubmit={handleSubmit(sendFormData)}>
-				<TextInput
-					placeholder='Имя'
-					id='registration_first_name'
-					type='text'
-					required
-					error={errors?.first_name?.message}
-					{...register('first_name')}
-				/>
-				<TextInput
-					placeholder='Фамилия'
-					id='registration_last_name'
-					type='text'
-					required
-					error={errors?.last_name?.message}
-					{...register('last_name')}
-				/>
-				<TextInput
-					placeholder='Отчество'
-					id='registration_father_name'
-					type='text'
-					required
-					error={errors?.father_name?.message}
-					{...register('father_name')}
-				/>
-				<TextInput
-					placeholder='Email'
-					id='registration_email'
-					type='email'
-					required
-					error={errors?.email?.message}
-					{...register('email')}
-				/>
+			<form>
+				<TextInput placeholder='Имя' type='text' required {...form.getInputProps('first_name')} />
+				<TextInput placeholder='Фамилия' type='text' required {...form.getInputProps('last_name')} />
+				<TextInput placeholder='Отчество' type='text' required {...form.getInputProps('father_name')} />
+				<TextInput placeholder='Email' id='registration_email' type='email' required {...form.getInputProps('email')} />
 
-				<TextInput
-					placeholder='Телефон'
-					id='registration_phone'
-					type='phone'
-					required
-					error={errors?.phone?.message}
-					{...register('phone')}
-				/>
+				<TextInput placeholder='Телефон' type='phone' required {...form.getInputProps('phone')} />
 
-				<PasswordInput
-					placeholder='Придумай пароль'
-					id='registration_password'
-					type='password'
-					required
-					error={errors?.password?.message}
-					{...register('password')}
-				/>
-				<PasswordInput
-					placeholder='Повтори пароль'
-					id='registration_re_password'
-					type='password'
-					required
-					error={errors?.re_password?.message}
-					{...register('re_password')}
-				/>
+				<PasswordInput placeholder='Придумай пароль' type='password' required {...form.getInputProps('password')} />
+				<PasswordInput placeholder='Повтори пароль' type='password' required {...form.getInputProps('re_password')} />
 
-				<Button type='submit' fullWidth loading={isLoading}>
+				<Button onClick={form.onSubmit(sendFormData)} fullWidth loading={isLoading}>
 					Войти
 				</Button>
 			</form>

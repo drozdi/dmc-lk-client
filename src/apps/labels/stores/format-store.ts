@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { requestLabelsAddFormat, requestLabelsAllFormat } from '../api'
 
-class FormatStore {
+class FormatStore implements IQuery, Record<string, any> {
 	_formats: Record<string, string[]> = {}
 	isLoading = false
 	isLoaded = false
@@ -29,19 +29,12 @@ class FormatStore {
 			this.isLoaded = true
 			this._formats = res.data
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
 	}
-	async add({
-		format,
-		production_id,
-	}: {
-		format: string
-		production_id: number
-	}) {
+	async add({ format, production_id }: { format: string; production_id: number }) {
 		if (!format.trim()) {
 			this.error = 'Название не может быть пустым'
 			return
@@ -50,14 +43,10 @@ class FormatStore {
 		this.isLoading = true
 		try {
 			await requestLabelsAddFormat({ format, production_id })
-			this._formats[production_id] = [
-				...(this._formats[production_id] || []),
-				format,
-			]
+			this._formats[production_id] = [...(this._formats[production_id] || []), format]
 			this.load(true)
 		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

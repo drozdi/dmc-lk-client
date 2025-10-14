@@ -1,13 +1,7 @@
 import { api } from '../../../shared/api'
 
-export async function requestGetUsers({
-	size = 15,
-	number = 0,
-}: {
-	size: number
-	number: number
-}) {
-	const res = await await api.get('/users', {
+export async function requestGetUsers({ size = 15, number = 0 }: { size: number; number: number }) {
+	const res = await api.get('/users', {
 		params: {
 			size,
 			number,

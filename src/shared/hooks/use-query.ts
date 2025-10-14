@@ -1,15 +1,6 @@
 import { useMemo, useState } from 'react'
 
-interface IQuery {
-	isLoading: boolean
-	error: string
-	request: Function
-}
-
-export function useQuery(
-	handleRequest: Function,
-	errorMes = 'Неизвестная ошибка'
-): IQuery {
+export function useQuery(handleRequest: Function, errorMes = 'Неизвестная ошибка'): IQuery {
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string>('')
 	const request = async (...args: unknown[]) => {
@@ -30,10 +21,7 @@ export function useQuery(
 }
 
 export function useQueryLoading(...queries: IQuery[]): boolean {
-	return useMemo<boolean>(
-		() => queries.some(query => query.isLoading),
-		[queries.map(query => query.isLoading)]
-	)
+	return useMemo<boolean>(() => queries.some(query => query.isLoading), [queries.map(query => query.isLoading)])
 }
 export function useQueryError(...queries: IQuery[]): string {
 	return useMemo<string>(

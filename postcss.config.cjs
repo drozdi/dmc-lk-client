@@ -10,5 +10,10 @@ module.exports = {
 				'mantine-breakpoint-xl': '88rem',
 			},
 		},
+		/*'@tailwindcss/postcss': {
+			/*variables: {
+				
+			},*/
+		//},
 	},
 }

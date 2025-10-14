@@ -38,7 +38,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		<Stack>
 			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Loading active={isLoading} keepMounted>
-				<List separator>
+				<List separator bordered striped>
 					{list.map(item => (
 						<Item dense key={item.id} component={LinkRouter} to={`/analytics/query/${item.id}`} hoverable>
 							<ItemSection row top>

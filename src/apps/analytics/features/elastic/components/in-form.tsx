@@ -15,10 +15,21 @@ export function InForm({ values, onChange }: { values?: string[]; onChange?: (va
 	}
 
 	return (
-		<ul className='list-none text-left'>
+		<ul
+			style={{
+				listStyle: 'none',
+			}}
+		>
 			{((values as string[]) || []).map((item, index) => (
 				<li key={index}>
-					{item} <TbXboxX className='float-right cursor-pointer' onClick={() => handleRemoveItem(item)} />
+					{item}{' '}
+					<TbXboxX
+						style={{
+							float: 'right',
+							cursor: 'pointer',
+						}}
+						onClick={() => handleRemoveItem(item)}
+					/>
 				</li>
 			))}
 			<li>

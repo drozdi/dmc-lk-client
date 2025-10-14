@@ -7,7 +7,7 @@ export function UsersPage() {
 			<Text fz='h2' ta='center'>
 				Пользователи
 			</Text>
-			<UsersList className='mt-3' />
+			<UsersList />
 		</>
 	)
 }

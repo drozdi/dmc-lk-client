@@ -6,7 +6,7 @@ import {
 	requestLabelsUpdateJoined,
 } from '../api'
 
-class FormatPrintStore {
+class FormatPrintStore implements IQuery, Record<string, any> {
 	private _formatPrints: Array<{
 		id: string
 		format: string

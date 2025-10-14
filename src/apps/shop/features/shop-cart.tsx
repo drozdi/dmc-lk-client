@@ -1,6 +1,6 @@
+import { Drawer } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { TbArrowNarrowRight, TbX } from 'react-icons/tb'
-import { cls } from '../../../shared/utils'
 import { cartStore } from '../stores/cart-store'
 import { ProductCartView } from './view/product-cart-view'
 
@@ -15,13 +15,7 @@ export const ShopCart = observer(({ className }) => {
 	}
 
 	return (
-		<div
-			className={cls(
-				'absolute right-0 top-0 bottom-0 max-w-xs w-full px-6 py-4 transition duration-300 transform overflow-y-auto bg-white border-l-2 border-gray-300',
-				opened ? 'translate-x-0 ease-out' : 'translate-x-full ease-in',
-				className
-			)}
-		>
+		<Drawer opened={opened} onClose={() => cartStore.close()}>
 			<div className='flex items-center justify-between'>
 				<h3 className='text-2xl font-medium text-gray-700'>Your cart</h3>
 				<button onClick={() => cartStore.close()} className='text-gray-600 focus:outline-none cursor-pointer'>
@@ -50,6 +44,6 @@ export const ShopCart = observer(({ className }) => {
 				<span>Chechout</span>
 				<TbArrowNarrowRight />
 			</a>
-		</div>
+		</Drawer>
 	)
 })

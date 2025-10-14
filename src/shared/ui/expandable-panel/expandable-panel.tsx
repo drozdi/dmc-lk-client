@@ -22,7 +22,7 @@ export function ExpandablePanel({
 
 	return (
 		<Paper
-			shadow='md'
+			shadow='xl'
 			p='md'
 			{...otherProps}
 			style={{
