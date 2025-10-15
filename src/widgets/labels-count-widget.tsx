@@ -7,7 +7,7 @@ import { requestLabelsCount } from '../apps/labels/api'
 import { GroupContainer } from '../apps/labels/features/components/group/container'
 import { GroupItem } from '../apps/labels/features/components/group/item'
 import { GroupProvider } from '../apps/labels/features/components/group/provider'
-import { formatPrintStore } from '../apps/labels/stores/format-print-store'
+import { labelsStore } from '../apps/labels/stores'
 import { useLabelFormat } from '../apps/labels/stores/hooks'
 import { useQuery } from '../shared/hooks'
 import { ExpandablePanel } from '../shared/ui'
@@ -122,7 +122,7 @@ export const LabelsCountWidget = observer(props => {
 			// }
 			const sourceLabel = data.not_distributed.splice(sourceIndex, 1)[0]
 
-			await formatPrintStore.add({
+			await labelsStore.addFormatPrint({
 				production_id: sourceLabel.production_id,
 				add_label_format: target.id,
 				statistics_print_format: sourceLabel.add_label_format,

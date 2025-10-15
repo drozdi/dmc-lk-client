@@ -1,21 +1,19 @@
 import { useMemo } from 'react'
-import { formatPrintStore } from '../format-print-store'
-import { formatStore } from '../format-store'
-import { printStore } from '../print-store'
+import { labelsStore } from '../label-store'
 
 export function useLabelFormat(production_id?: integer | string) {
 	const res = useMemo(() => {
 		let productions: string[] = []
-		productions = productions.concat(Object.keys(formatPrintStore.formatPrints))
-		productions = productions.concat(Object.keys(formatStore.formats))
-		productions = productions.concat(Object.keys(printStore.prints))
+		productions = productions.concat(Object.keys(labelsStore.formatPrints))
+		productions = productions.concat(Object.keys(labelsStore.formats))
+		productions = productions.concat(Object.keys(labelsStore.prints))
 		productions = [...new Set(productions)]
 
 		return Object.fromEntries(
 			productions.map(production_id => {
-				const formatPrints = formatPrintStore.formatPrints[production_id] || []
-				const formats = formatStore.formats[production_id] || []
-				const prints = printStore.prints[production_id] || []
+				const formatPrints = labelsStore.formatPrints[production_id] || []
+				const formats = labelsStore.formats[production_id] || []
+				const prints = labelsStore.prints[production_id] || []
 
 				const con = Object.fromEntries(formats.map(item => [item, []])) || {}
 
@@ -33,7 +31,7 @@ export function useLabelFormat(production_id?: integer | string) {
 				return [production_id, con]
 			})
 		)
-	}, [formatPrintStore.formatPrints, formatStore.formats, printStore.prints])
+	}, [labelsStore.formatPrints, labelsStore.formats, labelsStore.prints])
 	return useMemo(() => {
 		if (production_id) {
 			return res[production_id]

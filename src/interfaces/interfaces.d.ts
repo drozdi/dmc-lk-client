@@ -1,3 +1,10 @@
+interface IResponse<T extends any> {
+	success: boolean
+	message: string | null
+	data?: T
+	response?: T
+}
+
 interface IUser {
 	first_name: string
 	last_name: string

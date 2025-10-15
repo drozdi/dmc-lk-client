@@ -46,7 +46,6 @@
 .item_vertical {
 	gap: var(--mantine-spacing-xs, 0.5rem);
 }
-
 .item_dense {
 	min-height: 2rem;
 	gap: var(--mantine-spacing-xs, 0.5rem);
@@ -88,6 +87,9 @@
 }
 .section_row.section_end {
 	justify-content: end;
+}
+.section_left {
+	align-items: flex-start;
 }
 .section_main {
 	flex: 1;

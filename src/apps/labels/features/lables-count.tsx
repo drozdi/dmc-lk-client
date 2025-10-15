@@ -6,7 +6,7 @@ import { useQuery, useQueryError, useQueryLoading } from '../../../shared/hooks'
 import { ItemLabel, List, Loading } from '../../../shared/ui'
 import { useProduction } from '../../../stores/hooks/use-production'
 import { requestLabelsCount } from '../api'
-import { formatPrintStore } from '../stores/format-print-store'
+import { labelsStore } from '../stores'
 import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
@@ -16,8 +16,8 @@ export const LabelsCount = observer(() => {
 	const { productionNameById } = useProduction()
 	const reqLabelsCount = useQuery(requestLabelsCount)
 
-	const error = useQueryError(formatPrintStore, reqLabelsCount)
-	const isLoading = useQueryLoading(formatPrintStore, reqLabelsCount)
+	const error = useQueryError(labelsStore, reqLabelsCount)
+	const isLoading = useQueryLoading(labelsStore, reqLabelsCount)
 
 	const [dangerLimits, setDangerLimits] = useState(0)
 	const [warningLimits, setWarningLimits] = useState(-50)
@@ -90,7 +90,7 @@ export const LabelsCount = observer(() => {
 			}
 			const sourceLabel = data.not_distributed.splice(sourceIndex, 1)[0]
 
-			await formatPrintStore.add({
+			await labelsStore.addFormatPrint({
 				production_id: sourceLabel.production_id,
 				add_label_format: target.id,
 				statistics_print_format: sourceLabel.add_label_format,

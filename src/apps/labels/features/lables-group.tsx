@@ -6,9 +6,7 @@ import { Template } from '../../../layout/context'
 import { Loading } from '../../../shared/ui'
 import { userStore } from '../../../stores/user-store'
 
-import { formatPrintStore } from '../stores/format-print-store'
-import { formatStore } from '../stores/format-store'
-import { printStore } from '../stores/print-store'
+import { labelsStore } from '../stores'
 
 import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
@@ -17,13 +15,13 @@ import { GroupProvider } from './components/group/provider'
 import { useQueryError, useQueryLoading } from '../../../shared/hooks'
 
 export const LabelsGroup = observer(() => {
-	const error = useQueryError(printStore, formatStore, formatPrintStore)
-	const isLoading = useQueryLoading(printStore, formatStore, formatPrintStore)
+	const error = useQueryError(labelsStore)
+	const isLoading = useQueryLoading(labelsStore)
 
 	const { products } = userStore
-	const { prints: _prints } = printStore
-	const { formats: _formats } = formatStore
-	const { formatPrints: _formatPrints } = formatPrintStore
+	const { prints: _prints } = labelsStore
+	const { formats: _formats } = labelsStore
+	const { formatPrints: _formatPrints } = labelsStore
 
 	const [production_id, setProduction_id] = useState()
 
@@ -105,17 +103,17 @@ export const LabelsGroup = observer(() => {
 		}
 
 		if (containers[sourceParent][sourceIndex]._id && target.id === '.default') {
-			await formatPrintStore.delete(containers[sourceParent][sourceIndex]._id)
-			printStore.load(true)
-			formatStore.load(true)
+			await labelsStore.deleteFormatPrint(containers[sourceParent][sourceIndex]._id)
+			labelsStore.loadPrints(true)
+			labelsStore.loadFormats(true)
 		} else if (sourceParent !== target.id && containers[sourceParent][sourceIndex]._id) {
-			formatPrintStore.update(containers[sourceParent][sourceIndex]._id, {
+			labelsStore.updateFormatPrint(containers[sourceParent][sourceIndex]._id, {
 				production_id,
 				add_label_format: target.id,
 				statistics_print_format: containers[sourceParent][sourceIndex].print,
 			})
 		} else if (target.id !== '.default' && !containers[sourceParent][sourceIndex]._id) {
-			formatPrintStore.add({
+			labelsStore.addFormatPrint({
 				production_id,
 				add_label_format: target.id,
 				statistics_print_format: containers[sourceParent][sourceIndex].print,
@@ -129,7 +127,7 @@ export const LabelsGroup = observer(() => {
 	}
 	const handleKeyPress = ({ key }: React.KeyboardEvent) => {
 		if (key === 'Enter') {
-			formatStore.add({ format: newFormat.trim(), production_id })
+			labelsStore.addFormat({ format: newFormat.trim(), production_id })
 			setNewFormat('')
 		}
 	}

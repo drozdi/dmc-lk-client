@@ -57,7 +57,7 @@ export function AnalyticsPage() {
 				/>
 			</Group>
 
-			<SimpleGrid cols={2}>
+			<SimpleGrid mt='xs' cols={2}>
 				<AnalyticEventWidget {...query} step='mon' />
 				<AnalyticPieWidget {...query} step='mon' />
 				<AnalyticTypeWidget {...query} step='mon' />

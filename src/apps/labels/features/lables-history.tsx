@@ -29,13 +29,13 @@ export const LabelsHistory = () => {
 			<Loading active={isLoading} keepMounted>
 				<Accordion variant='contained'>
 					{ddata.map(item => (
-						<Accordion.Item key={item.production_id} value={String(item.production_id)}>
+						<Accordion.Item key={item.production_id} value={'tab-' + String(item.production_id)}>
 							<Accordion.Control>{item.name_production}</Accordion.Control>
 							<Accordion.Panel>
 								<List dense separator>
 									{item.items.map(item => (
 										<Item key={item.id}>
-											<ItemSection>
+											<ItemSection left>
 												<ItemLabel>{item.place_name}</ItemLabel>
 												<ItemLabel caption>
 													{dayjs(item.date_applic).format('HH:mm DD-MM-YYYY')} - {item.format_template}

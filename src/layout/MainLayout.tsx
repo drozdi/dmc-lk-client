@@ -48,7 +48,7 @@ export function MainLayout() {
 					<AppShell.Section grow my='xs' component={ScrollArea} px='xs'>
 						<MainMenu />
 					</AppShell.Section>
-					<AppShell.Section p='xs'>Navbar footer – always at the bottom</AppShell.Section>
+					<AppShell.Section p='xs'></AppShell.Section>
 				</AppShell.Navbar>
 				<AppShell.Main>
 					<ScrollArea h={`calc(100vh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px))`}>
