@@ -22,17 +22,12 @@ export async function requestLabelsCountHistory({
 	return res.data
 }
 
-export async function requestLabelsCount() {
+export async function requestLabelsCount(): Promise<IResponse<IResponseCountLabel>> {
 	const res = await api.get('/count_label/')
 	return res.data
 }
 
-export async function requestLabelsCountAdd(data: {
-	label_format: string
-	count_label: number
-	place_name: string
-	production_id: number
-}) {
+export async function requestLabelsCountAdd(data: IRequestCountLabelAdd): Promise<IResponse<ICountLabelItem>> {
 	const res = await api.post('/count_label/', data)
 	return res.data
 }

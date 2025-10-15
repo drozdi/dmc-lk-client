@@ -12,16 +12,9 @@ import { GroupContainer } from './components/group/container'
 import { GroupItem } from './components/group/item'
 import { GroupProvider } from './components/group/provider'
 
-import { useQueryError, useQueryLoading } from '../../../shared/hooks'
-
 export const LabelsGroup = observer(() => {
-	const error = useQueryError(labelsStore)
-	const isLoading = useQueryLoading(labelsStore)
-
 	const { products } = userStore
-	const { prints: _prints } = labelsStore
-	const { formats: _formats } = labelsStore
-	const { formatPrints: _formatPrints } = labelsStore
+	const { error, isLoading, prints: _prints, formats: _formats, formatPrints: _formatPrints } = labelsStore
 
 	const [production_id, setProduction_id] = useState()
 
@@ -131,6 +124,10 @@ export const LabelsGroup = observer(() => {
 			setNewFormat('')
 		}
 	}
+
+	useEffect(() => {
+		labelsStore.load(true)
+	}, [])
 
 	return (
 		<Stack gap='xs'>

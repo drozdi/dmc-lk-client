@@ -1,9 +1,8 @@
 import { NumberInput } from '@mantine/core'
 import { forwardRef, useRef, useState } from 'react'
 import { TbList } from 'react-icons/tb'
-import { useQuery } from '../../../../../shared/hooks'
 import { ButtonIcon, Item, ItemSection } from '../../../../../shared/ui'
-import { requestLabelsCountAdd } from '../../../api'
+import { countLabelStore } from '../../../stores'
 
 export const LabelItem = forwardRef(
 	(
@@ -31,12 +30,11 @@ export const LabelItem = forwardRef(
 		},
 		ref
 	) => {
-		const { request, isLoading } = useQuery(requestLabelsCountAdd)
 		const inputRef = useRef<HTMLElement>(null)
 		const [editMode, setEditMode] = useState<boolean>(false)
 		const handleSave = async () => {
 			if (inputRef.current?.value) {
-				const res = await request({
+				const res = await countLabelStore.add({
 					count_label: Number(inputRef.current?.value),
 					place_name: 'Пополнение этикеток',
 					label_format: item.add_label_format,
@@ -83,7 +81,7 @@ export const LabelItem = forwardRef(
 				<ItemSection side>{item.sum}</ItemSection>
 				{editable && (
 					<ItemSection side>
-						<ButtonIcon loading={isLoading} onClick={() => setEditMode(true)}>
+						<ButtonIcon loading={countLabelStore.isLoading} onClick={() => setEditMode(true)}>
 							tb-circle-plus
 						</ButtonIcon>
 					</ItemSection>

@@ -3,7 +3,8 @@ import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { AnalyticPieWidget } from '../apps/analytics/widgets/analytic-pie-widget'
-import { LabelsCountWidget } from '../widgets/labels-count-widget'
+import { LabelsCountWidget } from '../apps/labels/widgets/labels-count-widget'
+import { LabelsCountWidget as MainCountWidget } from '../widgets/labels-count-widget'
 
 const dNow = dayjs('2025-05-02')
 
@@ -15,8 +16,9 @@ export const MainPage = observer(() => {
 	})
 	return (
 		<SimpleGrid cols={2}>
-			<LabelsCountWidget {...query} />
+			<MainCountWidget {...query} />
 			<AnalyticPieWidget {...query} />
+			<LabelsCountWidget />
 		</SimpleGrid>
 	)
 })

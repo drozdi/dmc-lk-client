@@ -1,12 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import {
-	requestLabelsAllPrint,
-	requestLabelsCountHistory,
-	requestLabelsDetachFormat,
-	requestLabelsJoinFormat,
-	requestLabelsList,
-	requestLabelsUpdateJoined,
-} from '../api'
+import { requestLabelsCount, requestLabelsCountAdd, requestLabelsCountHistory, requestLabelsCountReset } from '../api'
 
 class CountLabelStore implements IQuery, Record<string, any> {
 	isLoading = false
@@ -40,26 +33,30 @@ class CountLabelStore implements IQuery, Record<string, any> {
 		}
 	}
 
-	_prints: string[] = []
-	isLoadedPrint = false
-	get prints() {
-		this.loadPrints()
-		return this._prints
+	isLoadedCount = false
+	private _count: IResponseCountLabel = {
+		distributed: [],
+		not_distributed: [],
 	}
-	async loadPrints(reloading: boolean = false) {
+	get count(): IResponseCountLabel {
+		this.loadCount()
+		return this._count
+	}
+	async loadCount(reloading: boolean = false) {
 		if (reloading) {
-			this.isLoadedPrint = false
-			this._prints = []
+			this.isLoadedCount = false
+			this._count = {}
 		}
-		if (this.isLoadedPrint) {
+		if (this.isLoadedCount) {
 			return
 		}
+
 		this.error = undefined
 		this.isLoading = true
 		try {
-			const res = await requestLabelsAllPrint()
-			this.isLoadedPrint = true
-			this._prints = res.data
+			const res = await requestLabelsCount()
+			this.isLoadedCount = true
+			this._count = res.data
 		} catch (error) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
@@ -70,80 +67,28 @@ class CountLabelStore implements IQuery, Record<string, any> {
 	constructor() {
 		makeAutoObservable(this)
 	}
-	get formatPrints() {
-		this.load()
-		return this._formatPrints
-	}
-	async load(reloading: boolean = false) {
-		if (reloading) {
-			this.isLoaded = false
-			this._formatPrints = []
-		}
-		if (this.isLoaded) {
-			return
-		}
 
+	async load(reloading: boolean = false) {
+		await this.loadHistory(reloading)
+		await this.loadCount(reloading)
+	}
+
+	async reset(production_id: IRequestCountLabelReset) {
 		this.error = undefined
 		this.isLoading = true
 		try {
-			const res = await requestLabelsList({
-				size: 100,
-				number: 0,
-			})
-			this.isLoaded = true
-			this._formatPrints = Object.fromEntries(
-				Object.keys(res.response).map(key => {
-					return [
-						key,
-						res.response[key]
-							.map(item => ({
-								...item,
-								format: item.add_label_format,
-								print: item.statistics_print_format,
-							}))
-							.filter(item => item.format !== item.print),
-					]
-				})
-			)
+			await requestLabelsCountReset(production_id)
 		} catch (error) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}
 	}
-	async add(data: Record<string, string>) {
+	async add(param: IRequestCountLabelAdd) {
 		this.error = undefined
 		this.isLoading = true
 		try {
-			const res = await requestLabelsJoinFormat(data)
-			await this.load(true)
-		} catch (error) {
-			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
-		} finally {
-			this.isLoading = false
-		}
-	}
-	async delete(id: number) {
-		this.error = undefined
-		this.isLoading = true
-		try {
-			const res = await requestLabelsDetachFormat(id)
-			await this.load(true)
-		} catch (error) {
-			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
-		} finally {
-			this.isLoading = false
-		}
-	}
-	async update(id: number, data: Record<string, string>) {
-		this.error = undefined
-		this.isLoading = true
-		try {
-			const res = await requestLabelsUpdateJoined(id, {
-				...this._formatPrints[data.production_id].find(item => item.id === id),
-				...data,
-			})
-			await this.load(true)
+			return await requestLabelsCountAdd(param)
 		} catch (error) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {

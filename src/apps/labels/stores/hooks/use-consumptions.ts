@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
 import { requestLabelsCountHistory } from '../../api'
 
-export function useConsumption(params: IRequestCountLabelHistory = {}) {
+export function useConsumptions(params: IRequestCountLabelHistory = {}) {
 	const request = useQuery(requestLabelsCountHistory)
 	const [list, setList] = useState<IResponseCountLabelHistory>({})
 	const load = useCallback((query: IRequestCountLabelHistory = {}) => {
@@ -10,7 +10,12 @@ export function useConsumption(params: IRequestCountLabelHistory = {}) {
 			setList(res.data.response)
 		})
 	}, [])
-	const res = useMemo(() => {
+
+	useEffect(() => {
+		load()
+	}, [])
+
+	return useMemo(() => {
 		const res = {}
 		for (let prod in list) {
 			res[prod] = res[prod] || {}
@@ -21,6 +26,4 @@ export function useConsumption(params: IRequestCountLabelHistory = {}) {
 		}
 		return res
 	}, [list])
-
-	return { ...request, res, load }
 }

@@ -22,3 +22,20 @@ declare interface ICountLabelHistoryItem {
 	is_archive: boolean
 }
 declare type IResponseCountLabelHistory = Record<string, ICountLabelHistoryItem[]>
+
+declare interface ICountLabelItem {
+	add_label_format: string
+	production_id: number
+	sum: number
+}
+declare interface IResponseCountLabel {
+	distributed: ICountLabelItem[]
+	not_distributed: ICountLabelItem[]
+}
+
+interface IRequestCountLabelAdd {
+	label_format: string
+	count_label: number
+	place_name: string
+	production_id: number
+}

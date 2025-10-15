@@ -8,13 +8,13 @@ import { GroupContainer } from '../apps/labels/features/components/group/contain
 import { GroupItem } from '../apps/labels/features/components/group/item'
 import { GroupProvider } from '../apps/labels/features/components/group/provider'
 import { labelsStore } from '../apps/labels/stores'
-import { useLabelFormat } from '../apps/labels/stores/hooks'
+import { useFormatPrints } from '../apps/labels/stores/hooks'
 import { useQuery } from '../shared/hooks'
 import { ExpandablePanel } from '../shared/ui'
 import { useProduction } from '../stores/hooks/use-production'
 
 export const LabelsCountWidget = observer(props => {
-	const labelsFormat = useLabelFormat()
+	const labelsFormat = useFormatPrints()
 	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
 		distributed: [],

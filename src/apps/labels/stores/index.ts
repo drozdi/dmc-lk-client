@@ -1,2 +1,3 @@
+export * from './count-label-store'
 export * from './hooks'
-export * from './label-store'
+export * from './labels-store'

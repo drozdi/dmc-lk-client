@@ -17,7 +17,13 @@ class LabelsStore implements IQuery, Record<string, any> {
 		makeAutoObservable(this)
 	}
 
-	_prints: Record<string, string[]> = {}
+	async load(reloading: boolean = false) {
+		await this.loadPrints(reloading)
+		await this.loadFormats(reloading)
+		await this.loadFormatPrints(reloading)
+	}
+
+	private _prints: Record<string, string[]> = {}
 	isLoadedPrint = false
 	get prints(): Record<string, string[]> {
 		this.loadPrints()
@@ -44,7 +50,7 @@ class LabelsStore implements IQuery, Record<string, any> {
 		}
 	}
 
-	_formats: Record<string, string[]> = {}
+	private _formats: Record<string, string[]> = {}
 	get formats(): Record<string, string[]> {
 		this.loadFormats()
 		return this._formats

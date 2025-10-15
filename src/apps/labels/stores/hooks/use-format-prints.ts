@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { labelsStore } from '../label-store'
+import { labelsStore } from '../labels-store'
 
-export function useLabelFormat(production_id?: integer | string) {
+export function useFormatPrints(production_id?: integer | string) {
 	const res = useMemo(() => {
 		let productions: string[] = []
 		productions = productions.concat(Object.keys(labelsStore.formatPrints))
@@ -34,9 +34,9 @@ export function useLabelFormat(production_id?: integer | string) {
 	}, [labelsStore.formatPrints, labelsStore.formats, labelsStore.prints])
 	return useMemo(() => {
 		if (production_id) {
-			return res[production_id]
+			return res[production_id] || []
 		} else {
-			return res
+			return res || []
 		}
 	}, [res, production_id])
 }
