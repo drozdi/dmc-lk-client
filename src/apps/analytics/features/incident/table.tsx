@@ -10,7 +10,7 @@ import { incidentStore } from '../../stores/incident-store'
 
 const _variantDetails = ['production_id', 'taskid', 'device_id', 'event_id', 'node_id', 'place_id']
 
-export const TableIncident = observer(() => {
+export const IncidentTable = observer(() => {
 	const { fields, list } = fieldsStore
 	const { template, limit, data, isLoading } = incidentStore
 
@@ -170,7 +170,7 @@ export const TableIncident = observer(() => {
 				<Button onClick={() => incidentStore.send()}>Применить</Button>
 			</Group>
 			<Loading active={isLoading} keepMounted>
-				<Table withRowBorders striped>
+				<Table withRowBorders>
 					<Table.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
 							<Table.Tr key={headerGroup.id}>

@@ -2,6 +2,7 @@ import { SimpleGrid } from '@mantine/core'
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
+import { AnalyticAnalyticWidget } from '../apps/analytics/widgets/analytic-analytic-widget'
 import { AnalyticPieWidget } from '../apps/analytics/widgets/analytic-pie-widget'
 import { LabelsCountWidget } from '../apps/labels/widgets/labels-count-widget'
 import { LabelsCountWidget as MainCountWidget } from '../widgets/labels-count-widget'
@@ -16,9 +17,10 @@ export const MainPage = observer(() => {
 	})
 	return (
 		<SimpleGrid cols={2}>
-			<MainCountWidget {...query} />
+			<AnalyticAnalyticWidget />
 			<AnalyticPieWidget {...query} />
 			<LabelsCountWidget />
+			<MainCountWidget {...query} />
 		</SimpleGrid>
 	)
 })

@@ -6,27 +6,30 @@ export function ExpandablePanel({
 	title,
 	loading = false,
 	children,
+	keepMounted = true,
+	component,
 	...otherProps
 }: {
 	title: string
 	loading?: boolean
+	keepMounted?: boolean
 	children: React.ReactNode
+	component?: any
 }) {
 	// Управляем состоянием компонента
 	const [isExpanded, setIsExpanded] = useState(false)
 
 	// Обработчик переключения состояния
 	const toggleExpanded = () => {
-		setIsExpanded(!isExpanded)
+		setIsExpanded(v => !v)
 	}
 
 	return (
 		<Paper
 			shadow='xl'
-			p='md'
+			p='xs'
 			{...otherProps}
 			style={{
-				// Стили меняются в зависимости от состояния
 				position: isExpanded ? 'fixed' : 'relative',
 				top: isExpanded ? 0 : 'auto',
 				left: isExpanded ? 0 : 'auto',
@@ -37,23 +40,24 @@ export function ExpandablePanel({
 			}}
 		>
 			<LoadingOverlay visible={loading} zIndex={1000} />
-			{/* Шапка компонента */}
-			<Group justify='space-between' mb='md'>
+			<Group justify='space-between' mb='xs'>
 				<Text fw={500}>{title}</Text>
 				<Button
 					variant='subtle'
-					size='sm'
+					size='compact-xs'
 					onClick={toggleExpanded}
-					leftSection={isExpanded ? <TbArrowsMinimize size={16} /> : <TbArrowsMaximize size={16} />}
+					rightSection={isExpanded ? <TbArrowsMinimize size='1rem' /> : <TbArrowsMaximize size='1rem' />}
 				>
 					{isExpanded ? 'Свернуть' : 'Развернуть'}
 				</Button>
 			</Group>
 
 			{/* Содержимое компонента */}
-			<Box mih={loading ? 300 : undefined} miw={loading ? 300 : undefined}>
-				{children}
-			</Box>
+			{(keepMounted || isExpanded) && (
+				<Box component={component} mih={loading ? 300 : undefined} miw={loading ? 300 : undefined}>
+					{children}
+				</Box>
+			)}
 		</Paper>
 	)
 }

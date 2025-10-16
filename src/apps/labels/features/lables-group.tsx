@@ -161,7 +161,7 @@ export const LabelsGroup = observer(() => {
 						>
 							{formats.map(item => (
 								<GroupContainer key={item} column={item}>
-									<Table>
+									<Table striped={false}>
 										<Table.Thead>
 											<Table.Tr>
 												<Table.Td w='2rem'></Table.Td>
@@ -184,9 +184,9 @@ export const LabelsGroup = observer(() => {
 								</GroupContainer>
 							))}
 						</Stack>
-
 						<GroupContainer column='.default'>
 							<Table
+								striped={false}
 								style={{
 									width: '50%',
 								}}

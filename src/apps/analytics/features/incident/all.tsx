@@ -8,7 +8,7 @@ import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { IncidentDetail } from './components/incident-detail'
 
-export const AllIncident = observer(() => {
+export const IncidentAll = observer(() => {
 	const day = dayjs()
 	const { isLoading, request } = useQuery(requestAnalyticsIncident)
 	const [data, setData] = useState([])

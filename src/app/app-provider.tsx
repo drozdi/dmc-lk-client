@@ -13,6 +13,7 @@ import {
 	SimpleGrid,
 	Stack,
 	Switch,
+	Table,
 	Tabs,
 } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
@@ -252,6 +253,15 @@ const theme = createTheme({
 		TabsTab: Tabs.Tab.extend({
 			defaultProps: {
 				fz: 'md',
+			},
+		}),
+		Table: Table.extend({
+			defaultProps: {
+				striped: true,
+				highlightOnHover: true,
+				layout: 'fixed',
+				horizontalSpacing: '0.25rem',
+				verticalSpacing: '0.25rem',
 			},
 		}),
 		Flex: Flex.extend({

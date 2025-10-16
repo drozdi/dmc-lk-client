@@ -1,4 +1,4 @@
-import { Accordion, Group, Table, Text } from '@mantine/core'
+import { Accordion, Group, NavLink, Table, Text } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { TbList } from 'react-icons/tb'
@@ -15,6 +15,7 @@ import { useProduction } from '../stores/hooks/use-production'
 
 export const LabelsCountWidget = observer(props => {
 	const labelsFormat = useFormatPrints()
+	const [active, setActive] = useState(false)
 	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
 		distributed: [],
@@ -142,70 +143,70 @@ export const LabelsCountWidget = observer(props => {
 
 	return (
 		<ExpandablePanel loading={reqAnalytics.isLoading || reqLabelsCount.isLoading} title={''}>
-			<Accordion variant='unstyled'>
-				<Accordion.Item value='main'>
-					<Accordion.Control>
-						<Group justify='space-between'>
-							<Text>Площадка</Text>
-							<Group justify='space-between' miw='50%'>
-								<Text>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</Text>
-								<Text miw='50%'>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</Text>
-							</Group>
+			<NavLink
+				active={active}
+				variant='light'
+				href='#'
+				onChange={v => setActive(v)}
+				childrenOffset='0'
+				label={
+					<Group justify='space-between'>
+						<Text>Площадка</Text>
+						<Group justify='space-between' miw='50%'>
+							<Text>расход: {Object.values(res).reduce((acc, item) => acc + item.minus, 0)}</Text>
+							<Text miw='50%'>остаток: {Object.values(res).reduce((acc, item) => acc + item.total, 0)}</Text>
 						</Group>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Accordion variant='contained' chevronPosition='left'>
-							{Object.values(res).map(production => {
-								return (
-									<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
-										<Accordion.Control>
-											<Group justify='space-between'>
-												<Text>
-													{production.production_name} ({production.production_id})
-												</Text>
-												<Group justify='space-between' miw='50%'>
-													<Text>расход: {production.minus}</Text>
-													<Text miw='50%'>остаток: {production.total}</Text>
-												</Group>
-											</Group>
-										</Accordion.Control>
-										<Accordion.Panel>
-											<Table layout='fixed' withTableBorder withRowBorders withColumnBorders highlightOnHover>
-												<Table.Thead>
-													<Table.Tr>
-														<Table.Th w='2rem'></Table.Th>
-														<Table.Th>Этикетка</Table.Th>
-														<Table.Th>Расход</Table.Th>
-														<Table.Th>Остаток</Table.Th>
-													</Table.Tr>
-												</Table.Thead>
-												<GroupProvider onDragEnd={factoryHandleDragEnd(Number(production.production_id))}>
-													<Table.Tbody>
-														{Object.entries(production.labels).map(([label, { total, minus, container }]) => {
-															const Wrap = container ? GroupContainer : GroupItem
-															const props = container ? { column: label } : { id: label, data: label }
-															return (
-																<Wrap key={production.production_id + label} {...props}>
-																	<Table.Tr>
-																		<Table.Td ta='center'>{container === false && <TbList />}</Table.Td>
-																		<Table.Td>{label}</Table.Td>
-																		<Table.Td>{minus}</Table.Td>
-																		<Table.Td>{total}</Table.Td>
-																	</Table.Tr>
-																</Wrap>
-															)
-														})}
-													</Table.Tbody>
-												</GroupProvider>
-											</Table>
-										</Accordion.Panel>
-									</Accordion.Item>
-								)
-							})}
-						</Accordion>
-					</Accordion.Panel>
-				</Accordion.Item>
-			</Accordion>
+					</Group>
+				}
+			>
+				<Accordion chevronPosition='left'>
+					{Object.values(res).map(production => (
+						<Accordion.Item key={production.production_id} value={'acc-' + production.production_id}>
+							<Accordion.Control>
+								<Group my='-xs' justify='space-between'>
+									<Text>
+										{production.production_name} ({production.production_id})
+									</Text>
+									<Group justify='space-between' miw='50%'>
+										<Text>расход: {production.minus}</Text>
+										<Text miw='50%'>остаток: {production.total}</Text>
+									</Group>
+								</Group>
+							</Accordion.Control>
+							<Accordion.Panel>
+								<Table withTableBorder withRowBorders withColumnBorders>
+									<Table.Thead>
+										<Table.Tr>
+											<Table.Th w='2rem'></Table.Th>
+											<Table.Th>Этикетка</Table.Th>
+											<Table.Th>Расход</Table.Th>
+											<Table.Th>Остаток</Table.Th>
+										</Table.Tr>
+									</Table.Thead>
+									<GroupProvider onDragEnd={factoryHandleDragEnd(Number(production.production_id))}>
+										<Table.Tbody>
+											{Object.entries(production.labels).map(([label, { total, minus, container }]) => {
+												const Wrap = container ? GroupContainer : GroupItem
+												const props = container ? { column: label } : { id: label, data: label }
+												return (
+													<Wrap key={production.production_id + label} {...props}>
+														<Table.Tr>
+															<Table.Td ta='center'>{container === false && <TbList />}</Table.Td>
+															<Table.Td>{label}</Table.Td>
+															<Table.Td>{minus}</Table.Td>
+															<Table.Td>{total}</Table.Td>
+														</Table.Tr>
+													</Wrap>
+												)
+											})}
+										</Table.Tbody>
+									</GroupProvider>
+								</Table>
+							</Accordion.Panel>
+						</Accordion.Item>
+					))}
+				</Accordion>
+			</NavLink>
 		</ExpandablePanel>
 	)
 })

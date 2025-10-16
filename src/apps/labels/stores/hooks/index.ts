@@ -1,5 +1,7 @@
 export * from './use-consumptions'
+export * from './use-counts'
 export * from './use-format-consumptions'
 export * from './use-format-prints'
 export * from './use-formats'
+export * from './use-histories'
 export * from './use-prints'

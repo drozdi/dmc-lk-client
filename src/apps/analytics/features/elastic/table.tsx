@@ -169,7 +169,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 				</Group>
 			</Group>
 			<Loading active={isLoading} keepMounted>
-				<Table striped>
+				<Table>
 					<Table.Thead>
 						{table.getHeaderGroups().map((headerGroup, index) => (
 							<Table.Tr key={headerGroup.id + '-' + index}>
