@@ -1,17 +1,17 @@
 import { Button, Notification, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { setAccessToken } from '../../shared/api/token-service'
 import { authStore } from '../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
+	let [searchParams] = useSearchParams()
 	const { isLoading, error } = authStore
-
-	const [link, setLink] = useState('')
+	const [link, setLink] = useState(searchParams.get('link') || '')
 	const navigate = useNavigate()
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-		e.preventDefault()
+	async function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
+		e?.preventDefault()
 		try {
 			const data = await authStore.verification(link)
 			setAccessToken(data.data.token)
@@ -20,10 +20,16 @@ export const VerificationForm = observer(() => {
 			console.log(error)
 		}
 	}
+	useEffect(() => {
+		if (searchParams.get('link')) {
+			handleSubmit()
+		}
+	}, [])
+
 	return (
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
-			<form name='verification' className='space-y-3' onSubmit={handleSubmit}>
+			<form name='verification' onSubmit={handleSubmit}>
 				<TextInput
 					placeholder='Код'
 					id='link-code'

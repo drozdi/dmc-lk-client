@@ -1,4 +1,4 @@
-import { Button, Notification, PasswordInput, TextInput } from '@mantine/core'
+import { Button, Notification, PasswordInput, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { yupResolver } from 'mantine-form-yup-resolver'
 import { observer } from 'mobx-react-lite'
@@ -69,11 +69,11 @@ export const SignUpForm = observer(() => {
 	return (
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
-			<form>
+			<Stack component='form' name='signГз'>
 				<TextInput placeholder='Имя' type='text' required {...form.getInputProps('first_name')} />
 				<TextInput placeholder='Фамилия' type='text' required {...form.getInputProps('last_name')} />
 				<TextInput placeholder='Отчество' type='text' required {...form.getInputProps('father_name')} />
-				<TextInput placeholder='Email' id='registration_email' type='email' required {...form.getInputProps('email')} />
+				<TextInput placeholder='Email' type='email' required {...form.getInputProps('email')} />
 
 				<TextInput placeholder='Телефон' type='phone' required {...form.getInputProps('phone')} />
 
@@ -83,7 +83,7 @@ export const SignUpForm = observer(() => {
 				<Button onClick={form.onSubmit(sendFormData)} fullWidth loading={isLoading}>
 					Войти
 				</Button>
-			</form>
+			</Stack>
 		</>
 	)
 })

@@ -65,7 +65,6 @@ export const LabelsCountWidget = observer(() => {
 				res[count.production_id].labels[count.add_label_format].total += count.sum
 			}
 		}
-
 		for (let prod in res) {
 			for (let label in res[prod].labels) {
 				if (

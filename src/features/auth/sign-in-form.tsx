@@ -25,7 +25,6 @@ export const SignInForm = observer(props => {
 					<TextInput
 						label='Email'
 						placeholder='Email'
-						id='email-address'
 						name='email'
 						type='email'
 						autoComplete='email'
@@ -36,7 +35,6 @@ export const SignInForm = observer(props => {
 					<PasswordInput
 						label='Пароль'
 						placeholder='Пароль'
-						id='email-address'
 						name='password'
 						type='password'
 						autoComplete='current-password'
