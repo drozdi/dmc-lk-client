@@ -51,8 +51,12 @@ api.interceptors.response.use(
 		if (error.response?.status === 401 && !originalRequest._retry) {
 			originalRequest._retry = true
 			try {
+				const refreshToken = getRefreshToken()
+				if (!refreshToken) {
+					window.location.href = '/auth/sign-in'
+				}
 				// Пытаемся обновить токен
-				const response = await requestRefresh(getRefreshToken())
+				const response = await requestRefresh(refreshToken)
 				const { access, refresh } = response.data.token
 
 				setAccessToken(access)

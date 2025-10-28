@@ -14,7 +14,7 @@ export const SignInForm = observer(props => {
 		e.preventDefault()
 		const res = await authStore.login(email, password)
 		if (true === res) {
-			navigate('/')
+			navigate('/analytics')
 		}
 	}
 

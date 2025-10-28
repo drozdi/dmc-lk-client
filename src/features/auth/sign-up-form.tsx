@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite'
 import { useNavigate } from 'react-router-dom'
 import * as yup from 'yup'
 import { authStore } from '../../stores/auth-store'
+import { userStore } from '../../stores/user-store'
 
 const fieldsSchema = yup.object().shape({
 	first_name: yup.string().required('Заполните имя'),
@@ -61,8 +62,10 @@ export const SignUpForm = observer(() => {
 	const navigate = useNavigate()
 
 	async function sendFormData(formData) {
-		if (await authStore.register(formData)) {
-			navigate('/lk')
+		const res = await authStore.register(formData)
+		userStore.setUserData(res.user)
+		if (res) {
+			navigate('/analytics')
 		}
 	}
 
