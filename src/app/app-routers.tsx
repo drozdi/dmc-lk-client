@@ -6,6 +6,7 @@ import { ProtectedRoute } from '../features/router/protected-route'
 
 import { MainPage } from '../pages/main-page'
 import { PersonalPage } from '../pages/personal-page'
+import { SettingsPage } from '../pages/settings-page'
 import { SignInPage } from '../pages/sign-in-page'
 import { SignOutPage } from '../pages/sign-out-page'
 import { SignUpPage } from '../pages/sign-up-page'
@@ -42,6 +43,11 @@ const routes = () => [
 				element: <SignOutPage />,
 			},
 		],
+	},
+	{
+		path: '/s',
+		element: <AuthLayout />,
+		children: [{ path: '', element: <SettingsPage /> }],
 	},
 	{
 		path: '/',

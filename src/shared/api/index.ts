@@ -1,9 +1,10 @@
 import axios, { AxiosError } from 'axios'
-import { PRODUCT_ID_KEY, URL_API } from '../constants'
+import { PRODUCT_ID_KEY } from '../constants'
+import { getURLApi } from '../utils'
 import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from './token-service'
 
 export const api = axios.create({
-	baseURL: URL_API,
+	baseURL: getURLApi(),
 	headers: {
 		'Content-Type': 'application/json',
 	},
