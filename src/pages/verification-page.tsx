@@ -1,9 +1,13 @@
+import { Stack, Title } from '@mantine/core'
 import { VerificationForm } from '../features/auth/verification-form'
-export function VerificatinPage() {
+
+export function VerificationPage() {
 	return (
-		<>
-			<h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Проверка</h2>
+		<Stack>
+			<Title ta='center' order={1}>
+				Проверка
+			</Title>
 			<VerificationForm />
-		</>
+		</Stack>
 	)
 }

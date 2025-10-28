@@ -5,5 +5,5 @@ export const REFRESH_TOKEN_KEY = 'token.refresh'
 export const URL_API_KEY = 'url.api'
 export const BASE_URL_KEY = 'base.url'
 
-export const URL_API = 'http://10.76.10.145:5056/v1'
-export const BASE_URL = '/api'
+export const URL_API = 'http://10.76.10.145:5056/api/v1'
+export const BASE_URL = '/'

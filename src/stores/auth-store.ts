@@ -1,12 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { requestLogin, requestRefresh, requestRegister, requestVerification } from '../shared/api'
-import {
-	clearTokens,
-	getAccessToken,
-	getRefreshToken,
-	setAccessToken,
-	setRefreshToken,
-} from '../shared/api/token-service'
+import { clearTokens, getRefreshToken, setAccessToken, setRefreshToken } from '../shared/api/token-service'
 import { notification } from '../shared/notification'
 
 class AuthStore {
@@ -19,7 +13,7 @@ class AuthStore {
 		this.checkAuth()
 	}
 	checkAuth = () => {
-		this.isAuthenticated = !!getAccessToken()
+		this.isAuthenticated = !!getRefreshToken()
 	}
 	private clearAuth() {
 		this.isAuthenticated = false

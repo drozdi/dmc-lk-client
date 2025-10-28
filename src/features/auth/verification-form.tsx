@@ -1,4 +1,4 @@
-import { Button, Notification, TextInput } from '@mantine/core'
+import { Button, Notification, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { authStore } from '../../stores/auth-store'
 export const VerificationForm = observer(() => {
 	let [searchParams] = useSearchParams()
 	const { isLoading, error } = authStore
-	const [link, setLink] = useState(searchParams.get('link') || '')
+	const [link, setLink] = useState<string>(searchParams.get('link') || '')
 	const navigate = useNavigate()
 	async function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
 		e?.preventDefault()
@@ -29,7 +29,7 @@ export const VerificationForm = observer(() => {
 	return (
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
-			<form name='verification' onSubmit={handleSubmit}>
+			<Stack component='form' name='verification' onSubmit={handleSubmit}>
 				<TextInput
 					placeholder='Код'
 					id='link-code'
@@ -43,7 +43,7 @@ export const VerificationForm = observer(() => {
 				<Button type='submit' fullWidth loading={isLoading}>
 					Продолжить
 				</Button>
-			</form>
+			</Stack>
 		</>
 	)
 })

@@ -1,9 +1,13 @@
+import { Stack, Title } from '@mantine/core'
 import { SignUpForm } from '../features/auth/sign-up-form'
+
 export function SignUpPage() {
 	return (
-		<>
-			<h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>Регистрация</h2>
+		<Stack>
+			<Title ta='center' order={1}>
+				Регистрация
+			</Title>
 			<SignUpForm />
-		</>
+		</Stack>
 	)
 }

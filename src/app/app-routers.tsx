@@ -10,7 +10,7 @@ import { SettingsPage } from '../pages/settings-page'
 import { SignInPage } from '../pages/sign-in-page'
 import { SignOutPage } from '../pages/sign-out-page'
 import { SignUpPage } from '../pages/sign-up-page'
-import { VerificatinPage } from '../pages/verification-page'
+import { VerificationPage } from '../pages/verification-page'
 
 import analyticsRouers from '../apps/analytics/routers'
 import labelsRouers from '../apps/labels/routers'
@@ -28,7 +28,7 @@ const routes = () => [
 			},
 			{
 				path: 'verificatin',
-				element: <VerificatinPage />,
+				element: <VerificationPage />,
 			},
 			{
 				path: 'sign-in',

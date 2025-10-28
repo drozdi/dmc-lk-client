@@ -69,7 +69,7 @@ export const SignUpForm = observer(() => {
 	return (
 		<>
 			{error && <Notification color='red'>{error}</Notification>}
-			<Stack component='form' name='signГз'>
+			<Stack component='form' name='signUp'>
 				<TextInput placeholder='Имя' type='text' required {...form.getInputProps('first_name')} />
 				<TextInput placeholder='Фамилия' type='text' required {...form.getInputProps('last_name')} />
 				<TextInput placeholder='Отчество' type='text' required {...form.getInputProps('father_name')} />
