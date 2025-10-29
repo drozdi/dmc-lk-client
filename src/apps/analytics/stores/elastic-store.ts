@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsElastic } from '../api/elastic'
 import { requestAnalyticsQueriesAdd, requestAnalyticsQueriesList, requestAnalyticsQueriesUpdate } from '../api/queries'
@@ -15,8 +16,8 @@ class ElasticStore {
 			select_field: [],
 			list_where: [],
 			date_limit: {
-				date_from: '',
-				date_to: '',
+				date_from: dayjs().month(-1).format('YYYY-MM-DD'),
+				date_to: dayjs().format('YYYY-MM-DD'),
 				date_rounding: undefined,
 			},
 		},
@@ -118,11 +119,12 @@ class ElasticStore {
 				size: this.size,
 				number: this.number,
 			})
+
 			this.isLoaded = true
-			this._list = res.request
+			this._list = res.data.request ?? []
 
 			this.state = {
-				isNext: res.request.length >= this.size,
+				isNext: res.data.length >= this.size,
 				isPrev: this.number > 1,
 			}
 		} catch (error) {
@@ -178,6 +180,7 @@ class ElasticStore {
 			return res.data
 		} catch (error) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.data = []
 		} finally {
 			this.isLoading = false
 		}
@@ -223,8 +226,10 @@ class ElasticStore {
 				select_field: [],
 				list_where: [],
 				date_limit: {
-					date_from: '',
-					date_to: '',
+					date_from: dayjs()
+						.month(dayjs().month() - 1)
+						.format('YYYY-MM-DD'),
+					date_to: dayjs().format('YYYY-MM-DD'),
 					date_rounding: undefined,
 				},
 			},

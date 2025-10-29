@@ -10,15 +10,15 @@ export const LabelsHistory = () => {
 	const [data, setData] = useState({})
 	const { isLoading, error, request } = useQuery(requestLabelsCountHistory)
 	const ddata = useMemo(() => {
-		return Object.values(data).map(item => ({
+		return Object.values(data ?? {}).map(item => ({
 			name_production: item[0].name_production,
 			production_id: item[0].production_id,
-			items: item.sort((a, b) => a.date_applic < b.date_applic),
+			items: item.sort((a, b) => a.filterdate < b.filterdate),
 		}))
 	}, [data])
 	async function fetch() {
 		const res = await request()
-		setData(res.data.response)
+		setData(res.data)
 	}
 	useEffect(() => {
 		fetch()

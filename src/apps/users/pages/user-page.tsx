@@ -1,7 +1,14 @@
+import { Paper } from '@mantine/core'
 import { useParams } from 'react-router-dom'
+import { TemplateTitle } from '../../../layout'
 import { UserForm } from '../features/user-form'
 
 export function UserPage() {
 	const { userId } = useParams()
-	return <UserForm id={userId} />
+	return (
+		<Paper>
+			<TemplateTitle>Пользователь</TemplateTitle>
+			<UserForm id={userId} />
+		</Paper>
+	)
 }

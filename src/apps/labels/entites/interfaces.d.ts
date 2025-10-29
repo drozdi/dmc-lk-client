@@ -2,11 +2,11 @@ declare type IRequestCountLabelReset = number
 declare interface IRequestCountLabelHistory {
 	size?: number
 	number?: number
-	date_applic?: string | string[]
+	filterdate?: string | string[]
 }
 declare interface ICountLabelHistoryItem {
 	format_template: string
-	date_applic: string
+	filterdate: string
 	count_label: number
 	production_id: number
 	id_company: number

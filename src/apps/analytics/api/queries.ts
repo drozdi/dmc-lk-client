@@ -13,7 +13,7 @@ export async function requestAnalyticsQueriesList({
 			number,
 		},
 	})
-	return res.data.data
+	return res.data
 }
 
 export async function requestAnalyticsQueriesGet(id: number) {

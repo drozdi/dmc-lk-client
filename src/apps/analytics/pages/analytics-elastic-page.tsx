@@ -1,8 +1,11 @@
+import { Paper } from '@mantine/core'
+import { TemplateTitle } from '@t'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { Loading } from '../../../shared/ui'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
+
 export const AnalyticsElasticPage = observer(() => {
 	const [isLoading, setIsLoading] = useState(true)
 
@@ -11,8 +14,11 @@ export const AnalyticsElasticPage = observer(() => {
 		setIsLoading(false)
 	}, [])
 	return (
-		<Loading active={isLoading}>
-			<TableElastic />
-		</Loading>
+		<Paper>
+			<TemplateTitle>Новый шаблон</TemplateTitle>
+			<Loading active={isLoading}>
+				<TableElastic />
+			</Loading>
+		</Paper>
 	)
 })

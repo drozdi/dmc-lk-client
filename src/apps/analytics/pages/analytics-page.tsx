@@ -1,5 +1,6 @@
-import { Group, SimpleGrid, Text } from '@mantine/core'
+import { Group, Paper, SimpleGrid, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
+import { TemplateTitle } from '@t'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
@@ -39,7 +40,8 @@ export function AnalyticsPage() {
 	}
 
 	return (
-		<>
+		<Paper>
+			<TemplateTitle>Аналитика</TemplateTitle>
 			<Group justify='center'>
 				<Text>C</Text>
 				<DatePickerInput
@@ -62,6 +64,6 @@ export function AnalyticsPage() {
 				<AnalyticPieWidget {...query} step='mon' />
 				<AnalyticTypeWidget {...query} step='mon' />
 			</SimpleGrid>
-		</>
+		</Paper>
 	)
 }

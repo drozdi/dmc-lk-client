@@ -18,7 +18,7 @@ export function SettingsPage() {
 	return (
 		<Box component='form' w='20rem'>
 			<TextInput variant='filled' placeholder='API' label='API' {...form.getInputProps('api')} />
-			<TextInput variant='filled' placeholder='Base' label='Base' {...form.getInputProps('base')} />
+			<TextInput variant='filled' placeholder='Base Router' label='Base Router' {...form.getInputProps('base')} />
 			<Button onClick={form.onSubmit(onHandleSubmit)}>Сохранить</Button>
 		</Box>
 	)

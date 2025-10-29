@@ -79,9 +79,10 @@ export const LabelsCountWidget = observer(props => {
 				res[count.production_id].labels[count.add_label_format].total += count.sum
 			}
 		}
+		console.log(countP)
 		for (const production of countP.production || []) {
 			for (const data of production.data || []) {
-				Object.entries(res[production.production_id].labels).forEach(([label, labels]) => {
+				Object.entries(res[production.production_id]?.labels || {}).forEach(([label, labels]) => {
 					if (labels.labels.includes(data.data)) {
 						labels.minus += data.count
 					}

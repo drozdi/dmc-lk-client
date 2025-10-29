@@ -91,6 +91,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	return (
 		<>
 			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
+			{/* <TemplateTitle>Пользователь - {form.values?.email}</TemplateTitle> */}
 			<Loading active={isLoading} keepMounted>
 				<form>
 					<Tabs defaultValue='tab-general'>

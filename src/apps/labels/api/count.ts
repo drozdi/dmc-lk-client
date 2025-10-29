@@ -8,15 +8,15 @@ export async function requestLabelsCountReset(production_id: IRequestCountLabelR
 export async function requestLabelsCountHistory({
 	size = 100,
 	number = 0,
-	date_applic = [],
+	filterdate = [],
 }: IRequestCountLabelHistory = {}): Promise<IResponse<IResponseCountLabelHistory>> {
 	const arr = ['size=' + size, 'number=' + number]
-	if (Array.isArray(date_applic)) {
-		date_applic.forEach(item => {
-			item && arr.push('date_applic=' + item)
+	if (Array.isArray(filterdate)) {
+		filterdate.forEach(item => {
+			item && arr.push('filterdate=' + item)
 		})
-	} else if (date_applic) {
-		arr.push(`date_applic=${date_applic}`)
+	} else if (filterdate) {
+		arr.push(`filterdate=${filterdate}`)
 	}
 	const res = await api.get(`/count_label/history/?${arr.join('&')}`)
 	return res.data
