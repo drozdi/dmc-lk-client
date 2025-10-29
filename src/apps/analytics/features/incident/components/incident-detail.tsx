@@ -73,7 +73,7 @@ export function IncidentDetail(props) {
 	}
 
 	return (
-		<Loading keepMounted active={isLoading}>
+		<Loading mih='100' keepMounted active={isLoading}>
 			<Group justify='center'>
 				{production_id && (
 					<Button color='red' variant='outline' onClick={() => setProduction(0, '')} rightSection={<TbX />}>

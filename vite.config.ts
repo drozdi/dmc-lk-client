@@ -9,6 +9,7 @@ export default defineConfig({
 		alias: {
 			'@style': path.resolve(__dirname, './src/shared/style/index.css'),
 			'@ui': path.resolve(__dirname, './src/shared/ui'),
+			'@t': path.resolve(__dirname, './src/layout'),
 		},
 	},
 	plugins: [react(), tailwindcss()],

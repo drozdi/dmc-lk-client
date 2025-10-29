@@ -60,9 +60,11 @@ export const IncidentDay = observer(({ day }: { day: string }) => {
 	}, [fields])
 
 	useEffect(() => {
-		request(query).then(data => {
-			setData(data?.message || [])
-		})
+		if (query.filterdate?.length) {
+			request(query).then(data => {
+				setData(data?.message || [])
+			})
+		}
 	}, [query])
 
 	return (
@@ -79,18 +81,26 @@ export const IncidentDay = observer(({ day }: { day: string }) => {
 					</Table.Tr>
 				</Table.Thead>
 				<Table.Tbody>
-					{data.map((item: any, index: number) => (
-						<Table.Tr key={item.id}>
-							<Table.Td>{dayjs(item.timestamp).format('YYYY-MM-DD HH:mm')}</Table.Td>
-							<Table.Td>{item.place_name}</Table.Td>
-							<Table.Td>{item.device_name}</Table.Td>
-							<Table.Td>{item.event_name}</Table.Td>
-							<Table.Td>{item.node_name}</Table.Td>
-							<Table.Td>
-								{item.data} ({item.total_counter})
+					{data?.length ? (
+						data.map((item: any, index: number) => (
+							<Table.Tr key={item.id}>
+								<Table.Td>{dayjs(item.timestamp).format('YYYY-MM-DD HH:mm')}</Table.Td>
+								<Table.Td>{item.place_name}</Table.Td>
+								<Table.Td>{item.device_name}</Table.Td>
+								<Table.Td>{item.event_name}</Table.Td>
+								<Table.Td>{item.node_name}</Table.Td>
+								<Table.Td>
+									{item.data} ({item.total_counter})
+								</Table.Td>
+							</Table.Tr>
+						))
+					) : (
+						<Table.Tr>
+							<Table.Td colSpan={6} ta='center' fz='h2' p='md'>
+								Данные отсутствуют
 							</Table.Td>
 						</Table.Tr>
-					))}
+					)}
 				</Table.Tbody>
 			</Table>
 		</Loading>

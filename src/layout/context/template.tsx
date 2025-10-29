@@ -1,4 +1,5 @@
 import { cloneElement, createContext, useContext, useEffect, useId, useMemo, useState } from 'react'
+import { Title } from '../../shared/ui'
 
 type TemplateManagerStateType = Record<string, any>
 type TemplateManagerContextType = {
@@ -73,6 +74,14 @@ export function Template({ slot, children }: { slot: string; children: any }) {
 	}
 
 	return null
+}
+
+export function TemplateTitle({ children, ...props }: { children: React.ReactNode }) {
+	const manager = useContext(TemplateManagerContext)
+	if (!manager) {
+		return <Title {...props}>{children}</Title>
+	}
+	return <Template slot='title'>{children}</Template>
 }
 
 /**

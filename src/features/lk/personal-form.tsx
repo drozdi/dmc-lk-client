@@ -24,24 +24,23 @@ const fieldsSchema = yup.object().shape({
 })
 
 export const PersonalForm = observer(() => {
-	const { isLoading } = userStore
+	const { isLoading, userData } = userStore
 
 	const form = useForm({
 		mode: 'uncontrolled',
 		name: 'personalForm',
 		initialValues: {
-			first_name: userStore.userData?.first_name || '',
-			last_name: userStore.userData?.last_name || '',
-			father_name: userStore.userData?.father_name || '',
-			email: userStore.userData?.email || '',
-			phone: userStore.userData?.phone || '',
+			first_name: userData?.first_name || '',
+			last_name: userData?.last_name || '',
+			father_name: userData?.father_name || '',
+			email: userData?.email || '',
+			phone: userData?.phone || '',
 		},
 		validate: yupResolver(fieldsSchema),
 		onValuesChange: values => {
 			userStore.setUserData(values)
 		},
 	})
-
 	const formPassword = useForm({
 		mode: 'uncontrolled',
 		name: 'passwordForm',
@@ -90,8 +89,10 @@ export const PersonalForm = observer(() => {
 	const isValid = true
 
 	useEffect(() => {
-		// form.setValues(userData)
-	}, [])
+		if (userData?.email) {
+			form.initialize(userData)
+		}
+	}, [userData])
 
 	return (
 		<Loading active={isLoading} keepMounted>

@@ -51,16 +51,17 @@ class LabelsStore implements IQuery, Record<string, any> {
 	}
 
 	private _formats: Record<string, string[]> = {}
+	isLoadedFormats = false
 	get formats(): Record<string, string[]> {
 		this.loadFormats()
 		return this._formats
 	}
 	async loadFormats(reloading: boolean = false) {
 		if (reloading) {
-			this.isLoaded = false
+			this.isLoadedFormats = false
 			this._formats = []
 		}
-		if (this.isLoaded) {
+		if (this.isLoadedFormats) {
 			return
 		}
 
@@ -68,7 +69,7 @@ class LabelsStore implements IQuery, Record<string, any> {
 		this.isLoading = true
 		try {
 			const res = await requestLabelsAllFormat()
-			this.isLoaded = true
+			this.isLoadedFormats = true
 			this._formats = res.data
 		} catch (error) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
@@ -126,7 +127,7 @@ class LabelsStore implements IQuery, Record<string, any> {
 			})
 			this.isLoadedFormatPrints = true
 			this._formatPrints = Object.fromEntries(
-				Object.keys(res.response).map(key => {
+				Object.keys(res.data).map(key => {
 					return [
 						key,
 						res.response[key]

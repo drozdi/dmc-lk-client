@@ -1,4 +1,4 @@
-import { AppShell, Burger, Button, Container, Group, ScrollArea } from '@mantine/core'
+import { AppShell, Burger, Button, Container, Divider, Group, ScrollArea } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ShopCartBtn } from '../apps/shop/features/shop-cart-btn'
@@ -7,6 +7,7 @@ import { InOutLink } from '../features/auth/in-out-link'
 import { ChangeProduct } from '../features/lk/change-product'
 import { PersonalLink } from '../features/lk/personal-link'
 import { Logo } from '../features/logo/Logo'
+import { Title } from '../shared/ui'
 import { MainMenu } from './components/main-menu'
 import { ThemeBtn } from './components/theme-btn'
 import { TemplateSlot } from './context/template'
@@ -29,8 +30,14 @@ export function MainLayout() {
 			>
 				<AppShell.Header>
 					<Group h='100%' px='md' justify='space-between'>
-						<Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
-						<Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom='sm' size='sm' />
+						<Group>
+							<Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
+							<Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom='sm' size='sm' />
+							<Divider orientation='vertical' />
+							<Title order={1} size='h3' fw='400'>
+								<TemplateSlot name='title' />
+							</Title>
+						</Group>
 						<Group>
 							<ChangeProduct />
 							<ShopCartBtn />
