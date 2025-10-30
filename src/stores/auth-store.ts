@@ -1,12 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { requestLogin, requestRefresh, requestRegister, requestVerification } from '../shared/api'
-import {
-	clearTokens,
-	getAccessToken,
-	getRefreshToken,
-	setAccessToken,
-	setRefreshToken,
-} from '../shared/api/token-service'
+import { api, requestLogin, requestRefresh, requestRegister, requestVerification } from '../shared/api'
 import { notification } from '../shared/notification'
 
 class AuthStore {
@@ -19,14 +12,14 @@ class AuthStore {
 		this.checkAuth()
 	}
 	checkAuth = () => {
-		this.isAuthenticated = !!getRefreshToken() && !!getAccessToken()
+		this.isAuthenticated = !!api.getRefreshToken() && !!api.getAccessToken()
 	}
 	private clearAuth() {
 		this.isAuthenticated = false
-		clearTokens()
+		api.clearTokens()
 	}
 	private async refreshAuth() {
-		const refresh = getRefreshToken()
+		const refresh = api.getRefreshToken()
 
 		if (!refresh) {
 			throw new Error('Нет refresh token')
@@ -35,8 +28,8 @@ class AuthStore {
 		try {
 			const response = await requestRefresh(refresh)
 			const { accessToken, refreshToken } = response
-			setAccessToken(accessToken)
-			setRefreshToken(refreshToken)
+			api.setAccessToken(accessToken)
+			api.setRefreshToken(refreshToken)
 			return { accessToken, refreshToken }
 		} catch (error) {
 			this.clearAuth()
@@ -65,8 +58,8 @@ class AuthStore {
 				password,
 			})
 			const { token } = response.data
-			setAccessToken(token.access)
-			setRefreshToken(token.refresh)
+			api.setAccessToken(token.access)
+			api.setRefreshToken(token.refresh)
 			this.isAuthenticated = true
 			return true
 		} catch (error) {
@@ -84,8 +77,8 @@ class AuthStore {
 		try {
 			const response = await requestRegister(userData)
 			const { token, user } = response.data
-			setAccessToken(token.access)
-			setRefreshToken(token.refresh)
+			api.setAccessToken(token.access)
+			api.setRefreshToken(token.refresh)
 			this.isAuthenticated = true
 			return response.data
 		} catch (error) {

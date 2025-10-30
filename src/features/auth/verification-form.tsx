@@ -2,7 +2,7 @@ import { Button, Notification, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { setAccessToken, setRefreshToken } from '../../shared/api/token-service'
+import { api } from '../../shared/api'
 import { authStore } from '../../stores/auth-store'
 
 export const VerificationForm = observer(() => {
@@ -17,8 +17,8 @@ export const VerificationForm = observer(() => {
 			if (!data.data?.token) {
 				return
 			}
-			setAccessToken(data.data.token)
-			setRefreshToken('')
+			api.setAccessToken(data.data.token)
+			api.setRefreshToken('')
 			navigate('/auth/sign-up')
 		} catch (error) {
 			console.log(error)
