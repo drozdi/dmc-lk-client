@@ -92,7 +92,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 
 							try {
 								const newTokens = await this.refreshTokens()
-								console.log(newTokens)
+
 								this.setAccessToken(newTokens[this.accessToken])
 								this.setRefreshToken(newTokens[this.refreshToken])
 

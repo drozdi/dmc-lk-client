@@ -1,7 +1,3 @@
-import { DatesProvider } from '@mantine/dates'
-import 'dayjs/locale/ru'
-import { TemplateProvider } from '../layout/context'
-
 import {
 	Checkbox,
 	createTheme,
@@ -16,8 +12,12 @@ import {
 	Table,
 	Tabs,
 } from '@mantine/core'
+import { DatesProvider } from '@mantine/dates'
 import { ModalsProvider } from '@mantine/modals'
 import { Notifications } from '@mantine/notifications'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import 'dayjs/locale/ru'
+import { TemplateProvider } from '../layout/context'
 import inputClasses from './input.module.css'
 import switchClasses from './switch.module.css'
 
@@ -307,14 +307,24 @@ const theme = createTheme({
 	},
 })
 
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			//suspense: true,
+		},
+	},
+})
+
 export function AppProvider({ children }: AppProviderProps) {
 	return (
 		<MantineProvider theme={theme}>
 			<DatesProvider settings={{ locale: 'ru' }}>
-				<Notifications />
-				<ModalsProvider>
-					<TemplateProvider>{children}</TemplateProvider>
-				</ModalsProvider>
+				<QueryClientProvider client={queryClient}>
+					<Notifications />
+					<ModalsProvider>
+						<TemplateProvider>{children}</TemplateProvider>
+					</ModalsProvider>
+				</QueryClientProvider>
 			</DatesProvider>
 		</MantineProvider>
 	)

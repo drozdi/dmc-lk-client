@@ -1,45 +1,38 @@
-import { Button, Group, NavLink, Notification, Select } from '@mantine/core'
+import { Button, Group, NavLink, Notification, Paper, Select } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout/context'
-import { useQuery } from '../../../shared/hooks'
 import { Loading } from '../../../shared/ui'
-import { requestUsersList } from '../api'
+import { useFetchUsers } from '../api'
 
 interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
-	const navigate = useNavigate()
-	const { isLoading, error, request } = useQuery(requestUsersList, 'Ошибка при загрузке пользователей')
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)
-
-	const fetchUsers = async () => {
-		const res = await request({ size, number })
-		setList(res.user.request)
-	}
+	const navigate = useNavigate()
+	const ff = useFetchUsers({ number, size })
+	const { isLoading, error, data } = ff
 
 	useEffect(() => {
-		fetchUsers()
-	}, [number, size])
+		setList(data?.user?.request || [])
+	}, [data])
 
 	return (
-		<>
-			<Loading mt='xs' active={isLoading} keepMounted>
+		<Paper>
+			<Loading active={isLoading} keepMounted>
 				{list.map(item => (
 					<NavLink
-						onClick={event => {
-							event.preventDefault()
-							navigate(`/users/${item.id}`)
-						}}
-						href={`/users/${item.id}`}
+						component={Link}
+						to={`/users/${item.id}`}
 						key={item.id}
 						label={[item.last_name, item.first_name, item.father_name].join(' ')}
 					/>
 				))}
 			</Loading>
+
 			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 			<Template slot='footer'>
 				<Group>
@@ -55,6 +48,6 @@ export function UsersList({ className }: UsersListProps) {
 					data={['15', '30', '50', '75', '100']}
 				/>
 			</Template>
-		</>
+		</Paper>
 	)
 }

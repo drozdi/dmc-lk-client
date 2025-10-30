@@ -1,12 +1,12 @@
-import { Button, Checkbox, Group, Notification, Stack, Tabs, TextInput } from '@mantine/core'
+import { Button, Checkbox, Group, Stack, Tabs, TextInput } from '@mantine/core'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
+import { TemplateTitle } from '@t'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout/context'
-import { useQuery, useQueryError, useQueryLoading } from '../../../shared/hooks'
 import { Item, ItemSection, List, Loading, PhoneInput } from '../../../shared/ui'
-import { requestUsersGet, requestUsersUpdate } from '../api'
+import { useEditUser, useFetchUser } from '../api'
 import { usersStore } from '../stores/users-store'
 
 interface UserFormProps {
@@ -17,13 +17,19 @@ interface UserFormProps {
 export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { products } = usersStore
 	const naigate = useNavigate()
-	const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
-	const reqUserUpdate = useQuery(requestUsersUpdate)
+	const ff = useFetchUser(id)
+	const { isLoading, error, data } = ff
+	const fu = useEditUser()
+	console.log(fu)
+	const { mutate } = fu
+	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
+	// const reqUserUpdate = useQuery(requestUsersUpdate)
 
 	const form = useForm({
 		mode: 'uncontrolled',
 		name: 'userForm',
 		initialValues: {
+			id: 0,
 			first_name: '',
 			last_name: '',
 			father_name: '',
@@ -52,15 +58,24 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		},
 	})
 
-	const error = useQueryError(reqUserGet, reqUserUpdate)
-	const isLoading = useQueryLoading(reqUserGet, reqUserUpdate)
+	useEffect(() => {
+		if (data?.email) {
+			const user = { is_active: true, is_superuser: false, ...data }
+			user.id_production = (user.id_production || []).map(item => String(item))
+			form.initialize(user)
+		}
+	}, [data])
+
+	// const error = useQueryError(reqUserGet, reqUserUpdate)
+	// const isLoading = useQueryLoading(reqUserGet, reqUserUpdate)
 
 	async function handleSave(formData: IUsersUser) {
-		await reqUserUpdate.request(id, formData)
+		mutate(formData)
+		// await reqUserUpdate.request(id, formData)
 	}
 	async function handleSaveNavigate(formData: IUsersUser) {
-		await reqUserUpdate.request(id, formData)
-		naigate('/users')
+		// await reqUserUpdate.request(id, formData)
+		// naigate('/users')
 	}
 
 	const handleCheckboxChange = event => {
@@ -70,28 +85,11 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		)
 	}
 
-	useEffect(() => {
-		if (!id) {
-			return
-		}
-		reqUserGet.request(id).then(_ => {
-			const user = { is_active: true, is_superuser: false, ..._ }
-			user.id_production = (user.id_production || []).map(item => String(item))
-			form.setValues({
-				...user,
-			})
-			form.resetDirty({
-				...user,
-			})
-		})
-	}, [id])
-
-	const isValid = true
-
+	const isValid = !(form.errors.length > 0)
 	return (
 		<>
-			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
-			{/* <TemplateTitle>Пользователь - {form.values?.email}</TemplateTitle> */}
+			{/* <Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template> */}
+			<TemplateTitle>Пользователь - {data?.email}</TemplateTitle>
 			<Loading active={isLoading} keepMounted>
 				<form>
 					<Tabs defaultValue='tab-general'>
