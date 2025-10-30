@@ -1,80 +1,41 @@
-import axios, { AxiosError } from 'axios'
-import { PRODUCT_ID_KEY } from '../constants'
-import { getURLApi } from '../utils'
-import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from './token-service'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../constants'
+import { AxiosInterceptor, getURLApi } from '../utils'
 
-export const api = axios.create({
+export const api = new AxiosInterceptor({
 	baseURL: getURLApi(),
 	headers: {
 		'Content-Type': 'application/json',
 	},
-})
-
-api.interceptors.request.use(
-	config => {
-		const token = getAccessToken()
-		if (token) {
-			config.headers.Authorization = `Bearer ${token}`
-		}
-		return config
-		// Площадка
-		if (config.data instanceof FormData) {
-			// Для FormData
-			config.data.append('production_id', localStorage.getItem(PRODUCT_ID_KEY))
-		} else {
-			// Для JSON или других данных
-			config.data = {
-				...config.data,
-				production_id: localStorage.getItem(PRODUCT_ID_KEY),
-			}
-		}
-		return {
-			...config,
-			params: {
-				...config.params,
-				production_id: localStorage.getItem(PRODUCT_ID_KEY),
-			},
-		}
+	message401: 'Signature has expired.',
+	accessToken: 'access',
+	refreshToken: 'refresh',
+	accessTokenKey: ACCESS_TOKEN_KEY,
+	refreshTokenKey: REFRESH_TOKEN_KEY,
+	// urlRefreshToken: '/auth/refreshToken',
+	urlRefreshToken: async (refreshToken: string, axios: Axios) => {
+		const res = await axios.post('/registration/refresh', {
+			refresh_token: refreshToken,
+		})
+		return res.data.data.token
 	},
-	(error: AxiosError) => Promise.reject(error)
-)
-// Интерцептор для обработки 401 ошибки (не авторизован)
-api.interceptors.response.use(
-	response => response,
-	async (error: AxiosError) => {
-		const originalRequest = error.config
-
-		if (originalRequest._retry) {
-			return Promise.reject(error)
-		}
-
-		if (error.response?.status === 401 && !originalRequest._retry) {
-			originalRequest._retry = true
-			try {
-				const refreshToken = getRefreshToken()
-				if (!refreshToken) {
-					window.location.href = '/auth/sign-in'
-				}
-				// Пытаемся обновить токен
-				const response = await requestRefresh(refreshToken)
-				const { access, refresh } = response.data.token
-
-				setAccessToken(access)
-				setRefreshToken(refresh)
-
-				originalRequest.headers.Authorization = `Bearer ${access}`
-				return await api(originalRequest)
-			} catch (refreshError) {
-				// Если не удалось обновить - разлогиниваем
-				clearTokens()
-				//window.location.href = '/auth/sign-in'
-				return Promise.reject(error)
-			}
-		}
-
-		return Promise.reject(error)
-	}
-)
+	// handleRequest: config => {
+	// 	if (config.data instanceof FormData) {
+	// 		config.data.append('production_id', localStorage.getItem(PRODUCT_ID_KEY))
+	// 	} else {
+	// 		config.data = {
+	// 			...config.data,
+	// 			production_id: localStorage.getItem(PRODUCT_ID_KEY),
+	// 		}
+	// 	}
+	// 	return {
+	// 		...config,
+	// 		params: {
+	// 			...config.params,
+	// 			production_id: localStorage.getItem(PRODUCT_ID_KEY),
+	// 		},
+	// 	}
+	// },
+})
 
 export async function requestLogin(credentials: { email: string; password: string }) {
 	const res = await api.post('/registration/authorization', credentials)
