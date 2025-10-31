@@ -44,11 +44,13 @@ const routes = () => [
 			},
 		],
 	},
-	{
-		path: '/s',
-		element: <AuthLayout />,
-		children: [{ path: '', element: <SettingsPage /> }],
-	},
+	import.meta.env.DEV
+		? {
+				path: '/s',
+				element: <AuthLayout />,
+				children: [{ path: '', element: <SettingsPage /> }],
+		  }
+		: {},
 	{
 		path: '/',
 		element: (
