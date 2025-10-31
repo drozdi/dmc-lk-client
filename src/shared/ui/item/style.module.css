@@ -38,6 +38,8 @@
 }
 .item_disabled,
 .item:has(input:disabled) {
+	cursor: not-allowed;
+	opacity: 0.6;
 	&.item_bordered {
 		border-color: var(--mantine-color-disabled-border);
 	}

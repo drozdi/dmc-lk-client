@@ -7,12 +7,12 @@ export async function requestUsersList({ size = 15, number = 0 }: { size?: numbe
 			number,
 		},
 	})
-	return res.data.data
+	return res.data
 }
 
 export async function requestUsersGet(id: number) {
 	const res = await api.get(`/users/user?id_user=${id}`)
-	return res.data.data.user.request[0]
+	return res.data
 }
 export async function requestUsersUpdate(id: number, data: IUsersUser) {
 	const res = await api.patch(`/users/?id_user=${id}`, data)

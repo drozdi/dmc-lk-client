@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, Stack, Tabs, TextInput } from '@mantine/core'
+import { Button, Checkbox, Group, Notification, Stack, Tabs, TextInput } from '@mantine/core'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
 import { TemplateTitle } from '@t'
 import { observer } from 'mobx-react-lite'
@@ -18,10 +18,9 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { products } = usersStore
 	const naigate = useNavigate()
 	const ff = useFetchUser(id)
-	const { isLoading, error, data } = ff
-	const fu = useEditUser()
-	console.log(fu)
-	const { mutate } = fu
+	const { isLoading, error, isError, data } = ff
+	console.log(ff)
+	const { mutate } = useEditUser()
 	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
 	// const reqUserUpdate = useQuery(requestUsersUpdate)
 
@@ -88,7 +87,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const isValid = !(form.errors.length > 0)
 	return (
 		<>
-			{/* <Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template> */}
+			{<Template slot='notification'>{error && <Notification color='red'>{error.message}</Notification>}</Template>}
 			<TemplateTitle>Пользователь - {data?.email}</TemplateTitle>
 			<Loading active={isLoading} keepMounted>
 				<form>
@@ -105,6 +104,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Фамилия'
 										required
 										variant='underline'
+										disabled={isError}
 										{...form.getInputProps('last_name')}
 									/>
 									<TextInput
@@ -112,6 +112,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Имя'
 										required
 										variant='underline'
+										disabled={isError}
 										{...form.getInputProps('first_name')}
 									/>
 									<TextInput
@@ -119,6 +120,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Отчество'
 										required
 										variant='underline'
+										disabled={isError}
 										{...form.getInputProps('father_name')}
 									/>
 								</Stack>
@@ -130,6 +132,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										type='email'
 										required
 										variant='underline'
+										disabled={isError}
 										{...form.getInputProps('email')}
 									/>
 									<PhoneInput
@@ -137,6 +140,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										type='phone'
 										required
 										variant='underline'
+										disabled={isError}
 										{...form.getInputProps('phone')}
 									/>
 								</Stack>
@@ -145,7 +149,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						<Tabs.Panel value='tab-product'>
 							<List dense separator>
 								{products.map(product => (
-									<Item component='label' key={product.production_id}>
+									<Item component='label' key={product.production_id} disabled={isError}>
 										<ItemSection top row>
 											{product.name_production}
 										</ItemSection>
@@ -155,6 +159,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 												onChange={handleCheckboxChange}
 												checked={form.values.id_production.includes(String(product.production_id))}
 												value={String(product.production_id)}
+												disabled={isError}
 											/>
 										</ItemSection>
 									</Item>
@@ -165,10 +170,15 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 
 					<Template slot='footer'>
 						<Group>
-							<Button color='green' onClick={form.onSubmit(handleSaveNavigate)} loading={isLoading} disabled={!isValid}>
+							<Button
+								color='green'
+								onClick={form.onSubmit(handleSaveNavigate)}
+								loading={isLoading}
+								disabled={isError || !isValid}
+							>
 								Сохранить
 							</Button>
-							<Button onClick={form.onSubmit(handleSave)} loading={isLoading} disabled={!isValid}>
+							<Button onClick={form.onSubmit(handleSave)} loading={isLoading} disabled={isError || !isValid}>
 								Применить
 							</Button>
 						</Group>

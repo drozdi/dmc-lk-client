@@ -310,7 +310,10 @@ const theme = createTheme({
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			//suspense: true,
+			//staleTime: 1 * 60 * 60,
+			enabled: true,
+			throwOnError: false,
+			retry: false,
 		},
 	},
 })

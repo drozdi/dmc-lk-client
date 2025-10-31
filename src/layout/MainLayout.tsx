@@ -1,5 +1,6 @@
-import { AppShell, Burger, Button, Container, Divider, Group, ScrollArea } from '@mantine/core'
+import { ActionIcon, AppShell, Burger, Button, Container, Divider, Group, ScrollArea } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { TbArrowBarLeft, TbArrowBarRight } from 'react-icons/tb'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ShopCartBtn } from '../apps/shop/features/shop-cart-btn'
 import { ShopCartDrawer } from '../apps/shop/widgets/shop-cart-drawer'
@@ -32,7 +33,9 @@ export function MainLayout() {
 					<Group h='100%' px='md' justify='space-between'>
 						<Group>
 							<Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
-							<Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom='sm' size='sm' />
+							<ActionIcon onClick={toggleDesktop} visibleFrom='sm' variant='default'>
+								{desktopOpened ? <TbArrowBarLeft /> : <TbArrowBarRight />}
+							</ActionIcon>
 							<Divider orientation='vertical' />
 							<Title order={1} size='h3' fw='400'>
 								<TemplateSlot name='title' />
@@ -68,10 +71,10 @@ export function MainLayout() {
 				<AppShell.Footer<Group> component={Group} justify='space-between' gap='xs' px='xs'>
 					<TemplateSlot name='footer'>
 						<div></div>
-						<Button color='dark' size='sm' onClick={() => navigate(-1)}>
-							Назад
-						</Button>
 					</TemplateSlot>
+					<Button color='dark' size='sm' onClick={() => navigate(-1)}>
+						Назад
+					</Button>
 				</AppShell.Footer>
 			</AppShell>
 			<ShopCartDrawer />
