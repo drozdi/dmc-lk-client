@@ -80,7 +80,7 @@ export const LabelsCountWidget = observer(() => {
 				delete res[prod]
 			}
 		}
-		console.log(formatPrints, counts, formatСonsumptions)
+
 		Object.values(res).forEach(production => {
 			if (production) {
 				production.total = Object.values(production.labels).reduce((acc, item) => acc + item.total, 0)

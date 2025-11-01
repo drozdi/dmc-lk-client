@@ -72,13 +72,13 @@ class ElasticStore {
 		}
 	}
 	get isNext() {
-		return !!this.template.paginate.id_record
+		return !!this.template?.paginate?.id_record || false
 	}
 	get isPrev() {
 		return this.history.length > 1
 	}
 	get date() {
-		return this.template.company.date_limit
+		return this.template?.company?.date_limit
 	}
 
 	size = 15

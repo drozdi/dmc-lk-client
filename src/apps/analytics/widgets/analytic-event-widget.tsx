@@ -14,7 +14,7 @@ import {
 
 import { AspectRatio, Button, Group, Select, Stack } from '@mantine/core'
 import { ExpandablePanel } from '../../../shared/ui'
-import { useAnalytics } from '../api/api'
+import { useAnalytics } from '../api'
 import { mapEvent, mapEventColor } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
@@ -105,10 +105,10 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	useEffect(() => {
 		const send = async () => {
 			setData({
-				v: (await sendRequest('v')).message,
-				i: (await sendRequest('i')).message,
-				d: (await sendRequest('d')).message,
-				p: (await sendRequest('p')).message,
+				v: await sendRequest('v'),
+				i: await sendRequest('i'),
+				d: await sendRequest('d'),
+				p: await sendRequest('p'),
 			})
 		}
 		send()

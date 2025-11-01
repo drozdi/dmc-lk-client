@@ -11,21 +11,6 @@ export function useFetchUsers({ size = 15, number = 0 }: { size?: number; number
 			}
 			return res
 		},
-		initialData: {
-			success: false,
-			message: 'Список пользователей пустой',
-			data: {
-				page: 1,
-				next_page: 2,
-				previous_page: 0,
-				size: 0,
-				request: [],
-			},
-		},
-		// structuralSharing(oldData, newData) {
-		// 	console.log(oldData, newData)
-		// 	return newData
-		// },
 		select(data) {
 			return data.data.request
 		},

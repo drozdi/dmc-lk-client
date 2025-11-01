@@ -18,7 +18,7 @@ export async function requestAnalyticsQueriesList({
 
 export async function requestAnalyticsQueriesGet(id: number) {
 	const res = await api.get(`/query_users/query_id/?id_query=${id}`)
-	return res.data.data
+	return res.data
 }
 
 export async function requestAnalyticsQueriesUpdate(id: number, name: string, data: IAnalyticsElasticQuery) {

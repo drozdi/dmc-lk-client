@@ -6,8 +6,9 @@ import { useEffect, useMemo } from 'react'
 import { TbColumnRemove } from 'react-icons/tb'
 import { Template } from '../../../../layout/context'
 import { ButtonIcon, ButtonRemove, Loading } from '../../../../shared/ui'
+import { useEditQuery, useNewQuery } from '../../api/hooks/queries'
+import { useFetchFields } from '../../api/hooks/use-fetch-fields'
 import { elasticStore } from '../../stores/elastic-store'
-import { fieldsStore } from '../../stores/fields-store'
 import { ActionForm } from './components/action-form'
 import { InForm } from './components/in-form'
 import { SignForm } from './components/sign-form'
@@ -17,7 +18,10 @@ interface TableElasticProps {
 }
 
 export const TableElastic = observer(({ className }: TableElasticProps) => {
-	const { fields, list } = fieldsStore
+	const { data: fields } = useFetchFields()
+	const newQuery = useNewQuery()
+	const updateQuery = useEditQuery()
+
 	const { template, data, isNext, isPrev, limit, date, isLoading } = elasticStore
 
 	const variantFields = useMemo<
@@ -26,11 +30,13 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 			label: string
 		}>
 	>(() => {
-		return list.map(item => ({
-			value: String(item),
-			label: fields?.[item]?.label ?? item,
-		}))
-	}, [fields, list])
+		return fields
+			? Object.entries(fields).map(([value, item]) => ({
+					value,
+					label: item.label || value,
+			  }))
+			: []
+	}, [fields])
 
 	const columns = useMemo(
 		() => [
@@ -39,7 +45,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 				header: '#',
 				type: 'main',
 			},
-			...template.company.select_field.map(item => ({
+			...(template.company?.select_field || []).map(item => ({
 				accessorKey: item,
 				header: fields?.[item]?.label ?? item,
 				type: 'field',
@@ -127,7 +133,12 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		if (!elasticStore.name) {
 			elasticStore.setName(prompt('Введите название запроса'))
 		}
-		await elasticStore.save()
+		if (elasticStore.id) {
+			updateQuery.mutate(elasticStore.id, elasticStore.name, elasticStore.template)
+		} else {
+			newQuery.mutate(elasticStore.name, elasticStore.template)
+		}
+		//await elasticStore.save()
 	}
 
 	useEffect(() => {
@@ -138,7 +149,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 
 	return (
 		<>
-			<Group justify='space-between'>
+			<Group className={className} justify='space-between'>
 				<Group>
 					<Select
 						value={''}
@@ -150,13 +161,13 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 						<Text>С</Text>
 						<DatePickerInput
 							name='date_from'
-							value={date.date_from}
+							value={date?.date_from}
 							onChange={value => handleDateChange('date_from', value)}
 						/>
 						<Text>по</Text>
 						<DatePickerInput
 							name='date_to'
-							value={date.date_to}
+							value={date?.date_to}
 							onChange={value => handleDateChange('date_to', value)}
 						/>
 					</Group>

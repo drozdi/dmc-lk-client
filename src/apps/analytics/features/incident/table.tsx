@@ -5,14 +5,15 @@ import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
 import { TbXboxX } from 'react-icons/tb'
 import { ButtonRemove, Icon, Loading } from '../../../../shared/ui'
-import { fieldsStore } from '../../stores/fields-store'
+import { useFetchFields } from '../../api/hooks/use-fetch-fields'
 import { incidentStore } from '../../stores/incident-store'
 
 const _variantDetails = ['production_id', 'taskid', 'device_id', 'event_id', 'node_id', 'place_id']
 
 export const IncidentTable = observer(() => {
-	const { fields, list } = fieldsStore
 	const { template, limit, data, isLoading } = incidentStore
+	const { data: fields } = useFetchFields()
+	const list = useMemo(() => (fields ? Object.keys(fields) : []), [fields])
 
 	const variantDetails = useMemo<
 		Array<{

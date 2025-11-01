@@ -1,9 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { requestUsersGet } from '../request'
 
 export function useFetchUser(id: number | string) {
+	const queryClient = useQueryClient()
 	return useQuery({
-		queryKey: ['users', String(id)],
+		queryKey: ['users', id],
+		staleTime: 0,
 		queryFn: async () => {
 			try {
 				const res = await requestUsersGet(id)
@@ -15,21 +17,10 @@ export function useFetchUser(id: number | string) {
 			}
 			return {}
 		},
-		initialData: {
-			success: false,
-			message: null,
-			data: {
-				id: 0,
-				first_name: '',
-				last_name: '',
-				father_name: '',
-				email: '',
-				phone: '',
-				is_active: true,
-				is_superuser: false,
-				id_production: [],
-			},
-		},
+		// initialData: () => {
+		// 	const users = queryClient.getQueryData(['users']);
+		//     return users?.find((user) => user.id === id);
+		// }
 		select(data) {
 			return data.data
 		},

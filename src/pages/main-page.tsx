@@ -15,6 +15,7 @@ export const MainPage = observer(() => {
 		filterdate_to: dNow.format('YYYY-MM-DD'),
 		step: 'd',
 	})
+
 	return (
 		<SimpleGrid cols={2}>
 			<AnalyticAnalyticWidget />

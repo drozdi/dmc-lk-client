@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '../../../../shared/hooks'
 import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
-import { fieldsStore } from '../../stores/fields-store'
+import { useFetchFields } from '../../api/hooks/use-fetch-fields'
 
 export const IncidentDay = observer(({ day }: { day: string }) => {
-	const { fields, list } = fieldsStore
+	const { data: fields } = useFetchFields()
+
 	const { isLoading, error, request } = useQuery(requestAnalyticsIncident)
+
 	const [data, setData] = useState([])
 	const [query, setQuery] = useState({
 		limit_page: 1000,

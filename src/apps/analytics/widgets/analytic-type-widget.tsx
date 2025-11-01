@@ -4,22 +4,18 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { ExpandablePanel } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
-import { useAnalytics } from '../api/api'
+import { useAnalytics } from '../api'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
 
 export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
-	const { isLoading, request } = useAnalytics()
+	const { isLoading, request, data } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState(0)
-	const [data, setData] = useState<IAnalyticsResponse>()
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
 
 	function reset() {
 		setQuery({ ...props })
-	}
-	async function sendRequest(event: IAnalyticsQuery['event']) {
-		return await request({ ...query, event })
 	}
 
 	// Извлекаем список площадок
@@ -91,11 +87,9 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	const isEmpty = useMemo(() => !ddata.length, [ddata])
 
 	useEffect(() => {
-		const send = async () => {
-			setData((await sendRequest('p')).message)
-		}
-		send()
+		request({ ...query, event: 'p' })
 	}, [query])
+
 	useEffect(() => {
 		setQuery(props)
 	}, [props])

@@ -65,16 +65,12 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		}
 	}, [data])
 
-	// const error = useQueryError(reqUserGet, reqUserUpdate)
-	// const isLoading = useQueryLoading(reqUserGet, reqUserUpdate)
-
 	async function handleSave(formData: IUsersUser) {
 		mutate(formData)
-		// await reqUserUpdate.request(id, formData)
 	}
 	async function handleSaveNavigate(formData: IUsersUser) {
-		// await reqUserUpdate.request(id, formData)
-		// naigate('/users')
+		mutate(formData)
+		naigate('/users')
 	}
 
 	const handleCheckboxChange = event => {

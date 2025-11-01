@@ -16,7 +16,6 @@ import { useProduction } from '../stores/hooks/use-production'
 export const LabelsCountWidget = observer(props => {
 	const labelsFormat = useFormatPrints()
 	const [active, setActive] = useState(false)
-	const [countP, setCountP] = useState({})
 	const [data, setData] = useState({
 		distributed: [],
 		not_distributed: [],
@@ -29,7 +28,7 @@ export const LabelsCountWidget = observer(props => {
 	const reqLabelsCount = useQuery(requestLabelsCount)
 	const { productionNameById } = useProduction()
 	async function fetch() {
-		setCountP((await reqAnalytics.request({})).message)
+		await reqAnalytics.request()
 		setData((await reqLabelsCount.request()).data)
 	}
 
@@ -79,8 +78,8 @@ export const LabelsCountWidget = observer(props => {
 				res[count.production_id].labels[count.add_label_format].total += count.sum
 			}
 		}
-		console.log(countP)
-		for (const production of countP.production || []) {
+
+		for (const production of reqAnalytics.data.production || []) {
 			for (const data of production.data || []) {
 				Object.entries(res[production.production_id]?.labels || {}).forEach(([label, labels]) => {
 					if (labels.labels.includes(data.data)) {
@@ -107,7 +106,7 @@ export const LabelsCountWidget = observer(props => {
 			}
 		})
 		return res
-	}, [labelsFormat, data, countP])
+	}, [labelsFormat, data, reqAnalytics.data])
 
 	useEffect(() => {
 		fetch()

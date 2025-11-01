@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { ExpandablePanel } from '../../../shared/ui'
-import { useAnalytics } from '../api/api'
+import { useAnalytics } from '../api'
 import { mapEvent, mapEventColor } from '../entites/constants'
 
 interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
@@ -68,10 +68,10 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	useEffect(() => {
 		const send = async () => {
 			setData({
-				v: (await sendRequest('v')).message,
-				i: (await sendRequest('i')).message,
-				d: (await sendRequest('d')).message,
-				p: (await sendRequest('p')).message,
+				v: await sendRequest('v'),
+				i: await sendRequest('i'),
+				d: await sendRequest('d'),
+				p: await sendRequest('p'),
 			})
 		}
 		send()

@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ExpandablePanel } from '../../../shared/ui'
-import { useAnalytics } from '../api/api'
+import { useAnalytics } from '../api'
 import { mapEvent } from '../entites/constants'
 
 const nDow = dayjs('2025-05-02')
@@ -29,10 +29,10 @@ export const AnalyticAnalyticWidget = observer(() => {
 	useEffect(() => {
 		const send = async () => {
 			setData({
-				v: (await request({ event: 'v' })).message,
-				i: (await request({ event: 'i' })).message,
-				d: (await request({ event: 'd' })).message,
-				p: (await request({ event: 'p' })).message,
+				v: await request({ event: 'v' }),
+				i: await request({ event: 'i' }),
+				d: await request({ event: 'd' }),
+				p: await request({ event: 'p' }),
 			})
 		}
 		send()
