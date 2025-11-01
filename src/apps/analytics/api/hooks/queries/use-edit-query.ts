@@ -8,7 +8,7 @@ export function useEditQuery() {
 			return await requestAnalyticsQueriesUpdate(id, name, template)
 		},
 		onSuccess: data => {
-			console.log('useNewQueries', data)
+			console.log('useEditQueries', data)
 			queryClient.removeQueries({ queryKey: ['query_users'] })
 		},
 	})
