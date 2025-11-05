@@ -1,6 +1,7 @@
 import { notifications, notificationsStore } from '@mantine/notifications'
+import type { NotificationData } from '@mantine/notifications/dist/types'
 
-function checkMessage(notifications, message: string) {
+function checkMessage(notifications: NotificationData[], message: string) {
 	if (notifications.length) {
 		if (notifications.findIndex(notification => notification.message === message) > -1) {
 			return false
@@ -9,7 +10,7 @@ function checkMessage(notifications, message: string) {
 	return true
 }
 
-function send(item) {
+function send(item: { title?: string; message: string; color?: string }) {
 	const store = notificationsStore.getState()
 	if (false === checkMessage(store.notifications, item.message)) {
 		return

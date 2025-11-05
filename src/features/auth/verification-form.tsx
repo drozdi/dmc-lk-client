@@ -10,7 +10,7 @@ export const VerificationForm = observer(() => {
 	const { isLoading, error } = authStore
 	const [link, setLink] = useState<string>(searchParams.get('link') || '')
 	const navigate = useNavigate()
-	async function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e?: FormEvent<HTMLElement>) {
 		e?.preventDefault()
 		try {
 			const data = await authStore.verification(link)

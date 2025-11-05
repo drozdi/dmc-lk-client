@@ -3,9 +3,9 @@ import { api, requestLogin, requestRefresh, requestRegister, requestVerification
 import { notification } from '../shared/notification'
 
 class AuthStore {
-	error = null
-	isLoading = false
-	isAuthenticated = false
+	error: IError = null
+	isLoading: boolean = false
+	isAuthenticated: boolean = false
 
 	constructor() {
 		makeAutoObservable(this)
@@ -42,7 +42,7 @@ class AuthStore {
 		try {
 			const response = requestVerification(link)
 			return response
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error?.message || 'Ошибка входа'
 		} finally {
 			this.isLoading = false
@@ -62,10 +62,10 @@ class AuthStore {
 			api.setRefreshToken(token.refresh)
 			this.isAuthenticated = true
 			return true
-		} catch (error) {
+		} catch (error: IError) {
 			console.error(error)
 			this.error = error?.response?.data?.detail || error?.message || 'Ошибка входа'
-			notification.error(this.error)
+			notification.error(error)
 		} finally {
 			this.isLoading = false
 		}
@@ -81,7 +81,7 @@ class AuthStore {
 			api.setRefreshToken(token.refresh)
 			this.isAuthenticated = true
 			return response.data
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error?.response?.data?.detail || error?.message || 'Ошибка регистрации'
 		} finally {
 			this.isLoading = false

@@ -12,6 +12,7 @@ export function Logo({ className }: { className?: string }) {
 				navigate('/')
 			}}
 			maw='100%'
+			className={className}
 		>
 			<Image w='100%' src='/assests/Logo_DMC_512.png' />
 		</Box>

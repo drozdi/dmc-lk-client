@@ -3,12 +3,12 @@ import { useMemo, useState } from 'react'
 
 export function useQuery(handleRequest: Function, errorMes = 'Неизвестная ошибка'): IQuery {
 	const [isLoading, setLoading] = useState<boolean>(false)
-	const [error, setError] = useState<string>('')
+	const [error, setError] = useState<IError>('')
 	const request = async (...args: unknown[]) => {
 		setLoading(true)
 		try {
 			return await handleRequest(...args)
-		} catch (error) {
+		} catch (error: IError) {
 			setError(error?.response?.data?.detail || error?.message || errorMes)
 		} finally {
 			setLoading(false)
@@ -20,17 +20,15 @@ export function useQuery(handleRequest: Function, errorMes = 'Неизвестн
 		request,
 	}
 }
-
 export function useQueryLoading(...queries: IQuery[]): boolean {
 	return useMemo<boolean>(() => queries.some(query => query.isLoading), [queries.map(query => query.isLoading)])
 }
-export function useQueryError(...queries: IQuery[]): string {
-	return useMemo<string>(
-		() => queries.reduce((acc, query) => acc || query.error, ''),
+export function useQueryError(...queries: IQuery[]): IError {
+	return useMemo<IError>(
+		() => queries.reduce((acc: IError, query: IQuery) => acc || query.error, ''),
 		[queries.map(query => query.error)]
 	)
 }
-
 export function useQuery_(
 	queryKey: string[],
 	queryFn: Function,
@@ -43,7 +41,7 @@ export function useQuery_(
 		select?: Function
 		[props: string]: any
 	}
-) {
+): IQuery {
 	const queryClient = useQueryClient()
 	const [error, setError] = useState<string>('')
 	const [isLoading, setLoading] = useState<boolean>(false)
@@ -62,7 +60,7 @@ export function useQuery_(
 				})
 				setData(select?.(res) || res)
 				return res
-			} catch (error) {
+			} catch (error: IError) {
 				setError(error?.response?.data?.detail || error?.message || errorMes)
 			} finally {
 				setLoading(false)

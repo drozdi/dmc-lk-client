@@ -1,42 +1,61 @@
-import axios from 'axios'
+import axios, { type AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 
-interface IAxiosInterceptorDeafult {
+interface IAxiosInterceptorDefault {
 	message401?: string
 	accessToken?: string
 	refreshToken?: string
 	accessTokenKey?: string
 	refreshTokenKey?: string
-	urlRefreshToken?: string | Function
+	urlRefreshToken?: string | ((refreshToken: string, axiosInstance: AxiosInstance) => Promise<any>)
 }
 
-interface IAxiosInterceptorConfig extends IAxiosInterceptorDeafult, CreateAxiosDefaults {
-	handleRequest?: Function
-	handleResponse?: Function
+interface IAxiosInterceptorConfig extends IAxiosInterceptorDefault, AxiosRequestConfig {
+	handleRequest?: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosRequestConfig>
+	handleResponse?: (error: AxiosError) => any
 }
 
-interface IAxiosInterceptor extends Axios, IAxiosInterceptorDeafult {
+interface IAxiosInterceptor extends IAxiosInterceptorDefault {
 	axiosInstance: AxiosInstance
 	isRefreshing: boolean
 	refreshSubscribers: ((accessToken: string) => void)[]
-	// post: Function
-	// get: Function
-	// patch: Function
-	// delete: Function
-	// head: Function
-	// options: Function
-	// put: Function
+
+	// Методы HTTP-запросов
+	post: AxiosInstance['post']
+	get: AxiosInstance['get']
+	patch: AxiosInstance['patch']
+	delete: AxiosInstance['delete']
+	head: AxiosInstance['head']
+	options: AxiosInstance['options']
+	put: AxiosInstance['put']
+
+	// Методы для работы с токенами
+	setAccessToken(accessToken: string): void
+	setRefreshToken(refreshToken: string): void
+	setTokens(accessToken: string, refreshToken: string): void
+	getAccessToken(): string | null
+	getRefreshToken(): string | null
+	clearTokens(): void
+	refreshTokens(): Promise<any>
 }
 
 export class AxiosInterceptor implements IAxiosInterceptor {
-	axiosInstance: AxiosInstance
-	isRefreshing: boolean = false
-	refreshSubscribers: ((accessToken: string) => void)[] = []
-	message401?: string
-	accessToken?: string = 'access'
-	refreshToken?: string = 'refresh'
-	accessTokenKey?: string
-	refreshTokenKey?: string
-	urlRefreshToken?: string | Function
+	public axiosInstance: AxiosInstance
+	public isRefreshing = false
+	public refreshSubscribers: ((accessToken: string) => void)[] = []
+	public message401?: string
+	public accessToken = 'access'
+	public refreshToken = 'refresh'
+	public accessTokenKey?: string
+	public refreshTokenKey?: string
+	public urlRefreshToken?: string | ((refreshToken: string, axiosInstance: AxiosInstance) => Promise<any>)
+	// Методы HTTP-запросов
+	public post: AxiosInstance['post']
+	public get: AxiosInstance['get']
+	public patch: AxiosInstance['patch']
+	public delete: AxiosInstance['delete']
+	public head: AxiosInstance['head']
+	public options: AxiosInstance['options']
+	public put: AxiosInstance['put']
 	constructor({
 		message401,
 		accessToken,
@@ -62,29 +81,29 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 		}
 
 		if (handleResponse) {
-			this.axiosInstance.interceptors.response.use(response => response, handleResponse)
+			this.axiosInstance.interceptors.response.use((response: AxiosResponse) => response, handleResponse)
 		}
 
 		if (accessTokenKey) {
 			this.accessTokenKey = accessTokenKey
 			this.axiosInstance.interceptors.request.use(
-				config => {
+				(config: AxiosRequestConfig) => {
 					const accessToken = this.getAccessToken()
 					if (accessToken) {
 						config.headers.Authorization = `Bearer ${accessToken}`
 					}
 					return config
 				},
-				error => Promise.reject(error)
+				(error: AxiosError) => Promise.reject(error)
 			)
 		}
 
 		if (refreshTokenKey) {
 			this.refreshTokenKey = refreshTokenKey
 			this.axiosInstance.interceptors.response.use(
-				response => response,
-				async error => {
-					const originalRequest = error.config
+				(response: AxiosResponse) => response,
+				async (error: AxiosError) => {
+					const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
 					if (error.response && error.response.status === 401 && !originalRequest._retry) {
 						if (!this.isRefreshing) {
@@ -96,7 +115,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 								this.setAccessToken(newTokens[this.accessToken])
 								this.setRefreshToken(newTokens[this.refreshToken])
 
-								this.refreshSubscribers.forEach(callback => callback(newTokens[this.accessToken]))
+								this.refreshSubscribers.forEach((callback: Function) => callback(newTokens[this.accessToken]))
 								this.refreshSubscribers = []
 
 								return this.axiosInstance(originalRequest)
@@ -110,7 +129,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 						}
 
 						return new Promise(resolve => {
-							this.refreshSubscribers.push(newAccessToken => {
+							this.refreshSubscribers.push((newAccessToken: string) => {
 								originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 								originalRequest._retry = true
 								resolve(this.axiosInstance(originalRequest))
@@ -124,12 +143,16 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 		}
 
 		if (handleRequest) {
-			this.axiosInstance.interceptors.request.use(handleRequest, error => Promise.reject(error))
+			this.axiosInstance.interceptors.request.use(handleRequest, (error: AxiosError) => Promise.reject(error))
 		}
 
-		;['delete', 'get', 'head', 'options', 'post', 'put', 'patch'].forEach(method => {
-			this[method] = this.axiosInstance[method].bind(this.axiosInstance)
-		})
+		this.post = this.axiosInstance.post.bind(this.axiosInstance)
+		this.get = this.axiosInstance.get.bind(this.axiosInstance)
+		this.patch = this.axiosInstance.patch.bind(this.axiosInstance)
+		this.delete = this.axiosInstance.delete.bind(this.axiosInstance)
+		this.head = this.axiosInstance.head.bind(this.axiosInstance)
+		this.options = this.axiosInstance.options.bind(this.axiosInstance)
+		this.put = this.axiosInstance.put.bind(this.axiosInstance)
 	}
 	setAccessToken(accessToken: string): void {
 		if (this.accessTokenKey) {
@@ -165,7 +188,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 			localStorage.removeItem(this.refreshTokenKey)
 		}
 	}
-	async refreshTokens() {
+	async refreshTokens(): Promise<any> {
 		const refreshToken = this.getRefreshToken()
 		if (!refreshToken) {
 			throw new Error('No refresh token available')
@@ -173,10 +196,12 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 		if (typeof this.urlRefreshToken === 'function') {
 			return await this.urlRefreshToken(refreshToken, this.axiosInstance)
 		} else if (typeof this.urlRefreshToken === 'string') {
-			const response = await this.axiosInstance.post(this.urlRefreshToken, {
-				refreshToken,
-			})
-			return response.data
+			return (
+				await this.axiosInstance.post(this.urlRefreshToken, {
+					refreshToken,
+				})
+			).data
 		}
+		throw new Error('No valid URL or function provided for token refresh')
 	}
 }

@@ -46,7 +46,11 @@ const fieldsSchema = yup.object().shape({
  */
 
 export const SignUpForm = observer(() => {
-	const form = useForm({
+	const form = useForm<
+		IUserPassword & {
+			re_password?: string
+		}
+	>({
 		mode: 'uncontrolled',
 		name: 'signUp',
 		initialValues: {
@@ -55,13 +59,14 @@ export const SignUpForm = observer(() => {
 			father_name: '',
 			email: '',
 			phone: '',
+			password: '',
 		},
 		validate: yupResolver(fieldsSchema),
 	})
 	const { isLoading, error } = authStore
 	const navigate = useNavigate()
 
-	async function sendFormData(formData) {
+	async function sendFormData(formData: IUserPassword) {
 		const res = await authStore.register(formData)
 		userStore.setUserData(res.user)
 		if (res) {
@@ -83,7 +88,7 @@ export const SignUpForm = observer(() => {
 				<PasswordInput placeholder='Придумай пароль' type='password' required {...form.getInputProps('password')} />
 				<PasswordInput placeholder='Повтори пароль' type='password' required {...form.getInputProps('re_password')} />
 
-				<Button onClick={form.onSubmit(sendFormData)} fullWidth loading={isLoading}>
+				<Button onClick={() => form.onSubmit(sendFormData)} fullWidth loading={isLoading}>
 					Войти
 				</Button>
 			</Stack>

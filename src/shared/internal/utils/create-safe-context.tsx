@@ -16,16 +16,12 @@ export function createSafeContext<T>(errorMessage?: string) {
 			throw new Error(errorMessage)
 		}
 
-		return ctx
+		return ctx as T
 	}
 
-	const Provider = ({
-		children,
-		value,
-	}: {
-		value: T
-		children: React.ReactNode
-	}) => <Context.Provider value={value}>{children}</Context.Provider>
+	const Provider = ({ children, value }: { value: T; children: React.ReactNode }) => (
+		<Context.Provider value={value}>{children}</Context.Provider>
+	)
 
 	return [Provider, useSafeContext] as const
 }

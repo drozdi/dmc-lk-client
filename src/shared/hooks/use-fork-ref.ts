@@ -18,8 +18,8 @@ export function setRef(ref: Function | object, value: any = null) {
  * @param {...(Function|Object)} refs - Ссылки, для которых нужно установить значение.
  * @returns {Function|null} - Функция для установки значения для ссылок или null, если все ссылки равны null.
  */
-export function useForkRef(...refs: any[]): Function {
-	return useMemo<Function>((): Function => {
+export function useForkRef(...refs: any[]): Function | undefined {
+	return useMemo<Function | undefined>((): Function | undefined => {
 		if (refs.every(ref => ref == null)) {
 			return undefined
 		}

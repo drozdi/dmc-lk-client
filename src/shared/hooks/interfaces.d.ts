@@ -1,5 +1,18 @@
 interface IQuery {
 	isLoading: boolean
-	error?: string
+	error?: IError
 	request?: Function
+	data?: any
+	fetch?: Function
 }
+
+type IError =
+	| (any & {
+			response?: {
+				data?: {
+					detail?: string
+				}
+			}
+			message?: string
+	  })
+	| string

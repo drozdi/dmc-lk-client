@@ -1,10 +1,10 @@
 import { NavLink } from '@mantine/core'
 import { useCallback } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 type NavItem = {
 	name: string
 	icon?: React.ReactNode
-	path?: string
+	path: string
 	subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[]
 }
 
@@ -49,12 +49,10 @@ const navItems: NavItem[] = [
 
 export const MainMenu = () => {
 	const location = useLocation()
-	const navigate = useNavigate()
 
-	// const isActive = (path: string) => location.pathname === path;
 	const isActive = useCallback((path: string) => location.pathname === path, [location.pathname])
 
-	return navItems.map((nav, index) => (
-		<NavLink component={Link} to={nav.path} key={nav.path} label={nav.name} active={isActive(nav.path)} />
+	return navItems.map(nav => (
+		<NavLink<Link> component={Link} to={nav.path} key={nav.path} label={nav.name} active={isActive(nav.path)} />
 	))
 }

@@ -1,6 +1,6 @@
 import { Box, Button, PasswordInput, Stack, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Loading } from '../../shared/ui'
 import { authStore } from '../../stores/auth-store'
@@ -10,7 +10,7 @@ export const SignInForm = observer(props => {
 	const [password, setPassword] = useState<string>('')
 	const { isLoading } = authStore
 	const navigate = useNavigate()
-	const handleSubmit = async (e: SubmitEvent) => {
+	const handleSubmit = async (e: FormEvent<HTMLElement>) => {
 		e.preventDefault()
 		const res = await authStore.login(email, password)
 		if (true === res) {

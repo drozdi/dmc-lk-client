@@ -9,7 +9,7 @@ export default defineConfig({
 		alias: {
 			'@style': path.resolve(__dirname, './src/shared/style/index.css'),
 			'@ui': path.resolve(__dirname, './src/shared/ui'),
-			'@t': path.resolve(__dirname, './src/layout'),
+			'@t': path.resolve(__dirname as any, './src/layout'),
 		},
 	},
 	plugins: [react(), tailwindcss()],
@@ -17,5 +17,11 @@ export default defineConfig({
 		host: true,
 		port: 3200,
 		open: true,
+	},
+	build: {
+		target: 'esnext',
+	},
+	optimizeDeps: {
+		include: ['axios'],
 	},
 })

@@ -1,3 +1,5 @@
+type Elem = HTMLElement & { disabled?: boolean }
+
 /**
  * Функция getPreviousIndex возвращает индекс предыдущего элемента, который не отключен.
  * @param {number} current - Текущий индекс.
@@ -5,11 +7,7 @@
  * @param {boolean} loop - Флаг, указывающий на то, нужно ли зацикливать поиск.
  * @returns {number} - Индекс предыдущего элемента, который не отключен.
  */
-function getPreviousIndex(
-	current: number,
-	elements: HTMLElement[],
-	loop: boolean
-) {
+function getPreviousIndex(current: number, elements: Elem[], loop: boolean) {
 	for (let i = current - 1; i >= 0; i -= 1) {
 		if (!elements[i].disabled) {
 			return i
@@ -34,7 +32,7 @@ function getPreviousIndex(
  * @param {boolean} loop - Флаг, указывающий на то, нужно ли зацикливать поиск.
  * @returns {number} - Индекс следующего элемента, который не отключен.
  */
-function getNextIndex(current: number, elements: HTMLElement[], loop: boolean) {
+function getNextIndex(current: number, elements: Elem[], loop: boolean) {
 	for (let i = current + 1; i < elements.length; i += 1) {
 		if (!elements[i].disabled) {
 			return i
@@ -73,18 +71,16 @@ export function scopedKeydownHandler({
 }: {
 	parentSelector: string
 	siblingSelector: string
-	onKeyDown?: (event: KeyboardEvent) => void
+	onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void
 	loop?: boolean
 	activateOnFocus?: boolean
 	orientation: 'x' | 'y' | 'xy' | 'yx'
 }) {
-	return (event: KeyboardEvent) => {
+	return (event: React.KeyboardEvent<HTMLElement>) => {
 		onKeyDown?.(event)
-		const { target } = event
+		const target = event.target as HTMLElement | null
 
-		const elements = Array.from(
-			target.closest(parentSelector).querySelectorAll(siblingSelector) || []
-		)
+		const elements: Elem[] = Array.from(target?.closest(parentSelector).querySelectorAll(siblingSelector) || [])
 
 		const current = elements.findIndex(el => target === el)
 		const nextIndex = getNextIndex(current, elements, loop)
@@ -95,8 +91,8 @@ export function scopedKeydownHandler({
 				if (orientation.includes('y')) {
 					event.stopPropagation()
 					event.preventDefault()
-					elements[previousIndex].focus()
-					activateOnFocus && elements[previousIndex].click()
+					elements[previousIndex]?.focus()
+					activateOnFocus && elements[previousIndex]?.click()
 				}
 				break
 			}
@@ -104,8 +100,8 @@ export function scopedKeydownHandler({
 				if (orientation.includes('y')) {
 					event.stopPropagation()
 					event.preventDefault()
-					elements[nextIndex].focus()
-					activateOnFocus && elements[nextIndex].click()
+					elements[nextIndex]?.focus()
+					activateOnFocus && elements[nextIndex]?.click()
 				}
 				break
 			}
@@ -113,8 +109,8 @@ export function scopedKeydownHandler({
 				if (orientation.includes('x')) {
 					event.stopPropagation()
 					event.preventDefault()
-					elements[nextIndex].focus()
-					activateOnFocus && elements[nextIndex].click()
+					elements[nextIndex]?.focus()
+					activateOnFocus && elements[nextIndex]?.click()
 				}
 				break
 			}
@@ -122,22 +118,22 @@ export function scopedKeydownHandler({
 				if (orientation.includes('x')) {
 					event.stopPropagation()
 					event.preventDefault()
-					elements[previousIndex].focus()
-					activateOnFocus && elements[previousIndex].click()
+					elements[previousIndex]?.focus()
+					activateOnFocus && elements[previousIndex]?.click()
 				}
 				break
 			}
 			case 'Home': {
 				event.stopPropagation()
 				event.preventDefault()
-				!elements[0].disabled && elements[0].focus()
+				!elements[0]?.disabled && elements[0]?.focus()
 				break
 			}
 			case 'End': {
 				event.stopPropagation()
 				event.preventDefault()
 				const last = elements.length - 1
-				!elements[last].disabled && elements[last].focus()
+				!elements[last]?.disabled && elements[last]?.focus()
 				break
 			}
 		}

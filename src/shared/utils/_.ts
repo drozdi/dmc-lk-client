@@ -1,17 +1,17 @@
-function isArray(value) {
+function isArray(value: unknown): boolean {
 	if (Array.isArray) {
 		return Array.isArray(value)
 	} else {
 		return Object.prototype.toString.call(value) === '[object Array]'
 	}
 }
-function isBoolean(value) {
+function isBoolean(value: unknown): boolean {
 	return typeof value === 'boolean'
 }
-function isObject(value) {
+function isObject(value: unknown): boolean {
 	return value !== null && typeof value === 'object' && !!value
 }
-function isSymbol(value) {
+function isSymbol(value: unknown): boolean {
 	if (typeof Symbol === 'function') {
 		return typeof value === 'symbol'
 	} else {
@@ -19,42 +19,37 @@ function isSymbol(value) {
 	}
 }
 
-function last(array) {
+function last(array: unknown[]): unknown {
 	const length = array == null ? 0 : array.length
 	return length ? array[length - 1] : undefined
 }
-function isKey(value, object) {
+function isKey(value: unknown, object: Record<string, any>): boolean {
 	if (isArray(value)) {
 		return false
 	}
 	const type = typeof value
-	if (
-		type === 'number' ||
-		type === 'boolean' ||
-		value == null ||
-		isSymbol(value)
-	) {
+	if (type === 'number' || type === 'boolean' || value == null || isSymbol(value)) {
 		return true
 	}
-	return object != null && value in Object(object)
+	return object != null && (value as string) in Object(object)
 }
-function toKey(value) {
+function toKey(value: unknown): string {
 	if (typeof value === 'string' || isSymbol(value)) {
-		return value
+		return value as string
 	}
 	return `${value}`
 }
-function parent(object, path) {
+function parent(object: Record<string, any>, path: string[]): unknown {
 	return path.length < 2 ? object : get(object, path.slice(0, -1))
 }
-function castPath(value, object) {
+function castPath(value: string | string[], object: Record<string, any>): string[] {
 	if (isArray(value)) {
-		return value
+		return value as string[]
 	}
-	return isKey(value, object) ? [value] : value.split('.')
+	return (isKey(value, object) ? [value] : (value as string).split('.')) as string[]
 }
-export function get(object, path) {
-	path = castPath(path, object)
+export function get(object: Record<string, any>, path: string | string[]): unknown {
+	path = castPath(path, object) as string[]
 
 	let index = 0
 	const length = path.length
@@ -64,11 +59,11 @@ export function get(object, path) {
 	}
 	return index && index === length ? object : undefined
 }
-export function set(object, path, value) {
+export function set(object: Record<string, any>, path: any, value: any): Record<string, any> {
 	if (!isObject(object)) {
 		return object
 	}
-	path = castPath(path, object)
+	path = castPath(path, object) as string[]
 
 	const length = path.length
 	const lastIndex = length - 1
@@ -86,16 +81,16 @@ export function set(object, path, value) {
 
 	return object
 }
-export function unset(object, path) {
+export function unset(object: Record<string, any>, path: string | string[]) {
 	path = castPath(path, object)
-	object = parent(object, path)
+	object = parent(object, path) as Record<string, any>
 	return object == null || delete object[toKey(last(path))]
 }
 
-export function merge(target, ...sources) {
-	let deep = sources.pop()
+export function merge(target: Record<string, any>, ...sources: Record<string, any>[]) {
+	let deep: unknown = sources.pop()
 	if (!isBoolean(deep)) {
-		sources.push(deep)
+		sources.push(deep as Record<string, any>)
 		deep = false
 	}
 	if (!sources.length) {
@@ -113,7 +108,7 @@ export function merge(target, ...sources) {
 						[key]: {},
 					})
 				}
-				merge(target[key], source[key], deep)
+				merge(target[key], source[key], deep as Record<string, any>)
 			} else {
 				Object.assign(target, {
 					[key]: source[key],
@@ -121,5 +116,5 @@ export function merge(target, ...sources) {
 			}
 		}
 	}
-	return merge(target, ...sources, deep)
+	return merge(target, ...sources, deep as Record<string, any>)
 }

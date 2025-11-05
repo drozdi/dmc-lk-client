@@ -7,7 +7,7 @@ import { notification } from '../shared/notification'
 class UserStore {
 	userData?: IUser
 	isLoading = false
-	error: string | null = null
+	error: IError = null
 	products: any[] = []
 	currentProductId: string | null = localStorage.getItem(PRODUCT_ID_KEY)
 	constructor() {
@@ -33,7 +33,7 @@ class UserStore {
 				this.setCurrentProductId(this.products[0].production_id)
 			}
 			return this.userData
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error.message || 'Ошибка загрузки'
 		} finally {
 			this.isLoading = false
@@ -46,7 +46,7 @@ class UserStore {
 		try {
 			const response = await requestUpdateUser(userData)
 			return (this.userData = response.data)
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error.message || 'Ошибка обновления'
 			notification.error(this.error)
 		} finally {
@@ -61,7 +61,7 @@ class UserStore {
 			const response = await requestUpdatePassword(oldPassword, newPassword)
 			this.userData = response.data
 			return true
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error.message || 'Ошибка обновления'
 			notification.error(this.error)
 		} finally {
@@ -74,7 +74,7 @@ class UserStore {
 		this.error = null
 		try {
 			return await requestRemoveUser()
-		} catch (error) {
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error.message || 'Ошибка удаления'
 			notification.error(this.error)
 		} finally {
