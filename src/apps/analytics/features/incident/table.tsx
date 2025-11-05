@@ -177,15 +177,20 @@ export const IncidentTable = observer(() => {
 							<Table.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header, index) => (
 									<Table.Th key={header.id} colSpan={header.colSpan}>
-										<Group justify='space-between'>
-											{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+										<Group justify='space-between' grow>
+											<Text>
+												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+											</Text>
+
 											{canRemove(header.column.columnDef) && (
-												<ButtonRemove
-													onClick={() => handleRemove(header.column.columnDef)}
-													title={`Удалить поле "${header.column.columnDef.header}"`}
-												>
-													<Icon>tb-column-remove</Icon>
-												</ButtonRemove>
+												<Group justify='end'>
+													<ButtonRemove
+														onClick={() => handleRemove(header.column.columnDef)}
+														title={`Удалить поле "${header.column.columnDef.header}"`}
+													>
+														<Icon>tb-column-remove</Icon>
+													</ButtonRemove>
+												</Group>
 											)}
 										</Group>
 									</Table.Th>
