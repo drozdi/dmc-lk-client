@@ -1,14 +1,16 @@
 import { Accordion, Notification } from '@mantine/core'
 import dayjs from 'dayjs'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Template } from '../../../layout/context'
-import { useQuery } from '../../../shared/hooks'
+import { useQuery_ } from '../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../shared/ui'
 import { requestLabelsCountHistory } from '../api'
 
 export const LabelsHistory = () => {
-	const [data, setData] = useState({})
-	const { isLoading, error, request } = useQuery(requestLabelsCountHistory)
+	const { isLoading, error, fetch, data } = useQuery_(['labels-count'], requestLabelsCountHistory, {
+		select: data => data.data,
+	})
+
 	const ddata = useMemo(() => {
 		return Object.values(data ?? {}).map(item => ({
 			name_production: item[0].name_production,
@@ -16,10 +18,6 @@ export const LabelsHistory = () => {
 			items: item.sort((a, b) => a.filterdate < b.filterdate),
 		}))
 	}, [data])
-	async function fetch() {
-		const res = await request()
-		setData(res.data)
-	}
 	useEffect(() => {
 		fetch()
 	}, [])

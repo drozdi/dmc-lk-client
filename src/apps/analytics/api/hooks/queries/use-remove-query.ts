@@ -7,8 +7,8 @@ export function useRemoveQuery() {
 		mutationFn: async (id: number) => {
 			return await requestAnalyticsQueriesDelete(id)
 		},
-		onSuccess: data => {
-			console.log('useRemoveQueries', data)
+		onSuccess: (...args) => {
+			console.log('useRemoveQueries', args)
 			queryClient.removeQueries({ queryKey: ['query_users'] })
 		},
 	})

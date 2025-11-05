@@ -1,29 +1,28 @@
-import { Accordion, Center } from '@mantine/core'
+import { Accordion, Center, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { useQuery } from '../../../../shared/hooks'
+import { Template } from '../../../../layout/context'
+import { useQuery_ } from '../../../../shared/hooks'
 import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { IncidentDetail } from './components/incident-detail'
 
 export const IncidentAll = observer(
 	({ query = {}, ...props }: { query: IAnalyticsIncidentQuery; [key: string]: any }) => {
-		const { isLoading, request } = useQuery(requestAnalyticsIncident)
-		const [data, setData] = useState([])
+		const { data, isLoading, error, fetch } = useQuery_(['incident'], requestAnalyticsIncident, {
+			select: data => data?.message || [],
+		})
 		const [openend, setOpenend] = useState<string[]>([])
 
-		async function fetch() {
-			const res = await request(query)
-			setData(res?.message)
-		}
 		useEffect(() => {
-			fetch()
+			fetch(query)
 		}, [query])
 
 		return (
 			<>
+				<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
 				<Loading {...props} active={isLoading} keepMounted>
-					{data.length ? (
+					{data?.length ? (
 						<Accordion multiple chevronPosition='left' onChange={setOpenend}>
 							{data.map((item, index) => (
 								<Accordion.Item key={item.data} value={item.data}>

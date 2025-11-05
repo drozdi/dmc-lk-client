@@ -134,11 +134,10 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 			elasticStore.setName(prompt('Введите название запроса'))
 		}
 		if (elasticStore.id) {
-			updateQuery.mutate(elasticStore.id, elasticStore.name, elasticStore.template)
+			updateQuery.mutate({ id: elasticStore.id, name: elasticStore.name, template: elasticStore.template })
 		} else {
-			newQuery.mutate(elasticStore.name, elasticStore.template)
+			newQuery.mutate({ name: elasticStore.name, template: elasticStore.template })
 		}
-		//await elasticStore.save()
 	}
 
 	useEffect(() => {
@@ -173,10 +172,12 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					</Group>
 				</Group>
 				<Group>
-					<Button color='green' onClick={handleSave}>
+					<Button color='green' onClick={handleSave} loading={newQuery.isPending || updateQuery.isPending}>
 						Сохранить
 					</Button>
-					<Button onClick={handleApply}>Применить</Button>
+					<Button onClick={handleApply} loading={isLoading}>
+						Применить
+					</Button>
 				</Group>
 			</Group>
 			<Loading active={isLoading} keepMounted>
@@ -186,48 +187,50 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 							<Table.Tr key={headerGroup.id + '-' + index}>
 								{headerGroup.headers.map((header, index) => (
 									<Table.Th key={header.id + '-' + index} colSpan={header.colSpan}>
-										<Group justify='space-between'>
+										<Group justify='space-between' grow>
 											<Text>
 												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
 											</Text>
 											{canEdit(header.column.columnDef) && (
-												<Popover>
-													<Popover.Target>
-														<ButtonIcon>tb-settings</ButtonIcon>
-													</Popover.Target>
-													<Popover.Dropdown w='18rem'>
-														<Stack gap='xs'>
-															<Group gap='xs' justify='space-between'>
-																<ActionForm
-																	value={whereItem(header.id)?.single_action_list || 'and'}
-																	onChange={single_action_list =>
-																		handleChangeActionField(header.id, single_action_list)
-																	}
-																/>
+												<Group justify='end'>
+													<Popover>
+														<Popover.Target>
+															<ButtonIcon>tb-settings</ButtonIcon>
+														</Popover.Target>
+														<Popover.Dropdown w='18rem'>
+															<Stack gap='xs'>
+																<Group gap='xs' justify='space-between'>
+																	<ActionForm
+																		value={whereItem(header.id)?.single_action_list || 'and'}
+																		onChange={single_action_list =>
+																			handleChangeActionField(header.id, single_action_list)
+																		}
+																	/>
 
-																<ButtonRemove onClick={() => handleRemoveField(header.id)} title='Удалить поле'>
-																	<TbColumnRemove />
-																</ButtonRemove>
-															</Group>
+																	<ButtonRemove onClick={() => handleRemoveField(header.id)} title='Удалить поле'>
+																		<TbColumnRemove />
+																	</ButtonRemove>
+																</Group>
 
-															<SignForm
-																value={whereItem(header.id)?.sing_action || '='}
-																onChange={sing_action => handleChangeSignField(header.id, sing_action)}
-															/>
-															{whereItem(header.id)?.sing_action === 'in' ||
-															whereItem(header.id)?.sing_action === 'not_in' ? (
-																<InForm
-																	values={whereItem(header.id)?.search_value}
-																	onChange={values => handleChangeInField(header.id, values)}
+																<SignForm
+																	value={whereItem(header.id)?.sing_action || '='}
+																	onChange={sing_action => handleChangeSignField(header.id, sing_action)}
 																/>
-															) : (
-																<TextInput
-																	onChange={({ target }) => handleChangeValueField(header.id, target.value)} ///
-																/>
-															)}
-														</Stack>
-													</Popover.Dropdown>
-												</Popover>
+																{whereItem(header.id)?.sing_action === 'in' ||
+																whereItem(header.id)?.sing_action === 'not_in' ? (
+																	<InForm
+																		values={whereItem(header.id)?.search_value}
+																		onChange={values => handleChangeInField(header.id, values)}
+																	/>
+																) : (
+																	<TextInput
+																		onChange={({ target }) => handleChangeValueField(header.id, target.value)} ///
+																	/>
+																)}
+															</Stack>
+														</Popover.Dropdown>
+													</Popover>
+												</Group>
 											)}
 										</Group>
 									</Table.Th>

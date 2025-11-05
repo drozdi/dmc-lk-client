@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
 import { requestAnalyticsElastic } from '../api/elastic'
-import { requestAnalyticsQueriesAdd, requestAnalyticsQueriesList, requestAnalyticsQueriesUpdate } from '../api/queries'
 
 const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 
@@ -30,11 +29,11 @@ class ElasticStore {
 	data = []
 	history = []
 	id = 0
-	name = ''
+	name: string | null = ''
 	setId(id: number) {
 		this.id = id
 	}
-	setName(name: string) {
+	setName(name: string | null) {
 		this.name = name
 	}
 
@@ -100,37 +99,6 @@ class ElasticStore {
 		const data = localStorage.getItem(ANALYTICS_ELASTIC_KEY)
 		if (data) {
 			this.template = JSON.parse(data)
-		}
-	}
-
-	async loadList(reloading: boolean = false) {
-		if (reloading) {
-			this.isLoaded = false
-			this._list = []
-		}
-		if (this.isLoaded) {
-			return
-		}
-		this.isLoading = true
-		this.error = ''
-
-		try {
-			const res = await requestAnalyticsQueriesList({
-				size: this.size,
-				number: this.number,
-			})
-
-			this.isLoaded = true
-			this._list = res.data.request ?? []
-
-			this.state = {
-				isNext: res.data.length >= this.size,
-				isPrev: this.number > 1,
-			}
-		} catch (error) {
-			this.error = error?.response?.data?.detail || error?.message || 'Неизвестная ошибка'
-		} finally {
-			this.isLoading = false
 		}
 	}
 
@@ -203,21 +171,6 @@ class ElasticStore {
 			this.limit = limit
 			this.history = []
 			await this.send('', false)
-		}
-	}
-	async save() {
-		this.isLoading = true
-		try {
-			let res
-			if (this.id) {
-				res = await requestAnalyticsQueriesUpdate(this.id, this.name, this.template)
-			} else {
-				res = await requestAnalyticsQueriesAdd(this.name, this.template)
-			}
-		} catch (error) {
-			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
-		} finally {
-			this.isLoading = false
 		}
 	}
 	clear() {

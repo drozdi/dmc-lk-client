@@ -1,15 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { requestAnalyticsQueriesAdd } from '../../queries'
 
 export function useNewQuery() {
 	const queryClient = useQueryClient()
+	const navigate = useNavigate()
 	return useMutation({
-		mutationFn: async (name: string, template: IAnalyticsElasticQuery): Promise<any> => {
+		mutationFn: async ({ name, template }: { name: string; template: IAnalyticsElasticQuery }): Promise<any> => {
 			return await requestAnalyticsQueriesAdd(name, template)
 		},
-		onSuccess: data => {
-			console.log('useNewQueries', data)
+		onSuccess: ({ data }) => {
 			queryClient.removeQueries({ queryKey: ['query_users'] })
+			navigate(`/analytics/query/${data.id}`)
 		},
 	})
 }

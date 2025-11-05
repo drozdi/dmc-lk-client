@@ -2,17 +2,16 @@ import { Table } from '@mantine/core'
 import dayjs from 'dayjs'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { useQuery } from '../../../../shared/hooks'
+import { useQuery_ } from '../../../../shared/hooks'
 import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { useFetchFields } from '../../api/hooks/use-fetch-fields'
 
 export const IncidentDay = observer(({ day }: { day: string }) => {
 	const { data: fields } = useFetchFields()
-
-	const { isLoading, error, request } = useQuery(requestAnalyticsIncident)
-
-	const [data, setData] = useState([])
+	const { isLoading, error, data, fetch } = useQuery_(['incident'], requestAnalyticsIncident, {
+		select: data => data?.message || [],
+	})
 	const [query, setQuery] = useState({
 		limit_page: 1000,
 		filterdate: [],
@@ -57,16 +56,12 @@ export const IncidentDay = observer(({ day }: { day: string }) => {
 		}))
 	}, [day])
 
-	useEffect(() => {
-		//setQuery(v => ({ ...v, fields_name: list }))
-	}, [fields])
+	// useEffect(() => {
+	// 	setQuery(v => ({ ...v, fields_name: list }))
+	// }, [fields])
 
 	useEffect(() => {
-		if (query.filterdate?.length) {
-			request(query).then(data => {
-				setData(data?.message || [])
-			})
-		}
+		fetch(query)
 	}, [query])
 
 	return (

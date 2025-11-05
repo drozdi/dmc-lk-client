@@ -4,10 +4,9 @@ import { useState } from 'react'
 import { TbCircleMinus } from 'react-icons/tb'
 import { Link as LinkRouter } from 'react-router-dom'
 import { Template } from '../../../../layout/context'
-import { useQuery, useQueryError, useQueryLoading } from '../../../../shared/hooks'
+import { useQueryError, useQueryLoading } from '../../../../shared/hooks'
 import { Item, ItemLabel, ItemSection, List, Loading } from '../../../../shared/ui'
-import { useFetchQueries } from '../../api/hooks/queries'
-import { requestAnalyticsQueriesDelete } from '../../api/queries'
+import { useFetchQueries, useRemoveQuery } from '../../api/hooks/queries'
 
 interface ListQueriesProps {
 	className?: string
@@ -26,10 +25,9 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		fetchPreviousPage,
 	} = listQueries
 
-	const removeQuery = useQuery(requestAnalyticsQueriesDelete)
-	const { request: requestRemove } = removeQuery
+	const removeQuery = useRemoveQuery()
 
-	const isLoading = useQueryLoading(listQueries, removeQuery)
+	const isLoading = useQueryLoading(listQueries)
 	const error = useQueryError(listQueries, removeQuery)
 
 	const handleRemove = async (event: React.MouseEvent, item) => {
@@ -38,13 +36,13 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 		if (!confirm(`Точно хотите удалить "${item.name_query}"?`)) {
 			return
 		}
-		await requestRemove(item.id)
+		removeQuery.mutate(item.id)
 	}
 
 	return (
 		<Stack className={className}>
 			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
-			<Loading active={isLoading} keepMounted>
+			<Loading active={isLoading || removeQuery.isPending} keepMounted>
 				<List separator>
 					{data?.length > 0 ? (
 						data.map(item => (
@@ -53,7 +51,12 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 									<ItemLabel>{item.name_query}</ItemLabel>
 								</ItemSection>
 								<ItemSection side>
-									<ActionIcon color='red' title='Удалить' onClick={e => handleRemove(e, item)}>
+									<ActionIcon
+										color='red'
+										title='Удалить'
+										loading={removeQuery.isPending}
+										onClick={e => handleRemove(e, item)}
+									>
 										<TbCircleMinus />
 									</ActionIcon>
 								</ItemSection>

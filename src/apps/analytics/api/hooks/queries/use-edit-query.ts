@@ -4,11 +4,10 @@ import { requestAnalyticsQueriesUpdate } from '../../queries'
 export function useEditQuery() {
 	const queryClient = useQueryClient()
 	return useMutation({
-		mutationFn: async (id, name, template) => {
+		mutationFn: async ({ id, name, template }: { id: number; name: string; template: IAnalyticsElasticQuery }) => {
 			return await requestAnalyticsQueriesUpdate(id, name, template)
 		},
-		onSuccess: data => {
-			console.log('useEditQueries', data)
+		onSuccess: () => {
 			queryClient.removeQueries({ queryKey: ['query_users'] })
 		},
 	})

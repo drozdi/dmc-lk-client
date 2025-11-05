@@ -1,20 +1,21 @@
 import { Button, Group, Table } from '@mantine/core'
 import { useEffect, useMemo, useState } from 'react'
 import { TbX } from 'react-icons/tb'
-import { useQuery } from '../../../../../shared/hooks'
+import { useQuery_ } from '../../../../../shared/hooks'
 import { Loading } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
 export function IncidentDetail(props) {
-	const { isLoading, request } = useQuery(requestAnalyticsIncident)
-	const [data, setData] = useState([])
+	const { isLoading, fetch, data } = useQuery_(['incident'], requestAnalyticsIncident, {
+		select: data => data?.message || [],
+	})
 
 	const [{ name_production, production_id }, setProduction] = useState({
 		name_production: '',
 		production_id: '',
 	})
 
-	const [query, setQuery] = useState({
+	const [query] = useState({
 		...props,
 		fields_name: [
 			...new Set([
@@ -31,19 +32,15 @@ export function IncidentDetail(props) {
 		details_field: [...new Set([...props.details_field, 'production_id', 'device_id', 'node_id', 'place_id'])],
 	})
 
-	async function fetch() {
-		const res = await request(query)
-		setData(res?.message || [])
-	}
 	useEffect(() => {
-		fetch()
+		fetch(query)
 	}, [query])
 
 	const ddata = useMemo(() => {
 		const res = {}
 
 		if (production_id) {
-			data.forEach(item => {
+			data?.forEach(item => {
 				if (item.production_id == production_id) {
 					res[item.device_id] = {
 						...item,
@@ -53,7 +50,7 @@ export function IncidentDetail(props) {
 			})
 			return Object.values(res).sort((a, b) => b.total_counter - a.total_counter)
 		} else {
-			data.forEach(item => {
+			data?.forEach(item => {
 				res[item.production_id] = {
 					...item,
 					total_counter: (res[item.production_id]?.total_counter || 0) + item.total_counter,
