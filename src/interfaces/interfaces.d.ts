@@ -1,6 +1,6 @@
 interface IResponse<T extends any> {
 	success: boolean
-	message: string | null
+	message: string | null | T
 	data?: T
 	response?: T
 }

@@ -1,5 +1,11 @@
 import { api } from '../../../shared/api'
 
-export async function requestAnalyticsFields() {
-	return (await api.get('/analytics/available_fields')).data
+export async function requestAnalyticsFields(
+	params: IRequestAnalyticsFields = {}
+): Promise<IResponse<IResponseAnalyticsFields>> {
+	return (
+		await api.get('/analytics/available_fields', {
+			params,
+		})
+	).data
 }

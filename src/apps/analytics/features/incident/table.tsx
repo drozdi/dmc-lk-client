@@ -71,7 +71,7 @@ export const IncidentTable = observer(() => {
 		}
 		template.fields.push({
 			accessorKey: field,
-			header: fields[field].label,
+			header: fields?.[field].label,
 			type: 'field',
 			index: template.fields.length,
 		})
@@ -83,7 +83,7 @@ export const IncidentTable = observer(() => {
 		}
 		template.details.push({
 			accessorKey: field,
-			header: fields[field].label,
+			header: fields?.[field].label,
 			type: 'detail',
 			index: template.fields.length,
 		})
@@ -103,7 +103,7 @@ export const IncidentTable = observer(() => {
 		}
 		incidentStore.saveTemp({ ...template })
 	}
-	const handleDate = (index, date) => {
+	const handleDate = (index: number, date: string) => {
 		if (index === 0) {
 			template.filterdate = [date, template.filterdate?.[1]]
 		} else {
@@ -152,20 +152,30 @@ export const IncidentTable = observer(() => {
 				))}
 			</ul>
 			<Group gap='xs' justify='space-between'>
-				<Select placeholder='Групировать поля' value='' onChange={handleAddDetail} data={variantDetails} />
-				<Select placeholder='Показывать поля' value='' onChange={handleAddField} data={variantFields} />
+				<Select
+					placeholder='Групировать поля'
+					value=''
+					onChange={val => handleAddDetail(val as string)}
+					data={variantDetails}
+				/>
+				<Select
+					placeholder='Показывать поля'
+					value=''
+					onChange={val => handleAddField(val as string)}
+					data={variantFields}
+				/>
 				<Group gap='xs'>
 					<Text>С</Text>
 					<DatePickerInput
 						name='date_from'
 						value={template.filterdate?.[0] || ''}
-						onChange={value => handleDate(0, value)}
+						onChange={value => handleDate(0, value as string)}
 					/>
 					<Text>по</Text>
 					<DatePickerInput
 						name='date_to'
 						value={template.filterdate?.[1] || ''}
-						onChange={value => handleDate(1, value)}
+						onChange={value => handleDate(1, value as string)}
 					/>
 				</Group>
 				<Button onClick={() => incidentStore.send()}>Применить</Button>
@@ -175,14 +185,14 @@ export const IncidentTable = observer(() => {
 					<Table.Thead>
 						{table.getHeaderGroups().map(headerGroup => (
 							<Table.Tr key={headerGroup.id}>
-								{headerGroup.headers.map((header, index) => (
+								{headerGroup.headers.map((header: any) => (
 									<Table.Th key={header.id} colSpan={header.colSpan}>
 										<Group justify='space-between' grow>
 											<Text>
 												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
 											</Text>
 
-											{canRemove(header.column.columnDef) && (
+											{canRemove(header?.column?.columnDef) && (
 												<Group justify='end'>
 													<ButtonRemove
 														onClick={() => handleRemove(header.column.columnDef)}
@@ -212,7 +222,7 @@ export const IncidentTable = observer(() => {
 			<Group justify='end'>
 				<Select
 					value={String(limit)}
-					onChange={value => incidentStore.setLimit(value)}
+					onChange={value => incidentStore.setLimit(Number(value))}
 					data={['15', '30', '50', '75', '100']}
 				/>
 			</Group>

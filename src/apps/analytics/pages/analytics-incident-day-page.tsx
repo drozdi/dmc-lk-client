@@ -1,9 +1,9 @@
 import { Group, Paper, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { Template } from '@t'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Template } from '../../../layout'
 import { IncidentDay } from '../features/incident/day'
 
 export function AnalyticsIncidentDayPage() {
@@ -11,10 +11,10 @@ export function AnalyticsIncidentDayPage() {
 	const [day, setDay] = useState(dayjs(searchParams.get('day') || undefined).format('YYYY-MM-DD'))
 	return (
 		<Paper>
-			<Template.Title slot='title'>Инциденты за день</Template.Title>
+			<Template.Title>Инциденты за день</Template.Title>
 			<Group justify='end'>
 				<Text>Дата:</Text>
-				<DatePickerInput value={day} onChange={setDay} />
+				<DatePickerInput value={day} onChange={val => setDay(val as string)} />
 			</Group>
 			<IncidentDay day={day} />
 		</Paper>

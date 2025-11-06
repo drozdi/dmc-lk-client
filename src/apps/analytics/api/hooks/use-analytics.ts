@@ -3,21 +3,21 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { requestAnalytics } from '../analytics'
 
-export function useAnalytics(params?: IAnalyticsQuery = {}) {
+export function useAnalytics(params: IRequestAnalytics = {}) {
 	const queryClient = useQueryClient()
-	const [data, setData] = useState<any>({
+	const [data, setData] = useState<IResponseAnalytics>({
 		id: 0,
 		sum_company: 0,
 		production: [],
 	})
-	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState('')
+	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [error, setError] = useState<IError>('')
 
 	return {
 		data,
 		isLoading,
 		error,
-		request: async (query?: IAnalyticsQuery = {}) => {
+		request: async (query: IRequestAnalytics = {}) => {
 			const _query = {
 				...params,
 				filterdate: [
@@ -30,7 +30,7 @@ export function useAnalytics(params?: IAnalyticsQuery = {}) {
 			setIsLoading(true)
 			const res = await queryClient.fetchQuery({
 				queryKey: ['analytics', JSON.stringify(_query)],
-				queryFn: async () => (await requestAnalytics(_query)).message,
+				queryFn: async (): Promise<IResponseAnalytics> => (await requestAnalytics(_query as IRequestAnalytics)).message,
 			})
 			setData(res)
 			setIsLoading(false)

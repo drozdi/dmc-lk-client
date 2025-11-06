@@ -20,7 +20,7 @@ interface TemplateSlotProps extends React.HTMLAttributes<HTMLElement> {
 	children?: React.ReactNode
 }
 
-export function createTemplateContext() {
+export function createTemplateContext(): [any & Record<string, any>, Function] {
 	// Создаем контекст для менеджера шаблонов
 	const TemplateContext = createContext<TemplateStateValue | null>(null)
 
@@ -102,10 +102,11 @@ export function createTemplateContext() {
 	 * @param {Object} props - Свойства компонента
 	 * @param {React.ReactNode} props.children - Дочерние элементы
 	 */
-	Template.Provider = ({ children, value }: TemplateProviderProps) => {
+	function TemplateProvider({ children, value }: TemplateProviderProps) {
 		const contextValue = value || factoryContext()
 		return <TemplateContext.Provider value={contextValue}>{children}</TemplateContext.Provider>
 	}
+	Template.Provider = TemplateProvider
 
 	/**
 	 * Компонент слота для размещения шаблонов
@@ -114,7 +115,7 @@ export function createTemplateContext() {
 	 * @param {string} props.name['default'] - Имя слота
 	 * @param {string} props.children - Дочерние элементы
 	 */
-	Template.Slot = ({ name = 'default', children, ...slotProps }: TemplateSlotProps) => {
+	function TemplateSlot({ name = 'default', children, ...slotProps }: TemplateSlotProps) {
 		const manager = useContext(TemplateContext)
 
 		// Если нет менеджера, используем children как fallback
@@ -137,6 +138,7 @@ export function createTemplateContext() {
 		// Для статических элементов клонируем с props
 		return cloneElement(template, { ...slotProps, key: template.key })
 	}
+	Template.Slot = TemplateSlot
 
 	/**
 	 * Компонент для проверки слота
@@ -145,14 +147,17 @@ export function createTemplateContext() {
 	 * @param {string} props.name['default'] - Имя слота
 	 * @param {string} props.children - Дочерние элементы
 	 */
-	Template.Has = ({ name, children }: { name: string; children: React.ReactNode }) => {
+	function TemplateHas({ name, children }: { name: string; children: React.ReactNode }) {
 		const { hasTemplate } = useTemplateManager()
 		return hasTemplate(name) ? children : null
 	}
+	Template.Has = TemplateHas
 
-	Template.use = () => {
+	function useTemplate() {
 		return useContext(TemplateContext)
 	}
+
+	Template.use = useTemplate
 
 	return [Template, useTemplateManager]
 }

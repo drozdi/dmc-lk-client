@@ -6,7 +6,7 @@ import { ExpandablePanel } from '../../../shared/ui'
 import { randomColor } from '../../../shared/utils'
 import { useAnalytics } from '../api'
 
-interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
+interface ChartAnalyticProps extends Omit<IRequestAnalytics, 'event'> {}
 
 export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
@@ -19,9 +19,9 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IProductionAnalytics[]>(() => {
+	const productions = useMemo<IAnalyticsProduction[]>(() => {
 		if (data) {
-			return ((data?.production as Array<IProductionAnalytics>) || []).map(item => ({
+			return ((data?.production as Array<IAnalyticsProduction>) || []).map(item => ({
 				address: item.address,
 				label: item.name,
 				value: String(item.production_id),

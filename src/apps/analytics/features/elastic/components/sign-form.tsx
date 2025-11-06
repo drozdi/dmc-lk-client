@@ -4,7 +4,7 @@ export function SignForm({ value = '', onChange }: { value?: string; onChange?: 
 	return (
 		<Select
 			value={String(value)}
-			onChange={value => onChange?.(value)}
+			onChange={value => onChange?.(value as string)}
 			data={['=', '>=', '<=', '!=', 'in', 'not_in', 'like']}
 		/>
 	)

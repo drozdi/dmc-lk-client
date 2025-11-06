@@ -10,16 +10,16 @@ export async function requestUsersList({ size = 15, number = 0 }: { size?: numbe
 	return res.data
 }
 
-export async function requestUsersGet(id: number) {
+export async function requestUsersGet(id: number): Promise<IResponse<IUsersUser>> {
 	const res = await api.get(`/users/user?id_user=${id}`)
 	return res.data
 }
-export async function requestUsersUpdate(id: number, data: IUsersUser) {
+export async function requestUsersUpdate(id: number, data: IUsersUser): Promise<IResponse<IUsersUser>> {
 	const res = await api.patch(`/users/?id_user=${id}`, data)
 	return res.data
 }
 
-export async function requestUsersProducts() {
+export async function requestUsersProducts(): Promise<IResponse<IResponseProduction[]>> {
 	const res = await api.get('/users/products')
 	return res.data
 }

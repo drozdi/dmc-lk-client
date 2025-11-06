@@ -19,10 +19,10 @@ export const AnalyticAnalyticWidget = observer(() => {
 		step: 'd',
 	})
 	const [data, setData] = useState<{
-		v?: IAnalyticsResponse
-		i?: IAnalyticsResponse
-		d?: IAnalyticsResponse
-		p?: IAnalyticsResponse
+		v?: IResponseAnalytics
+		i?: IResponseAnalytics
+		d?: IResponseAnalytics
+		p?: IResponseAnalytics
 	}>({})
 	const [cuurent_production, setCurrentProduction] = useState('0')
 
@@ -38,7 +38,7 @@ export const AnalyticAnalyticWidget = observer(() => {
 		send()
 	}, [])
 	const productions = useMemo(() => {
-		const productions: IProductionAnalytics[] = []
+		const productions: address?: string[] = []
 		if (data) {
 			for (const event in mapEvent) {
 				data[event]?.production?.forEach(item => {

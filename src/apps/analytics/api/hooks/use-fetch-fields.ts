@@ -4,11 +4,9 @@ import { requestAnalyticsFields } from '../fields'
 export function useFetchFields() {
 	return useQuery({
 		queryKey: ['fields'],
-		queryFn: async () => {
-			return await requestAnalyticsFields()
-		},
-		select(data) {
-			return data.message
+		queryFn: async () => await requestAnalyticsFields(),
+		select(data): IResponseAnalyticsFields {
+			return data.message as IResponseAnalyticsFields
 		},
 	})
 }

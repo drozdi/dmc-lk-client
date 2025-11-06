@@ -27,7 +27,7 @@ export const AnalyticsQueryPage = observer(() => {
 		elasticStore.setId(id)
 	}, [data])
 
-	const goTo = id => {
+	const goTo = (id: string) => {
 		navigate(`/analytics/query/${id}`)
 	}
 
@@ -35,8 +35,8 @@ export const AnalyticsQueryPage = observer(() => {
 		<Paper>
 			<Select
 				value={String(id_query)}
-				onChange={value => goTo(value)}
-				data={(list || []).map(({ id, name_query }) => ({
+				onChange={value => goTo(value as string)}
+				data={(list || []).map(({ id, name_query }: { id: number | string; name_query: string }) => ({
 					value: String(id),
 					label: name_query,
 				}))}

@@ -11,7 +11,7 @@ export function InForm({ values, onChange }: { values?: string[]; onChange?: (va
 		}
 	}
 	const handleRemoveItem = (value: string) => {
-		onChange?.(values?.filter(item => value !== item))
+		onChange?.((values || []).filter(item => String(value) !== String(item)))
 	}
 
 	return (

@@ -68,11 +68,11 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 
 	const whereItemAppend = (
 		select: string,
-		sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like',
+		sign: PermittedActions,
 		value: string | string[] = '',
-		action: 'and' | 'or' | 'not' = 'and'
+		action: SingleActionList = 'and'
 	) => {
-		const index = template.company.list_where?.findIndex(item => item.name_field_table === select)
+		const index = template.company.list_where?.findIndex(item => item.name_field_table === select) as number
 		let where = {
 			name_field_table: select,
 			sing_action: sign,
@@ -80,9 +80,9 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 			single_action_list: action,
 		}
 		if (index === -1) {
-			template.company.list_where.push(where)
+			template.company.list_where?.push(where)
 		} else {
-			where = template.company.list_where[index]
+			where = template.company.list_where?.[index] as any
 		}
 		return where
 	}
@@ -96,15 +96,15 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 	}
 	const handleRemoveField = (select: string) => {
 		template.company.select_field = template.company.select_field.filter(item => item !== select)
-		template.company.list_where = template.company.list_where.filter(item => item.name_field_table !== select)
+		template.company.list_where = template.company.list_where?.filter(item => item.name_field_table !== select)
 		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeActionField = (select: string, action: 'and' | 'or' | 'not') => {
+	const handleChangeActionField = (select: string, action: SingleActionList) => {
 		const where = whereItemAppend(select, '=', '', action)
 		where.single_action_list = action
 		elasticStore.saveTemp({ ...template })
 	}
-	const handleChangeSignField = (select: string, sign: '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like') => {
+	const handleChangeSignField = (select: string, sign: PermittedActions) => {
 		const where = whereItemAppend(select, sign)
 		where.sing_action = sign
 		where.search_value = ''
@@ -134,9 +134,9 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 			elasticStore.setName(prompt('Введите название запроса'))
 		}
 		if (elasticStore.id) {
-			updateQuery.mutate({ id: elasticStore.id, name: elasticStore.name, template: elasticStore.template })
+			updateQuery.mutate({ id: elasticStore.id, name: elasticStore.name as string, template: elasticStore.template })
 		} else {
-			newQuery.mutate({ name: elasticStore.name, template: elasticStore.template })
+			newQuery.mutate({ name: elasticStore.name as string, template: elasticStore.template })
 		}
 	}
 
@@ -152,7 +152,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 				<Group>
 					<Select
 						value={''}
-						onChange={value => handleAddField(value)}
+						onChange={value => handleAddField(value as string)}
 						placeholder='Добавить поле'
 						data={variantFields}
 					/>
@@ -185,7 +185,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					<Table.Thead>
 						{table.getHeaderGroups().map((headerGroup, index) => (
 							<Table.Tr key={headerGroup.id + '-' + index}>
-								{headerGroup.headers.map((header, index) => (
+								{headerGroup.headers.map((header: any, index) => (
 									<Table.Th key={header.id + '-' + index} colSpan={header.colSpan}>
 										<Group justify='space-between' grow>
 											<Text>
@@ -203,7 +203,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 																	<ActionForm
 																		value={whereItem(header.id)?.single_action_list || 'and'}
 																		onChange={single_action_list =>
-																			handleChangeActionField(header.id, single_action_list)
+																			handleChangeActionField(header.id, single_action_list as SingleActionList)
 																		}
 																	/>
 
@@ -214,12 +214,14 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 
 																<SignForm
 																	value={whereItem(header.id)?.sing_action || '='}
-																	onChange={sing_action => handleChangeSignField(header.id, sing_action)}
+																	onChange={sing_action =>
+																		handleChangeSignField(header.id, sing_action as PermittedActions)
+																	}
 																/>
 																{whereItem(header.id)?.sing_action === 'in' ||
 																whereItem(header.id)?.sing_action === 'not_in' ? (
 																	<InForm
-																		values={whereItem(header.id)?.search_value}
+																		values={whereItem(header.id)?.search_value as string[]}
 																		onChange={values => handleChangeInField(header.id, values)}
 																	/>
 																) : (
@@ -263,7 +265,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 				<Select
 					value={String(limit)}
 					data={['15', '30', '50', '75', '100']}
-					onChange={value => elasticStore.setLimit(value)}
+					onChange={value => elasticStore.setLimit(Number(value))}
 				/>
 			</Template.Footer>
 		</>

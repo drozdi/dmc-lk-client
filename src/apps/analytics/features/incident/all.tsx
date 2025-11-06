@@ -1,21 +1,21 @@
 import { Accordion, Center, Notification } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
-import { Template } from '../../../../layout/context'
+import { Template } from '../../../../layout'
 import { useQuery_ } from '../../../../shared/hooks'
 import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { IncidentDetail } from './components/incident-detail'
 
 export const IncidentAll = observer(
-	({ query = {}, ...props }: { query: IAnalyticsIncidentQuery; [key: string]: any }) => {
+	({ query = {}, ...props }: { query: IRequestAnalyticsIncident; [key: string]: any }) => {
 		const { data, isLoading, error, fetch } = useQuery_(['incident'], requestAnalyticsIncident, {
-			select: data => data?.message || [],
+			select: (data: IResponse<IResponseAnalyticsIncident>) => data?.message || [],
 		})
 		const [openend, setOpenend] = useState<string[]>([])
 
 		useEffect(() => {
-			fetch(query)
+			fetch?.(query)
 		}, [query])
 
 		return (
@@ -24,7 +24,7 @@ export const IncidentAll = observer(
 				<Loading {...props} active={isLoading} keepMounted>
 					{data?.length ? (
 						<Accordion multiple chevronPosition='left' onChange={setOpenend}>
-							{data.map((item, index) => (
+							{data.map((item: IAnalyticsIncidentItem) => (
 								<Accordion.Item key={item.data} value={item.data}>
 									<Accordion.Control icon={item.total_counter}>{item.data}</Accordion.Control>
 									<Accordion.Panel>

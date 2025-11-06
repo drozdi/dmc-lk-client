@@ -8,13 +8,13 @@ export function useFetchQueries(size: number = 100) {
 		queryFn: async ({ pageParam }) => {
 			const res = await requestAnalyticsQueriesList({ size, number: pageParam })
 			if (!res.success) {
-				throw new Error(res.message || 'Список пользователей: подумать над ошибкой!')
+				throw new Error(res.message || 'Список запросов: подумать над ошибкой!')
 			}
 			return res
 		},
 		getNextPageParam: lastPage => lastPage.nextPage,
 		getPreviousPageParam: lastPage => lastPage.prevPage,
-		select({ pages }) {
+		select({ pages }): Array<IAnalyticsElasticQueryItem> {
 			return pages[0].data.request
 		},
 	})

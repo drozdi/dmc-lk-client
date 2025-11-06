@@ -1,12 +1,11 @@
 import { Button, Checkbox, Group, Notification, Stack, Tabs, TextInput } from '@mantine/core'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { Template } from '@t'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
+import { useEffect, type ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Template } from '../../../layout'
 import { Item, ItemSection, List, Loading, PhoneInput } from '../../../shared/ui'
-import { useEditUser, useFetchUser } from '../api'
-import { usersStore } from '../stores/users-store'
+import { useEditUser, useFetchProductions, useFetchUser } from '../api'
 
 interface UserFormProps {
 	id?: number | string
@@ -14,16 +13,16 @@ interface UserFormProps {
 }
 
 export const UserForm = observer(({ id, className }: UserFormProps) => {
-	const { products } = usersStore
+	const { data: products } = useFetchProductions()
 	const naigate = useNavigate()
-	const ff = useFetchUser(id)
+	const ff = useFetchUser(Number(id))
 	const { isLoading, error, isError, data } = ff
 	console.log(ff)
 	const { mutate } = useEditUser()
 	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
 	// const reqUserUpdate = useQuery(requestUsersUpdate)
 
-	const form = useForm({
+	const form = useForm<IUsersUser>({
 		mode: 'uncontrolled',
 		name: 'userForm',
 		initialValues: {
@@ -59,7 +58,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	useEffect(() => {
 		if (data?.email) {
 			const user = { is_active: true, is_superuser: false, ...data }
-			user.id_production = (user.id_production || []).map(item => String(item))
+			user.id_production = (user.id_production || []).map((item: unknown) => String(item))
 			form.initialize(user)
 		}
 	}, [data])
@@ -72,14 +71,14 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 		naigate('/users')
 	}
 
-	const handleCheckboxChange = event => {
+	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const { value, checked } = event.currentTarget
 		form.setFieldValue('id_production', currentItems =>
 			checked ? [...currentItems, value] : currentItems.filter(item => item !== value)
 		)
 	}
 
-	const isValid = !(form.errors.length > 0)
+	const isValid = !(Number(form.errors.length) > 0)
 	return (
 		<>
 			{<Template slot='notification'>{error && <Notification color='red'>{error.message}</Notification>}</Template>}
@@ -143,22 +142,23 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						</Tabs.Panel>
 						<Tabs.Panel value='tab-product'>
 							<List dense separator>
-								{products.map(product => (
-									<Item component='label' key={product.production_id} disabled={isError}>
-										<ItemSection top row>
-											{product.name_production}
-										</ItemSection>
-										<ItemSection side>
-											<input
-												type='checkbox'
-												onChange={handleCheckboxChange}
-												checked={form.values.id_production.includes(String(product.production_id))}
-												value={String(product.production_id)}
-												disabled={isError}
-											/>
-										</ItemSection>
-									</Item>
-								))}
+								{products?.length &&
+									products.map(product => (
+										<Item component='label' key={product.production_id} disabled={isError}>
+											<ItemSection top row>
+												{product.production_name}
+											</ItemSection>
+											<ItemSection side>
+												<input
+													type='checkbox'
+													onChange={handleCheckboxChange}
+													checked={form.values.id_production.includes(String(product.production_id))}
+													value={String(product.production_id)}
+													disabled={isError}
+												/>
+											</ItemSection>
+										</Item>
+									))}
 							</List>
 						</Tabs.Panel>
 					</Tabs>
@@ -167,13 +167,13 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						<Group>
 							<Button
 								color='green'
-								onClick={form.onSubmit(handleSaveNavigate)}
+								onClick={() => form.onSubmit(handleSaveNavigate)}
 								loading={isLoading}
 								disabled={isError || !isValid}
 							>
 								Сохранить
 							</Button>
-							<Button onClick={form.onSubmit(handleSave)} loading={isLoading} disabled={isError || !isValid}>
+							<Button onClick={() => form.onSubmit(handleSave)} loading={isLoading} disabled={isError || !isValid}>
 								Применить
 							</Button>
 						</Group>

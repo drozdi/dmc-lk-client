@@ -1,7 +1,7 @@
 import { Button, Group, NavLink, Notification, Paper, Select, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Template } from '../../../layout/context'
+import { Template } from '../../../layout'
 import { Loading } from '../../../shared/ui'
 import { useFetchUsers } from '../api'
 
@@ -12,7 +12,7 @@ export function UsersList({ className }: UsersListProps) {
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)
-	const { isLoading, error, data } = useFetchUsers({ number, size })
+	const { isLoading, error, data } = useFetchUsers({ number, size: Number(size) })
 
 	useEffect(() => {
 		setList(Array.isArray(data) ? data : [])
@@ -37,17 +37,17 @@ export function UsersList({ className }: UsersListProps) {
 				)}
 			</Loading>
 
-			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
+			<Template slot='notification'>{error && <Notification color='red'>{error as any}</Notification>}</Template>
 			<Template.Footer>
 				<Group>
 					<Button disabled={number != 1}>Предыдущая</Button>
-					<Button disabled={list.length < size}>Следующая</Button>
+					<Button disabled={list.length < Number(size)}>Следующая</Button>
 				</Group>
 				<Select
 					value={String(size)}
 					onChange={value => {
 						setNumber(0)
-						setSize(value)
+						setSize(Number(value))
 					}}
 					data={['15', '30', '50', '75', '100']}
 				/>

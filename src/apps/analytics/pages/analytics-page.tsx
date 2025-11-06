@@ -1,8 +1,8 @@
 import { Group, Paper, SimpleGrid, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { Template } from '@t'
 import dayjs from 'dayjs'
 import { useState } from 'react'
+import { Template } from '../../../layout'
 import { AnalyticEventWidget } from '../widgets/analytic-event-widget'
 import { AnalyticPieWidget } from '../widgets/analytic-pie-widget'
 import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
@@ -10,7 +10,7 @@ import { AnalyticTypeWidget } from '../widgets/analytic-type-widget'
 const dNow = dayjs('2025-08-02')
 
 export function AnalyticsPage() {
-	const [query, setQuery] = useState<Omit<IAnalyticsQuery, 'step' | 'event'>>({
+	const [query, setQuery] = useState<Omit<IRequestAnalytics, 'step' | 'event'>>({
 		filterdate_from: dNow.month(dNow.month() - 6).format('YYYY-MM-DD'),
 		filterdate_to: dNow.format('YYYY-MM-DD'),
 	})

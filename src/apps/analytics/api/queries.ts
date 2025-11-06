@@ -6,7 +6,7 @@ export async function requestAnalyticsQueriesList({
 }: {
 	size?: number
 	number?: number
-} = {}) {
+} = {}): Promise<IResponse<IResponseAnalyticsQuery>> {
 	const res = await api.get('/query_users/', {
 		params: {
 			size,
@@ -16,7 +16,7 @@ export async function requestAnalyticsQueriesList({
 	return res.data
 }
 
-export async function requestAnalyticsQueriesGet(id: number) {
+export async function requestAnalyticsQueriesGet(id: number): Promise<IResponse<IAnalyticsElasticQueryItem>> {
 	const res = await api.get(`/query_users/query_id/?id_query=${id}`)
 	return res.data
 }

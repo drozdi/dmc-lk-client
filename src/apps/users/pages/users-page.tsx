@@ -1,5 +1,5 @@
 import { Paper } from '@mantine/core'
-import { Template } from '@t'
+import { Template } from '../../../layout'
 import { UsersList } from '../features/users-list'
 export function UsersPage() {
 	return (

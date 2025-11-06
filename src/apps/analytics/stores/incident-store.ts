@@ -1,9 +1,7 @@
-import { makeAutoObservable } from 'mobx'
-import { requestAnalyticsIncident } from '../api/incident'
-
 import dayjs from 'dayjs'
-
-const ANALYTICS_INCIDENT_KEY = 'analytics.incident.form'
+import { makeAutoObservable } from 'mobx'
+import { ANALYTICS_INCIDENT_KEY } from '../../../shared/constants'
+import { requestAnalyticsIncident } from '../api/incident'
 
 const dNow = dayjs()
 
@@ -16,15 +14,12 @@ class IncidentStore {
 		fields: any[]
 		details: any[]
 	} = {
-		filterdate: [
-			dNow.month(dNow.month() - 3).format('YYYY-MM-DD'),
-			dNow.format('YYYY-MM-DD'),
-		],
+		filterdate: [dNow.month(dNow.month() - 3).format('YYYY-MM-DD'), dNow.format('YYYY-MM-DD')],
 		data: [],
 		fields: [],
 		details: [],
 	}
-	data: any[] = []
+	data: IAnalyticsIncidentItem[] = []
 	limit: number = 50
 	constructor() {
 		makeAutoObservable(this)
@@ -37,12 +32,7 @@ class IncidentStore {
 			}
 		}
 	}
-	saveTemp(data: {
-		filterdate: any[]
-		data: any[]
-		fields: any[]
-		details: any[]
-	}) {
+	saveTemp(data: { filterdate: any[]; data: any[]; fields: any[]; details: any[] }) {
 		this.template = data
 		localStorage.setItem(ANALYTICS_INCIDENT_KEY, JSON.stringify(data))
 	}
@@ -64,10 +54,9 @@ class IncidentStore {
 				fields_name: this.template.fields.map(item => item.accessorKey),
 				details_field: this.template.details.map(item => item.accessorKey),
 			})
-			this.data = res.message
-		} catch (error) {
-			this.error =
-				error.response?.data?.detail || error.message || 'Неизвестная ошибка'
+			this.data = res.message as IAnalyticsIncidentItem[]
+		} catch (error: IError) {
+			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 		} finally {
 			this.isLoading = false
 		}

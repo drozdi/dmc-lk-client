@@ -13,21 +13,21 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	const { isLoading, request } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState('0')
 	const [data, setData] = useState<{
-		v?: IAnalyticsResponse
-		i?: IAnalyticsResponse
-		d?: IAnalyticsResponse
-		p?: IAnalyticsResponse
+		v?: IResponseAnalytics
+		i?: IResponseAnalytics
+		d?: IResponseAnalytics
+		p?: IResponseAnalytics
 	}>({})
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
 
-	async function sendRequest(event: IAnalyticsQuery['event']) {
+	async function sendRequest(event: IRequestAnalytics['event']) {
 		return await request({ ...query, event })
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IProductionAnalytics[]>(() => {
+	const productions = useMemo<IAnalyticsProduction[]>(() => {
 		if (data) {
-			return (((data?.v || data?.i || data?.d || data?.p)?.production as Array<IProductionAnalytics>) || []).map(
+			return (((data?.v || data?.i || data?.d || data?.p)?.production as Array<IAnalyticsProduction>) || []).map(
 				item => ({
 					value: String(item.production_id),
 					label: item.name,

@@ -1,7 +1,7 @@
 import { Paper } from '@mantine/core'
-import { Template } from '@t'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
+import { Template } from '../../../layout'
 import { Loading } from '../../../shared/ui'
 import { TableElastic } from '../features/elastic/table'
 import { elasticStore } from '../stores/elastic-store'
@@ -13,6 +13,7 @@ export const AnalyticsElasticPage = observer(() => {
 		elasticStore.clear()
 		setIsLoading(false)
 	}, [])
+
 	return (
 		<Paper>
 			<Template.Title>Новый шаблон</Template.Title>

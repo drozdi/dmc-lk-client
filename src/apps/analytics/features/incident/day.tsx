@@ -17,9 +17,9 @@ export const IncidentDay = observer(
 	}) => {
 		const { data: fields } = useFetchFields()
 		const { isLoading, error, data, fetch } = useQuery_(['incident'], requestAnalyticsIncident, {
-			select: (data: any) => data?.message || [],
+			select: (data: IResponse<IResponseAnalyticsIncident>) => data?.message || [],
 		})
-		const [query, setQuery] = useState<IAnalyticsIncidentQuery>({
+		const [query, setQuery] = useState<IRequestAnalyticsIncident>({
 			limit_page: 1000,
 			filterdate: [],
 			data: [],
@@ -58,7 +58,7 @@ export const IncidentDay = observer(
 		useEffect(() => {
 			const currDay = dayjs(day)
 			setQuery(
-				(v: IAnalyticsIncidentQuery): IAnalyticsIncidentQuery => ({
+				(v: IRequestAnalyticsIncident): IRequestAnalyticsIncident => ({
 					...v,
 					filterdate: [currDay.format('YYYY-MM-DD'), currDay.day(currDay.day() + 1).format('YYYY-MM-DD')],
 				})
@@ -87,7 +87,7 @@ export const IncidentDay = observer(
 					</Table.Thead>
 					<Table.Tbody>
 						{data?.length ? (
-							data.map((item: any, index: number) => (
+							data.map((item: IAnalyticsIncidentItem) => (
 								<Table.Tr key={item.id}>
 									<Table.Td>{dayjs(item.timestamp).format('YYYY-MM-DD HH:mm')}</Table.Td>
 									{showFields.map(name => (

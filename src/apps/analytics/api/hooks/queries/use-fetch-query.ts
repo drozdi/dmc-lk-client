@@ -7,8 +7,8 @@ export function useFetchQuery(id: number) {
 		queryFn: async () => {
 			return await requestAnalyticsQueriesGet(id)
 		},
-		select(data) {
-			return data.data
+		select(data): IAnalyticsElasticQueryItem {
+			return data.data as IAnalyticsElasticQueryItem
 		},
 	})
 }

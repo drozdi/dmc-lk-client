@@ -5,21 +5,24 @@ import { useQuery_ } from '../../../../../shared/hooks'
 import { Loading } from '../../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../../api'
 
-export function IncidentDetail(props) {
+export function IncidentDetail(props: IRequestAnalyticsIncident) {
 	const { isLoading, fetch, data } = useQuery_(['incident'], requestAnalyticsIncident, {
-		select: data => data?.message || [],
+		select: (data: IResponse<IResponseAnalyticsIncident>) => data?.message || [],
 	})
 
-	const [{ name_production, production_id }, setProduction] = useState({
+	const [{ name_production, production_id }, setProduction] = useState<{
+		name_production: string
+		production_id: number
+	}>({
 		name_production: '',
-		production_id: '',
+		production_id: 0,
 	})
 
-	const [query] = useState({
+	const [query] = useState<IRequestAnalyticsIncident>({
 		...props,
 		fields_name: [
 			...new Set([
-				...props.details_field,
+				...(props.fields_name || []),
 				'name_production',
 				'address_production',
 				'event_name',
@@ -29,18 +32,18 @@ export function IncidentDetail(props) {
 				'place_name',
 			]),
 		],
-		details_field: [...new Set([...props.details_field, 'production_id', 'device_id', 'node_id', 'place_id'])],
+		details_field: [...new Set([...(props.details_field || []), 'production_id', 'device_id', 'node_id', 'place_id'])],
 	})
 
 	useEffect(() => {
-		fetch(query)
+		fetch?.(query)
 	}, [query])
 
 	const ddata = useMemo(() => {
-		const res = {}
+		const res: Record<string, any> = {}
 
 		if (production_id) {
-			data?.forEach(item => {
+			data?.forEach((item: IAnalyticsIncidentItem) => {
 				if (item.production_id == production_id) {
 					res[item.device_id] = {
 						...item,
@@ -50,7 +53,7 @@ export function IncidentDetail(props) {
 			})
 			return Object.values(res).sort((a, b) => b.total_counter - a.total_counter)
 		} else {
-			data?.forEach(item => {
+			data?.forEach((item: IAnalyticsIncidentItem) => {
 				res[item.production_id] = {
 					...item,
 					total_counter: (res[item.production_id]?.total_counter || 0) + item.total_counter,
@@ -62,7 +65,7 @@ export function IncidentDetail(props) {
 		return data
 	}, [data, production_id])
 
-	async function handleProduction(production_id, name_production) {
+	async function handleProduction(production_id: number, name_production: string) {
 		setProduction({
 			name_production,
 			production_id,
@@ -73,7 +76,7 @@ export function IncidentDetail(props) {
 		<Loading mih='100' keepMounted active={isLoading}>
 			<Group justify='center'>
 				{production_id && (
-					<Button color='red' variant='outline' onClick={() => setProduction(0, '')} rightSection={<TbX />}>
+					<Button color='red' variant='outline' onClick={() => handleProduction(0, '')} rightSection={<TbX />}>
 						Площадка: {name_production}
 					</Button>
 				)}
@@ -88,7 +91,7 @@ export function IncidentDetail(props) {
 								</Table.Th>
 							</Table.Tr>
 
-							{ddata.map((item, index) => (
+							{ddata.map((item: IAnalyticsIncidentItem) => (
 								<Table.Tr key={item.device_id}>
 									<Table.Td>{item.device_name}</Table.Td>
 									<Table.Td>{item.total_counter}</Table.Td>
@@ -102,7 +105,7 @@ export function IncidentDetail(props) {
 									Площадки
 								</Table.Th>
 							</Table.Tr>
-							{ddata.map((item, index) => (
+							{ddata.map((item: IAnalyticsIncidentItem) => (
 								<Table.Tr
 									className='cursor-pointer'
 									key={item.production_id}

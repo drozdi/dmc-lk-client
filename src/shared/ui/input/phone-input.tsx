@@ -14,7 +14,7 @@ const countries = [
 	{ value: 'by', label: '🇧🇾 Беларусь', code: '+375' },
 ]
 
-export function PhoneInput({ variant, value, defaultValue, onChange, size, ...props }) {
+export function PhoneInput({ variant, value, defaultValue, onChange, size, ...props }: Record<string, any>) {
 	const detectCountryFromNumber = (phoneNumber: string, def: string | null = null) => {
 		if (!phoneNumber) return def
 		try {

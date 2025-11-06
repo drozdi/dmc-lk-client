@@ -17,7 +17,7 @@ import { ExpandablePanel } from '../../../shared/ui'
 import { useAnalytics } from '../api'
 import { mapEvent, mapEventColor } from '../entites/constants'
 
-interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
+interface ChartAnalyticProps extends Omit<IRequestAnalytics, 'event'> {}
 
 const initialState = {
 	refAreaLeft: '',
@@ -30,23 +30,23 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	const { isLoading, request } = useAnalytics()
 	const [cuurent_production, setCurrentProduction] = useState(0)
 	const [data, setData] = useState<{
-		v?: IAnalyticsResponse
-		i?: IAnalyticsResponse
-		d?: IAnalyticsResponse
-		p?: IAnalyticsResponse
+		v?: IResponseAnalytics
+		i?: IResponseAnalytics
+		d?: IResponseAnalytics
+		p?: IResponseAnalytics
 	}>()
 
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
 	function reset() {
 		setQuery({ ...props })
 	}
-	async function sendRequest(event: IAnalyticsQuery['event']) {
+	async function sendRequest(event: IRequestAnalytics['event']) {
 		return await request({ ...query, event })
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IProductionAnalytics[]>(() => {
-		const productions: IProductionAnalytics[] = []
+	const productions = useMemo<IAnalyticsProduction[]>(() => {
+		const productions: IAnalyticsProduction[] = []
 		if (data) {
 			for (const event in mapEvent) {
 				data[event]?.production?.forEach(item => {

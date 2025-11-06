@@ -1,13 +1,11 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
+import { ANALYTICS_ELASTIC_KEY } from '../../../shared/constants'
 import { requestAnalyticsElastic } from '../api/elastic'
-
-const ANALYTICS_ELASTIC_KEY = 'analytics.elastic.form'
 
 class ElasticStore {
 	isLoading = false
 	isLoaded = false
-	_list = []
 	error?: string = undefined
 
 	template: IAnalyticsElasticQuery = {
@@ -26,20 +24,16 @@ class ElasticStore {
 		},
 	}
 
-	data = []
-	history = []
+	data: Record<string, any>[] = []
+	history: string[] = []
 	id = 0
 	name: string | null = ''
+
 	setId(id: number) {
 		this.id = id
 	}
 	setName(name: string | null) {
 		this.name = name
-	}
-
-	get list() {
-		this.loadList()
-		return this._list
 	}
 
 	get nextPage() {
@@ -55,11 +49,7 @@ class ElasticStore {
 		}
 	}
 	get limit() {
-		try {
-			return this.template.paginate.limit_page
-		} catch (error) {
-			return 50
-		}
+		return this.template.paginate.limit_page
 	}
 	set limit(value) {
 		this.template = {
@@ -80,20 +70,14 @@ class ElasticStore {
 		return this.template?.company?.date_limit
 	}
 
-	size = 15
-	number = 0
-	state = {
+	state: {
+		isNext: boolean
+		isPrev: boolean
+	} = {
 		isNext: false,
 		isPrev: false,
 	}
-	setNumber(number: number) {
-		this.number = number
-		this.loadList(true)
-	}
-	setSize(size: number) {
-		this.size = size
-		this.loadList(true)
-	}
+
 	constructor() {
 		makeAutoObservable(this)
 		const data = localStorage.getItem(ANALYTICS_ELASTIC_KEY)
@@ -112,7 +96,7 @@ class ElasticStore {
 			...date,
 		}
 	}
-	async send(page = '', histrory = true) {
+	async send(page: string = '', histrory: boolean = true) {
 		this.isLoading = true
 		try {
 			const select_field = [...this.template.company.select_field]
@@ -127,7 +111,7 @@ class ElasticStore {
 			})
 			const date_limit = { ...this.template.company.date_limit }
 
-			if (list_where.length > 0) {
+			if (list_where?.length && list_where?.length > 0) {
 				delete list_where[list_where.length - 1]?.single_action_list
 			}
 
@@ -143,10 +127,9 @@ class ElasticStore {
 				},
 			})
 			histrory && this.history.push(page)
-			this.nextPage = res.data.last_id_record
-			this.data = res.data.message
-			return res.data
-		} catch (error) {
+			this.nextPage = res.last_id_record
+			this.data = res.message
+		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error.message || 'Неизвестная ошибка'
 			this.data = []
 		} finally {
