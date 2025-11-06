@@ -150,7 +150,9 @@ export function createTemplateContext() {
 		return hasTemplate(name) ? children : null
 	}
 
-	Template.Context = TemplateContext
+	Template.use = () => {
+		return useContext(TemplateContext)
+	}
 
 	return [Template, useTemplateManager]
 }
