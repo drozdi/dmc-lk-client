@@ -1,16 +1,15 @@
 import { Button, Checkbox, Group, Notification, Stack, Tabs, TextInput } from '@mantine/core'
 import { isEmail, isNotEmpty, useForm } from '@mantine/form'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Template } from '../../../layout/context'
 import { Item, ItemSection, List, Loading, PhoneInput } from '../../../shared/ui'
 import { useEditUser, useFetchUser } from '../api'
 import { usersStore } from '../stores/users-store'
 
 interface UserFormProps {
-	id?: number
+	id?: number | string
 	className?: string
 }
 
@@ -84,7 +83,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	return (
 		<>
 			{<Template slot='notification'>{error && <Notification color='red'>{error.message}</Notification>}</Template>}
-			<TemplateTitle>Пользователь - {data?.email}</TemplateTitle>
+			<Template.Title>Пользователь - {data?.email}</Template.Title>
 			<Loading active={isLoading} keepMounted>
 				<form>
 					<Tabs defaultValue='tab-general'>
@@ -164,7 +163,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						</Tabs.Panel>
 					</Tabs>
 
-					<Template slot='footer'>
+					<Template.Footer>
 						<Group>
 							<Button
 								color='green'
@@ -178,7 +177,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 								Применить
 							</Button>
 						</Group>
-					</Template>
+					</Template.Footer>
 				</form>
 			</Loading>
 		</>

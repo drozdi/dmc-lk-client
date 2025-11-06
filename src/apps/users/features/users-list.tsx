@@ -38,7 +38,7 @@ export function UsersList({ className }: UsersListProps) {
 			</Loading>
 
 			<Template slot='notification'>{error && <Notification color='red'>{error}</Notification>}</Template>
-			<Template slot='footer'>
+			<Template.Footer>
 				<Group>
 					<Button disabled={number != 1}>Предыдущая</Button>
 					<Button disabled={list.length < size}>Следующая</Button>
@@ -51,7 +51,7 @@ export function UsersList({ className }: UsersListProps) {
 					}}
 					data={['15', '30', '50', '75', '100']}
 				/>
-			</Template>
+			</Template.Footer>
 		</Paper>
 	)
 }

@@ -31,10 +31,9 @@ export function TemplateProvider({ children }: { children: React.ReactNode }) {
 	// Удаление шаблона
 	const unregister = (slotName: string) => {
 		setTemplates((prev: TemplateManagerStateType): TemplateManagerStateType => {
-			return {
-				...prev,
-				[slotName]: undefined,
-			} as TemplateManagerStateType
+			const newTemplates = { ...prev }
+			delete newTemplates[slotName]
+			return newTemplates
 		})
 	}
 

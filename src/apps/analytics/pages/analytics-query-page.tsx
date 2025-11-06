@@ -2,7 +2,7 @@ import { Paper, Select } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { TemplateTitle } from '../../../layout'
+import { Template } from '../../../layout'
 import { Loading } from '../../../shared/ui'
 import { useFetchQueries, useFetchQuery } from '../api/hooks/queries'
 import { TableElastic } from '../features/elastic/table'
@@ -41,7 +41,7 @@ export const AnalyticsQueryPage = observer(() => {
 					label: name_query,
 				}))}
 			/>
-			<TemplateTitle>Запрос "{name}"</TemplateTitle>
+			<Template.Title>Запрос "{name}"</Template.Title>
 			<Loading active={isLoading} keepMounted mt='xs'>
 				<TableElastic />
 			</Loading>

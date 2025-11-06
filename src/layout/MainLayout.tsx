@@ -11,7 +11,7 @@ import { Logo } from '../features/logo/Logo'
 import { Title } from '../shared/ui'
 import { MainMenu } from './components/main-menu'
 import { ThemeBtn } from './components/theme-btn'
-import { TemplateSlot } from './context/template'
+import { Template } from './context'
 
 export function MainLayout() {
 	const navigate = useNavigate()
@@ -38,7 +38,7 @@ export function MainLayout() {
 							</ActionIcon>
 							<Divider orientation='vertical' />
 							<Title order={1} size='h3' fw='400'>
-								<TemplateSlot name='title' />
+								<Template.Slot name='title' />
 							</Title>
 						</Group>
 						<Group>
@@ -63,15 +63,15 @@ export function MainLayout() {
 				<AppShell.Main>
 					<ScrollArea h={`calc(100vh - var(--app-shell-header-height, 0px) - var(--app-shell-footer-height, 0px))`}>
 						<Container size='xl' p='md'>
-							<TemplateSlot name='notification' />
+							<Template.Slot name='notification' />
 							<Outlet />
 						</Container>
 					</ScrollArea>
 				</AppShell.Main>
 				<AppShell.Footer<Group> component={Group} justify='space-between' gap='xs' px='xs'>
-					<TemplateSlot name='footer'>
+					<Template.Slot name='footer'>
 						<div></div>
-					</TemplateSlot>
+					</Template.Slot>
 					<Button color='dark' size='sm' onClick={() => navigate(-1)}>
 						Назад
 					</Button>

@@ -75,7 +75,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					Добавить
 				</Button>
 			</Group>
-			<Template slot='footer'>
+			<Template.Footer>
 				<Group>
 					<Button disabled={!hasPreviousPage} loading={isFetchingPreviousPage} onClick={fetchPreviousPage}>
 						Предыдущая
@@ -85,7 +85,7 @@ export const ListQueries = observer(({ className }: ListQueriesProps) => {
 					</Button>
 				</Group>
 				<Select value={String(size)} onChange={setSize} data={['15', '30', '50', '75', '100']} />
-			</Template>
+			</Template.Footer>
 		</Stack>
 	)
 })

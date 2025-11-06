@@ -1,6 +1,6 @@
 import { Group, Paper, Text } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import { IncidentAll } from '../features/incident/all'
@@ -23,7 +23,7 @@ export function AnalyticsIncidentListPage() {
 
 	return (
 		<Paper>
-			<TemplateTitle slot='title'>Инциденты</TemplateTitle>
+			<Template.Title slot='title'>Инциденты</Template.Title>
 			<Group justify='end'>
 				<Text>С</Text>
 				<DatePickerInput

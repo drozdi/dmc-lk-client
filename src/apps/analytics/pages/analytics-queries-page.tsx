@@ -1,5 +1,5 @@
 import { Paper } from '@mantine/core'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { useNavigate } from 'react-router-dom'
 import { ListQueries } from '../features/queries/list-queries'
 
@@ -7,9 +7,9 @@ export function AnalyticsQueriesPage() {
 	const navigate = useNavigate()
 	return (
 		<Paper>
-			<TemplateTitle fz='h2' ta='center'>
+			<Template.Title fz='h2' ta='center'>
 				Список запросов
-			</TemplateTitle>
+			</Template.Title>
 			<ListQueries />
 		</Paper>
 	)

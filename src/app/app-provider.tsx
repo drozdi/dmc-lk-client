@@ -18,7 +18,7 @@ import { Notifications } from '@mantine/notifications'
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import 'dayjs/locale/ru'
-import { TemplateProvider } from '../layout/context'
+import { Template } from '../layout/context'
 import inputClasses from './input.module.css'
 import switchClasses from './switch.module.css'
 
@@ -334,7 +334,7 @@ export function AppProvider({ children }: AppProviderProps) {
 				<QueryClientProvider client={queryClient}>
 					<Notifications />
 					<ModalsProvider>
-						<TemplateProvider>{children}</TemplateProvider>
+						<Template.Provider>{children}</Template.Provider>
 					</ModalsProvider>
 					{import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
 				</QueryClientProvider>

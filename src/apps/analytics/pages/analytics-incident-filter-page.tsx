@@ -1,11 +1,11 @@
 import { Paper } from '@mantine/core'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { IncidentTable } from '../features/incident/table'
 
 export function AnalyticsIncidentFilterPage() {
 	return (
 		<Paper>
-			<TemplateTitle slot='title'>Поиск по инцидентам</TemplateTitle>
+			<Template.Title slot='title'>Поиск по инцидентам</Template.Title>
 			<IncidentTable />
 		</Paper>
 	)

@@ -1,12 +1,12 @@
 import { Paper, Tabs } from '@mantine/core'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { LablesConsumption } from '../features/lables-consumption'
 import { LabelsCount } from '../features/lables-count'
 import { LabelsHistory } from '../features/lables-history'
 export function LabelsCountPage() {
 	return (
 		<Paper>
-			<TemplateTitle>Статистика по этикеткам</TemplateTitle>
+			<Template.Title>Статистика по этикеткам</Template.Title>
 			<Tabs defaultValue='item-count'>
 				<Tabs.List grow>
 					<Tabs.Tab value='item-count'>Текущее состояние</Tabs.Tab>

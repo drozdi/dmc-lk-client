@@ -1,5 +1,5 @@
 import { Paper } from '@mantine/core'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { Loading } from '../../../shared/ui'
@@ -15,7 +15,7 @@ export const AnalyticsElasticPage = observer(() => {
 	}, [])
 	return (
 		<Paper>
-			<TemplateTitle>Новый шаблон</TemplateTitle>
+			<Template.Title>Новый шаблон</Template.Title>
 			<Loading active={isLoading}>
 				<TableElastic />
 			</Loading>

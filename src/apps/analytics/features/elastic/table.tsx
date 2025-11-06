@@ -251,7 +251,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					</Table.Tbody>
 				</Table>
 			</Loading>
-			<Template slot='footer'>
+			<Template.Footer>
 				<Group>
 					<Button disabled={!isPrev} loading={isLoading} onClick={() => elasticStore.prev()}>
 						Предыдущая
@@ -265,7 +265,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 					data={['15', '30', '50', '75', '100']}
 					onChange={value => elasticStore.setLimit(value)}
 				/>
-			</Template>
+			</Template.Footer>
 		</>
 	)
 })

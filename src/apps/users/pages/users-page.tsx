@@ -1,12 +1,12 @@
 import { Paper } from '@mantine/core'
-import { TemplateTitle } from '@t'
+import { Template } from '@t'
 import { UsersList } from '../features/users-list'
 export function UsersPage() {
 	return (
 		<Paper>
-			<TemplateTitle fz='h2' ta='center'>
+			<Template.Title fz='h2' ta='center'>
 				Пользователи
-			</TemplateTitle>
+			</Template.Title>
 			<UsersList />
 		</Paper>
 	)
