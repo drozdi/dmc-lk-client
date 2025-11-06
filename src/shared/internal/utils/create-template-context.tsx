@@ -36,8 +36,8 @@ export function createTemplateContext() {
 		}
 
 		return {
-			getTemplates: (slotName: string) => context.templates[slotName],
-			hasTemplate: (slotName: string) => !!context.templates[slotName],
+			getTemplates: (slotName: string): any => context.templates[slotName],
+			hasTemplate: (slotName: string): boolean => !!context.templates[slotName],
 		}
 	}
 
