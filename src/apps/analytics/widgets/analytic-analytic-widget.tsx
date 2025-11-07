@@ -37,11 +37,11 @@ export const AnalyticAnalyticWidget = observer(() => {
 		}
 		send()
 	}, [])
-	const productions = useMemo(() => {
-		const productions: address?: string[] = []
+	const productions = useMemo<IAnalyticsProductionSelect[]>(() => {
+		const productions: IAnalyticsProductionSelect[] = []
 		if (data) {
 			for (const event in mapEvent) {
-				data[event]?.production?.forEach(item => {
+				data[event as AnalyticEvent]?.production?.forEach((item: IAnalyticsDataProduction) => {
 					if (productions.findIndex(production => production.value === String(item.production_id)) === -1) {
 						productions.push({
 							value: String(item.production_id),
@@ -55,16 +55,16 @@ export const AnalyticAnalyticWidget = observer(() => {
 	}, [data])
 
 	const ddata = useMemo(() => {
-		const res = {}
+		const res: Record<string, any> = {}
 		const def = Object.fromEntries(Object.keys(mapEvent).map(key => [key, 0]))
 		for (let i = 0; i < 7; i++) {
-			res[sDay.day(sDay.day() + i).format('YYYY-MM-DD')] = { ...def }
+			res[sDay.day(sDay.day() + i).format('YYYY-MM-DD') as string] = { ...def }
 		}
 		const currProduction = Number(cuurent_production) || 0
 
 		if (data) {
 			for (let event of maps) {
-				for (let production of data[event]?.production || []) {
+				for (let production of data[event as AnalyticEvent]?.production || []) {
 					if (currProduction > 0 && production.production_id === currProduction) {
 						continue
 					}
@@ -88,13 +88,13 @@ export const AnalyticAnalyticWidget = observer(() => {
 			<Select
 				defaultValue={String(cuurent_production)}
 				checkIconPosition='right'
-				onChange={setCurrentProduction}
+				onChange={val => setCurrentProduction(val as string)}
 				data={[
 					{
 						value: '0',
 						label: 'Все площадки',
 					},
-				].concat(productions)}
+				].concat(productions as any)}
 			/>
 			<Table>
 				<Table.Thead>

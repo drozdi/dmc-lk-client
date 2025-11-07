@@ -28,7 +28,7 @@ class UserStore {
 			const response = await requestGetUser()
 			this.userData = response.data.user
 			const products = await requestUsersProducts()
-			this.products = products.data
+			this.products = products.data as IResponseProduction[]
 			if (!this.currentProductId) {
 				this.setCurrentProductId(this.products[0].production_id)
 			}

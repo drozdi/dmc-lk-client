@@ -10,7 +10,7 @@ export const ChangeProduct = observer(() => {
 		return products.find(product => product.production_id == currentProductId)?.name_production || ''
 	}, [products, currentProductId])
 
-	const handleChange = value => {
+	const handleChange = (value: string) => {
 		userStore.setCurrentProductId(value)
 		setChange(false)
 	}
@@ -20,7 +20,7 @@ export const ChangeProduct = observer(() => {
 				<Select
 					variant='filled'
 					value={String(currentProductId)}
-					onChange={handleChange}
+					onChange={value => handleChange(value as string)}
 					data={products.map(product => ({
 						value: String(product.production_id),
 						label: product.name_production,

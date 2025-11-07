@@ -2,7 +2,7 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { AuthLayout } from '../layout/AuthLayout'
 import { MainLayout } from '../layout/MainLayout'
 
-import { ProtectedRoute } from '../features/router/protected-route'
+import { ProtectedRoute } from '../features/auth/protected-route'
 
 import { MainPage } from '../pages/main-page'
 import { PersonalPage } from '../pages/personal-page'

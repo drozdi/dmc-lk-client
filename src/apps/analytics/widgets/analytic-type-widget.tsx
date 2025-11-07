@@ -11,7 +11,7 @@ interface ChartAnalyticProps extends Omit<IRequestAnalytics, 'event'> {}
 export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
 	const { isLoading, request, data } = useAnalytics()
-	const [cuurent_production, setCurrentProduction] = useState(0)
+	const [cuurent_production, setCurrentProduction] = useState('0')
 	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props })
 
 	function reset() {
@@ -19,10 +19,9 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IAnalyticsProduction[]>(() => {
+	const productions = useMemo<IAnalyticsProductionSelect[]>(() => {
 		if (data) {
 			return ((data?.production as Array<IAnalyticsProduction>) || []).map(item => ({
-				address: item.address,
 				label: item.name,
 				value: String(item.production_id),
 			}))
@@ -46,7 +45,7 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		let res: string[] = []
 		if (data) {
 			for (const p of data?.production || []) {
-				res = res.concat(p.data.map(item => formatName(item.data)))
+				res = res.concat(((p.data as any) || []).map((item: IAnalyticsDataItem) => formatName(item.data)))
 			}
 		}
 		return [...new Set(res)].filter(label => label.length < 12).sort()
@@ -108,13 +107,13 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					<Select
 						defaultValue={String(cuurent_production)}
 						checkIconPosition='right'
-						onChange={setCurrentProduction}
+						onChange={val => setCurrentProduction(val as string)}
 						data={[
 							{
 								value: '0',
 								label: 'Все площадки',
 							},
-						].concat(productions)}
+						].concat(productions as any)}
 					/>
 					<Button onClick={reset}>Сбросить</Button>
 				</Group>

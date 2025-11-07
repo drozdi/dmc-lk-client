@@ -10,7 +10,7 @@ import { LabelsCountWidget as MainCountWidget } from '../widgets/labels-count-wi
 const dNow = dayjs('2025-05-02')
 
 export const MainPage = observer(() => {
-	const [query] = useState<Omit<IAnalyticsQuery, 'event'>>({
+	const [query] = useState<Omit<IRequestAnalytics, 'event'>>({
 		filterdate_from: dNow.day(dNow.day() - 7).format('YYYY-MM-DD'),
 		filterdate_to: dNow.format('YYYY-MM-DD'),
 		step: 'd',

@@ -6,7 +6,7 @@ import { ExpandablePanel } from '../../../shared/ui'
 import { useAnalytics } from '../api'
 import { mapEvent, mapEventColor } from '../entites/constants'
 
-interface ChartAnalyticProps extends Omit<IAnalyticsQuery, 'event'> {}
+interface ChartAnalyticProps extends Omit<IRequestAnalytics, 'event'> {}
 
 export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	//return ''
@@ -25,13 +25,12 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IAnalyticsProduction[]>(() => {
+	const productions = useMemo<IAnalyticsProductionSelect[]>(() => {
 		if (data) {
 			return (((data?.v || data?.i || data?.d || data?.p)?.production as Array<IAnalyticsProduction>) || []).map(
 				item => ({
 					value: String(item.production_id),
 					label: item.name,
-					address: item.address,
 				})
 			)
 		}
@@ -49,10 +48,11 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 		if (data) {
 			for (const event in res) {
 				if (currProduction > 0) {
-					res[event].value =
-						data[event].production?.find(item => item.production_id === currProduction)?.all_label_prod || 0
+					res[event as 'v' | 'i' | 'd'].value =
+						data?.[event as AnalyticEvent]?.production?.find(item => item.production_id === currProduction)
+							?.all_label_prod || 0
 				} else {
-					res[event].value = data[event]?.sum_company
+					res[event as 'v' | 'i' | 'd'].value = Number(data[event as AnalyticEvent]?.sum_company)
 				}
 			}
 		}
@@ -92,13 +92,13 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 				<Select
 					defaultValue={String(cuurent_production)}
 					checkIconPosition='right'
-					onChange={setCurrentProduction}
+					onChange={val => setCurrentProduction(val as string)}
 					data={[
 						{
 							value: '0',
 							label: 'Все площадки',
 						},
-					].concat(productions)}
+					].concat(productions as any)}
 				/>
 
 				<AspectRatio ratio={16 / 9}>
@@ -122,7 +122,7 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 									align='left'
 								/>
 								<Pie data={ddata} cx='50%' cy='50%' fill='#8884d8' dataKey='value'>
-									{ddata.map((entry, index) => (
+									{ddata.map(entry => (
 										<Cell key={`cell-${entry.name}`} fill={entry.color} />
 									))}
 								</Pie>

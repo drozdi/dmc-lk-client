@@ -1,6 +1,7 @@
 type PermittedActions = '=' | '>=' | '<=' | '!=' | 'in' | 'not_in' | 'like' | 'or'
 type SliceStep = 's' | 'm' | 'h' | 'd' | 'mon' | 'y'
 type SingleActionList = 'and' | 'or' | 'not'
+type AnalyticEvent = 'v' | 'i' | 'd' | 'p'
 
 interface IAnalyticsDataItem {
 	data: string
@@ -11,6 +12,10 @@ interface IAnalyticsProduction {
 	production_id: number
 	name: string
 	address?: string
+}
+interface IAnalyticsProductionSelect {
+	value: number | string
+	label: string
 }
 interface IAnalyticsDataProduction extends IAnalyticsProduction {
 	event_name: string

@@ -28,7 +28,7 @@ const initialState = {
 export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	//return ''
 	const { isLoading, request } = useAnalytics()
-	const [cuurent_production, setCurrentProduction] = useState(0)
+	const [cuurent_production, setCurrentProduction] = useState('0')
 	const [data, setData] = useState<{
 		v?: IResponseAnalytics
 		i?: IResponseAnalytics
@@ -45,16 +45,15 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	}
 
 	// Извлекаем список площадок
-	const productions = useMemo<IAnalyticsProduction[]>(() => {
-		const productions: IAnalyticsProduction[] = []
+	const productions = useMemo<IAnalyticsProductionSelect[]>(() => {
+		const productions: IAnalyticsProductionSelect[] = []
 		if (data) {
 			for (const event in mapEvent) {
-				data[event]?.production?.forEach(item => {
+				data[event as AnalyticEvent]?.production?.forEach(item => {
 					if (productions.findIndex(production => production.value === String(item.production_id)) === -1) {
 						productions.push({
 							value: String(item.production_id),
 							label: item.name,
-							address: item.address,
 						})
 					}
 				})
@@ -68,7 +67,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		let res: string[] = []
 		if (data) {
 			for (const event in mapEvent) {
-				for (const p of data[event]?.production || []) {
+				for (const p of data[event as AnalyticEvent]?.production || []) {
 					res = res.concat(p.data.map(item => item.timestamp))
 				}
 			}
@@ -82,10 +81,10 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		)
 		const currProduction = Number(cuurent_production || 0)
 		for (const event in mapEvent) {
-			if (!data?.[event]?.production) {
+			if (!data?.[event as AnalyticEvent]?.production) {
 				continue
 			}
-			for (const p of data[event].production) {
+			for (const p of data?.[event as AnalyticEvent]?.production || []) {
 				if (currProduction > 0 && p.production_id !== currProduction) {
 					continue
 				}
@@ -118,7 +117,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 		setQuery(props)
 	}, [props])
 
-	const stepLow = (from, to) => {
+	const stepLow = (from: string, to: string) => {
 		const dFrom = dayjs(from)
 		const dTo = dayjs(to)
 
@@ -176,13 +175,13 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 	}>(initialState)
 	const { refAreaLeft, refAreaRight } = state
 
-	const handleMouseDown = event => {
+	const handleMouseDown = (event: any) => {
 		setState(prevState => ({ ...prevState, refAreaLeft: event.activeLabel }))
 	}
-	const handleMouseMove = event => {
+	const handleMouseMove = (event: any) => {
 		state.refAreaLeft && setState(prevState => ({ ...prevState, refAreaRight: event.activeLabel }))
 	}
-	const handleMouseUp = event => {
+	const handleMouseUp = (event: any) => {
 		let { refAreaLeft, refAreaRight } = state
 
 		if (refAreaLeft === refAreaRight || refAreaRight === '') {
@@ -198,7 +197,7 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 			;[refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft]
 		}
 
-		stepLow(refAreaLeft, refAreaRight)
+		stepLow(refAreaLeft as string, refAreaRight as string)
 		setState(prevState => ({
 			...prevState,
 			refAreaLeft: '',
@@ -219,13 +218,13 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 					<Select
 						defaultValue={String(cuurent_production)}
 						checkIconPosition='right'
-						onChange={setCurrentProduction}
+						onChange={val => setCurrentProduction(val as string)}
 						data={[
 							{
 								value: '0',
 								label: 'Все площадки',
 							},
-						].concat(productions)}
+						].concat(productions as any)}
 					/>
 					<Button onClick={reset}>Сбросить</Button>
 				</Group>
@@ -245,9 +244,27 @@ export const AnalyticEventWidget = memo((props: ChartAnalyticProps) => {
 								<YAxis />
 								<Tooltip />
 								<Legend />
-								<Line name={mapEvent.d} type='monotone' dataKey='d' stroke={mapEventColor.d} label={mapEvent.d} />
-								<Line name={mapEvent.i} type='monotone' dataKey='i' stroke={mapEventColor.i} label={mapEvent.i} />
-								<Line name={mapEvent.v} type='monotone' dataKey='v' stroke={mapEventColor.v} label={mapEvent.v} />
+								<Line
+									name={mapEvent.d}
+									type='monotone'
+									dataKey='d'
+									stroke={mapEventColor.d}
+									label={mapEvent.d as any}
+								/>
+								<Line
+									name={mapEvent.i}
+									type='monotone'
+									dataKey='i'
+									stroke={mapEventColor.i}
+									label={mapEvent.i as any}
+								/>
+								<Line
+									name={mapEvent.v}
+									type='monotone'
+									dataKey='v'
+									stroke={mapEventColor.v}
+									label={mapEvent.v as any}
+								/>
 								{refAreaLeft && refAreaRight ? (
 									<ReferenceArea x1={refAreaLeft} x2={refAreaRight} strokeOpacity={0.3} />
 								) : null}
