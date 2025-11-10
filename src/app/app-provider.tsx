@@ -179,56 +179,6 @@ const theme = createTheme({
 		lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
 		xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) ',
 	},
-
-	// colors: {
-	// 	...Object.fromEntries(
-	// 		['primary', 'success', 'secondary', 'accent', 'warning', 'info', 'danger', 'dark'].map(color => [
-	// 			color,
-	// 			new Array(10).fill(1).map((v, i) => `--var(--color-${color}-${i * 100})`),
-	// 		])
-	// 	),
-	// },
-	// fontSizes: {
-	// 	xs: 'var(--text-xs, 0.75rem)', // 12px
-	// 	sm: 'var(--text-sm, 0.875rem)', // 14px
-	// 	md: 'var(--text-md, 1rem)', // 16px
-	// 	lg: 'var(--text-xs, 1.125rem)', // 18px
-	// 	xl: 'var(--text-xs, 1.25rem)', // 20px
-	// },
-	// spacing: {
-	// 	base: 'var(--spacing)',
-	// 	xs: 'var(--space-xs)',
-	// 	sm: 'var(--space-sm)',
-	// 	md: 'var(--space-md)',
-	// 	lg: 'var(--space-lg)',
-	// 	xl: 'var(--space-xl)',
-	// },
-	// radius: {
-	// 	xs: 'var(--radius-xs, 0.125rem)', // 2px
-	// 	sm: 'var(--radius-sm, 0.25rem)', // 4px
-	// 	md: 'var(--radius-md, 0.375rem)', // 6px
-	// 	lg: 'var(--radius-lg, 0.5rem)', // 8px
-	// 	xl: 'var(--radius-xl, 0.75rem)', // 12px
-	// },
-	// headings: {
-	// 	sizes: {
-	// 		h1: { fontSize: 'var(--text-h1)', lineHeight: 'var(--text-h1--line-height)' },
-	// 		h2: { fontSize: 'var(--text-h2)', lineHeight: 'var(--text-h2--line-height)' },
-	// 		h3: { fontSize: 'var(--text-h3)', lineHeight: 'var(--text-h3--line-height)' },
-	// 		h4: { fontSize: 'var(--text-h4)', lineHeight: 'var(--text-h4--line-height)' },
-	// 		h5: { fontSize: 'var(--text-h5)', lineHeight: 'var(--text-h5--line-height)' },
-	// 		h6: { fontSize: 'var(--text-h6)', lineHeight: 'var(--text-h6--line-height)' },
-	// 	},
-	// },
-	// shadows: {
-	// 	xs: {
-	// 		color: 'var(--shadow-color)',
-	// 		offsetX: 'var(--shadow-offset-x)',
-	// 		offsetY: 'var(--shadow-offset-y)',
-	// 		blur: 'var(--shadow-blur)',
-	// 		spread: 'var(--shadow-spread)',
-	// 	},
-	// },
 	components: {
 		Drawer: Drawer.extend({
 			defaultProps: {
@@ -314,10 +264,6 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			staleTime: 'static',
-			// staleTime(query) {
-			// 	console.log(query)
-			// 	return 1000
-			// },
 			enabled: true,
 			throwOnError: false,
 			retry: false,
