@@ -8,5 +8,5 @@ export const ANALYTICS_INCIDENT_KEY = 'analytics.incident.form'
 export const URL_API_KEY = 'url.api'
 export const BASE_URL_KEY = 'base.url'
 
-export const URL_API = '/lk_api'
+export const URL_API = '/lk_api/v1'
 export const BASE_URL = '/lk'
