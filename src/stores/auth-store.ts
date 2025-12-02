@@ -65,7 +65,7 @@ class AuthStore {
 		} catch (error: IError) {
 			console.error(error)
 			this.error = error?.response?.data?.detail || error?.message || 'Ошибка входа'
-			notification.error(error)
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}

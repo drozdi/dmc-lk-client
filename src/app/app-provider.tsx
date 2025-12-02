@@ -271,6 +271,7 @@ const queryClient = new QueryClient({
 		},
 	},
 })
+
 import.meta.env.DEV && console.log(queryClient)
 
 export function AppProvider({ children }: AppProviderProps) {

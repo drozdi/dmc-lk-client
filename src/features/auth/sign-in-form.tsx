@@ -1,49 +1,50 @@
 import { Box, Button, PasswordInput, Stack, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import { observer } from 'mobx-react-lite'
-import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Loading } from '../../shared/ui'
 import { authStore } from '../../stores/auth-store'
 
 export const SignInForm = observer(props => {
-	const [email, setEmail] = useState<string>('')
-	const [password, setPassword] = useState<string>('')
+	const form = useForm({
+		mode: 'uncontrolled',
+		name: 'signUp',
+		initialValues: {
+			email: '',
+			password: '',
+		},
+	})
 	const { isLoading } = authStore
 	const navigate = useNavigate()
-	const handleSubmit = async (e: FormEvent<HTMLElement>) => {
-		e.preventDefault()
+	const handleSubmit = async ({ email, password }) => {
 		const res = await authStore.login(email, password)
 		if (true === res) {
-			navigate('/analytics')
+			navigate('/')
 		}
 	}
 
 	return (
 		<Box {...props}>
-			<Stack component='form' name='signIn' onSubmit={handleSubmit}>
+			<Stack>
 				<Loading active={isLoading} keepMounted>
 					<TextInput
 						label='Email'
 						placeholder='Email'
-						name='email'
 						type='email'
 						autoComplete='email'
 						required
-						value={email}
-						onChange={e => setEmail(e.target.value)}
+						{...form.getInputProps('email')}
 					/>
 					<PasswordInput
 						label='Пароль'
 						placeholder='Пароль'
-						name='password'
 						type='password'
 						autoComplete='current-password'
 						required
-						value={password}
-						onChange={e => setPassword(e.target.value)}
+						{...form.getInputProps('password')}
 					/>
 				</Loading>
-				<Button type='submit' fullWidth loading={isLoading}>
+				<Button type='submit' fullWidth loading={isLoading} onClick={() => form.onSubmit(handleSubmit)()}>
 					Войти
 				</Button>
 			</Stack>
