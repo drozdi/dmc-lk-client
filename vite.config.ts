@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 // https://vite.dev/config/
 export default defineConfig({
-	base: './',
+	base: '/lk',
 	resolve: {
 		alias: {
 			'@style': path.resolve(__dirname, './src/shared/style/index.css'),
