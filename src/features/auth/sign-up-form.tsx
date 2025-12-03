@@ -88,7 +88,7 @@ export const SignUpForm = observer(() => {
 				<PasswordInput placeholder='Придумай пароль' type='password' required {...form.getInputProps('password')} />
 				<PasswordInput placeholder='Повтори пароль' type='password' required {...form.getInputProps('re_password')} />
 
-				<Button onClick={() => form.onSubmit(sendFormData)} fullWidth loading={isLoading}>
+				<Button onClick={() => form.onSubmit(sendFormData)()} fullWidth loading={isLoading}>
 					Войти
 				</Button>
 			</Stack>

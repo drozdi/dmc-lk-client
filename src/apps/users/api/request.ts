@@ -1,7 +1,7 @@
 import { api } from '../../../shared/api'
 
 export async function requestUsersList({ size = 15, number = 0 }: { size?: number; number?: number } = {}) {
-	const res = await api.get('/users', {
+	const res = await api.get('/users/', {
 		params: {
 			size,
 			number,

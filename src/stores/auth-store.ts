@@ -44,6 +44,7 @@ class AuthStore {
 			return response
 		} catch (error: IError) {
 			this.error = error.response?.data?.detail || error?.message || 'Ошибка входа'
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}
@@ -83,6 +84,7 @@ class AuthStore {
 			return response.data
 		} catch (error: IError) {
 			this.error = error?.response?.data?.detail || error?.message || 'Ошибка регистрации'
+			notification.error(this.error)
 		} finally {
 			this.isLoading = false
 		}

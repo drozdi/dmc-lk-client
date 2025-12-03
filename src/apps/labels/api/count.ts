@@ -18,7 +18,7 @@ export async function requestLabelsCountHistory({
 	} else if (filterdate) {
 		arr.push(`filterdate=${filterdate}`)
 	}
-	const res = await api.get(`/count_label/history/?${arr.join('&')}`)
+	const res = await api.get(`/count_label/history?${arr.join('&')}`)
 	return res.data
 }
 

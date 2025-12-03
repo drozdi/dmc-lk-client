@@ -109,6 +109,10 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 						if (error.response.data.detail === 'Пароль или логин введены неверно') {
 							return Promise.reject(error)
 						}
+						if (error.response.data.detail === 'Unsupported token type') {
+							return Promise.reject(error)
+						}
+
 						if (!this.isRefreshing) {
 							this.isRefreshing = true
 

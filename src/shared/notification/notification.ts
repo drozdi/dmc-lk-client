@@ -1,5 +1,5 @@
+import type { NotificationData } from '@mantine/notifications'
 import { notifications, notificationsStore } from '@mantine/notifications'
-import type { NotificationData } from '@mantine/notifications/dist/types'
 
 function checkMessage(notifications: NotificationData[], message: string) {
 	if (notifications.length) {

@@ -5,7 +5,7 @@ export function Logo({ className }: { className?: string }) {
 	const navigate = useNavigate()
 	return (
 		<Box component={Link} to='/' maw='100%' className={className}>
-			<Image w='100%' src='/assests/Logo_DMC_512.png' />
+			<Image w='100%' src='/lk/assets/Logo_DMC_512.png' />
 		</Box>
 	)
 }

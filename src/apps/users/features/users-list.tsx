@@ -1,7 +1,8 @@
 import { Button, Group, NavLink, Notification, Paper, Select, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Template } from '../../../layout'
+import { notification } from '../../../shared/notification'
 import { Loading } from '../../../shared/ui'
 import { useFetchUsers } from '../api'
 
@@ -9,10 +10,17 @@ interface UsersListProps {
 	className?: string
 }
 export function UsersList({ className }: UsersListProps) {
+	const navigate = useNavigate()
 	const [list, setList] = useState<IUsersUser[]>([])
 	const [size, setSize] = useState<number>(30)
 	const [number, setNumber] = useState<number>(0)
 	const { isLoading, error, data } = useFetchUsers({ number, size: Number(size) })
+
+	if (error?.response?.data?.detail === 'Unsupported token type') {
+		navigate('/')
+		notification.error('Нет прав!')
+		return
+	}
 
 	useEffect(() => {
 		setList(Array.isArray(data) ? data : [])

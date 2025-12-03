@@ -25,7 +25,7 @@ export const SignInForm = observer(props => {
 
 	return (
 		<Box {...props}>
-			<Stack>
+			<Stack component='form' name='signIn' onSubmit={form.onSubmit(handleSubmit)}>
 				<Loading active={isLoading} keepMounted>
 					<TextInput
 						label='Email'
@@ -44,7 +44,7 @@ export const SignInForm = observer(props => {
 						{...form.getInputProps('password')}
 					/>
 				</Loading>
-				<Button type='submit' fullWidth loading={isLoading} onClick={() => form.onSubmit(handleSubmit)()}>
+				<Button type='submit' fullWidth loading={isLoading}>
 					Войти
 				</Button>
 			</Stack>
