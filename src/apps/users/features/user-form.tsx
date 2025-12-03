@@ -15,9 +15,8 @@ interface UserFormProps {
 export const UserForm = observer(({ id, className }: UserFormProps) => {
 	const { data: products } = useFetchProductions()
 	const naigate = useNavigate()
-	const ff = useFetchUser(Number(id))
-	const { isLoading, error, isError, data } = ff
-	console.log(ff)
+	const { isLoading, error, isError, data } = useFetchUser(Number(id))
+
 	const { mutate } = useEditUser()
 	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
 	// const reqUserUpdate = useQuery(requestUsersUpdate)
@@ -56,7 +55,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	})
 
 	useEffect(() => {
-		if (data?.email) {
+		if (data?.email && !form.initialized) {
 			const user = { is_active: true, is_superuser: false, ...data }
 			user.id_production = (user.id_production || []).map((item: unknown) => String(item))
 			form.initialize(user)
@@ -79,6 +78,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 	}
 
 	const isValid = !(Number(form.errors.length) > 0)
+
 	return (
 		<>
 			{<Template slot='notification'>{error && <Notification color='red'>{error.message}</Notification>}</Template>}
@@ -98,7 +98,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Фамилия'
 										required
 										variant='underline'
-										disabled={isError}
 										{...form.getInputProps('last_name')}
 									/>
 									<TextInput
@@ -106,7 +105,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Имя'
 										required
 										variant='underline'
-										disabled={isError}
 										{...form.getInputProps('first_name')}
 									/>
 									<TextInput
@@ -114,7 +112,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										placeholder='Отчество'
 										required
 										variant='underline'
-										disabled={isError}
 										{...form.getInputProps('father_name')}
 									/>
 								</Stack>
@@ -126,7 +123,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										type='email'
 										required
 										variant='underline'
-										disabled={isError}
 										{...form.getInputProps('email')}
 									/>
 									<PhoneInput
@@ -134,7 +130,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 										type='phone'
 										required
 										variant='underline'
-										disabled={isError}
 										{...form.getInputProps('phone')}
 									/>
 								</Stack>
@@ -144,7 +139,7 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 							<List dense separator>
 								{products?.length &&
 									products.map(product => (
-										<Item component='label' key={product.production_id} disabled={isError}>
+										<Item component='label' key={product.production_id}>
 											<ItemSection top row>
 												{product.production_name}
 											</ItemSection>
@@ -154,7 +149,6 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 													onChange={handleCheckboxChange}
 													checked={form.values.id_production.includes(String(product.production_id))}
 													value={String(product.production_id)}
-													disabled={isError}
 												/>
 											</ItemSection>
 										</Item>
@@ -167,13 +161,13 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 						<Group>
 							<Button
 								color='green'
-								onClick={() => form.onSubmit(handleSaveNavigate)}
+								onClick={() => form.onSubmit(handleSaveNavigate)()}
 								loading={isLoading}
 								disabled={isError || !isValid}
 							>
 								Сохранить
 							</Button>
-							<Button onClick={() => form.onSubmit(handleSave)} loading={isLoading} disabled={isError || !isValid}>
+							<Button onClick={() => form.onSubmit(handleSave)()} loading={isLoading} disabled={isError || !isValid}>
 								Применить
 							</Button>
 						</Group>

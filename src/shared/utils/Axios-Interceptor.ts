@@ -105,13 +105,18 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 				async (error: AxiosError) => {
 					const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
-					if (error.response && error.response.status === 401 && !originalRequest._retry) {
-						if (error.response.data.detail === 'Пароль или логин введены неверно') {
-							return Promise.reject(error)
-						}
-						if (error.response.data.detail === 'Unsupported token type') {
-							return Promise.reject(error)
-						}
+					if (
+						error.response &&
+						error.response.status === 401 &&
+						error.response.data.detail === this.message401 &&
+						!originalRequest._retry
+					) {
+						// if (error.response.data.detail === 'Пароль или логин введены неверно') {
+						// 	return Promise.reject(error)
+						// }
+						// if (error.response.data.detail === 'Unsupported token type') {
+						// 	return Promise.reject(error)
+						// }
 
 						if (!this.isRefreshing) {
 							this.isRefreshing = true

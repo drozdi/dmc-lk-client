@@ -19,7 +19,7 @@ export const VerificationForm = observer(() => {
 			}
 			api.setAccessToken(data.data.token)
 			api.setRefreshToken('')
-			navigate('/auth/sign-up')
+			navigate('/auth/sign-up', { replace: true })
 		} catch (error) {
 			console.log(error)
 		}

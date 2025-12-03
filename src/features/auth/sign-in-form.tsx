@@ -19,7 +19,7 @@ export const SignInForm = observer(props => {
 	const handleSubmit = async ({ email, password }) => {
 		const res = await authStore.login(email, password)
 		if (true === res) {
-			navigate('/')
+			navigate('/', { replace: true })
 		}
 	}
 

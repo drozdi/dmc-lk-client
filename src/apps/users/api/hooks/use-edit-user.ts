@@ -4,7 +4,7 @@ import { requestUsersUpdate } from '../request'
 export function useEditUser() {
 	const queryClient = useQueryClient()
 	return useMutation({
-		mutationFn: async (data: IUsersUser) => await requestUsersUpdate(data.id, data),
+		mutationFn: async ({ id, ...data }: IUsersUser) => await requestUsersUpdate(id, data),
 		onSuccess: (data, ...args) => {
 			console.log('onSuccess', data, args)
 			queryClient.removeQueries({ queryKey: ['users'] })

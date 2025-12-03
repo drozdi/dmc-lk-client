@@ -70,7 +70,7 @@ export const SignUpForm = observer(() => {
 		const res = await authStore.register(formData)
 		userStore.setUserData(res.user)
 		if (res) {
-			navigate('/analytics')
+			navigate('/analytics', { replace: true })
 		}
 	}
 

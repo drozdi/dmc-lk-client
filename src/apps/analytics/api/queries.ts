@@ -17,7 +17,7 @@ export async function requestAnalyticsQueriesList({
 }
 
 export async function requestAnalyticsQueriesGet(id: number): Promise<IResponse<IAnalyticsElasticQueryItem>> {
-	const res = await api.get(`/query_users/query_id/?id_query=${id}`)
+	const res = await api.get(`/query_users/query_id?id_query=${id}`)
 	return res.data
 }
 
@@ -30,6 +30,6 @@ export async function requestAnalyticsQueriesDelete(id: number) {
 	return res.data
 }
 export async function requestAnalyticsQueriesAdd(name: string, data: IAnalyticsElasticQuery) {
-	const res = await api.post(`/query_users/save_query/?name_query=${name}`, data)
+	const res = await api.post(`/query_users/save_query?name_query=${name}`, data)
 	return res.data
 }

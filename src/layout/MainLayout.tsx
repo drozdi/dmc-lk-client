@@ -1,5 +1,6 @@
 import { ActionIcon, AppShell, Burger, Button, Container, Divider, Group, ScrollArea } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useMemo } from 'react'
 import { TbArrowBarLeft, TbArrowBarRight } from 'react-icons/tb'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { ShopCartBtn } from '../apps/shop/features/shop-cart-btn'
@@ -17,6 +18,9 @@ export function MainLayout() {
 	const navigate = useNavigate()
 	const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
 	const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
+	const back = useMemo<boolean>(() => {
+		return false || window?.history?.state?.idx > 0
+	}, [window?.history?.state?.idx])
 	return (
 		<>
 			<AppShell
@@ -72,7 +76,7 @@ export function MainLayout() {
 					<Template.Slot name='footer'>
 						<div></div>
 					</Template.Slot>
-					<Button color='dark' size='sm' onClick={() => navigate(-1)}>
+					<Button color='dark' size='sm' disabled={!back} onClick={() => navigate(-1)}>
 						Назад
 					</Button>
 				</AppShell.Footer>
