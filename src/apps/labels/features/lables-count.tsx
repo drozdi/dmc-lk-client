@@ -38,9 +38,9 @@ export const LabelsCount = observer(() => {
 					return
 				}
 				const production_name = productionNameById(item.production_id)
-				if (!production_name) {
+				/*if (!production_name) {
 					return
-				}
+				}*/
 				prod[item.production_id] = prod[item.production_id] || {
 					production_id: item.production_id,
 					production_name,
@@ -58,6 +58,8 @@ export const LabelsCount = observer(() => {
 
 		return Object.values(prod)
 	}, [data, filterProdaction, productionNameById])
+
+	console.log(ddata)
 
 	async function fetch() {
 		const res = await reqLabelsCount.request()

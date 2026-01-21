@@ -1,7 +1,7 @@
-import { Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/core'
+import { ActionIcon, Flex, Notification, Select, Stack, Table, TextInput } from '@mantine/core'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useMemo, useState } from 'react'
-import { TbList } from 'react-icons/tb'
+import { TbList, TbPlus } from 'react-icons/tb'
 import { Template } from '../../../layout/context'
 import { Loading } from '../../../shared/ui'
 import { userStore } from '../../../stores/user-store'
@@ -14,13 +14,20 @@ import { GroupProvider } from './components/group/provider'
 
 export const LabelsGroup = observer(() => {
 	const { products } = userStore
-	const { error, isLoading, prints: _prints, formats: _formats, formatPrints: _formatPrints } = labelsStore
+	const { error, isLoading } = labelsStore
 
 	const [production_id, setProduction_id] = useState()
 
-	const prints = useMemo(() => _prints[production_id] || [], [_prints, production_id])
-	const formats = useMemo(() => _formats[production_id] || [], [_formats, production_id])
-	const formatPrints = useMemo(() => _formatPrints[production_id] || [], [_formatPrints, production_id])
+	const prints = useMemo(() => labelsStore.prints[production_id] || [], [labelsStore.prints, production_id])
+	const formats = useMemo(() => labelsStore.formats[production_id] || [], [labelsStore.formats, production_id])
+	const formatPrints = useMemo(
+		() => labelsStore.formatPrints[production_id] || [],
+		[labelsStore.formatPrints, production_id]
+	)
+
+	console.log(JSON.parse(JSON.stringify(prints)))
+	console.log(JSON.parse(JSON.stringify(formats)))
+	console.log(JSON.parse(JSON.stringify(formatPrints)))
 
 	const containers = useMemo<
 		Record<
@@ -120,6 +127,14 @@ export const LabelsGroup = observer(() => {
 	}
 	const handleKeyPress = ({ key }: React.KeyboardEvent) => {
 		if (key === 'Enter') {
+			if (newFormat) {
+				labelsStore.addFormat({ format: newFormat.trim(), production_id })
+				setNewFormat('')
+			}
+		}
+	}
+	const handleAddFormat = () => {
+		if (newFormat) {
 			labelsStore.addFormat({ format: newFormat.trim(), production_id })
 			setNewFormat('')
 		}
@@ -151,6 +166,11 @@ export const LabelsGroup = observer(() => {
 					value={newFormat}
 					onChange={handleChange}
 					onKeyPress={handleKeyPress}
+					rightSection={
+						<ActionIcon onClick={handleAddFormat}>
+							<TbPlus />
+						</ActionIcon>
+					}
 				/>
 				<GroupProvider onDragEnd={handleDragEnd}>
 					<Flex mt='xs'>

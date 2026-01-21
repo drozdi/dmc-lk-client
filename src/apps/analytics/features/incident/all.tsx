@@ -7,6 +7,8 @@ import { Loading } from '../../../../shared/ui'
 import { requestAnalyticsIncident } from '../../api'
 import { IncidentDetail } from './components/incident-detail'
 
+let i = 0
+
 export const IncidentAll = observer(
 	({ query = {}, ...props }: { query: IRequestAnalyticsIncident; [key: string]: any }) => {
 		const { data, isLoading, error, fetch } = useQuery_(['incident'], requestAnalyticsIncident, {
@@ -25,8 +27,8 @@ export const IncidentAll = observer(
 					{data?.length ? (
 						<Accordion multiple chevronPosition='left' onChange={setOpenend}>
 							{data.map((item: IAnalyticsIncidentItem) => (
-								<Accordion.Item key={item.data} value={item.data}>
-									<Accordion.Control icon={item.total_counter}>{item.data}</Accordion.Control>
+								<Accordion.Item key={item.data || `acc-${i++}`} value={item.data || `acc-${i}`}>
+									<Accordion.Control icon={item?.total_counter}>{item.data}</Accordion.Control>
 									<Accordion.Panel>
 										<div style={{ minHeight: 100 }}>
 											{openend.includes(item.data) && <IncidentDetail {...query} data={[item.data]} />}

@@ -1,9 +1,17 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useQuery_ } from '../../../../shared/hooks'
 import { useProduction } from '../../../../stores/hooks/use-production'
+import { requestLabelsCountHistory } from '../../api'
 import { useConsumptions } from './use-consumptions'
 import { useFormatPrints } from './use-format-prints'
 
 export function useFormatСonsumptions(production_id?: integer | string) {
+	const request = useQuery_(['labels-count-history'], requestLabelsCountHistory, {
+		select(data) {
+			return data.data.response
+		},
+	})
+
 	const consumptions = useConsumptions()
 	const formatPrints = useFormatPrints()
 	const { productionNameById } = useProduction()
@@ -12,7 +20,7 @@ export function useFormatСonsumptions(production_id?: integer | string) {
 		for (let prod in consumptions) {
 			const prodaction = {
 				production_id: prod,
-				production_name: productionNameById(prod),
+				production_name: productionNameById(prod) || request.data?.[prod]?.[0]?.name_production,
 				labels: [],
 			}
 			const formats = formatPrints[prod]
@@ -39,6 +47,10 @@ export function useFormatСonsumptions(production_id?: integer | string) {
 
 		return res
 	}, [consumptions, formatPrints])
+
+	useEffect(() => {
+		request.fetch({})
+	}, [])
 
 	return useMemo(() => {
 		if (production_id) {

@@ -1,9 +1,9 @@
-import { Button, Group, Select, Stack, Table, Text, TextInput } from '@mantine/core'
+import { ActionIcon, Button, Group, Select, Stack, Table, Text, TextInput } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { observer } from 'mobx-react-lite'
 import { useMemo, useState } from 'react'
-import { TbXboxX } from 'react-icons/tb'
+import { TbPlus, TbXboxX } from 'react-icons/tb'
 import { ButtonRemove, Icon, Loading } from '../../../../shared/ui'
 import { useFetchFields } from '../../api/hooks/use-fetch-fields'
 import { incidentStore } from '../../stores/incident-store'
@@ -126,6 +126,13 @@ export const IncidentTable = observer(() => {
 			setValue('')
 		}
 	}
+	const handleAddData = () => {
+		if (value) {
+			template.data.push(value)
+			incidentStore.saveTemp({ ...template })
+			setValue('')
+		}
+	}
 	const handleRemoveItem = (value: string) => {
 		template.data = template.data.filter(item => value !== item)
 		incidentStore.saveTemp({ ...template })
@@ -140,6 +147,11 @@ export const IncidentTable = observer(() => {
 						value={value}
 						onChange={({ target }) => setValue(target.value)}
 						onKeyPress={handleKeyPress}
+						rightSection={
+							<ActionIcon onClick={handleAddData}>
+								<TbPlus />
+							</ActionIcon>
+						}
 					/>
 				</li>
 				{template.data.map(item => (

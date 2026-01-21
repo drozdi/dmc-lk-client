@@ -59,7 +59,7 @@ class LabelsStore implements IQuery, Record<string, any> {
 	async loadFormats(reloading: boolean = false) {
 		if (reloading) {
 			this.isLoadedFormats = false
-			this._formats = []
+			this._formats = {}
 		}
 		if (this.isLoadedFormats) {
 			return
@@ -127,11 +127,11 @@ class LabelsStore implements IQuery, Record<string, any> {
 			})
 			this.isLoadedFormatPrints = true
 			this._formatPrints = Object.fromEntries(
-				Object.keys(res.data).map(key => {
+				Object.keys(res.data.response).map(key => {
 					return [
 						key,
-						res.response[key]
-							.map(item => ({
+						res.data.response[key]
+							?.map(item => ({
 								...item,
 								format: item.add_label_format,
 								print: item.statistics_print_format,

@@ -108,7 +108,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 					if (
 						error.response &&
 						error.response.status === 401 &&
-						error.response.data.detail === this.message401 &&
+						(!this.message401 || error.response.data.detail === this.message401) &&
 						!originalRequest._retry
 					) {
 						// if (error.response.data.detail === 'Пароль или логин введены неверно') {

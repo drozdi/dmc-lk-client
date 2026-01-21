@@ -8,7 +8,7 @@ import { requestLabelsCountHistory } from '../api'
 
 export const LabelsHistory = () => {
 	const { isLoading, error, fetch, data } = useQuery_(['labels-count'], requestLabelsCountHistory, {
-		select: data => data.data,
+		select: data => data.data.response,
 	})
 
 	const ddata = useMemo(() => {

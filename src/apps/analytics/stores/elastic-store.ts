@@ -99,16 +99,21 @@ class ElasticStore {
 	async send(page: string = '', histrory: boolean = true) {
 		this.isLoading = true
 		try {
+			console.log(JSON.parse(JSON.stringify(this.template)))
 			const select_field = [...this.template.company.select_field]
-			const list_where = this.template.company.list_where?.filter(item => {
-				if (Array.isArray(item.search_value)) {
-					if (item.search_value.length > 0) {
-						return item
+			const list_where = this.template.company.list_where
+				?.filter(item => {
+					return !!item.search_value
+				})
+				.map(item => {
+					if (Array.isArray(item.search_value)) {
+						if (item.search_value.length > 0) {
+							return { single_action_list: 'and', ...item }
+						}
+					} else if (item.search_value) {
+						return { single_action_list: 'and', ...item }
 					}
-				} else if (item.search_value) {
-					return item
-				}
-			})
+				})
 			const date_limit = { ...this.template.company.date_limit }
 
 			if (list_where?.length && list_where?.length > 0) {

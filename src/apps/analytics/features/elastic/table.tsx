@@ -100,6 +100,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 		elasticStore.saveTemp({ ...template })
 	}
 	const handleChangeActionField = (select: string, action: SingleActionList) => {
+		console.log(select, action)
 		const where = whereItemAppend(select, '=', '', action)
 		where.single_action_list = action
 		elasticStore.saveTemp({ ...template })
@@ -226,6 +227,7 @@ export const TableElastic = observer(({ className }: TableElasticProps) => {
 																	/>
 																) : (
 																	<TextInput
+																		value={whereItem(header.id)?.search_value as string[]}
 																		onChange={({ target }) => handleChangeValueField(header.id, target.value)} ///
 																	/>
 																)}

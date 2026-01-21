@@ -13,6 +13,8 @@ export const LabelsCountWidget = observer(() => {
 	const { productionNameById } = useProduction()
 	const isLoading = useQueryLoading(labelsStore, countLabelStore)
 
+	console.log(formatPrints)
+
 	const ddata = useMemo(() => {
 		const res = {}
 		for (let prod in formatPrints) {
