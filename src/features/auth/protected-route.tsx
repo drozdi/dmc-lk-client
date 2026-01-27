@@ -1,14 +1,10 @@
-import { observer } from 'mobx-react-lite'
-import { Navigate } from 'react-router-dom'
-import { authStore } from '../../stores/auth-store'
+import { useStoreAuth } from "@/entites/auth";
+import { Navigate } from "react-router-dom";
 
-interface ProtectedRouteProps {
-	children: React.ReactNode
-}
-
-export const ProtectedRoute = observer(({ children }: ProtectedRouteProps) => {
-	if (!authStore.isAuthenticated) {
-		return <Navigate to='/auth/sign-in' replace />
+export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+	const storeAuth = useStoreAuth();
+	if (!storeAuth.isAuthenticated) {
+		return <Navigate to="/auth/sign-in" replace />;
 	}
-	return children
-})
+	return children;
+};

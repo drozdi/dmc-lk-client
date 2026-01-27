@@ -1,0 +1,20 @@
+import { Setting } from "./Setting";
+
+export * from "./Config";
+export * from "./Setting";
+
+export const $setting = new Setting(
+	{
+		"api.host": "https://dmc-mact.ru/lk_api/v1/",
+		"api.timeout": 10,
+		"base.url": "/",
+		"product.id": 0,
+	},
+	{
+		"api.host": "https://dmc-mact.ru/lk_api/v1/",
+		"api.timeout": 10,
+		"base.url": "/",
+		"product.id": 0,
+	},
+	"dmc-lk",
+);

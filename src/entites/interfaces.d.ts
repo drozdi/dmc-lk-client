@@ -1,25 +1,40 @@
+interface IRequestList {
+	size?: number;
+	number?: number;
+}
+
 interface IResponse<T extends any> {
-	success: boolean
-	message: string | null | T
-	data?: T
-	response?: T
+	success: boolean;
+	message?: string | null | T | IError;
+	data?: T;
+	response?: T;
 }
 
-interface IUser {
-	first_name: string
-	last_name: string
-	father_name: string
-	email: string
-	phone: string
-}
-interface IUserPassword extends IUser {
-	password: string
+interface IResponseList<T> {
+	success: boolean;
+	message?: string | null | T;
+	data: {
+		page: number;
+		next_page: number;
+		previous_page: number;
+		size: number;
+		total_records: number;
+		response: T[];
+	};
 }
 
-interface AppRouterProps {
-	path?: string
-	children?: React.ReactNode
-	render?: () => React.ReactNode
-	routes?: any
-	element?: any
+type IError =
+	| (any & {
+			response?: {
+				data?: {
+					detail?: string;
+				};
+			};
+			message?: string;
+	  })
+	| string;
+
+interface IStore {
+	error: string;
+	isLoading: boolean;
 }

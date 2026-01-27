@@ -1,81 +1,64 @@
-import { Navigate, useRoutes } from 'react-router-dom'
-import { AuthLayout } from '../layout/AuthLayout'
-import { MainLayout } from '../layout/MainLayout'
+import { ProtectedRoute } from "@/features/auth/protected-route";
+import { AuthLayout, MainLayout } from "@t";
+import { Navigate, useRoutes } from "react-router-dom";
 
-import { ProtectedRoute } from '../features/auth/protected-route'
-
-import { MainPage } from '../pages/main-page'
-import { PersonalPage } from '../pages/personal-page'
-import { SettingsPage } from '../pages/settings-page'
-import { SignInPage } from '../pages/sign-in-page'
-import { SignOutPage } from '../pages/sign-out-page'
-import { SignUpPage } from '../pages/sign-up-page'
-import { VerificationPage } from '../pages/verification-page'
-
-import analyticsRouers from '../apps/analytics/routers'
-import labelsRouers from '../apps/labels/routers'
-import shopRouers from '../apps/shop/routers'
-import usersRouers from '../apps/users/routers'
+import { SignInPage } from "../pages/auth/sign-in-page";
+import { SignOutPage } from "../pages/auth/sign-out-page";
+import { SignUpPage } from "../pages/auth/sign-up-page";
+import { VerificationPage } from "../pages/auth/verification-page";
 
 const routes = () => [
 	{
-		path: '/auth',
+		path: "/auth",
 		element: <AuthLayout />,
 		children: [
 			{
-				path: '',
-				element: <Navigate to='/auth/sign-in' />,
+				path: "",
+				element: <Navigate to="/auth/sign-in" />,
 			},
 			{
-				path: 'verificatin',
+				path: "verificatin",
 				element: <VerificationPage />,
 			},
 			{
-				path: 'sign-in',
+				path: "sign-in",
 				element: <SignInPage />,
 			},
 			{
-				path: 'sign-up',
+				path: "sign-up",
 				element: <SignUpPage />,
 			},
 			{
-				path: 'sign-out',
+				path: "sign-out",
 				element: <SignOutPage />,
 			},
 		],
 	},
-	import.meta.env.DEV
-		? {
-				path: '/s',
-				element: <AuthLayout />,
-				children: [{ path: '', element: <SettingsPage /> }],
-		  }
-		: {},
 	{
-		path: '/',
+		path: "/",
 		element: (
 			<ProtectedRoute>
 				<MainLayout />
 			</ProtectedRoute>
 		),
-		children: [
-			{
-				path: '',
-				element: <MainPage />,
-			},
-			{
-				path: '/lk',
-				element: <PersonalPage />,
-			},
-			analyticsRouers(),
-			shopRouers(),
-			usersRouers(),
-			labelsRouers(),
-		],
+		// children: [
+		// 	{
+		// 		path: "",
+		// 		element: <MainPage />,
+		// 	},
+		// 	{
+		// 		path: "/lk",
+		// 		element: <PersonalPage />,
+		// 	},
+		// 	analyticsRouers(),
+		// 	shopRouers(),
+		// 	usersRouers(),
+		// 	labelsRouers(),
+		// ],
 	},
-]
+];
 
 export function AppRouters() {
-	const routesElement = useRoutes(routes())
-	return routesElement
+	const routesElement = useRoutes(routes());
+	return routesElement;
 }

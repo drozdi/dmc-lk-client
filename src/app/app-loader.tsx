@@ -1,18 +1,16 @@
-import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
-import { authStore } from '../stores/auth-store'
-import { userStore } from '../stores/user-store'
+import { useStoreAuth, useStoreUserProfile } from "@/entites/auth/stores";
+import { useEffect } from "react";
 
-interface AppLoaderProps {
-	children: React.ReactNode
-}
-export const AppLoader = observer(({ children }: AppLoaderProps) => {
+export const AppLoader = ({ children }: { children: React.ReactNode }) => {
+	const storeAuth = useStoreAuth();
+	const storeUserProfile = useStoreUserProfile();
+
 	useEffect(() => {
-		if (authStore.isAuthenticated) {
-			userStore.fetch()
+		if (storeAuth.isAuthenticated) {
+			storeUserProfile.load(true);
 		} else {
-			userStore.reset()
+			storeUserProfile.reset();
 		}
-	}, [authStore.isAuthenticated])
-	return children
-})
+	}, [storeAuth.isAuthenticated]);
+	return children;
+};

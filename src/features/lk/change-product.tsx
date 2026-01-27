@@ -1,36 +1,35 @@
-import { Select } from '@mantine/core'
-import { observer } from 'mobx-react-lite'
-import { useMemo, useState } from 'react'
-import { userStore } from '../../stores/user-store'
+import { useStoreUserProfile } from "@/entites/auth";
+import { useQueryProductList } from "@/entites/users";
+import { Select } from "@mantine/core";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
 
 export const ChangeProduct = observer(() => {
-	const { products, currentProductId } = userStore
-	const [change, setChange] = useState<boolean>(false)
-	const currentName = useMemo(() => {
-		return products.find(product => product.production_id == currentProductId)?.name_production || ''
-	}, [products, currentProductId])
+	const storeUserProfile = useStoreUserProfile();
+	const qpl = useQueryProductList();
+	const [change, setChange] = useState<boolean>(false);
 
 	const handleChange = (value: string) => {
-		userStore.setCurrentProductId(value)
-		setChange(false)
-	}
+		storeUserProfile.setProductId(value);
+		setChange(false);
+	};
 	return (
 		<>
 			{change ? (
 				<Select
-					variant='filled'
-					value={String(currentProductId)}
-					onChange={value => handleChange(value as string)}
-					data={products.map(product => ({
-						value: String(product.production_id),
-						label: product.name_production,
-					}))}
+					variant="filled"
+					value={String(storeUserProfile.product_id)}
+					onChange={(value) => handleChange(value as string)}
+					data={qpl.dataSelect}
 				/>
 			) : (
-				<span className='cursor-pointer' onClick={() => setChange(true)}>
-					{currentName}
+				<span
+					className="cursor-pointer"
+					onClick={() => setChange(true)}
+				>
+					{qpl.findNameById(storeUserProfile.product_id)}
 				</span>
 			)}
 		</>
-	)
-})
+	);
+});
