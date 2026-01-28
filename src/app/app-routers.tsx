@@ -6,6 +6,8 @@ import { SignInPage } from "../pages/auth/sign-in-page";
 import { SignOutPage } from "../pages/auth/sign-out-page";
 import { SignUpPage } from "../pages/auth/sign-up-page";
 import { VerificationPage } from "../pages/auth/verification-page";
+import { MainPage } from "../pages/main-page";
+import { PersonalPage } from "../pages/personal-page";
 
 const routes = () => [
 	{
@@ -41,18 +43,34 @@ const routes = () => [
 				<MainLayout />
 			</ProtectedRoute>
 		),
+		children: [
+			{
+				path: "",
+				element: <MainPage />,
+			},
+			{
+				path: "/lk",
+				element: <PersonalPage />,
+			},
+			// {
+			// 	path: "/users",
+			// 	element: <Outlet />,
+			// 	children: [
+			// 		{
+			// 			path: "",
+			// 			element: <UsersPage />,
+			// 		},
+			// 		{
+			// 			path: ":userId",
+			// 			element: <UserPage />,
+			// 		},
+			// 	],
+			// },
+		],
 		// children: [
-		// 	{
-		// 		path: "",
-		// 		element: <MainPage />,
-		// 	},
-		// 	{
-		// 		path: "/lk",
-		// 		element: <PersonalPage />,
-		// 	},
+		//
 		// 	analyticsRouers(),
 		// 	shopRouers(),
-		// 	usersRouers(),
 		// 	labelsRouers(),
 		// ],
 	},

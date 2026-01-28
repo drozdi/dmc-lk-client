@@ -23,6 +23,16 @@ export const useStoreAuth = create<IStoreAuth>(
 			});
 			api.clearTokens();
 		},
+		async load() {
+			const isAuthenticated =
+				!!api.getRefreshToken() && !!api.getAccessToken();
+			set({
+				isAuthenticated,
+			});
+			if (!isAuthenticated) {
+				api.clearTokens();
+			}
+		},
 
 		async refreshAuth() {
 			const refresh = api.getRefreshToken();
@@ -42,7 +52,6 @@ export const useStoreAuth = create<IStoreAuth>(
 				throw error;
 			}
 		},
-
 		async verification(link) {
 			set({
 				isLoading: true,

@@ -8,7 +8,7 @@ export const InOutLink = () => {
 	const storeAuth = useStoreAuth();
 	return (
 		<>
-			{storeAuth.isAuthenticated ? (
+			{storeAuth.isAuth ? (
 				<ActionIcon
 					variant="default"
 					aria-label="Выйти"

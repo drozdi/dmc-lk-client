@@ -1,4 +1,4 @@
-import { userStore } from "@/entites/auth/stores/user-store";
+import { useStoreUserProfile } from "@/entites/auth";
 import { Loading, PhoneInput } from "@/shared/ui";
 import {
 	Button,
@@ -34,8 +34,9 @@ const fieldsSchema = yup.object().shape({
 });
 
 export const PersonalForm = observer(() => {
-	const { isLoading, userData } = userStore;
-
+	const storeUserProfile = useStoreUserProfile();
+	const { isLoading, userData } = storeUserProfile;
+	const navigate = useNavigate();
 	const form = useForm({
 		mode: "uncontrolled",
 		name: "personalForm",
@@ -48,12 +49,12 @@ export const PersonalForm = observer(() => {
 		},
 		validate: yupResolver(fieldsSchema),
 		onValuesChange: (values) => {
-			userStore.setUserData(values);
+			storeUserProfile.setUserData(values);
 		},
 	});
 	const formPassword = useForm({
 		mode: "uncontrolled",
-		name: "passwordForm",
+		name: "passwordFormPassword",
 		initialValues: {
 			oldPassword: "",
 			newPassword: "",
@@ -72,21 +73,17 @@ export const PersonalForm = observer(() => {
 		},
 	});
 
-	const navigate = useNavigate();
-
 	async function handleSave(formData: IUser) {
-		await userStore.update(formData);
+		await storeUserProfile.update(formData);
 	}
 	async function handleSaveNavigate(formData: IUser) {
-		await userStore.update(formData);
+		await storeUserProfile.update(formData);
 		navigate("/");
 	}
 	async function handleRemove() {
 		if (!confirm("Вы уверены что хотите удалить себя?")) {
 			return;
 		}
-		// await userStore.remove()
-		// navigate('/')
 	}
 	async function handleChangePassword({
 		oldPassword,
@@ -95,7 +92,10 @@ export const PersonalForm = observer(() => {
 		oldPassword: string;
 		newPassword: string;
 	}) {
-		const res = await userStore.updatePassword(oldPassword, newPassword);
+		const res = await storeUserProfile.updatePassword(
+			oldPassword,
+			newPassword,
+		);
 		if (res) {
 			formPassword.setValues({
 				oldPassword: "",
@@ -112,6 +112,10 @@ export const PersonalForm = observer(() => {
 			form.initialize(userData);
 		}
 	}, [userData]);
+
+	useEffect(() => {
+		storeUserProfile.load();
+	}, []);
 
 	return (
 		<Loading active={isLoading} keepMounted>

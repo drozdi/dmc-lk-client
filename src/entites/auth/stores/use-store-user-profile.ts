@@ -44,7 +44,7 @@ export const useStoreUserProfile = create<IStoreUserProfile>(
 				error: "",
 			});
 			try {
-				const userData = queryClient.fetchQuery({
+				const userData = await queryClient.fetchQuery({
 					queryKey: ["user-profile"],
 					queryFn: async () => {
 						const response = await requestUserProfileGet();

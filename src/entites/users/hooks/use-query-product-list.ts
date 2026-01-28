@@ -18,7 +18,6 @@ export function useQueryProductList() {
 			return data.data;
 		},
 	});
-
 	const dataSelect = useMemo<ComboboxItem[]>(() => {
 		return [
 			{
@@ -32,13 +31,17 @@ export function useQueryProductList() {
 			})),
 		);
 	}, [q.data]);
-
 	const findById = useCallback(
-		(id: IProduction["production_id"]) =>
-			(q.data || []).find((item) => item.production_id === id),
+		(id: IProduction["production_id"]) => {
+			if (id === 0) {
+				return {
+					name_production: "Все площадки",
+				};
+			}
+			return (q.data || []).find((item) => item.production_id === id);
+		},
 		[q.data],
 	);
-
 	const findNameById = useCallback(
 		(id: IProduction["production_id"]) =>
 			findById(id)?.name_production || "",

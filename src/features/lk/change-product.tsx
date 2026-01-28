@@ -13,11 +13,12 @@ export const ChangeProduct = observer(() => {
 		storeUserProfile.setProductId(value);
 		setChange(false);
 	};
+
 	return (
 		<>
 			{change ? (
 				<Select
-					variant="filled"
+					variant="underline"
 					value={String(storeUserProfile.product_id)}
 					onChange={(value) => handleChange(value as string)}
 					data={qpl.dataSelect}
@@ -27,7 +28,7 @@ export const ChangeProduct = observer(() => {
 					className="cursor-pointer"
 					onClick={() => setChange(true)}
 				>
-					{qpl.findNameById(storeUserProfile.product_id)}
+					{qpl.findNameById(Number(storeUserProfile.product_id))}
 				</span>
 			)}
 		</>
