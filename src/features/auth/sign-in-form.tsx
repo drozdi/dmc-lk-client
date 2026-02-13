@@ -2,10 +2,9 @@ import { useStoreAuth } from "@/entites/auth";
 import { Loading } from "@/shared/ui";
 import { Box, Button, PasswordInput, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 
-export const SignInForm = observer((props) => {
+export const SignInForm = (props) => {
 	const storeAuth = useStoreAuth();
 	const form = useForm({
 		mode: "uncontrolled",
@@ -55,4 +54,4 @@ export const SignInForm = observer((props) => {
 			</Stack>
 		</Box>
 	);
-});
+};

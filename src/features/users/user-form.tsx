@@ -1,3 +1,4 @@
+import { Item, ItemSection, List, Loading, PhoneInput } from "@/shared/ui";
 import {
 	Button,
 	Checkbox,
@@ -8,23 +9,21 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { isEmail, isNotEmpty, useForm } from "@mantine/form";
-import { observer } from "mobx-react-lite";
+import { Template } from "@t";
 import { useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Template } from "../../../layout";
 import {
 	useEditUser,
 	useFetchProductions,
 	useFetchUser,
 } from "../../apps/users/api";
-import { Item, ItemSection, List, Loading, PhoneInput } from "../../shared/ui";
 
 interface UserFormProps {
 	id?: number | string;
 	className?: string;
 }
 
-export const UserForm = observer(({ id, className }: UserFormProps) => {
+export const UserForm = ({ id, className }: UserFormProps) => {
 	const { data: products } = useFetchProductions();
 	const naigate = useNavigate();
 	const { isLoading, error, isError, data } = useFetchUser(Number(id));
@@ -225,4 +224,4 @@ export const UserForm = observer(({ id, className }: UserFormProps) => {
 			</Loading>
 		</>
 	);
-});
+};

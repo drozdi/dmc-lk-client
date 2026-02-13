@@ -1,3 +1,6 @@
+import { Template } from "@/shared/layout";
+import { notification } from "@/shared/notification";
+import { Loading } from "@/shared/ui";
 import {
 	Button,
 	Group,
@@ -9,10 +12,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Template } from "../../../layout";
 import { useFetchUsers } from "../../apps/users/api";
-import { notification } from "../../shared/notification";
-import { Loading } from "../../shared/ui";
 
 interface UsersListProps {
 	className?: string;

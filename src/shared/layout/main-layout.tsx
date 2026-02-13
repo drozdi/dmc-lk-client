@@ -73,7 +73,7 @@ export function MainLayout() {
 							<Template.Slot name="title" />
 						</Title>
 					</Group>
-					<Template.Slot name="header">default header</Template.Slot>
+					<Template.Slot name="header" />
 					<Group>
 						<ChangeProduct />
 						<PersonalLink />

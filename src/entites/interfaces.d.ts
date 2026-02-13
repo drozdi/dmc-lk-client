@@ -19,7 +19,7 @@ interface IResponseList<T extends object> {
 		previous_page: number;
 		size: number;
 		total_records: number;
-		response: T[] | Record<string, T[]>;
+		response: T[];
 	};
 }
 

@@ -1,3 +1,4 @@
+import { type Axios, type AxiosError } from "axios";
 import { $setting } from "../setting";
 import { AxiosInterceptor } from "../utils";
 
@@ -11,12 +12,17 @@ export const api = new AxiosInterceptor({
 	refreshToken: "refresh",
 	accessTokenKey: "token.access",
 	refreshTokenKey: "token.refresh",
-	// urlRefreshToken: '/auth/refreshToken',
 	urlRefreshToken: async (refreshToken: string, axios: Axios) => {
 		const res = await axios.post("/registration/refresh", {
 			refresh_token: refreshToken,
 		});
 		return res.data.data.token;
+	},
+	message401: async (error: AxiosError, axios: Axios) => {
+		return (
+			error.response?.config?.url !== "/registration/refresh" &&
+			error.response?.data?.detail === "Signature has expired."
+		);
 	},
 	// handleRequest: config => {
 	// 	if (config.data instanceof FormData) {

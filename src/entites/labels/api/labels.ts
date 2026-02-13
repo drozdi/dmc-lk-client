@@ -1,28 +1,45 @@
 import { api } from "@/shared/api";
 
-export async function requestLabelsPrintAll(): Promise<
-	IResponse<Record<string, string[]>>
+export async function requestLabelsPrintList(): Promise<
+	IResponse<
+		Record<ILabel["production_id"], ILabel["statistics_print_format"][]>
+	>
 > {
-	const res = await api.get("/label/all_print_format");
+	const res = await api.get("/label/print");
 	return res.data;
 }
 
-export async function requestLabelsFormatAll(): Promise<
-	IResponse<Record<string, string[]>>
+export async function requestLabelsFormatList(): Promise<
+	IResponse<Record<ILabel["production_id"], ILabel["add_label_format"][]>>
 > {
-	const res = await api.get("/label/all_format");
+	const res = await api.get("/label/format");
 	return res.data;
 }
 export async function requestLabelsFormatAdd({
 	format,
 	production_id,
 }: {
-	format: string;
-	production_id: number;
+	format: ILabel["add_label_format"];
+	production_id: ILabel["production_id"];
 }): Promise<IResponse<ILabel>> {
-	const res = await api.post("/label/new_format", {
+	const res = await api.post("/label/format", {
 		add_label_format: format,
 		production_id,
+	});
+	return res.data;
+}
+export async function requestLabelsFormatDelete({
+	format,
+	production_id,
+}: {
+	format: ILabel["add_label_format"] | ILabel["add_label_format"][];
+	production_id: ILabel["production_id"];
+}): Promise<IResponse<ILabel>> {
+	const res = await api.delete("/label/format", {
+		data: {
+			name_label: [].concat(format as never),
+			production_id,
+		},
 	});
 	return res.data;
 }
@@ -33,7 +50,7 @@ export async function requestLabelsJoinedList({
 }: {
 	size?: number;
 	number?: number;
-}): Promise<IResponseObject<ILabel[]>> {
+}): Promise<IResponseList<ILabel>> {
 	const res = await api.get(`/label/?size=${size}&number=${number}`);
 	return res.data;
 }
@@ -43,14 +60,15 @@ export async function requestLabelsJoinedAdd(
 	const res = await api.post("/label/", data);
 	return res.data;
 }
-
 export async function requestLabelsJoinedUpdate(
-	id: number,
+	id: ILabel["id"],
 	data: Partial<ILabel>,
-) {
+): Promise<IResponse<ILabel>> {
+	console.log(id, data);
 	const res = await api.patch(`/label/${id}`, data);
 	return res.data;
 }
+
 export async function requestLabelsJoinedDelete(
 	id: ILabel["id"] | ILabel["id"][],
 ) {

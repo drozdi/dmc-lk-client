@@ -1,4 +1,3 @@
-import { makeAutoObservable } from "mobx";
 import {
 	requestLabelsCount,
 	requestLabelsCountAdd,
@@ -7,134 +6,154 @@ import {
 } from "../api";
 
 import { queryClient } from "@/shared/api/query-client";
-import { getterZustandMiddleware } from "@/shared/stores";
 import { create } from "zustand";
 
-interface IStoreCountLabel extends IStore {}
-
-export const useStoreCountLabel = create<IStoreCountLabel>(
-	getterZustandMiddleware((set, get) => ({
-		isLoading: false,
-		error: "",
-		async load(reloading = false) {
-			if (reloading) {
-				queryClient.invalidateQueries({
-					queryKey: ["labels-history"],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ["labels-count"],
-				});
-			}
-		},
-	})),
-);
-
-class CountLabelStore implements IQuery, Record<string, any> {
-	isLoading = false;
-	error?: string = undefined;
-
-	isLoadedHistory = false;
-	private _history: IResponseCountLabelHistory = {};
-	get history(): IResponseCountLabelHistory {
-		this.loadHistory();
-		return this._history;
-	}
-	async loadHistory(reloading: boolean = false) {
-		if (reloading) {
-			this.isLoadedHistory = false;
-			this._history = {};
-		}
-		if (this.isLoadedHistory) {
-			return;
-		}
-
-		this.error = undefined;
-		this.isLoading = true;
-		try {
-			const res = await requestLabelsCountHistory();
-			this.isLoadedHistory = true;
-			this._history = res.data.response;
-		} catch (error) {
-			this.error =
-				error.response?.data?.detail ||
-				error.message ||
-				"Неизвестная ошибка";
-		} finally {
-			this.isLoading = false;
-		}
-	}
-
-	isLoadedCount = false;
-	private _count: IResponseCountLabel = {
-		distributed: [],
-		not_distributed: [],
+interface IStoreCountLabel extends IStore {
+	history: ICountLabelHistoryItem[];
+	count: {
+		distributed: ICountLabelItem[];
+		not_distributed: ICountLabelItem[];
 	};
-	get count(): IResponseCountLabel {
-		this.loadCount();
-		return this._count;
-	}
-	async loadCount(reloading: boolean = false) {
-		if (reloading) {
-			this.isLoadedCount = false;
-			this._count = {};
-		}
-		if (this.isLoadedCount) {
-			return;
-		}
-
-		this.error = undefined;
-		this.isLoading = true;
-		try {
-			const res = await requestLabelsCount();
-			this.isLoadedCount = true;
-			this._count = res.data;
-		} catch (error) {
-			this.error =
-				error.response?.data?.detail ||
-				error.message ||
-				"Неизвестная ошибка";
-		} finally {
-			this.isLoading = false;
-		}
-	}
-
-	constructor() {
-		makeAutoObservable(this);
-	}
-
-	async load(reloading: boolean = false) {
-		await this.loadHistory(reloading);
-		await this.loadCount(reloading);
-	}
-
-	async reset(production_id: IRequestCountLabelReset) {
-		this.error = undefined;
-		this.isLoading = true;
-		try {
-			await requestLabelsCountReset(production_id);
-		} catch (error) {
-			this.error =
-				error.response?.data?.detail ||
-				error.message ||
-				"Неизвестная ошибка";
-		} finally {
-			this.isLoading = false;
-		}
-	}
-	async add(param: IRequestCountLabelAdd) {
-		this.error = undefined;
-		this.isLoading = true;
-		try {
-			return await requestLabelsCountAdd(param);
-		} catch (error) {
-			this.error =
-				error.response?.data?.detail ||
-				error.message ||
-				"Неизвестная ошибка";
-		} finally {
-			this.isLoading = false;
-		}
-	}
+	loadHistory(reloading?: boolean): Promise<void>;
+	loadCount(reloading?: boolean): Promise<void>;
+	addCount(
+		param: IRequestCountLabelAdd,
+	): Promise<ICountLabelItem | undefined>;
+	reset(production_id: ILabel["production_id"]): Promise<void>;
 }
 
-export const countLabelStore = new CountLabelStore();
+export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
+	isLoading: false,
+	error: "",
+	history: [],
+	count: {
+		distributed: [],
+		not_distributed: [],
+	},
+	async load(reloading = false) {
+		await get().loadHistory(reloading);
+		await get().loadCount(reloading);
+	},
+	async loadHistory(reloading = false) {
+		if (reloading) {
+			queryClient.invalidateQueries({
+				queryKey: ["labels-history"],
+			});
+		}
+		set({
+			isLoading: false,
+			error: "",
+		});
+
+		const params = {
+			size: 100,
+			number: 0,
+			filterdate: [],
+		};
+		try {
+			let history: ICountLabelHistoryItem[] = [];
+			let res;
+
+			do {
+				res = await requestLabelsCountHistory(params);
+				for (const arr of Object.values(res.data.response)) {
+					history = [...history, ...arr];
+				}
+				params.number++;
+			} while (
+				history.length % params.size === 0 &&
+				Object.values(res.data.response).length
+			);
+
+			set({
+				isLoading: false,
+				history,
+			});
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail ||
+				e?.message ||
+				e ||
+				"Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+	},
+	async loadCount(reloading = false) {
+		if (reloading) {
+			queryClient.invalidateQueries({
+				queryKey: ["labels-count"],
+			});
+		}
+		set({
+			isLoading: false,
+			error: "",
+		});
+		try {
+			const count = (await requestLabelsCount()).data;
+			set({
+				isLoading: false,
+				count,
+			});
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail ||
+				e?.message ||
+				e ||
+				"Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+	},
+	async addCount(param: IRequestCountLabelAdd) {
+		set({
+			isLoading: true,
+			error: "",
+		});
+		try {
+			const res = (await requestLabelsCountAdd(param)).data;
+			set({
+				isLoading: false,
+			});
+			get().load(true);
+			return res;
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail ||
+				e?.message ||
+				e ||
+				"Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+		return undefined;
+	},
+	async reset(production_id) {
+		set({ isLoading: true, error: "" });
+		try {
+			await requestLabelsCountReset(production_id);
+			set({ isLoading: false });
+			get().load(true);
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail ||
+				e?.message ||
+				e ||
+				"Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+	},
+}));

@@ -1,6 +1,6 @@
-import { Paper } from '@mantine/core'
-import { Template } from '@t'
-import { LabelsGroup } from '../features/lables-group'
+import { LabelsGroup } from "@/features/labels/lables-group";
+import { Paper } from "@mantine/core";
+import { Template } from "@t";
 
 export function LabelsPage() {
 	return (
@@ -8,5 +8,5 @@ export function LabelsPage() {
 			<Template.Title>Групировка этикеток</Template.Title>
 			<LabelsGroup />
 		</Paper>
-	)
+	);
 }

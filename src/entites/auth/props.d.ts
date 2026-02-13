@@ -21,8 +21,8 @@ interface IStoreAuth extends IStore {
 
 interface IStoreUserProfile extends IStore {
 	userData?: IUser;
-	product_id?: string | number;
-	setProductId(id: IStoreUserProfile["product_id"]): void;
+	production_id: number;
+	setProductionId(id: IStoreUserProfile["production_id"]): void;
 	setUserData(data: Partial<IUser>): void;
 	load(reloading?: boolean): Promise<IUser | undefined>;
 	update(userData: IUser): Promise<IUser | undefined>;

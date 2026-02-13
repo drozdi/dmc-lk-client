@@ -1,7 +1,7 @@
 import { api } from "@/shared/api";
 
 export async function requestLabelsCountReset(
-	production_id: IRequestCountLabelReset,
+	production_id: ILabel["production_id"],
 ) {
 	const res = await api.get("/count_label/reset/", {
 		params: { production_id },
@@ -14,7 +14,7 @@ export async function requestLabelsCountHistory({
 	number = 0,
 	filterdate = [],
 }: IRequestCountLabelHistory = {}): Promise<
-	IResponse<IResponseCountLabelHistory>
+	IResponseObject<ICountLabelHistoryItem[]>
 > {
 	const arr = ["size=" + size, "number=" + number];
 	if (Array.isArray(filterdate)) {
@@ -29,7 +29,10 @@ export async function requestLabelsCountHistory({
 }
 
 export async function requestLabelsCount(): Promise<
-	IResponse<IResponseCountLabel>
+	IResponse<{
+		distributed: ICountLabelItem[];
+		not_distributed: ICountLabelItem[];
+	}>
 > {
 	const res = await api.get("/count_label/");
 	return res.data;
@@ -38,6 +41,7 @@ export async function requestLabelsCount(): Promise<
 export async function requestLabelsCountAdd(
 	data: IRequestCountLabelAdd,
 ): Promise<IResponse<ICountLabelItem>> {
+	data.place_name = data.place_name || "Пополнение этикеток";
 	const res = await api.post("/count_label/", data);
 	return res.data;
 }

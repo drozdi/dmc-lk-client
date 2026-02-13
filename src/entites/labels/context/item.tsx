@@ -2,9 +2,10 @@ import { useDraggable } from "@dnd-kit/react";
 import { Children, cloneElement } from "react";
 
 interface ItemProps {
-	id: string | number;
+	id: ILabel["statistics_print_format"];
 	data: Record<string, any>;
 	children: React.ReactNode;
+	[key: string]: any;
 }
 
 export function GroupedItem({ children, id, data, ...props }: ItemProps) {

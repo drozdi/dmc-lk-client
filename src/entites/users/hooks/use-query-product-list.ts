@@ -44,7 +44,7 @@ export function useQueryProductList() {
 	);
 	const findNameById = useCallback(
 		(id: IProduction["production_id"]) =>
-			findById(id)?.name_production || "",
+			findById(id)?.name_production || `Площадка #${id}`,
 		[findById],
 	);
 	return { ...q, dataSelect, findById, findNameById };

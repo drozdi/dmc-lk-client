@@ -3,7 +3,7 @@ import { useDroppable } from "@dnd-kit/react";
 import { Children, cloneElement } from "react";
 
 interface ContainerProps {
-	column: string;
+	column: ILabel["add_label_format"];
 	children: React.ReactNode;
 	hover?: string;
 	color?: string;

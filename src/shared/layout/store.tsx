@@ -1,6 +1,6 @@
 import { cloneElement, isValidElement, useEffect, useId, useMemo } from "react";
 import { useStoreTemplate } from "../stores/template";
-// import { Title } from '../shared/ui'
+import { Title } from "../ui";
 
 export function Template({
 	slot = "default",

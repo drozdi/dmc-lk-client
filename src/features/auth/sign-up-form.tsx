@@ -8,7 +8,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { yupResolver } from "mantine-form-yup-resolver";
-import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
@@ -53,7 +52,7 @@ const fieldsSchema = yup.object().shape({
  * }
  */
 
-export const SignUpForm = observer(() => {
+export const SignUpForm = () => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
 	const form = useForm<
@@ -143,4 +142,4 @@ export const SignUpForm = observer(() => {
 			</Stack>
 		</>
 	);
-});
+};

@@ -1,16 +1,15 @@
 import { useStoreUserProfile } from "@/entites/auth";
 import { useQueryProductList } from "@/entites/users";
 import { Select } from "@mantine/core";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export const ChangeProduct = observer(() => {
+export const ChangeProduct = () => {
 	const storeUserProfile = useStoreUserProfile();
 	const qpl = useQueryProductList();
 	const [change, setChange] = useState<boolean>(false);
 
 	const handleChange = (value: string) => {
-		storeUserProfile.setProductId(value);
+		storeUserProfile.setProductionId(Number(value));
 		setChange(false);
 	};
 
@@ -19,7 +18,7 @@ export const ChangeProduct = observer(() => {
 			{change ? (
 				<Select
 					variant="underline"
-					value={String(storeUserProfile.product_id)}
+					value={String(storeUserProfile.production_id)}
 					onChange={(value) => handleChange(value as string)}
 					data={qpl.dataSelect}
 				/>
@@ -28,9 +27,9 @@ export const ChangeProduct = observer(() => {
 					className="cursor-pointer"
 					onClick={() => setChange(true)}
 				>
-					{qpl.findNameById(Number(storeUserProfile.product_id))}
+					{qpl.findNameById(Number(storeUserProfile.production_id))}
 				</span>
 			)}
 		</>
 	);
-});
+};

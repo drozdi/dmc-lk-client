@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
 					"./src/shared/style/index.css",
 				),
 				"@ui": path.resolve(__dirname, "./src/shared/ui"),
-				"@t": path.resolve(__dirname as any, "./src/shared/layout"),
+				"@t": path.resolve(__dirname, "./src/shared/layout"),
 
 				"#test": path.resolve(__dirname, "./test"),
 				"#dev": path.resolve(__dirname, "./dev"),

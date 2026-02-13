@@ -11,7 +11,6 @@ import {
 import { isNotEmpty, matches, useForm } from "@mantine/form";
 import { Template } from "@t";
 import { yupResolver } from "mantine-form-yup-resolver";
-import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -33,7 +32,7 @@ const fieldsSchema = yup.object().shape({
 		.required('Заполните телефон'),*/
 });
 
-export const PersonalForm = observer(() => {
+export const PersonalForm = () => {
 	const storeUserProfile = useStoreUserProfile();
 	const { isLoading, userData } = storeUserProfile;
 	const navigate = useNavigate();
@@ -213,4 +212,4 @@ export const PersonalForm = observer(() => {
 			</Stack>
 		</Loading>
 	);
-});
+};
