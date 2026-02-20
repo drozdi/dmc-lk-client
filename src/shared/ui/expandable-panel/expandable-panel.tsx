@@ -6,10 +6,20 @@ import {
 	Modal,
 	Paper,
 	ScrollArea,
+	Stack,
 	Text,
+	type BoxProps,
 } from "@mantine/core";
 import { useState } from "react";
 import { TbArrowsMaximize, TbArrowsMinimize } from "react-icons/tb";
+
+export interface ExpandablePanelProps extends BoxProps {
+	title: React.ReactNode;
+	loading?: boolean;
+	keepMounted?: boolean;
+	children: React.ReactNode;
+	component?: any;
+}
 
 export function ExpandablePanel({
 	title,
@@ -18,13 +28,7 @@ export function ExpandablePanel({
 	keepMounted = true,
 	component,
 	...otherProps
-}: {
-	title: React.ReactElement;
-	loading?: boolean;
-	keepMounted?: boolean;
-	children: React.ReactNode;
-	component?: any;
-}) {
+}: ExpandablePanelProps) {
 	// Управляем состоянием компонента
 	const [isExpanded, setIsExpanded] = useState(false);
 
@@ -34,58 +38,55 @@ export function ExpandablePanel({
 	};
 
 	return (
-		<>
-			<Modal
-				opened={isExpanded}
-				onClose={() => setIsExpanded(false)}
-				title={title}
-				size="100vw"
-				scrollAreaComponent={ScrollArea.Autosize}
-			>
-				{children}
-			</Modal>
-			<Paper
-				shadow="xl"
-				p="xs"
-				{...otherProps}
-				style={{
-					position: "relative",
-					width: "100%",
-					height: "auto",
-					zIndex: 1,
-					overflow: "hidden",
-				}}
-			>
-				<LoadingOverlay visible={loading} zIndex={1000} />
-				<Group justify="space-between" mb="xs">
-					<Text fw={500}>{title}</Text>
-					<Button
-						variant="subtle"
-						size="compact-xs"
-						onClick={toggleExpanded}
-						rightSection={
-							isExpanded ? (
-								<TbArrowsMinimize size="1rem" />
-							) : (
-								<TbArrowsMaximize size="1rem" />
-							)
-						}
-					>
-						{isExpanded ? "Свернуть" : "Развернуть"}
-					</Button>
-				</Group>
-
-				{/* Содержимое компонента */}
-				{(keepMounted || isExpanded) && (
-					<Box
-						component={component}
-						mih={loading ? 300 : undefined}
-						miw={loading ? 300 : undefined}
+		<Paper
+			shadow="xl"
+			p="xs"
+			component={Stack}
+			justify="space-between"
+			{...otherProps}
+			style={{
+				...otherProps.style,
+				position: "relative",
+				overflow: "hidden",
+			}}
+		>
+			<Group justify="space-between" mb="xs">
+				<Text fw={500}>{title}</Text>
+				<Button
+					variant="subtle"
+					size="compact-xs"
+					onClick={toggleExpanded}
+					rightSection={
+						isExpanded ? (
+							<TbArrowsMinimize size="1rem" />
+						) : (
+							<TbArrowsMaximize size="1rem" />
+						)
+					}
+				>
+					{isExpanded ? "Свернуть" : "Развернуть"}
+				</Button>
+			</Group>
+			{/* Содержимое компонента */}
+			{(keepMounted || isExpanded) && (
+				<Box
+					component={component}
+					mih={loading ? 300 : undefined}
+					miw={loading ? 300 : undefined}
+				>
+					<LoadingOverlay visible={loading} zIndex={1000} />
+					<Modal
+						opened={isExpanded}
+						onClose={() => setIsExpanded(false)}
+						title={title}
+						size="100vw"
+						scrollAreaComponent={ScrollArea.Autosize}
 					>
 						{children}
-					</Box>
-				)}
-			</Paper>
-		</>
+					</Modal>
+					{children}
+				</Box>
+			)}
+		</Paper>
 	);
 }

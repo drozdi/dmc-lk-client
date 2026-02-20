@@ -1,67 +1,27 @@
-import { $setting } from "@/shared";
-import {
-	closestCenter,
-	DndContext,
-	KeyboardSensor,
-	PointerSensor,
-	useSensor,
-	useSensors,
-	type DragEndEvent,
-} from "@dnd-kit/core";
-import { restrictToParentElement } from "@dnd-kit/modifiers";
-import {
-	arrayMove,
-	SortableContext,
-	sortableKeyboardCoordinates,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { ReactGridLayout, useContainerWidth } from "react-grid-layout";
 
-interface DashBoardProviderProps {
-	children: React.ReactNode;
-	name: string;
-	items: any[];
-}
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import { useDashboard } from "../utils";
 
-export function DashBoardProvider({
-	children,
-	name,
-	items,
-}: DashBoardProviderProps) {
-	const [widgets, setWidgets] = $setting.useState(`dashboard.${name}`, items);
-	const sensors = useSensors(
-		useSensor(PointerSensor),
-		useSensor(KeyboardSensor, {
-			coordinateGetter: sortableKeyboardCoordinates,
-		}),
-	);
-	const handleDragEnd = (event: DragEndEvent) => {
-		const { active, over } = event;
-		if (active.id !== over?.id) {
-			console.log(active.id, over?.id);
-			setWidgets((items) => {
-				const oldIndex = items.findIndex(
-					(item) => item.id === active.id,
-				);
-				const newIndex = items.findIndex(
-					(item) => item.id === over?.id,
-				);
-				return arrayMove(items, oldIndex, newIndex);
-			});
-		}
-	};
+export function DashBoardProvider({ children, name }) {
+	const { width, containerRef, mounted } = useContainerWidth();
+	const { layouts, updateLayout } = useDashboard();
+
 	return (
-		<DndContext
-			sensors={sensors}
-			collisionDetection={closestCenter}
-			onDragEnd={handleDragEnd}
-			modifiers={[restrictToParentElement]}
-		>
-			<SortableContext
-				items={widgets}
-				strategy={verticalListSortingStrategy}
-			>
-				{children}
-			</SortableContext>
-		</DndContext>
+		<div ref={containerRef}>
+			{mounted && (
+				<ReactGridLayout
+					layout={layouts}
+					width={width}
+					gridConfig={{ cols: 12, rowHeight: 60 }}
+					onLayoutChange={(layout) => {
+						updateLayout(layout as ILayoutItem[]);
+					}}
+				>
+					{children}
+				</ReactGridLayout>
+			)}
+		</div>
 	);
 }

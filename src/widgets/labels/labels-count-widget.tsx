@@ -1,7 +1,7 @@
 import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import { useQueryLoading } from "@/shared/hooks";
-import { ExpandablePanel } from "@/shared/ui";
+import { Widget } from "@/shared/ui";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 import {
@@ -117,7 +117,7 @@ export const LabelsCountWidget = () => {
 	}, []);
 
 	return (
-		<ExpandablePanel loading={isLoading} title="Сводная история">
+		<Widget loading={isLoading} title="Сводная история">
 			<Accordion>
 				{ddata.map((production) => (
 					<Accordion.Item
@@ -163,6 +163,6 @@ export const LabelsCountWidget = () => {
 					</Accordion.Item>
 				))}
 			</Accordion>
-		</ExpandablePanel>
+		</Widget>
 	);
 };

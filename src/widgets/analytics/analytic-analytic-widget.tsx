@@ -1,9 +1,10 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
-import { ExpandablePanel } from "@/shared/ui";
+import { Widget } from "@/shared/ui";
 import { Select, Table } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Filterdate } from "./components/filterdate";
 
 const nDow = dayjs("2025-05-02");
 const sDay = nDow.day(nDow.day() - 7);
@@ -99,9 +100,22 @@ export const AnalyticAnalyticWidget = () => {
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
 
 	return (
-		<ExpandablePanel
+		<Widget
 			loading={isLoading}
-			title={`Отчет c ${sDay.format("YYYY-MM-DD")} по ${nDow.day(nDow.day() - 1).format("YYYY-MM-DD")}`}
+			title={
+				<Filterdate
+					filterdate_from={query.filterdate_from}
+					filterdate_to={query.filterdate_to}
+					editable={!Boolean(props.filterdate_from)}
+					onChange={(val) => {
+						setQuery({
+							...query,
+							filterdate_from: val[0] || "",
+							filterdate_to: val[1] || "",
+						});
+					}}
+				/>
+			}
 		>
 			<Select
 				defaultValue={String(cuurent_production)}
@@ -142,6 +156,6 @@ export const AnalyticAnalyticWidget = () => {
 					))}
 				</Table.Tbody>
 			</Table>
-		</ExpandablePanel>
+		</Widget>
 	);
 };

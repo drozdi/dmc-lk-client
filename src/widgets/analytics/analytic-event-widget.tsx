@@ -14,7 +14,7 @@ import {
 
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { ExpandablePanel } from "@/shared/ui";
+import { Widget } from "@/shared/ui";
 import { AspectRatio, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
 
@@ -28,7 +28,7 @@ const initialState = {
 	animation: true,
 };
 
-export const AnalyticEventWidget = (props: ChartAnalyticProps) => {
+export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 	const { production_id } = useStoreUserProfile();
 	const { isLoading, fetch, error } = useQueryAnalytics();
 
@@ -41,7 +41,9 @@ export const AnalyticEventWidget = (props: ChartAnalyticProps) => {
 		p?: IResponseAnalytics;
 	}>();
 
-	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props });
+	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
+		...props,
+	});
 	function reset() {
 		setQuery({ ...props });
 	}
@@ -205,16 +207,8 @@ export const AnalyticEventWidget = (props: ChartAnalyticProps) => {
 		}));
 	};
 
-	const title = useMemo(() => {
-		return (
-			dayjs(query.filterdate_from).format("YYYY-MM-DD") +
-			" - " +
-			dayjs(query.filterdate_to || "").format("YYYY-MM-DD")
-		);
-	}, [query]);
-
 	return (
-		<ExpandablePanel
+		<Widget
 			title={
 				<Filterdate
 					filterdate_from={query.filterdate_from}
@@ -284,6 +278,6 @@ export const AnalyticEventWidget = (props: ChartAnalyticProps) => {
 					)}
 				</AspectRatio>
 			</Stack>
-		</ExpandablePanel>
+		</Widget>
 	);
 };

@@ -1,3 +1,4 @@
+import { Widget } from "@/shared/ui";
 import { Accordion, Group, NavLink, Table, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbList } from "react-icons/tb";
@@ -9,7 +10,6 @@ import { GroupProvider } from "../apps/labels/features/components/group/provider
 import { labelsStore } from "../apps/labels/stores";
 import { useFormatPrints } from "../apps/labels/stores/hooks";
 import { useQuery } from "../shared/hooks";
-import { ExpandablePanel } from "../shared/ui";
 import { useProduction } from "../stores/hooks/use-production";
 
 export const LabelsCountWidget = (props) => {
@@ -156,7 +156,7 @@ export const LabelsCountWidget = (props) => {
 	}
 
 	return (
-		<ExpandablePanel
+		<Widget
 			loading={reqAnalytics.isLoading || reqLabelsCount.isLoading}
 			title={""}
 		>
@@ -281,6 +281,6 @@ export const LabelsCountWidget = (props) => {
 					))}
 				</Accordion>
 			</NavLink>
-		</ExpandablePanel>
+		</Widget>
 	);
 };

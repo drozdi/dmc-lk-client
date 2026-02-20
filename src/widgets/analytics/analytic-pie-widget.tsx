@@ -1,7 +1,6 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { ExpandablePanel } from "@/shared/ui";
-import { round } from "@/shared/utils";
+import { Widget } from "@/shared/ui";
 import { AspectRatio, Stack } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -18,7 +17,7 @@ const ee = useEnumsEvents();
 
 interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
 
-export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
+export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 	const { production_id } = useStoreUserProfile();
 	const { isLoading, fetch } = useQueryAnalytics();
 	//return ''
@@ -29,7 +28,9 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 		d?: IResponseAnalytics;
 		p?: IResponseAnalytics;
 	}>({});
-	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props });
+	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
+		...props,
+	});
 
 	async function sendRequest(event: AnalyticEvent) {
 		return await fetch({ ...query, event });
@@ -88,7 +89,7 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 	}, [props]);
 
 	return (
-		<ExpandablePanel
+		<Widget
 			loading={isLoading}
 			title={
 				<Filterdate
@@ -113,7 +114,7 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 						<ResponsiveContainer>
 							<PieChart>
 								<Tooltip />
-								<Legend
+								{/* <Legend
 									formatter={(_: string, entry: any) => {
 										const { color, name, value } =
 											entry.payload;
@@ -127,6 +128,20 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 													) * 100,
 												).substring(0, 5)}
 												%)
+											</span>
+										);
+									}}
+									layout="vertical"
+									verticalAlign="middle"
+									align="left"
+								/> */}
+								<Legend
+									formatter={(_: string, entry: any) => {
+										const { color, name, value } =
+											entry.payload;
+										return (
+											<span style={{ color }}>
+												{name}
 											</span>
 										);
 									}}
@@ -153,6 +168,6 @@ export const AnalyticPieWidget = (props: ChartAnalyticProps) => {
 					)}
 				</AspectRatio>
 			</Stack>
-		</ExpandablePanel>
+		</Widget>
 	);
 };

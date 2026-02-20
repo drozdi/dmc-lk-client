@@ -4,35 +4,25 @@ import {
 	AnalyticPieWidget,
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
-import { Group, Paper, SimpleGrid, Text } from "@mantine/core";
+import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { Template } from "@t";
 import dayjs from "dayjs";
 import { createElement, useState } from "react";
 
 const dNow = dayjs("2025-05-02");
-
 const ww = [
 	{
-		id: "main-1",
-		title: "title-1",
-		description: "description-1",
+		key: "event",
 		element: AnalyticEventWidget,
-		icon: <></>,
 	},
 	{
-		id: "main-2",
-		title: "title-2",
-		description: "description-2",
+		key: "pie",
 		element: AnalyticPieWidget,
-		icon: <></>,
 	},
 	{
-		id: "main-3",
-		title: "title-3",
-		description: "description-3",
+		key: "type",
 		element: AnalyticTypeWidget,
-		icon: <></>,
 	},
 ];
 
@@ -43,7 +33,10 @@ export const DashboardPage = () => {
 		filterdate_from: dNow.month(dNow.month() - 6).format("YYYY-MM-DD"),
 		filterdate_to: dNow.format("YYYY-MM-DD"),
 	});
-	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [errors, setErrors] = useState<{
+		filterdate_from?: string;
+		filterdate_to?: string;
+	}>({});
 	const handleChange = (name: string, value: any) => {
 		setErrors({});
 		setQuery((v) => ({
@@ -88,19 +81,15 @@ export const DashboardPage = () => {
 					error={errors?.filterdate_to}
 				/>
 			</Group>
-			<DashBoardProvider name="main" items={ww}>
-				<SimpleGrid cols={2}>
-					{ww.map((item) => (
-						<DashBoardItem key={item.id} id={item.id}>
-							<div>
-								{createElement(item.element, {
-									...query,
-									step: "mon",
-								})}
-							</div>
-						</DashBoardItem>
-					))}
-				</SimpleGrid>
+			<DashBoardProvider name="main">
+				{ww.map((item) => (
+					<DashBoardItem
+						key={item.key}
+						data-grid={{ x: Infinity, y: Infinity, w: 6, h: 6 }}
+					>
+						{createElement(item.element, { ...query, step: "mon" })}
+					</DashBoardItem>
+				))}
 			</DashBoardProvider>
 		</Paper>
 	);

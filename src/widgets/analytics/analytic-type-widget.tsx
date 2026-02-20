@@ -1,9 +1,8 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { ExpandablePanel } from "@/shared/ui";
+import { Widget } from "@/shared/ui";
 import { randomColor } from "@/shared/utils";
 import { AspectRatio, Checkbox, Group, Stack } from "@mantine/core";
-import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Bar,
@@ -19,11 +18,13 @@ import { Filterdate } from "./components/filterdate";
 
 interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
 
-export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
+export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 	const { production_id } = useStoreUserProfile();
 	// return "";
 	const { isLoading, fetch, data } = useQueryAnalytics();
-	const [query, setQuery] = useState<ChartAnalyticProps>({ ...props });
+	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
+		...props,
+	});
 
 	function reset() {
 		setQuery({ ...props });
@@ -101,16 +102,8 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 		setQuery(props);
 	}, [props]);
 
-	const title = useMemo(() => {
-		return (
-			dayjs(query.filterdate_from).format("YYYY-MM-DD") +
-			" - " +
-			dayjs(query.filterdate_to || "").format("YYYY-MM-DD")
-		);
-	}, [query]);
-
 	return (
-		<ExpandablePanel
+		<Widget
 			loading={isLoading}
 			title={
 				<Filterdate
@@ -162,6 +155,6 @@ export const AnalyticTypeWidget = memo((props: ChartAnalyticProps) => {
 					)}
 				</AspectRatio>
 			</Stack>
-		</ExpandablePanel>
+		</Widget>
 	);
 });
