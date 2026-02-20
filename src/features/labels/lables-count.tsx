@@ -3,45 +3,63 @@ import {
 	GroupedItem,
 	GroupedProvider,
 } from "@/entites/labels";
-import { useQueryProductList } from "@/entites/users";
+import { useQueryProductions } from "@/entites/users";
 import { Accordion } from "@mantine/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
-import { requestLabelsCount } from "../../apps/labels/api";
-import { LabelItem } from "../../apps/labels/features/components/label-item/label-item";
-import { labelsStore } from "../../apps/labels/stores";
-import { useQuery, useQueryLoading } from "../../shared/hooks";
-import { ItemLabel, List, Loading } from "../../shared/ui";
+import { useStoreCountLabel } from "@/entites/labels";
+import { ItemLabel, List, Loading } from "@/shared/ui";
+import { LabelItem } from "./components/label-item";
 
-export const LabelsCount = () => {
-	const qpl = useQueryProductList();
+interface LabelsCountProps {
+	dangerLimits?: number;
+	warningLimits?: number;
+	warningColor?: string;
+	dangerColor?: string;
+}
 
-	const reqLabelsCount = useQuery(requestLabelsCount);
+export const LabelsCount = ({
+	dangerLimits = 0,
+	warningLimits = -50,
+	warningColor = "red",
+	dangerColor = "orange",
+}: LabelsCountProps) => {
+	const qp = useQueryProductions();
+	const storeCountLabel = useStoreCountLabel();
 
-	const isLoading = useQueryLoading(labelsStore, reqLabelsCount);
+	const filterProdaction = useCallback(
+		(item: ICountLabelItem) => !!item?.production_id,
+		[],
+	);
 
-	const [dangerLimits, setDangerLimits] = useState(0);
-	const [warningLimits, setWarningLimits] = useState(-50);
+	const ddata = useMemo<
+		{
+			distributed: ICountLabelItem[];
+			notDistributed: ICountLabelItem[];
+			production_id: IProduction["production_id"];
+			production_name: IProduction["production_name"];
+			sum: ICountLabelItem["sum"];
+		}[]
+	>(() => {
+		const prod: Record<
+			IProduction["production_id"],
+			{
+				distributed: ICountLabelItem[];
+				notDistributed: ICountLabelItem[];
+				production_id: IProduction["production_id"];
+				production_name: IProduction["production_name"];
+				sum: ICountLabelItem["sum"];
+			}
+		> = {};
 
-	const [data, setData] = useState({
-		distributed: [],
-		not_distributed: [],
-	});
-
-	const filterProdaction = useCallback((item) => !!item?.production_id, []);
-
-	const ddata = useMemo(() => {
-		const prod = {};
-
-		function factoryBuild(type: string) {
+		function factoryBuild(
+			type: "distributed" | "notDistributed",
+		): (item: ICountLabelItem) => void {
 			return (item) => {
 				if (!filterProdaction(item)) {
 					return;
 				}
-				const production_name = productionNameById(item.production_id);
-				/*if (!production_name) {
-					return
-				}*/
+				const production_name = qp.findNameById(item.production_id);
 				prod[item.production_id] = prod[item.production_id] || {
 					production_id: item.production_id,
 					production_name,
@@ -54,39 +72,21 @@ export const LabelsCount = () => {
 			};
 		}
 
-		data.distributed.forEach(factoryBuild("distributed"));
-		data.not_distributed.forEach(factoryBuild("notDistributed"));
+		storeCountLabel.count.distributed.forEach(factoryBuild("distributed"));
+		storeCountLabel.count.not_distributed.forEach(
+			factoryBuild("notDistributed"),
+		);
 
 		return Object.values(prod);
-	}, [data, filterProdaction, productionNameById]);
-
-	console.log(ddata);
-
-	async function fetch() {
-		const res = await reqLabelsCount.request();
-		setData(res.data);
-	}
-	function updateItem(res) {
-		for (const [, colections] of Object.entries(data)) {
-			const item = colections.find(
-				(item) =>
-					item.add_label_format === res.format_template &&
-					item.production_id === res.production_id,
-			);
-			if (item) {
-				item.sum += res.count_label;
-			}
-		}
-		setData({ ...data });
-	}
+	}, [storeCountLabel.count, qp.findNameById, filterProdaction]);
 
 	useEffect(() => {
-		fetch();
+		storeCountLabel.loadCount();
 	}, []);
 
 	return (
 		<>
-			<Loading active={isLoading} keepMounted>
+			<Loading active={storeCountLabel.isLoading} keepMounted>
 				<Accordion variant="contained">
 					{ddata.map((item) => (
 						<Accordion.Item
@@ -118,7 +118,6 @@ export const LabelsCount = () => {
 													warningLimits={
 														warningLimits
 													}
-													onUpdate={updateItem}
 												/>
 											</GroupedContainer>
 										))}
@@ -142,7 +141,8 @@ export const LabelsCount = () => {
 													warningLimits={
 														warningLimits
 													}
-													onUpdate={updateItem}
+													warningColor={warningColor}
+													dangerColor={dangerColor}
 												/>
 											</GroupedItem>
 										))}

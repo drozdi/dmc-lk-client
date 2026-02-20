@@ -3,27 +3,27 @@ interface IRequestList {
 	number?: number;
 }
 
-interface IResponse<T extends object> {
+interface IResponse<T> {
 	success: boolean;
 	message: string | null | T | IError;
 	data: T;
 	response: T;
 }
 
-interface IResponseList<T extends object> {
+interface IResponseList<T> {
 	success: boolean;
-	message?: string | null | T | IError;
+	message?: string | null | T[] | IError;
 	data: {
 		page: number;
 		next_page: number;
 		previous_page: number;
 		size: number;
-		total_records: number;
+		total_records?: number;
 		response: T[];
 	};
 }
 
-interface IResponseObject<T extends object> {
+interface IResponseObject<T> {
 	success: boolean;
 	message?: string | null | T | IError;
 	data: {

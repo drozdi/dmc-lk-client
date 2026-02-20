@@ -9,6 +9,11 @@ export const $setting = new Setting(
 		"api.timeout": 10,
 		"base.url": "/",
 		"product.id": 0,
+		formatDate: "DD.MM.YYYY",
+		formatTime: "HH:mm",
+		formatTimeFull: "HH:mm:ss",
+		formatDateTime: "%formatDate% %formatTime%",
+		formatDateTimeFull: "%formatDate% %formatTimeFull%",
 	},
 	{
 		"api.host": "http://10.76.10.145:5054/lk_api/v1/",

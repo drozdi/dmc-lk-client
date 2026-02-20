@@ -40,7 +40,7 @@ export async function requestLabelsCount(): Promise<
 
 export async function requestLabelsCountAdd(
 	data: IRequestCountLabelAdd,
-): Promise<IResponse<ICountLabelItem>> {
+): Promise<IResponse<ICountLabelHistoryItem>> {
 	data.place_name = data.place_name || "Пополнение этикеток";
 	const res = await api.post("/count_label/", data);
 	return res.data;

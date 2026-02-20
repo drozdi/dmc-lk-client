@@ -1,4 +1,7 @@
+import { LablesConsumption } from "@/features/labels/lables-consumption";
 import { LabelsCount } from "@/features/labels/lables-count";
+import { LabelsHistory } from "@/features/labels/lables-history";
+
 import { Paper, Tabs } from "@mantine/core";
 import { Template } from "@t";
 
@@ -16,12 +19,10 @@ export function LabelsCountPage() {
 					<LabelsCount />
 				</Tabs.Panel>
 				<Tabs.Panel value="item-consumption" pt="xs">
-					<></>
-					{/* <LablesConsumption /> */}
+					{<LablesConsumption />}
 				</Tabs.Panel>
 				<Tabs.Panel value="item-history" pt="xs">
-					<></>
-					{/* <LabelsHistory /> */}
+					{<LabelsHistory />}
 				</Tabs.Panel>
 			</Tabs>
 		</Paper>

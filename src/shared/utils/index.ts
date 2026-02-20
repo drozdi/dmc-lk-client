@@ -4,5 +4,7 @@ export * from "./cached";
 export * from "./cls";
 export * from "./currency-format";
 export * from "./debounce";
+export * from "./factory-query";
 export * from "./random-color";
+export * from "./round";
 export * from "./string";

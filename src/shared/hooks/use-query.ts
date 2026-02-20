@@ -1,72 +1,88 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 
-export function useQuery(handleRequest: Function, errorMes = 'Неизвестная ошибка'): IQuery {
-	const [isLoading, setLoading] = useState<boolean>(false)
-	const [error, setError] = useState<IError>('')
+export function useQueryLoading(...queries: (IQuery | IStore)[]): boolean {
+	return useMemo<boolean>(
+		() => queries.some((query) => query.isLoading),
+		[queries.map((query) => query.isLoading)],
+	);
+}
+export function useQueryError(...queries: (IQuery | IStore)[]): IError {
+	return useMemo<IError>(
+		() =>
+			queries.reduce(
+				(acc: IError, query: IQuery) => acc || query.error,
+				"",
+			),
+		[queries.map((query) => query.error)],
+	);
+}
+
+export function useQuery(
+	handleRequest: Function,
+	errorMes = "Неизвестная ошибка",
+): IQuery {
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [error, setError] = useState<IError>("");
 	const request = async (...args: unknown[]) => {
-		setLoading(true)
+		setLoading(true);
 		try {
-			return await handleRequest(...args)
+			return await handleRequest(...args);
 		} catch (error: IError) {
-			setError(error?.response?.data?.detail || error?.message || errorMes)
+			setError(
+				error?.response?.data?.detail || error?.message || errorMes,
+			);
 		} finally {
-			setLoading(false)
+			setLoading(false);
 		}
-	}
+	};
 	return {
 		isLoading,
 		error,
 		request,
-	}
+	};
 }
-export function useQueryLoading(...queries: IQuery[]): boolean {
-	return useMemo<boolean>(() => queries.some(query => query.isLoading), [queries.map(query => query.isLoading)])
-}
-export function useQueryError(...queries: IQuery[]): IError {
-	return useMemo<IError>(
-		() => queries.reduce((acc: IError, query: IQuery) => acc || query.error, ''),
-		[queries.map(query => query.error)]
-	)
-}
+
 export function useQuery_(
 	queryKey: string[],
 	queryFn: Function,
 	{
-		errorMes = 'Неизвестная ошибка',
+		errorMes = "Неизвестная ошибка",
 		select,
 		...props
 	}: {
-		errorMes?: string
-		select?: Function
-		[props: string]: any
-	}
+		errorMes?: string;
+		select?: Function;
+		[props: string]: any;
+	},
 ): IQuery {
-	const queryClient = useQueryClient()
-	const [error, setError] = useState<string>('')
-	const [isLoading, setLoading] = useState<boolean>(false)
-	const [data, setData] = useState<any>(null)
+	const queryClient = useQueryClient();
+	const [error, setError] = useState<string>("");
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [data, setData] = useState<any>(null);
 	return {
 		data,
 		isLoading,
 		error,
 		async fetch(query?: any) {
-			setLoading(true)
+			setLoading(true);
 			try {
 				const res = await queryClient.fetchQuery({
 					...props,
 					queryKey: queryKey.concat(query),
 					queryFn: async () => await queryFn(query),
-				})
-				setData(select?.(res) || res)
-				return res
+				});
+				setData(select?.(res) || res);
+				return res;
 			} catch (error: IError) {
-				setError(error?.response?.data?.detail || error?.message || errorMes)
+				setError(
+					error?.response?.data?.detail || error?.message || errorMes,
+				);
 			} finally {
-				setLoading(false)
+				setLoading(false);
 			}
 
-			return undefined
+			return undefined;
 		},
-	}
+	};
 }

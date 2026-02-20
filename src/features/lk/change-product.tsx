@@ -1,11 +1,11 @@
 import { useStoreUserProfile } from "@/entites/auth";
-import { useQueryProductList } from "@/entites/users";
+import { useQueryProductions } from "@/entites/users";
 import { Select } from "@mantine/core";
 import { useState } from "react";
 
 export const ChangeProduct = () => {
 	const storeUserProfile = useStoreUserProfile();
-	const qpl = useQueryProductList();
+	const qpl = useQueryProductions();
 	const [change, setChange] = useState<boolean>(false);
 
 	const handleChange = (value: string) => {

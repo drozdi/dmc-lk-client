@@ -7,6 +7,7 @@ interface ILabel {
 	id: number | string;
 	format?: ILabel["add_label_format"];
 	print?: ILabel["statistics_print_format"];
+	consumption_m?: ICountLabelHistoryItem["consumption_m"];
 }
 interface IStoreLabels extends IStore {
 	prints: Record<
@@ -46,7 +47,7 @@ interface IStoreLabels extends IStore {
 }
 interface ICountLabelHistoryItem {
 	format_template: string;
-	filterdate: string;
+	date_applic: string;
 	count_label: number;
 	production_id: number;
 	id_company: number;
@@ -60,6 +61,23 @@ interface ICountLabelHistoryItem {
 	consumption_m: number | null;
 	id: number;
 	is_archive: boolean;
+}
+
+interface IStoreCountLabel extends IStore {
+	history: ICountLabelHistoryItem[];
+	count: {
+		distributed: ICountLabelItem[];
+		not_distributed: ICountLabelItem[];
+	};
+	loadHistory(reloading?: boolean): Promise<void>;
+	loadCount(reloading?: boolean): Promise<void>;
+	addCount(
+		param: IRequestCountLabelAdd,
+	): Promise<ICountLabelHistoryItem | undefined>;
+	reset(production_id: ILabel["production_id"]): Promise<void>;
+	selectHistory(
+		production_id: ILabel["production_id"],
+	): ICountLabelHistoryItem[];
 }
 
 interface ICountLabelItem {

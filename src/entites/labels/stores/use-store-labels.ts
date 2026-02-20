@@ -159,7 +159,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 	selectFormatPrints(production_id) {
 		return get().formatPrints.filter(
-			(item) => item.production_id === production_id,
+			(item) => String(item.production_id) === String(production_id),
 		);
 	},
 

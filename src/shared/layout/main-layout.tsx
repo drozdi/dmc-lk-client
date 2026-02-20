@@ -5,7 +5,6 @@ import {
 	ActionIcon,
 	AppShell,
 	Burger,
-	Button,
 	Container,
 	Divider,
 	Group,
@@ -114,14 +113,6 @@ export function MainLayout() {
 				<Template.Slot name="footer">
 					<div></div>
 				</Template.Slot>
-				<Button
-					color="dark"
-					size="sm"
-					disabled={!back}
-					onClick={() => navigate(-1)}
-				>
-					Назад
-				</Button>
 			</AppShell.Footer>
 		</AppShell>
 	);

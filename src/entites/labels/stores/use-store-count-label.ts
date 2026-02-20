@@ -8,20 +8,6 @@ import {
 import { queryClient } from "@/shared/api/query-client";
 import { create } from "zustand";
 
-interface IStoreCountLabel extends IStore {
-	history: ICountLabelHistoryItem[];
-	count: {
-		distributed: ICountLabelItem[];
-		not_distributed: ICountLabelItem[];
-	};
-	loadHistory(reloading?: boolean): Promise<void>;
-	loadCount(reloading?: boolean): Promise<void>;
-	addCount(
-		param: IRequestCountLabelAdd,
-	): Promise<ICountLabelItem | undefined>;
-	reset(production_id: ILabel["production_id"]): Promise<void>;
-}
-
 export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	isLoading: false,
 	error: "",
@@ -118,10 +104,21 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		});
 		try {
 			const res = (await requestLabelsCountAdd(param)).data;
+			const count = get().count;
+			for (const [, colections] of Object.entries(count)) {
+				const item = colections.find(
+					(item) =>
+						item.add_label_format === res.format_template &&
+						item.production_id === res.production_id,
+				);
+				if (item) {
+					item.sum += res.count_label;
+				}
+			}
 			set({
 				isLoading: false,
+				count,
 			});
-			get().load(true);
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -155,5 +152,10 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 				error,
 			});
 		}
+	},
+	selectHistory(production_id) {
+		return get().history.filter(
+			(item) => item.production_id === production_id,
+		);
 	},
 }));
