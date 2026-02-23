@@ -1,12 +1,33 @@
 import { useDashboard } from "./context";
 
-interface DashBoardItemProps {
+type DashBoardItemProps = {
+	type: string;
+	params?: IWidget["params"];
 	children: React.ReactNode;
 	[key: string]: any;
-}
+};
+type DashBoardItemProps1 = Omit<DashBoardItemProps, "children"> & {
+	component: React.FC<any>;
+};
 
-export function DashBoardItem({ children, ...params }: DashBoardItemProps) {
+export function DashBoardItem({
+	type,
+	params,
+	children,
+	component,
+	...props
+}: DashBoardItemProps | DashBoardItemProps1) {
 	const dashboard = useDashboard();
-
-	return <div {...params}>{children}</div>;
+	dashboard?.registerWidget({
+		type,
+		params,
+		children,
+		component,
+	});
+	if (dashboard && !dashboard.hasWidget(type)) {
+		return null;
+	} else if (dashboard) {
+		return dashboard.renderWidget(type, props);
+	}
+	return children;
 }

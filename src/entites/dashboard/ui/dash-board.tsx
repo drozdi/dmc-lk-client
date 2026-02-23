@@ -2,9 +2,13 @@ import { ReactGridLayout, useContainerWidth } from "react-grid-layout";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useDashboard } from "../utils";
+import { useDashboard } from "../context";
 
-export function DashBoardProvider({ children, name }) {
+interface UiDashBoardProps {
+	children: React.ReactNode;
+}
+
+export function UiDashBoard({ children }: UiDashBoardProps) {
 	const { width, containerRef, mounted } = useContainerWidth();
 	const { layouts, updateLayout } = useDashboard();
 

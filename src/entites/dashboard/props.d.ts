@@ -9,8 +9,10 @@ interface ILayoutItem {
 }
 
 interface IWidget {
-	id: ILayoutItem["i"];
+	id?: ILayoutItem["i"];
 	type: string;
 	title?: string;
-	content?: React.FC;
+	params?: string[];
+	component?: React.FC<any>;
+	children?: React.ReactNode;
 }

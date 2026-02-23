@@ -1,6 +1,5 @@
 import { $setting } from "@/shared";
-import { createContext, useContext } from "react";
-import FactoryWidget from "../utils/factory-widget";
+import { createContext, useContext, useState } from "react";
 
 interface DashboardContextType {
 	widgets: IWidget[];
@@ -8,14 +7,15 @@ interface DashboardContextType {
 	addWidget: (type: IWidget["type"], title?: IWidget["title"]) => void;
 	removeWidget: (id: IWidget["id"]) => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
-	renderWidget: (type: IWidget["type"], title?: IWidget["title"]) => void;
+	renderWidget: (type: IWidget["type"], props: any) => React.ReactNode;
 	hasWidget: (type: IWidget["type"]) => boolean;
+	registerWidget: (widget: IWidget) => void;
 }
 
 interface DashboardProviderProps {
 	children: React.ReactNode;
 	storageKey: string;
-	availableWidgets: string[];
+	availableWidgets?: Record<IWidget["type"], IWidget>;
 	initialWidgets?: IWidget[];
 	initialLayouts?: ILayoutItem[];
 }
@@ -27,23 +27,38 @@ const DashboardContext = createContext<DashboardContextType | undefined>(
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 	children,
 	storageKey,
-	availableWidgets,
+	availableWidgets = {},
 	initialWidgets = [],
 	initialLayouts = [],
 }) => {
+	const [acceptableWidgets, setAcceptableWidgets] =
+		useState<Record<IWidget["type"], IWidget>>(availableWidgets);
+
 	const [widgets, setWidgets] = $setting.useState<IWidget[]>(
 		`dashboard.${storageKey}.widgets`,
 		initialWidgets,
 	);
+
 	const [layouts, setLayouts] = $setting.useState<ILayoutItem[]>(
 		`dashboard.${storageKey}.layouts`,
 		initialLayouts,
 	);
 
-	const addWidget = (type: IWidget["type"], title?: IWidget["title"]) => {
-		if (!availableWidgets.includes(type)) {
+	const updateLayout = (newLayout: ILayoutItem[]) => {
+		setLayouts(newLayout);
+	};
+
+	const registerWidget = (widget: IWidget) => {
+		if (!widget.type || acceptableWidgets[widget.type]) {
 			return;
 		}
+		setAcceptableWidgets((v) => ({
+			...v,
+			[widget.type]: widget,
+		}));
+	};
+
+	const addWidget = (type: IWidget["type"], title?: IWidget["title"]) => {
 		const newId = `widget.${Date.now()}`;
 		setWidgets([
 			...widgets,
@@ -72,15 +87,19 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 		setLayouts(layouts.filter((l) => l.i !== id));
 	};
 
-	const renderWidget = (type: IWidget["type"], props: any) =>
-		FactoryWidget.create(type, props);
+	const renderWidget = (type: IWidget["type"], props: any) => {
+		const widget = acceptableWidgets[type];
+		if (widget?.params) {
+			const Component = widget.component;
+		} else if (widget?.children) {
+			return <div {...props}>{widget.children}</div>;
+		}
+		return <div>Unknown widget type: {type}</div>;
+	};
+	// FactoryWidget.create(type, props);
 
 	const hasWidget = (type: IWidget["type"]) =>
 		Boolean(widgets.find((item) => item.type === type));
-
-	const updateLayout = (newLayout: ILayoutItem[]) => {
-		setLayouts(newLayout);
-	};
 
 	return (
 		<DashboardContext.Provider
@@ -91,6 +110,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 				removeWidget,
 				updateLayout,
 				renderWidget,
+				registerWidget,
 				hasWidget,
 			}}
 		>

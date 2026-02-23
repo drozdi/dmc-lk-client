@@ -1,14 +1,19 @@
-import { DashBoardItem, DashBoardProvider } from "@/entites/dashboard";
+import {
+	DashBoardItem,
+	DashboardProvider,
+	UiDashBoard,
+} from "@/entites/dashboard";
 import {
 	AnalyticEventWidget,
 	AnalyticPieWidget,
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
+import { TesstWidget } from "@/widgets/test";
 import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { Template } from "@t";
 import dayjs from "dayjs";
-import { createElement, useState } from "react";
+import { useState } from "react";
 
 const dNow = dayjs("2025-05-02");
 const ww = [
@@ -65,7 +70,7 @@ export const DashboardPage = () => {
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
-			<Group justify="center">
+			<Group justify="flex-end">
 				<Text>C</Text>
 				<DatePickerInput
 					name="filterdate_from"
@@ -81,16 +86,57 @@ export const DashboardPage = () => {
 					error={errors?.filterdate_to}
 				/>
 			</Group>
-			<DashBoardProvider name="main">
-				{ww.map((item) => (
+			<DashboardProvider
+				storageKey="main"
+				initialWidgets={[
+					{ type: "TesstWidget" },
+					{ type: "TesstWidget" },
+					{ type: "TesstWidget" },
+					{ type: "TesstWidget" },
+				]}
+			>
+				<UiDashBoard>
 					<DashBoardItem
-						key={item.key}
-						data-grid={{ x: Infinity, y: Infinity, w: 6, h: 6 }}
+						key="w-1"
+						type="TesstWidget"
+						data-grid={{ x: 0, y: Infinity, w: 6, h: 6 }}
 					>
-						{createElement(item.element, { ...query, step: "mon" })}
+						<TesstWidget timeout={10} />
 					</DashBoardItem>
-				))}
-			</DashBoardProvider>
+					<DashBoardItem
+						key="w-2"
+						type="TesstWidget"
+						data-grid={{ x: 6, y: Infinity, w: 6, h: 6 }}
+					>
+						<TesstWidget timeout={9} />
+					</DashBoardItem>
+					<DashBoardItem
+						key="w-3"
+						type="TesstWidget"
+						data-grid={{ x: 0, y: Infinity, w: 6, h: 6 }}
+					>
+						<TesstWidget timeout={10} />
+					</DashBoardItem>
+					<DashBoardItem
+						key="w-4"
+						type="TesstWidget"
+						data-grid={{ x: 6, y: Infinity, w: 6, h: 6 }}
+					>
+						<TesstWidget timeout={7} />
+					</DashBoardItem>
+					{/* {ww.map((item) => (
+						<DashBoardItem
+							key={item.key}
+							data-grid={{ x: Infinity, y: Infinity, w: 6, h: 6 }}
+						>
+							{createElement(item.element, {
+								...query,
+								step: "mon",
+							})}
+						</DashBoardItem>
+					))} */}
+				</UiDashBoard>
+			</DashboardProvider>
 		</Paper>
 	);
 };

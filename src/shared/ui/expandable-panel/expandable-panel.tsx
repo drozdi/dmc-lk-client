@@ -7,7 +7,6 @@ import {
 	Paper,
 	ScrollArea,
 	Stack,
-	Text,
 	type BoxProps,
 } from "@mantine/core";
 import { useState } from "react";
@@ -51,7 +50,9 @@ export function ExpandablePanel({
 			}}
 		>
 			<Group justify="space-between" mb="xs">
-				<Text fw={500}>{title}</Text>
+				<Box fw={500} flex="1">
+					{title}
+				</Box>
 				<Button
 					variant="subtle"
 					size="compact-xs"
@@ -73,6 +74,7 @@ export function ExpandablePanel({
 					component={component}
 					mih={loading ? 300 : undefined}
 					miw={loading ? 300 : undefined}
+					h="100%"
 				>
 					<LoadingOverlay visible={loading} zIndex={1000} />
 					<Modal

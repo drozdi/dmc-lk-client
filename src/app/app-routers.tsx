@@ -102,9 +102,9 @@ const routes = () => [
 				element: <AnalyticsQueryItemPage />,
 			},
 			{
-				path: 'analytics',
-				element: <DashboardPage />
-			}
+				path: "analytics",
+				element: <DashboardPage />,
+			},
 
 			// {
 			// 	path: "/users",
