@@ -11,7 +11,7 @@ type DashBoardItemProps1 = Omit<DashBoardItemProps, "children"> & {
 	component?: IWidget["component"];
 };
 
-export function DashBoardItem({
+export function Widget({
 	id,
 	type,
 	params,

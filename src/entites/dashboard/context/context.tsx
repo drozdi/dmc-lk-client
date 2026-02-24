@@ -1,16 +1,5 @@
 import { $setting } from "@/shared";
-import { createContext, useContext, useState } from "react";
-
-interface DashboardContextType {
-	widgets: IWidget[];
-	layouts: ILayoutItem[];
-	addWidget: (type: IWidget["type"], title?: IWidget["title"]) => void;
-	removeWidget: (id: IWidget["id"]) => void;
-	updateLayout: (newLayout: ILayoutItem[]) => void;
-	renderWidget: (type: IWidget["type"], props: any) => React.ReactNode;
-	hasWidget: (type: IWidget["type"]) => boolean;
-	registerWidget: (widget: IWidget) => void;
-}
+import { createContext, useCallback, useContext, useState } from "react";
 
 interface DashboardProviderProps {
 	children: React.ReactNode;
@@ -34,6 +23,11 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 	const [acceptableWidgets, setAcceptableWidgets] =
 		useState<Record<IWidget["type"], IWidget>>(availableWidgets);
 
+	const [def, setDef] = $setting.useState<IWidget["id"][]>(
+		`dashboard.${storageKey}.default`,
+		[],
+	);
+
 	const [widgets, setWidgets] = $setting.useState<IWidget[]>(
 		`dashboard.${storageKey}.widgets`,
 		initialWidgets,
@@ -44,9 +38,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 		initialLayouts,
 	);
 
-	const updateLayout = (newLayout: ILayoutItem[]) => {
+	const updateLayout = useCallback((newLayout: ILayoutItem[]) => {
 		setLayouts(newLayout);
-	};
+	}, []);
 
 	const registerWidget = (widget: IWidget) => {
 		if (!widget.type || acceptableWidgets[widget.type]) {
@@ -58,20 +52,16 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 		}));
 	};
 
-	const addWidget = (type: IWidget["type"], title?: IWidget["title"]) => {
-		const newId = `widget.${Date.now()}`;
-		setWidgets([
-			...widgets,
-			{
-				id: newId,
-				type,
-				title: title || type,
-			} as IWidget,
-		]);
-		setLayouts([
+	const addWidget = (widget: IWidget) => {
+		widget.id = widget.id || `widget.${Date.now()}`;
+		if (widgets.findIndex((item) => item.id === widget.id) > -1) {
+			return;
+		}
+		setWidgets((widgets) => [...widgets, widget]);
+		setLayouts((layouts) => [
 			...layouts,
 			{
-				i: newId,
+				i: widget.id,
 				x: (layouts.length * 2) % 12,
 				y: Infinity,
 				w: 3,
@@ -82,24 +72,33 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 		]);
 	};
 
-	const removeWidget = (id: IWidget["id"]) => {
-		setWidgets(widgets.filter((w) => w.id !== id));
-		setLayouts(layouts.filter((l) => l.i !== id));
+	const addDefault = (widget: IWidget) => {
+		widget.id = widget.id || `widget.${Date.now()}`;
+		if (def.includes(widget.id)) {
+			return;
+		}
+		setDef((v) => [...v, widget.id]);
+		addWidget(widget);
 	};
 
-	const renderWidget = (type: IWidget["type"], props: any) => {
-		const widget = acceptableWidgets[type];
-		if (widget?.params) {
-			const Component = widget.component;
-		} else if (widget?.children) {
-			return <div {...props}>{widget.children}</div>;
-		}
-		return <div>Unknown widget type: {type}</div>;
+	const removeWidget = useCallback((widget: IWidget) => {
+		setWidgets((widgets) => widgets.filter((w) => w.id !== widget.id));
+		setLayouts((layouts) => layouts.filter((l) => l.i !== widget.id));
+	}, []);
+
+	const renderWidget = (widget: IWidget) => {
+		const Component = acceptableWidgets[widget.type]?.component;
+		return (
+			<Component
+				{...widget.params}
+				onRemove={() => removeWidget(widget)}
+			/>
+		);
 	};
 	// FactoryWidget.create(type, props);
 
 	const hasWidget = (type: IWidget["type"]) =>
-		Boolean(widgets.find((item) => item.type === type));
+		Boolean(acceptableWidgets[type]);
 
 	return (
 		<DashboardContext.Provider
@@ -107,6 +106,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 				widgets,
 				layouts,
 				addWidget,
+				addDefault,
 				removeWidget,
 				updateLayout,
 				renderWidget,
