@@ -1,13 +1,13 @@
 import { useDashboard } from "./context";
 
 type DashBoardItemProps = {
-	type: string;
+	type: IWidget["type"];
 	params?: IWidget["params"];
 	children: React.ReactNode;
 	[key: string]: any;
 };
 type DashBoardItemProps1 = Omit<DashBoardItemProps, "children"> & {
-	component: React.FC<any>;
+	component: IWidget["component"];
 };
 
 export function DashBoardItem({

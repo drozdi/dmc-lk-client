@@ -12,7 +12,7 @@ interface IWidget {
 	id?: ILayoutItem["i"];
 	type: string;
 	title?: string;
-	params?: string[];
-	component?: React.FC<any>;
+	params?: string[] | Record<string, any>;
+	component?: React.ComponentType<any>;
 	children?: React.ReactNode;
 }
