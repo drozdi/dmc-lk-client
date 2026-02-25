@@ -1,3 +1,4 @@
+import { Children } from "react";
 import { ReactGridLayout, useContainerWidth } from "react-grid-layout";
 import { GridBackground } from "react-grid-layout/extras";
 
@@ -10,31 +11,16 @@ interface UiDashBoardProps {
 	children: React.ReactNode;
 }
 
-import { DndGrid, verticalCompactor } from "@dnd-grid/react";
-
 export function UiDashBoard({ children }: UiDashBoardProps) {
 	const { width, containerRef, mounted } = useContainerWidth();
 	const { layouts, updateLayout, widgets, renderWidget } = useDashboard();
-
-	return (
-		<DndGrid
-			layout={layouts}
-			cols={12}
-			rowHeight={100}
-			onLayoutChange={(layout) => {
-				updateLayout(layout as ILayoutItem[]);
-			}}
-			compactor={verticalCompactor}
-			dragHandle=".mantine-Text-root"
-		>
-			{children}
-		</DndGrid>
-	);
-
 	return (
 		<div ref={containerRef} style={{ position: "relative" }}>
 			{mounted && (
 				<>
+					{Children.map(children, (child) => {
+						return child.key ? null : child;
+					})}
 					<GridBackground
 						width={width}
 						cols={12}
@@ -52,7 +38,9 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 							updateLayout(layout as ILayoutItem[]);
 						}}
 					>
-						{children}
+						{Children.map(children, (child) => {
+							return child.key ? child : null;
+						})}
 						{widgets.map((widget) => (
 							<div key={widget.id}>{renderWidget(widget)}</div>
 						))}

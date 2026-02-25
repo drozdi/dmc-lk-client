@@ -22,35 +22,39 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 }) => {
 	const [acceptableWidgets, setAcceptableWidgets] =
 		useState<Record<IWidget["type"], IWidget>>(availableWidgets);
-
-	const [def, setDef] = $setting.useState<IWidget["id"][]>(
-		`dashboard.${storageKey}.default`,
-		[],
-	);
-
 	const [widgets, setWidgets] = $setting.useState<IWidget[]>(
 		`dashboard.${storageKey}.widgets`,
 		initialWidgets,
 	);
-
 	const [layouts, setLayouts] = $setting.useState<ILayoutItem[]>(
 		`dashboard.${storageKey}.layouts`,
 		initialLayouts,
 	);
+	const [showed, setShowed] = useState<IWidget["id"][]>([]);
+
+	const addShowed = useCallback((id: IWidget["id"]): void => {
+		setShowed((v) => [...v, id]);
+	}, []);
 
 	const updateLayout = useCallback((newLayout: ILayoutItem[]) => {
 		setLayouts(newLayout);
 	}, []);
 
-	const registerWidget = (widget: IWidget) => {
-		if (!widget.type || acceptableWidgets[widget.type]) {
+	const registerWidget = useCallback((widget: IWidget) => {
+		if (!widget.type) {
 			return;
 		}
-		setAcceptableWidgets((v) => ({
-			...v,
-			[widget.type]: widget,
-		}));
-	};
+		setAcceptableWidgets((v) => {
+			if (v[widget.type]) {
+				return v;
+			}
+
+			return {
+				...v,
+				[widget.type]: widget,
+			};
+		});
+	}, []);
 
 	const addWidget = (widget: IWidget) => {
 		widget.id = widget.id || `widget.${Date.now()}`;
@@ -72,15 +76,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 		]);
 	};
 
-	const addDefault = (widget: IWidget) => {
-		widget.id = widget.id || `widget.${Date.now()}`;
-		if (def.includes(widget.id)) {
-			return;
-		}
-		setDef((v) => [...v, widget.id]);
-		addWidget(widget);
-	};
-
 	const removeWidget = useCallback((widget: IWidget) => {
 		setWidgets((widgets) => widgets.filter((w) => w.id !== widget.id));
 		setLayouts((layouts) => layouts.filter((l) => l.i !== widget.id));
@@ -88,12 +83,11 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 
 	const renderWidget = (widget: IWidget) => {
 		const Component = acceptableWidgets[widget.type]?.component;
-		return (
-			<Component
-				{...widget.params}
-				onRemove={() => removeWidget(widget)}
-			/>
-		);
+		const params = widget.params;
+		if (!widget.fixed) {
+			params.onRemove = () => removeWidget(widget);
+		}
+		return <Component {...params} />;
 	};
 	// FactoryWidget.create(type, props);
 
@@ -106,12 +100,21 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 				widgets,
 				layouts,
 				addWidget,
-				addDefault,
 				removeWidget,
 				updateLayout,
 				renderWidget,
 				registerWidget,
 				hasWidget,
+				addShowed,
+				findWidget: (id: IWidget["id"]) =>
+					showed.includes(id)
+						? undefined
+						: widgets.find((w) => w.id === id),
+				clear: () => {
+					setWidgets(initialWidgets);
+					setLayouts(initialLayouts);
+					setShowed([]);
+				},
 			}}
 		>
 			{children}

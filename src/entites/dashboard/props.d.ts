@@ -9,16 +9,15 @@ interface ILayoutItem {
 }
 
 interface IWidget {
-	id?: ILayoutItem["i"];
+	id?: ILayoutItem["id"];
 	type: string;
-	title?: string;
+	fixed?: string;
 	params?: string[] | Record<string, any>;
 	component?: React.ComponentType<any>;
 	children?: React.ReactNode;
 }
 
 interface DashboardContextType {
-	availableWidgets: IWidget[];
 	widgets: IWidget[];
 	layouts: ILayoutItem[];
 	updateLayout: (newLayout: ILayoutItem[]) => void;
@@ -27,5 +26,7 @@ interface DashboardContextType {
 	renderWidget: (widget: IWidget) => React.ReactNode;
 	hasWidget: (type: IWidget["type"]) => boolean;
 	registerWidget: (widget: IWidget) => void;
-	clear: () => void
+	clear: () => void;
+	addShowed: (id: IWidget["id"]) => void;
+	findWidget: (id: IWidget["id"]) => IWidget | undefined;
 }

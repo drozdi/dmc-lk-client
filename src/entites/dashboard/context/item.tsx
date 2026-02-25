@@ -1,47 +1,39 @@
+import { type GridItemProps } from "@dnd-grid/react";
 import { useDashboard } from "./context";
 
-type DashBoardItemProps = {
+type DashBoardItemProps<T = unknown> = GridItemProps<T> & {
 	id?: IWidget["id"];
-	children: React.ReactNode;
-	[key: string]: any;
+	children: React.ReactNode | string;
+	fixed?: boolean;
+	"data-grid"?: any;
 };
-type DashBoardItemProps1 = Omit<DashBoardItemProps, "children"> & {
+
+type DashBoardItemParamsProps<T = unknown> = Omit<
+	DashBoardItemProps<T>,
+	"children"
+> & {
 	type: IWidget["type"];
 	params: IWidget["params"];
-	component?: IWidget["component"];
 };
 
 export function DashBoardItem({
 	id,
+	fixed,
 	type,
 	params,
 	children,
-	component,
 	...props
-}: DashBoardItemProps | DashBoardItemProps1) {
+}: DashBoardItemProps<object> | DashBoardItemParamsProps<object>) {
 	const dashboard = useDashboard();
 	if (id) {
-		dashboard.addDefault({ type, id, params });
+		dashboard.addWidget({
+			id,
+			children,
+			fixed,
+			type,
+			params,
+		});
 		return null;
 	}
-
-	// dashboard?.registerWidget({
-	// 	type,
-	// 	params,
-	// 	children,
-	// 	component,
-	// });
-
-	if (children && children.length > 1) {
-		return <div {...props}>{children}</div>;
-	} else if (dashboard && type) {
-		return (
-			<div {...props}>
-				{dashboard.renderWidget({ type, params })}
-				{children}
-			</div>
-		);
-	}
-
-	return <div {...props}>Unknown widget type: {type}</div>;
+	return <div {...props}>{children}</div>;
 }

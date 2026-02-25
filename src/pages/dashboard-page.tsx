@@ -3,6 +3,7 @@ import {
 	DashboardProvider,
 	UiDashBoard,
 } from "@/entites/dashboard";
+import { ClearBtn } from "@/entites/dashboard/ui/clear";
 import {
 	AnalyticEventWidget,
 	AnalyticPieWidget,
@@ -70,22 +71,6 @@ export const DashboardPage = () => {
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
-			<Group justify="flex-end">
-				<Text>C</Text>
-				<DatePickerInput
-					name="filterdate_from"
-					value={query.filterdate_from}
-					onChange={(value) => handleChange("filterdate_from", value)}
-					error={errors?.filterdate_from}
-				/>
-				<Text>по</Text>
-				<DatePickerInput
-					name="filterdate_to"
-					value={query.filterdate_to}
-					onChange={(value) => handleChange("filterdate_to", value)}
-					error={errors?.filterdate_to}
-				/>
-			</Group>
 			<DashboardProvider
 				storageKey="main"
 				availableWidgets={{
@@ -96,26 +81,53 @@ export const DashboardPage = () => {
 					},
 				}}
 			>
-				<DashBoardItem
-					id="w-0"
-					type="test"
-					params={{
-						timeout: 5,
-						title: "Тестовый виджет",
-						description: "Описание виджета",
-					}}
-				/>
-				<DashBoardItem
-					id="w-1"
-					type="test"
-					params={{
-						timeout: 3,
-						title: "Тестовый 1",
-						description: "Виджет 1",
-					}}
-				/>
-
+				<Group justify="flex-end">
+					<Text>C</Text>
+					<DatePickerInput
+						name="filterdate_from"
+						value={query.filterdate_from}
+						onChange={(value) =>
+							handleChange("filterdate_from", value)
+						}
+						error={errors?.filterdate_from}
+					/>
+					<Text>по</Text>
+					<DatePickerInput
+						name="filterdate_to"
+						value={query.filterdate_to}
+						onChange={(value) =>
+							handleChange("filterdate_to", value)
+						}
+						error={errors?.filterdate_to}
+					/>
+					<ClearBtn />
+				</Group>
 				<UiDashBoard>
+					<DashBoardItem
+						id="w-1"
+						type="test"
+						params={{
+							timeout: 10,
+							title: "test",
+							description: "test",
+						}}
+					/>
+					<DashBoardItem
+						id="w-2"
+						type="test"
+						params={{
+							timeout: 7,
+							title: "test",
+							description: "test",
+						}}
+					/>
+					<DashBoardItem
+						id="w-3"
+						type="test"
+						params={{
+							timeout: 3,
+						}}
+					/>
 					<DashBoardItem key="event">
 						<AnalyticEventWidget {...query} step="mon" />
 					</DashBoardItem>
