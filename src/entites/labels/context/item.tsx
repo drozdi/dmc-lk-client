@@ -14,8 +14,7 @@ export function GroupedItem({ children, id, data, ...props }: ItemProps) {
 		type: "item",
 		data,
 	});
-	Children.only(children);
-	return cloneElement(children, {
+	return cloneElement(Children.only(children), {
 		...props,
 		groupable: true,
 		ref,

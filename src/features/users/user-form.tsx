@@ -4,15 +4,7 @@ import {
 	useQueryUsersUpdate,
 } from "@/entites/users";
 import { Item, ItemSection, List, Loading, PhoneInput } from "@/shared/ui";
-import {
-	Button,
-	Checkbox,
-	Group,
-	Notification,
-	Stack,
-	Tabs,
-	TextInput,
-} from "@mantine/core";
+import { Button, Checkbox, Group, Stack, Tabs, TextInput } from "@mantine/core";
 import { isEmail, isNotEmpty, useForm } from "@mantine/form";
 import { Template } from "@t";
 import { useEffect, type ChangeEvent } from "react";
@@ -100,13 +92,6 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 
 	return (
 		<>
-			{
-				<Template slot="notification">
-					{error && (
-						<Notification color="red">{error.message}</Notification>
-					)}
-				</Template>
-			}
 			<Template.Title>Пользователь - {data?.email}</Template.Title>
 			<Loading active={isLoading} keepMounted>
 				<form>

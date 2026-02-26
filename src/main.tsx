@@ -15,6 +15,10 @@ if (typeof TouchEvent === "undefined") {
 	};
 }
 
+import { labelName } from "./shared/utils";
+
+console.log(labelName("W   60  .3,4  5  H   40.5345,   G1"));
+
 createRoot(document.querySelector("body")!).render(
 	<AppProvider>
 		<AppLoader>

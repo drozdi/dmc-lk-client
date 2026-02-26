@@ -12,7 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { TbArrowsMaximize, TbArrowsMinimize, TbX } from "react-icons/tb";
 
-export interface ExpandablePanelProps extends CardProps {
+export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
 	loading?: boolean;
 	keepMounted?: boolean;
@@ -31,7 +31,7 @@ export function Widget({
 	component = ScrollArea,
 	dragable = false,
 	...otherProps
-}: ExpandablePanelProps) {
+}: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
 
 	return (

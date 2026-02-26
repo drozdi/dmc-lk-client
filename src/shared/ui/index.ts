@@ -3,6 +3,7 @@ export * from "./expandable-panel";
 export * from "./icon";
 export * from "./input";
 export * from "./item";
+export * from "./label-format";
 export * from "./list";
 export * from "./loading";
 export * from "./progress";

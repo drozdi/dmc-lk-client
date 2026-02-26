@@ -9,6 +9,8 @@ export const $setting = new Setting(
 		"api.timeout": 10,
 		"base.url": "/",
 		"product.id": 0,
+		size: "15",
+		limits: ["15", "30", "50", "75", "100"],
 		formatDate: "DD.MM.YYYY",
 		formatTime: "HH:mm",
 		formatTimeFull: "HH:mm:ss",

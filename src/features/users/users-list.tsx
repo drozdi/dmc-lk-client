@@ -10,7 +10,10 @@ interface UsersListProps {
 	className?: string;
 }
 export function UsersList({ className }: UsersListProps) {
-	const [size, setSize] = $setting.useState<number>("users.limit", 30);
+	const [size, setSize] = $setting.useState<number>(
+		"users.size",
+		$setting.get("size"),
+	);
 	const {
 		isLoading,
 		error,
@@ -40,11 +43,10 @@ export function UsersList({ className }: UsersListProps) {
 							component={Link}
 							to={`/users/${item.id}`}
 							key={item.id}
-							label={[
-								item.last_name,
-								item.first_name,
-								item.father_name,
-							].join(" ")}
+							label={`
+								${item.email} (${[item.last_name, item.first_name, item.father_name].join(
+									" ",
+								)})`}
 						/>
 					))
 				) : (
@@ -74,7 +76,7 @@ export function UsersList({ className }: UsersListProps) {
 					onChange={(value) => {
 						setSize(Number(value));
 					}}
-					data={["15", "30", "50", "75", "100"]}
+					data={$setting.get("limits")}
 				/>
 			</Template.Footer>
 		</Paper>

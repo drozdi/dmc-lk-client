@@ -8,7 +8,7 @@ import {
 	useStoreLabels,
 } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
-import { Widget } from "@/shared/ui";
+import { LabelFormat, Widget } from "@/shared/ui";
 import { Accordion, Group, NavLink, Table, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbList } from "react-icons/tb";
@@ -56,7 +56,6 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 				};
 			}
 		}
-		console.log(res);
 		for (const count of storeCountLabel.count.distributed) {
 			if (!count.production_id) {
 				continue;
@@ -231,7 +230,9 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 																	)}
 																</Table.Td>
 																<Table.Td>
-																	{label}
+																	<LabelFormat>
+																		{label}
+																	</LabelFormat>
 																</Table.Td>
 																<Table.Td>
 																	{minus}

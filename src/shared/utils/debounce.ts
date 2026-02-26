@@ -1,32 +1,43 @@
+export type DebouncedFunction = {
+	(...args: any[]): void;
+	cancel: () => void;
+	flush: () => void;
+};
+
 /**
  * Функция debounce создает функцию, которая будет вызвана не чаще, чем через заданный интервал времени.
  * @param {Function} fn - Функция, которую нужно задержать.
- * @param {number} [delay=200] - Интервал времени в миллисекундах.
+ * @param {number} delay[200] - Интервал времени в миллисекундах.
  * @returns {Function} - Задержанная функция.
  */
-export function debounce(fn: Function, delay: number = 200): Function {
-	let timer: NodeJS.Timeout
+export function debounce(
+	fn: (...args: any[]) => void,
+	delay: number = 200,
+): DebouncedFunction {
+	let timer: NodeJS.Timeout | null = null;
 
-	const func = (...args: any[]): void => {
+	const func = (...args: any[]) => {
 		if (timer) {
-			clearTimeout(timer)
+			clearTimeout(timer);
 		}
-		timer = setTimeout(() => fn(...args), delay)
-	}
+		timer = setTimeout(() => fn(...args), delay);
+	};
 
 	// Добавляем метод для отмены
-	func.cancel = (): void => {
+	func.cancel = () => {
 		if (timer) {
-			clearTimeout(timer)
+			clearTimeout(timer);
+			timer = null;
 		}
-	}
+	};
 
 	// Добавляем метод для немедленного вызова
-	func.flush = (...args: any[]): void => {
+	func.flush = (...args: any[]) => {
 		if (timer) {
-			func(...args)
+			clearTimeout(timer);
+			fn(...args);
 		}
-	}
+	};
 
-	return func
+	return func;
 }

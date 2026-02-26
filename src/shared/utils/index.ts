@@ -5,6 +5,7 @@ export * from "./cls";
 export * from "./currency-format";
 export * from "./debounce";
 export * from "./factory-query";
+export * from "./label";
 export * from "./random-color";
 export * from "./round";
 export * from "./string";
