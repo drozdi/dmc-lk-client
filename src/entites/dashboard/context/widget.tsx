@@ -22,6 +22,6 @@ export function DashBoardWidget({
 		params,
 		children,
 		component,
-	});
+	} as IWidget);
 	return null;
 }

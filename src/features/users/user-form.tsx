@@ -1,3 +1,8 @@
+import {
+	useQueryProductions,
+	useQueryUsersRead,
+	useQueryUsersUpdate,
+} from "@/entites/users";
 import { Item, ItemSection, List, Loading, PhoneInput } from "@/shared/ui";
 import {
 	Button,
@@ -12,23 +17,18 @@ import { isEmail, isNotEmpty, useForm } from "@mantine/form";
 import { Template } from "@t";
 import { useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	useEditUser,
-	useFetchProductions,
-	useFetchUser,
-} from "../../apps/users/api";
 
 interface UserFormProps {
-	id?: number | string;
+	id?: IUsersUser["id"];
 	className?: string;
 }
 
 export const UserForm = ({ id, className }: UserFormProps) => {
-	const { data: products } = useFetchProductions();
+	const { data: products } = useQueryProductions();
 	const naigate = useNavigate();
-	const { isLoading, error, isError, data } = useFetchUser(Number(id));
+	const { isLoading, error, isError, data } = useQueryUsersRead(Number(id));
 
-	const { mutate } = useEditUser();
+	const { mutate } = useQueryUsersUpdate();
 	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
 	// const reqUserUpdate = useQuery(requestUsersUpdate)
 
@@ -67,7 +67,11 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 
 	useEffect(() => {
 		if (data?.email && !form.initialized) {
-			const user = { is_active: true, is_superuser: false, ...data };
+			const user = {
+				is_active: true,
+				is_superuser: false,
+				...data,
+			} as IUsersUser;
 			user.id_production = (user.id_production || []).map(
 				(item: unknown) => String(item),
 			);

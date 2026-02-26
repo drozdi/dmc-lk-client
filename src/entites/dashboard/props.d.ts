@@ -1,29 +1,46 @@
-interface ILayoutItem {
-	i: string;
+type ILayoutItem = (
+	| {
+			i: string;
+	  }
+	| {
+			id: string;
+	  }
+) & {
 	x: number;
 	y: number;
 	w: number;
 	h: number;
 	minW?: number;
 	minH?: number;
-}
+};
 
 interface IWidget {
-	id?: ILayoutItem["id"];
+	id?: ILayoutItem["i"] | ILayoutItem["id"];
+	label?: string;
+	description?: string;
 	type: string;
 	fixed?: string;
-	params?: string[] | Record<string, any>;
+	params?:
+		| {
+				label?: string;
+				field?: string;
+				type?: string;
+		  }[]
+		| Record<string, any>;
 	component?: React.ComponentType<any>;
 	children?: React.ReactNode;
 }
 
 interface DashboardContextType {
+	key: string;
 	widgets: IWidget[];
 	layouts: ILayoutItem[];
+	showed: IWidget["id"][];
+	availableWidgets: Record<IWidget["type"], IWidget>;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
 	addWidget: (widget: IWidget) => void;
 	removeWidget: (widget: IWidget) => void;
-	renderWidget: (widget: IWidget) => React.ReactNode;
+	renderWidget: (widget: IWidget) => React.ReactNode | undefined;
 	hasWidget: (type: IWidget["type"]) => boolean;
 	registerWidget: (widget: IWidget) => void;
 	clear: () => void;

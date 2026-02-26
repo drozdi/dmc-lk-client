@@ -37,6 +37,9 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 						onLayoutChange={(layout) => {
 							updateLayout(layout as ILayoutItem[]);
 						}}
+						dragConfig={{
+							handle: ".drag-handle",
+						}}
 					>
 						{Children.map(children, (child) => {
 							return child.key ? child : null;

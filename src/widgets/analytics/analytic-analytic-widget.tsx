@@ -1,6 +1,7 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
+import { useStoreUserProfile } from "@/entites/auth";
 import { Widget } from "@/shared/ui";
-import { Select, Table } from "@mantine/core";
+import { Table } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,23 +10,25 @@ import { Filterdate } from "./components/filterdate";
 const nDow = dayjs("2025-05-02");
 const sDay = nDow.day(nDow.day() - 7);
 
-export const AnalyticAnalyticWidget = () => {
-	const ee = useEnumsEvents();
-	const maps = Object.keys(ee.data) as AnalyticEvent[];
-
-	const navigate = useNavigate();
-	const { isLoading, error, fetch } = useQueryAnalytics({
+export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
+	const { production_id } = useStoreUserProfile();
+	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate_from: sDay.format("YYYY-MM-DD"),
 		filterdate_to: nDow.format("YYYY-MM-DD"),
 		step: "d",
 	});
+
+	const ee = useEnumsEvents();
+	const maps = Object.keys(ee.data) as AnalyticEvent[];
+
+	const navigate = useNavigate();
+	const { isLoading, error, fetch } = useQueryAnalytics(query);
 	const [data, setData] = useState<{
 		v?: IResponseAnalytics;
 		i?: IResponseAnalytics;
 		d?: IResponseAnalytics;
 		p?: IResponseAnalytics;
 	}>({});
-	const [cuurent_production, setCurrentProduction] = useState("0");
 
 	useEffect(() => {
 		const send = async () => {
@@ -38,30 +41,6 @@ export const AnalyticAnalyticWidget = () => {
 		};
 		send();
 	}, []);
-	const productions = useMemo<IAnalyticsProductionSelect[]>(() => {
-		const productions: IAnalyticsProductionSelect[] = [];
-		if (data) {
-			for (const event in ee.data) {
-				data[event as AnalyticEvent]?.production?.forEach(
-					(item: IAnalyticsDataProduction) => {
-						if (
-							productions.findIndex(
-								(production) =>
-									production.value ===
-									String(item.production_id),
-							) === -1
-						) {
-							productions.push({
-								value: String(item.production_id),
-								label: item.name,
-							});
-						}
-					},
-				);
-			}
-		}
-		return productions;
-	}, [data]);
 
 	const ddata = useMemo(() => {
 		const res: Record<string, any> = {};
@@ -71,7 +50,7 @@ export const AnalyticAnalyticWidget = () => {
 				...def,
 			};
 		}
-		const currProduction = Number(cuurent_production) || 0;
+		const currProduction = Number(production_id) || 0;
 
 		if (data) {
 			for (let event of maps) {
@@ -95,12 +74,13 @@ export const AnalyticAnalyticWidget = () => {
 			...value,
 			label,
 		}));
-	}, [data, cuurent_production]);
+	}, [data, production_id]);
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
 
 	return (
 		<Widget
+			dragable
 			loading={isLoading}
 			title={
 				<Filterdate
@@ -117,17 +97,6 @@ export const AnalyticAnalyticWidget = () => {
 				/>
 			}
 		>
-			<Select
-				defaultValue={String(cuurent_production)}
-				checkIconPosition="right"
-				onChange={(val) => setCurrentProduction(val as string)}
-				data={[
-					{
-						value: "0",
-						label: "Все площадки",
-					},
-				].concat(productions as any)}
-			/>
 			<Table>
 				<Table.Thead>
 					<Table.Tr>

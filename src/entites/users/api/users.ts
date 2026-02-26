@@ -1,20 +1,18 @@
 import { api } from "@/shared/api";
 
-export async function requestUsersList({
-	size = 15,
-	number = 0,
-}: { size?: number; number?: number } = {}) {
+export async function requestUsersList(
+	params: IRequestList = {},
+): Promise<IResponseList<IUsersUser>> {
+	params.size = params.size || 15;
+	params.number = params.number || 0;
 	const res = await api.get("/users/", {
-		params: {
-			size,
-			number,
-		},
+		params,
 	});
 	return res.data;
 }
 
 export async function requestUsersGet(
-	id: number,
+	id: IUsersUser["id"],
 ): Promise<IResponse<IUsersUser>> {
 	const res = await api.get(`/users/user?id_user=${id}`);
 	return res.data;

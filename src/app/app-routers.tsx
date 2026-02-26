@@ -18,6 +18,8 @@ import { LabelsCountPage } from "@/pages/labels/lables-count-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
 import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
+import { UsersListPage } from "@/pages/users/list-page";
+import { UsersUserPage } from "@/pages/users/user-page";
 
 const routes = () => [
 	{
@@ -104,6 +106,20 @@ const routes = () => [
 			{
 				path: "analytics",
 				element: <DashboardPage />,
+			},
+			{
+				path: "users",
+				element: <Outlet />,
+				children: [
+					{
+						path: "",
+						element: <UsersListPage />,
+					},
+					{
+						path: ":userId",
+						element: <UsersUserPage />,
+					},
+				],
 			},
 
 			// {

@@ -1,15 +1,14 @@
+import { DashboardProvider, UiDashBoard } from "@/entites/dashboard";
+import { useStoreDashboardMain } from "@/entites/dashboard/stores/use-store-dashboard-main";
+import { AddWidget } from "@/features/dashboard/add-widget";
+import { BtnClear } from "@/features/dashboard/btn-clear";
 import {
-	DashBoardItem,
-	DashboardProvider,
-	UiDashBoard,
-} from "@/entites/dashboard";
-import { ClearBtn } from "@/entites/dashboard/ui/clear";
-import {
+	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
 	AnalyticPieWidget,
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
-import { TesstWidget } from "@/widgets/test";
+import { CountWidget } from "@/widgets/count-widget";
 import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { Template } from "@t";
@@ -17,20 +16,6 @@ import dayjs from "dayjs";
 import { useState } from "react";
 
 const dNow = dayjs("2025-05-02");
-const ww = [
-	{
-		key: "event",
-		Component: AnalyticEventWidget,
-	},
-	{
-		key: "pie",
-		Component: AnalyticPieWidget,
-	},
-	{
-		key: "type",
-		Component: AnalyticTypeWidget,
-	},
-];
 
 export const DashboardPage = () => {
 	const [query, setQuery] = useState<
@@ -71,74 +56,96 @@ export const DashboardPage = () => {
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
-			<DashboardProvider
-				storageKey="main"
-				availableWidgets={{
-					test: {
-						type: "test",
-						component: TesstWidget,
-						params: ["timeout", "title", "description"],
-					},
-				}}
-			>
-				<Group justify="flex-end">
-					<Text>C</Text>
-					<DatePickerInput
-						name="filterdate_from"
-						value={query.filterdate_from}
-						onChange={(value) =>
-							handleChange("filterdate_from", value)
-						}
-						error={errors?.filterdate_from}
-					/>
-					<Text>по</Text>
-					<DatePickerInput
-						name="filterdate_to"
-						value={query.filterdate_to}
-						onChange={(value) =>
-							handleChange("filterdate_to", value)
-						}
-						error={errors?.filterdate_to}
-					/>
-					<ClearBtn />
-				</Group>
+			<Group justify="flex-end">
+				<Text>C</Text>
+				<DatePickerInput
+					name="filterdate_from"
+					value={query.filterdate_from}
+					onChange={(value) => handleChange("filterdate_from", value)}
+					error={errors?.filterdate_from}
+				/>
+				<Text>по</Text>
+				<DatePickerInput
+					name="filterdate_to"
+					value={query.filterdate_to}
+					onChange={(value) => handleChange("filterdate_to", value)}
+					error={errors?.filterdate_to}
+				/>
+			</Group>
+			<DashboardProvider store={useStoreDashboardMain}>
 				<UiDashBoard>
-					<DashBoardItem
+					{/* <DashBoardItem
 						id="w-1"
 						type="test"
 						params={{
 							timeout: 10,
-							title: "test",
-							description: "test",
+							title: "Title",
+							description: "Описание виджета",
 						}}
-					/>
-					<DashBoardItem
-						id="w-2"
-						type="test"
-						params={{
-							timeout: 7,
-							title: "test",
-							description: "test",
+					/> */}
+					<div
+						key="event"
+						data-grid={{
+							x: 0,
+							y: 0,
+							w: 6,
+							h: 6,
 						}}
-					/>
-					<DashBoardItem
-						id="w-3"
-						type="test"
-						params={{
-							timeout: 3,
-						}}
-					/>
-					<DashBoardItem key="event">
+					>
 						<AnalyticEventWidget {...query} step="mon" />
-					</DashBoardItem>
-					<DashBoardItem key="pie">
+					</div>
+					<div
+						key="pie"
+						data-grid={{
+							x: 6,
+							y: 0,
+							w: 6,
+							h: 6,
+						}}
+					>
 						<AnalyticPieWidget {...query} step="mon" />
-					</DashBoardItem>
-					<DashBoardItem key="type">
+					</div>
+					<div
+						key="type"
+						data-grid={{
+							x: 0,
+							y: 6,
+							w: 6,
+							h: 6,
+						}}
+					>
 						<AnalyticTypeWidget {...query} step="mon" />
-					</DashBoardItem>
+					</div>
+					<div
+						key="analytic"
+						data-grid={{
+							x: 6,
+							y: 6,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<AnalyticAnalyticWidget {...query} step="mon" />
+					</div>
+					<div
+						key="count"
+						data-grid={{
+							x: 0,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<CountWidget {...query} step="d" />
+					</div>
 				</UiDashBoard>
 			</DashboardProvider>
+			<Template.Footer>
+				<Group>
+					<AddWidget store={useStoreDashboardMain} />
+					<BtnClear store={useStoreDashboardMain} />
+				</Group>
+			</Template.Footer>
 		</Paper>
 	);
 };

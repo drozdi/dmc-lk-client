@@ -1,24 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { requestUsersList } from "../api/users";
 
-export function useQueryUsersList({
-	size = 15,
-	number = 0,
-}: { size?: number; number?: number } = {}) {
-	return useQuery({
-		queryKey: ["users", { size, number }],
-		queryFn: async () => {
-			const res = await requestUsersList({ size, number });
+export function useQueryUsersList(params: Omit<IRequestList, "number">) {
+	params.size = params.size || 15;
+	return useInfiniteQuery({
+		queryKey: ["users", { ...params, number: undefined }],
+		initialPageParam: 0,
+		queryFn: async ({ pageParam }) => {
+			const res = await requestUsersList({
+				...params,
+				number: pageParam,
+			});
 			if (!res.success) {
 				throw new Error(
-					res.message ||
-						"Список пользователей: подумать над ошибкой!",
+					res.message || "Список запросов: подумать над ошибкой!",
 				);
 			}
 			return res;
 		},
-		select(data) {
-			return data.data.request;
+		getNextPageParam: (lastPage) => lastPage.next_page,
+		getPreviousPageParam: (lastPage) => lastPage.previous_page,
+		select({ pages }): IUsersUser[] {
+			return pages[0].data.response;
 		},
 	});
 }

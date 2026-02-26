@@ -1,9 +1,9 @@
+import { UserForm } from "@/features/users/user-form";
 import { Paper } from "@mantine/core";
+import { Template } from "@t";
 import { useParams } from "react-router-dom";
-import { Template } from "../../../layout";
-import { UserForm } from "../../features/users/user-form";
 
-export function UserPage() {
+export function UsersUserPage() {
 	const { userId } = useParams();
 	return (
 		<Paper>

@@ -1,42 +1,37 @@
+import { useQueryAnalytics } from "@/entites/analytics";
+import {
+	GroupedContainer,
+	GroupedItem,
+	GroupedProvider,
+	useGrouped,
+	useStoreCountLabel,
+	useStoreLabels,
+} from "@/entites/labels";
+import { useQueryProductions } from "@/entites/users";
 import { Widget } from "@/shared/ui";
 import { Accordion, Group, NavLink, Table, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbList } from "react-icons/tb";
-import { useAnalytics } from "../apps/analytics/api";
-import { requestLabelsCount } from "../apps/labels/api";
-import { GroupContainer } from "../apps/labels/features/components/group/container";
-import { GroupItem } from "../apps/labels/features/components/group/item";
-import { GroupProvider } from "../apps/labels/features/components/group/provider";
-import { labelsStore } from "../apps/labels/stores";
-import { useFormatPrints } from "../apps/labels/stores/hooks";
-import { useQuery } from "../shared/hooks";
-import { useProduction } from "../stores/hooks/use-production";
 
-export const LabelsCountWidget = (props) => {
-	const labelsFormat = useFormatPrints();
-	const [active, setActive] = useState(false);
-	const [data, setData] = useState({
-		distributed: [],
-		not_distributed: [],
-	});
-	const reqAnalytics = useAnalytics({
+export const CountWidget = (props: Partial<IRequestAnalytics>) => {
+	const storeCountLabel = useStoreCountLabel();
+	const storeLabels = useStoreLabels();
+	const qa = useQueryAnalytics({
 		...props,
 		step: "d",
 		event: "p",
 	});
-	const reqLabelsCount = useQuery(requestLabelsCount);
-	const { productionNameById } = useProduction();
-	async function fetch() {
-		await reqAnalytics.request();
-		setData((await reqLabelsCount.request()).data);
-	}
+	const qp = useQueryProductions();
+
+	const labelsFormat = useGrouped();
+	const [active, setActive] = useState(false);
 
 	const res = useMemo(() => {
 		const res = {};
 		for (let prod in labelsFormat) {
 			res[prod] = res[prod] || {
 				production_id: prod,
-				production_name: productionNameById(prod),
+				production_name: qp.findNameById(Number(prod)),
 				labels: {},
 				total: 0,
 				minus: 0,
@@ -53,7 +48,7 @@ export const LabelsCountWidget = (props) => {
 				};
 			}
 			for (let label of labelsFormat[prod][".default"] || []) {
-				res[prod].labels[label] = res[prod].labels[label] || {
+				res[prod].labels[label.print] = res[prod].labels[label] || {
 					labels: [label],
 					total: 0,
 					minus: 0,
@@ -61,7 +56,8 @@ export const LabelsCountWidget = (props) => {
 				};
 			}
 		}
-		for (const count of data.distributed) {
+		console.log(res);
+		for (const count of storeCountLabel.count.distributed) {
 			if (!count.production_id) {
 				continue;
 			}
@@ -70,7 +66,7 @@ export const LabelsCountWidget = (props) => {
 					count.sum;
 			}
 		}
-		for (const count of data.not_distributed) {
+		for (const count of storeCountLabel.count.not_distributed) {
 			if (!count.production_id) {
 				continue;
 			}
@@ -79,8 +75,7 @@ export const LabelsCountWidget = (props) => {
 					count.sum;
 			}
 		}
-
-		for (const production of reqAnalytics.data.production || []) {
+		for (const production of qa.data.production || []) {
 			for (const data of production.data || []) {
 				Object.entries(
 					res[production.production_id]?.labels || {},
@@ -97,12 +92,12 @@ export const LabelsCountWidget = (props) => {
 					res[prod].labels[label].minus === 0 &&
 					res[prod].labels[label].total === 0
 				) {
-					delete res[prod].labels[label];
+					// delete res[prod].labels[label];
 				}
 			}
 			if (Object.values(res[prod].labels).length === 0) {
 				res[prod] = undefined;
-				delete res[prod];
+				// delete res[prod];
 			}
 		}
 		Object.values(res).forEach((production) => {
@@ -118,47 +113,23 @@ export const LabelsCountWidget = (props) => {
 			}
 		});
 		return res;
-	}, [labelsFormat, data, reqAnalytics.data]);
+	}, [labelsFormat, storeCountLabel.count, qa.data, qp.findNameById]);
 
 	useEffect(() => {
-		fetch();
+		qa.fetch();
+		storeLabels.load();
+		storeCountLabel.loadCount();
 	}, []);
-
-	function factoryHandleDragEnd(production_id) {
-		return async function handleDragEnd(event) {
-			const { source, target } = event.operation;
-			const sourceIndex = data.not_distributed.findIndex(
-				(item) =>
-					item.production_id === production_id &&
-					item.add_label_format === source.id,
-			);
-			// if (sourceIndex === -1) {
-			// 	return
-			// }
-			const sourceLabel = data.not_distributed.splice(sourceIndex, 1)[0];
-
-			await labelsStore.addFormatPrint({
-				production_id: sourceLabel.production_id,
-				add_label_format: target.id,
-				statistics_print_format: sourceLabel.add_label_format,
-			});
-
-			/*data.distributed = data.distributed.map(item => {
-				if (item.production_id === sourceLabel.production_id && item.add_label_format === target.id) {
-					return {
-						...item,
-						sum: item.sum + sourceLabel.sum,
-					}
-				}
-				return item
-			})*/
-		};
-	}
 
 	return (
 		<Widget
-			loading={reqAnalytics.isLoading || reqLabelsCount.isLoading}
+			loading={
+				qa.isLoading ||
+				storeCountLabel.isLoading ||
+				storeLabels.isLoading
+			}
 			title={""}
+			dragable
 		>
 			<NavLink
 				active={active}
@@ -222,9 +193,9 @@ export const LabelsCountWidget = (props) => {
 											<Table.Th>Остаток</Table.Th>
 										</Table.Tr>
 									</Table.Thead>
-									<GroupProvider
-										onDragEnd={factoryHandleDragEnd(
-											Number(production.production_id),
+									<GroupedProvider
+										production_id={Number(
+											production.production_id,
 										)}
 									>
 										<Table.Tbody>
@@ -236,8 +207,8 @@ export const LabelsCountWidget = (props) => {
 													{ total, minus, container },
 												]) => {
 													const Wrap = container
-														? GroupContainer
-														: GroupItem;
+														? GroupedContainer
+														: GroupedItem;
 													const props = container
 														? { column: label }
 														: {
@@ -274,7 +245,7 @@ export const LabelsCountWidget = (props) => {
 												},
 											)}
 										</Table.Tbody>
-									</GroupProvider>
+									</GroupedProvider>
 								</Table>
 							</Accordion.Panel>
 						</Accordion.Item>

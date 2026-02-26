@@ -16,6 +16,7 @@ export interface ExpandablePanelProps extends CardProps {
 	title: React.ReactNode;
 	loading?: boolean;
 	keepMounted?: boolean;
+	dragable?: boolean;
 	children: React.ReactNode;
 	component?: any;
 	onRemove?: () => void;
@@ -27,7 +28,8 @@ export function Widget({
 	loading = false,
 	children,
 	keepMounted = true,
-	component,
+	component = ScrollArea,
+	dragable = false,
 	...otherProps
 }: ExpandablePanelProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -38,6 +40,7 @@ export function Widget({
 			p="xs"
 			w="100%"
 			h="100%"
+			bd="1px solid var(--mantine-color-default-border)"
 			{...otherProps}
 			style={{
 				position: "relative",
@@ -45,7 +48,11 @@ export function Widget({
 				...otherProps?.style,
 			}}
 		>
-			<Card.Section inheritPadding py="xs">
+			<Card.Section
+				inheritPadding
+				py="xs"
+				className={dragable ? "drag-handle" : ""}
+			>
 				<Group justify="space-between">
 					<Text fw={500} flex="1">
 						{title}
@@ -76,6 +83,7 @@ export function Widget({
 			</Card.Section>
 			{(keepMounted || isExpanded) && (
 				<Card.Section
+					inheritPadding
 					component={component}
 					mih={loading ? 300 : undefined}
 					miw={loading ? 300 : undefined}

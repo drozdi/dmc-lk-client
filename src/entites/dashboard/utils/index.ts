@@ -1,2 +1,2 @@
-export * from "../context/context";
+export * from "./factory-store";
 export * from "./factory-widget";

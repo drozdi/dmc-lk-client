@@ -44,9 +44,7 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
 		...props,
 	});
-	function reset() {
-		setQuery({ ...props });
-	}
+
 	async function sendRequest(event: AnalyticEvent) {
 		return await fetch({ ...query, event });
 	}
@@ -209,6 +207,7 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 
 	return (
 		<Widget
+			dragable
 			title={
 				<Filterdate
 					filterdate_from={query.filterdate_from}

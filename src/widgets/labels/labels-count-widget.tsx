@@ -117,7 +117,7 @@ export const LabelsCountWidget = () => {
 	}, []);
 
 	return (
-		<Widget loading={isLoading} title="Сводная история">
+		<Widget loading={isLoading} title="Сводная история" dragable>
 			<Accordion>
 				{ddata.map((production) => (
 					<Accordion.Item

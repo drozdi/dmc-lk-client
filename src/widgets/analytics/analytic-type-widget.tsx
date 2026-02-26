@@ -104,6 +104,7 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 
 	return (
 		<Widget
+			dragable
 			loading={isLoading}
 			title={
 				<Filterdate

@@ -11,7 +11,7 @@ export function useQueryQueryUpdate() {
 		},
 		onSuccess: (res, data) => {
 			queryClient.refetchQueries({ queryKey: ["query_users"] });
-			queryClient.setQueryData(["query_users", { id: data.id }], res);
+			queryClient.setQueryData(["query_users", Number(data.id)], res);
 		},
 	});
 }
