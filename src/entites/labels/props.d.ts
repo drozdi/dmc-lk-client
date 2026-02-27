@@ -46,7 +46,7 @@ interface IStoreLabels extends IStore {
 	deleteFormatPrint(data: Partial<ILabel>): Promise<boolean>;
 }
 interface ICountLabelHistoryItem {
-	format_template: string;
+	format_template: ILabel["statistics_print_format"];
 	date_applic: string;
 	count_label: number;
 	production_id: number;

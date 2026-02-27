@@ -64,7 +64,6 @@ export async function requestLabelsJoinedUpdate(
 	id: ILabel["id"],
 	data: Partial<ILabel>,
 ): Promise<IResponse<ILabel>> {
-	console.log(id, data);
 	const res = await api.patch(`/label/${id}`, data);
 	return res.data;
 }

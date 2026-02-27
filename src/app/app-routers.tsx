@@ -10,6 +10,7 @@ import { AnalyticsQueryItemPage } from "@/pages/analytics/query/item-page";
 import { AnalyticsQueryListPage } from "@/pages/analytics/query/list-page";
 import { DashboardPage } from "@/pages/dashboard-page";
 
+import { useStoreUserProfile } from "@/entites/auth";
 import { SignInPage } from "@/pages/auth/sign-in-page";
 import { SignOutPage } from "@/pages/auth/sign-out-page";
 import { SignUpPage } from "@/pages/auth/sign-up-page";
@@ -90,7 +91,10 @@ const routes = () => [
 					},
 				],
 			},
-
+			{
+				path: "dashboard",
+				element: <DashboardPage />,
+			},
 			{
 				path: "analytics/elastic",
 				element: <AnalyticsElasticFormPage />,
@@ -103,24 +107,22 @@ const routes = () => [
 				path: "analytics/:id_query",
 				element: <AnalyticsQueryItemPage />,
 			},
-			{
-				path: "analytics",
-				element: <DashboardPage />,
-			},
-			{
-				path: "users",
-				element: <Outlet />,
-				children: [
-					{
-						path: "",
-						element: <UsersListPage />,
-					},
-					{
-						path: ":userId",
-						element: <UsersUserPage />,
-					},
-				],
-			},
+			useStoreUserProfile.getState().userData?.is_superuser
+				? {
+						path: "users",
+						element: <Outlet />,
+						children: [
+							{
+								path: "",
+								element: <UsersListPage />,
+							},
+							{
+								path: ":userId",
+								element: <UsersUserPage />,
+							},
+						],
+					}
+				: {},
 
 			// {
 			// 	path: "/users",

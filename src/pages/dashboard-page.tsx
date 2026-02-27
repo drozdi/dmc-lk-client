@@ -9,6 +9,7 @@ import {
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
 import { CountWidget } from "@/widgets/count-widget";
+import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { Template } from "@t";
@@ -137,6 +138,17 @@ export const DashboardPage = () => {
 						}}
 					>
 						<CountWidget {...query} step="d" />
+					</div>
+					<div
+						key="labels-count"
+						data-grid={{
+							x: 6,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<LabelsCountWidget {...query} step="d" />
 					</div>
 				</UiDashBoard>
 			</DashboardProvider>

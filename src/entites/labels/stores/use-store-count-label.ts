@@ -1,8 +1,8 @@
 import {
 	requestLabelsCount,
 	requestLabelsCountAdd,
-	requestLabelsCountHistory,
-	requestLabelsCountReset,
+	requestLabelsHistory,
+	requestLabelsReset,
 } from "../api";
 
 import { queryClient } from "@/shared/api/query-client";
@@ -41,16 +41,18 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			let res;
 
 			do {
-				res = await requestLabelsCountHistory(params);
-				for (const arr of Object.values(res.data.response)) {
-					history = [...history, ...arr];
-				}
+				res = await queryClient.fetchQuery({
+					queryKey: ["labels-history", params],
+					queryFn: async () => {
+						return await requestLabelsHistory(params);
+					},
+				});
+				history = [...history, ...res.data.response];
 				params.number++;
 			} while (
 				history.length % params.size === 0 &&
-				Object.values(res.data.response).length
+				res.data.response.length
 			);
-
 			set({
 				isLoading: false,
 				history,
@@ -79,7 +81,14 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			error: "",
 		});
 		try {
-			const count = (await requestLabelsCount()).data;
+			const count = await queryClient.fetchQuery({
+				queryKey: ["labels-count"],
+				queryFn: async () => {
+					const response = await requestLabelsCount();
+					return response.data;
+				},
+			});
+
 			set({
 				isLoading: false,
 				count,
@@ -137,7 +146,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	async reset(production_id) {
 		set({ isLoading: true, error: "" });
 		try {
-			await requestLabelsCountReset(production_id);
+			await requestLabelsReset(production_id);
 			set({ isLoading: false });
 			get().load(true);
 		} catch (e: IError) {

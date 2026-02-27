@@ -26,11 +26,8 @@ export const useStoreAuth = create<IStoreAuth>(
 		async load() {
 			const isAuthenticated =
 				!!api.getRefreshToken() && !!api.getAccessToken();
-			set({
-				isAuthenticated,
-			});
 			if (!isAuthenticated) {
-				api.clearTokens();
+				get().clearAuth();
 			}
 		},
 

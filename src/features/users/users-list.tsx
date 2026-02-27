@@ -44,9 +44,9 @@ export function UsersList({ className }: UsersListProps) {
 							to={`/users/${item.id}`}
 							key={item.id}
 							label={`
-								${item.email} (${[item.last_name, item.first_name, item.father_name].join(
+								${[item.last_name, item.first_name, item.father_name].join(
 									" ",
-								)})`}
+								)} (${item.email})`}
 						/>
 					))
 				) : (

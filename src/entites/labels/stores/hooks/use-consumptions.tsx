@@ -1,10 +1,66 @@
+import { useMemo } from "react";
 import { useStoreCountLabel } from "../use-store-count-label";
-import { useStoreLabels } from "../use-store-labels";
-import { useGrouped } from './use-grouped';
+import { useGroupedShort } from "./use-grouped-short";
 
-export function useConsumptions (production_id?: ILabel["production_id"]) {
-	const storeLabels = useStoreLabels();
+export function useConsumptions(production_id?: ILabel["production_id"]) {
 	const storeCountLabel = useStoreCountLabel();
-	const grouped = useGrouped()
-	
+
+	const formatPrints = useGroupedShort();
+
+	const ddata = useMemo(() => {
+		const res: any = {};
+
+		for (let history of storeCountLabel.history) {
+			res[history.production_id] = res[history.production_id] || {
+				production_id: history.production_id,
+				labels: {},
+			};
+
+			for (let format in formatPrints[history.production_id]) {
+				if (
+					formatPrints[history.production_id][format].includes(
+						history.format_template,
+					)
+				) {
+					if (format === ".default") {
+						res[history.production_id].labels[
+							history.format_template
+						] =
+							(res[history.production_id].labels[
+								history.format_template
+							] || 0) + (history.consumption_m || 0);
+					} else {
+						res[history.production_id].labels[format] =
+							(res[history.production_id].labels[format] || 0) +
+							(history.consumption_m || 0);
+					}
+
+					break;
+				}
+			}
+		}
+		//return res;
+		return Object.fromEntries(
+			Object.entries(res).map(([production_id, data]) => [
+				production_id,
+				{
+					...data,
+					labels: Object.entries(data.labels).map(
+						([label, consumption_m]) => ({
+							label,
+							consumption_m,
+						}),
+					),
+				},
+			]),
+		);
+	}, [storeCountLabel.history, formatPrints]);
+
+	return useMemo(() => {
+		if (production_id) {
+			return ddata[production_id] || {};
+		} else {
+			return ddata;
+		}
+	}, [ddata, production_id]);
 }

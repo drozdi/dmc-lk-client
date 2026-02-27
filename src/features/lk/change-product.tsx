@@ -1,10 +1,10 @@
 import { useStoreUserProfile } from "@/entites/auth";
-import { useQueryProductions } from "@/entites/users";
-import { Select } from "@mantine/core";
-import { useState } from "react";
+import { SelectProductions, useQueryProductions } from "@/entites/users";
+import { useEffect, useMemo, useState } from "react";
 
 export const ChangeProduct = () => {
 	const storeUserProfile = useStoreUserProfile();
+	const userData = storeUserProfile.userData;
 	const qpl = useQueryProductions();
 	const [change, setChange] = useState<boolean>(false);
 
@@ -13,21 +13,46 @@ export const ChangeProduct = () => {
 		setChange(false);
 	};
 
+	useEffect(() => {
+		storeUserProfile.load();
+	}, []);
+
+	useEffect(() => {
+		if (userData) {
+			if (
+				!userData?.is_superuser &&
+				!userData?.id_production?.includes(
+					Number(storeUserProfile.production_id),
+				)
+			) {
+				userData?.id_production &&
+					handleChange(String(userData?.id_production?.[0]));
+			}
+		}
+	}, [userData]);
+
+	const name = useMemo(
+		() => qpl.findNameById(Number(storeUserProfile.production_id)),
+		[qpl.findNameById, storeUserProfile.production_id],
+	);
+
 	return (
 		<>
 			{change ? (
-				<Select
+				<SelectProductions
+					excludeds={
+						storeUserProfile.userData?.is_superuser ? [] : ["0"]
+					}
 					variant="underline"
 					value={String(storeUserProfile.production_id)}
 					onChange={(value) => handleChange(value as string)}
-					data={qpl.dataSelect}
 				/>
 			) : (
 				<span
 					className="cursor-pointer"
 					onClick={() => setChange(true)}
 				>
-					{qpl.findNameById(Number(storeUserProfile.production_id))}
+					{name}
 				</span>
 			)}
 		</>

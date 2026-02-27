@@ -1,3 +1,4 @@
+import { useStoreUserProfile } from "@/entites/auth";
 import { Box, Group, ThemeIcon, Tooltip } from "@mantine/core";
 import { useCallback } from "react";
 import { TbMenu } from "react-icons/tb";
@@ -12,9 +13,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
 	{
-		label: "Аналитика",
+		label: "Dashboard",
 		icon: <TbMenu />,
-		path: "/analytics",
+		path: "/dashboard",
 	},
 	{
 		label: "Отчеты",
@@ -46,11 +47,13 @@ const navItems: NavItem[] = [
 		icon: <TbMenu />,
 		path: "/labels/count",
 	},
-	{
-		label: "Пользователи",
-		icon: <TbMenu />,
-		path: "/users",
-	},
+	useStoreUserProfile.getState().userData?.is_superuser
+		? {
+				label: "Пользователи",
+				icon: <TbMenu />,
+				path: "/users",
+			}
+		: {},
 ];
 
 function NavbarLink({
@@ -101,14 +104,16 @@ export const MainMenu = ({ mini = false }: { mini?: boolean }) => {
 		[location.pathname],
 	);
 
-	return navItems.map((nav) => (
-		<NavbarLink
-			key={nav.path}
-			mini={mini}
-			icon={nav.icon}
-			label={nav.label}
-			path={nav.path}
-			active={isActive(nav.path)}
-		/>
-	));
+	return navItems.map((nav) =>
+		nav.path ? (
+			<NavbarLink
+				key={nav.path}
+				mini={mini}
+				icon={nav.icon}
+				label={nav.label}
+				path={nav.path}
+				active={isActive(nav.path)}
+			/>
+		) : null,
+	);
 };

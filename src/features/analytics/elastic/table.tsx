@@ -1,4 +1,5 @@
 import {
+	SelectAnalyticsFields,
 	useQueryAnalyticsFields,
 	useQueryQueryCreate,
 	useQueryQueryUpdate,
@@ -122,7 +123,6 @@ export const AnalyticsElasticTable = ({
 		select: string,
 		action: SingleActionList,
 	) => {
-		console.log(select, action);
 		const where = whereItemAppend(select, "=", "", action);
 		where.single_action_list = action;
 		storeElastic.save({ ...template });
@@ -199,12 +199,11 @@ export const AnalyticsElasticTable = ({
 						onChange={(value) => handleDateChange("date_to", value)}
 					/>
 				</Group>
-				<Select
+				<SelectAnalyticsFields
 					flex="1"
 					value={""}
 					onChange={(value) => handleAddField(value as string)}
 					placeholder="Добавить поле"
-					data={qaf.dataSelect}
 				/>
 			</Group>
 			<Loading active={isLoading} keepMounted>

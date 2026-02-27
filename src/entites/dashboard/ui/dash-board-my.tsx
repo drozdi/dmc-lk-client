@@ -15,8 +15,6 @@ export function DashBoardUi({ children }: UiDashBoardProps) {
 	const { width, containerRef, mounted } = useContainerWidth();
 	const { layouts, updateLayout, widgets, renderWidget } = useDashboard();
 
-	console.log(layouts);
-
 	const { gridProps, itemProps, liveRegionElement } = useDndGrid({
 		layout: layouts,
 		cols: 12,

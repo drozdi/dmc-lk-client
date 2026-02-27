@@ -37,6 +37,10 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 				queryKey: ["user-profile"],
 			});
 		}
+		if (queryClient.getQueryData(["user-profile"])) {
+			return get().userData;
+		}
+
 		set({
 			isLoading: true,
 			error: "",
@@ -75,6 +79,10 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 		});
 		try {
 			const response = await requestUserProfileUpdate(userData);
+			queryClient.setQueryData(["user-profile"], {
+				...get().userData,
+				...response.data,
+			});
 			set({
 				isLoading: false,
 				userData: {
@@ -115,7 +123,7 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 			});
 			return true;
 		} catch (e: IError) {
-			console.log(e);
+			console.error(e);
 			const error =
 				e.response?.data?.detail || e.message || "Ошибка обновления";
 			notification.error(error);
@@ -135,7 +143,7 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 			const res = await requestUserProfileDelete();
 			return res;
 		} catch (e: IError) {
-			console.log(e);
+			console.error(e);
 			const error =
 				e.response?.data?.detail || e.message || "Ошибка удаления";
 

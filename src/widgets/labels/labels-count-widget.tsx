@@ -1,14 +1,14 @@
-import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
+import {
+	useConsumptions,
+	useGrouped,
+	useStoreCountLabel,
+	useStoreLabels,
+} from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import { useQueryLoading } from "@/shared/hooks";
 import { Widget } from "@/shared/ui";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
-import {
-	useCounts,
-	useFormatPrints,
-	useFormatСonsumptions,
-} from "../../apps/labels/stores";
 
 export const LabelsCountWidget = () => {
 	const qp = useQueryProductions();
@@ -17,18 +17,16 @@ export const LabelsCountWidget = () => {
 
 	const isLoading = useQueryLoading(storeLabels, storeCountLabel);
 
-	const formatPrints = useFormatPrints();
-	const formatСonsumptions = useFormatСonsumptions();
-	const counts = useCounts();
-
-	console.log(formatPrints);
+	const formatPrints = useGrouped();
+	const formatСonsumptions = useConsumptions();
+	const counts = storeCountLabel.count;
 
 	const ddata = useMemo(() => {
 		const res = {};
 		for (let prod in formatPrints) {
 			res[prod] = res[prod] || {
 				production_id: prod,
-				production_name: qp.findNameById(prod),
+				production_name: qp.findNameById(Number(prod)),
 				labels: {},
 				total: 0,
 				consumptions: 0,
@@ -56,7 +54,9 @@ export const LabelsCountWidget = () => {
 				};
 			}
 			(formatСonsumptions[prod]?.labels || []).forEach((item) => {
-				res[prod].labels[item.label].consumptions = item.sum;
+				res[prod].labels[item.label] =
+					res[prod].labels[item.label] || {};
+				res[prod].labels[item.label].consumptions = item.consumption_m;
 			});
 		}
 		for (const count of counts.distributed) {
@@ -109,7 +109,7 @@ export const LabelsCountWidget = () => {
 			}
 		});
 		return Object.values(res);
-	}, [formatPrints, counts, formatСonsumptions]);
+	}, [formatPrints, counts, formatСonsumptions, qp.findNameById]);
 
 	useEffect(() => {
 		storeLabels.load();
@@ -125,10 +125,7 @@ export const LabelsCountWidget = () => {
 						value={"acc-" + production.production_id}
 					>
 						<Accordion.Control px="xs">
-							<Box my="-xs">
-								{production.production_name} (
-								{production.production_id})
-							</Box>
+							<Box my="-xs">{production.production_name}</Box>
 						</Accordion.Control>
 						<Accordion.Panel>
 							<Table

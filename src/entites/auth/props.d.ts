@@ -5,6 +5,8 @@ interface IUser {
 	email: string;
 	phone: string;
 	password?: string;
+	is_superuser: boolean;
+	id_production: IProduction["production_id"][];
 }
 
 interface IStoreAuth extends IStore {
@@ -21,8 +23,8 @@ interface IStoreAuth extends IStore {
 
 interface IStoreUserProfile extends IStore {
 	userData?: IUser;
-	production_id: number;
-	setProductionId(id: IStoreUserProfile["production_id"]): void;
+	production_id: IProduction["production_id"];
+	setProductionId(id: IProduction["production_id"]): void;
 	setUserData(data: Partial<IUser>): void;
 	load(reloading?: boolean): Promise<IUser | undefined>;
 	update(userData: IUser): Promise<IUser | undefined>;

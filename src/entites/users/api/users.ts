@@ -21,7 +21,6 @@ export async function requestUsersUpdate(
 	id: number,
 	data: Omit<IUsersUser, "id">,
 ): Promise<IResponse<IUsersUser>> {
-	console.log(data);
 	const res = await api.patch(`/users/?id_user=${id}`, data);
 	return res.data;
 }

@@ -21,7 +21,7 @@ export const VerificationForm = () => {
 			api.setRefreshToken("");
 			navigate("/auth/sign-up", { replace: true });
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 		}
 	}
 	useEffect(() => {

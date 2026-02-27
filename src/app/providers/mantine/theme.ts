@@ -2,6 +2,7 @@ import { createTheme } from "@mantine/core";
 import inputClasses from "./input.module.css";
 import switchClasses from "./switch.module.css";
 
+import { LabelFormat } from "@/shared/ui";
 import {
 	Checkbox,
 	Drawer,
@@ -169,6 +170,11 @@ export const themeMantine = createTheme({
 		xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) ",
 	},
 	components: {
+		LabelFormat: LabelFormat.extend({
+			defaultProps: {
+				tooltip: true,
+			},
+		}),
 		Drawer: Drawer.extend({
 			defaultProps: {
 				radius: "xs",

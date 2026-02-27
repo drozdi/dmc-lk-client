@@ -18,6 +18,8 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		if (storeAuth.isAuthenticated) {
 			storeUserProfile.load(true);
+			//storeLabels.load();
+			//storeCountLabel.load();
 		} else {
 			storeUserProfile.reset();
 		}

@@ -92,7 +92,12 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 
 	return (
 		<>
-			<Template.Title>Пользователь - {data?.email}</Template.Title>
+			<Template.Title>
+				Пользователь -{" "}
+				{[data?.last_name, data?.first_name, data?.father_name].join(
+					" ",
+				)}
+			</Template.Title>
 			<Loading active={isLoading} keepMounted>
 				<form>
 					<Tabs defaultValue="tab-general">

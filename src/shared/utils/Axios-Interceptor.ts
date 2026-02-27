@@ -168,7 +168,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 
 								return this.axiosInstance(originalRequest);
 							} catch (refreshError) {
-								console.log(refreshError);
+								console.error(refreshError);
 								this.clearTokens();
 								this.refreshSubscribers = [];
 								return Promise.reject(refreshError);

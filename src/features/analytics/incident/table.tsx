@@ -1,13 +1,12 @@
 import {
-	useEnumsDetails,
-	useEnumsFields,
+	SelectAnalyticsIncidentDetails,
+	SelectAnalyticsIncidentFields,
 	useQueryAnalyticsFields,
 } from "@/entites/analytics";
 import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
 import { $setting } from "@/shared";
 import { ButtonRemove, Icon, Loading } from "@/shared/ui";
 import {
-	type ComboboxItem,
 	ActionIcon,
 	Button,
 	Group,
@@ -45,8 +44,6 @@ interface IncidentQueryProps {
 
 export const IncidentTable = () => {
 	const qaf = useQueryAnalyticsFields();
-	const ed = useEnumsDetails();
-	const ef = useEnumsFields();
 
 	const storeIncident = useStoreIncident();
 
@@ -66,27 +63,6 @@ export const IncidentTable = () => {
 	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
 
 	const { limit } = storeIncident;
-
-	const variantDetails = useMemo<ComboboxItem[]>(
-		() =>
-			ed.dataSelect.filter(
-				(item) =>
-					template.details.findIndex(
-						(col) => col.accessorKey === item.value,
-					) === -1,
-			),
-		[(ed.data, template)],
-	);
-	const variantFields = useMemo<ComboboxItem[]>(
-		() =>
-			ef.dataSelect.filter(
-				(item) =>
-					template.fields.findIndex(
-						(col) => col.accessorKey === item.value,
-					) === -1,
-			),
-		[ef.dataSelect, template],
-	);
 
 	const columns = useMemo(
 		() => [
@@ -229,17 +205,17 @@ export const IncidentTable = () => {
 				))}
 			</ul>
 			<Group gap="xs" justify="space-between">
-				<Select
+				<SelectAnalyticsIncidentDetails
+					excludeds={template.details.map((col) => col.accessorKey)}
 					placeholder="Групировать поля"
 					value=""
 					onChange={(val) => handleAddDetail(val as string)}
-					data={variantDetails}
 				/>
-				<Select
+				<SelectAnalyticsIncidentFields
+					excludeds={template.fields.map((col) => col.accessorKey)}
 					placeholder="Показывать поля"
 					value=""
 					onChange={(val) => handleAddField(val as string)}
-					data={variantFields}
 				/>
 				<Group gap="xs">
 					<Text>С</Text>

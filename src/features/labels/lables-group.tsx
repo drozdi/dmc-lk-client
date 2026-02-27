@@ -7,7 +7,7 @@ import {
 	useGrouped,
 	useStoreLabels,
 } from "@/entites/labels";
-import { Loading } from "@/shared/ui";
+import { LabelFormat, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
 	Center,
@@ -147,7 +147,11 @@ export const LabelsGroup = () => {
 										<Table.Thead>
 											<Table.Tr>
 												<Table.Td w="2rem"></Table.Td>
-												<Table.Td>{item}</Table.Td>
+												<Table.Td>
+													<LabelFormat>
+														{item}
+													</LabelFormat>
+												</Table.Td>
 												<Table.Td align="right">
 													<Tooltip
 														label={`Удалить "${item}"`}
@@ -184,7 +188,9 @@ export const LabelsGroup = () => {
 															<Table.Td
 																colSpan={2}
 															>
-																{item.id}
+																<LabelFormat>
+																	{item.id}
+																</LabelFormat>
 															</Table.Td>
 														</Table.Tr>
 													</GroupedItem>
@@ -224,7 +230,9 @@ export const LabelsGroup = () => {
 														<TbList />
 													</Table.Td>
 													<Table.Td>
-														{item.id}
+														<LabelFormat>
+															{item.id}
+														</LabelFormat>
 													</Table.Td>
 												</Table.Tr>
 											</GroupedItem>

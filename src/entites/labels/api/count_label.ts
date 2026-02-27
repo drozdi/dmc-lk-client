@@ -1,6 +1,6 @@
 import { api } from "@/shared/api";
 
-export async function requestLabelsCountReset(
+export async function requestLabelsReset(
 	production_id: ILabel["production_id"],
 ) {
 	const res = await api.get("/count_label/reset/", {
@@ -9,12 +9,12 @@ export async function requestLabelsCountReset(
 	return res.data;
 }
 
-export async function requestLabelsCountHistory({
+export async function requestLabelsHistory({
 	size = 100,
 	number = 0,
 	filterdate = [],
 }: IRequestCountLabelHistory = {}): Promise<
-	IResponseObject<ICountLabelHistoryItem[]>
+	IResponseList<ICountLabelHistoryItem>
 > {
 	const arr = ["size=" + size, "number=" + number];
 	if (Array.isArray(filterdate)) {
