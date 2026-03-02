@@ -27,7 +27,7 @@ export function Productions({ data, onChange }) {
 		<Select
 			defaultValue={String(production_id)}
 			checkIconPosition="right"
-			onChange={(val) => setProductionId(val as string)}
+			onChange={(val: string) => setProductionId(val)}
 			data={[
 				{
 					value: "0",

@@ -11,11 +11,6 @@ type Grouped = Record<
 	}[]
 >;
 
-type GroupedResult = {
-	_(production_id?: undefined): Record<ILabel["production_id"], Grouped>;
-	_(production_id: ILabel["production_id"]): Grouped;
-}["_"];
-
 function grouped(production_id: ILabel["production_id"]): Grouped {
 	const prints = useStoreLabels.getState().selectPrints(production_id);
 	const formats = useStoreLabels.getState().selectFormats(production_id);
@@ -52,7 +47,11 @@ function grouped(production_id: ILabel["production_id"]): Grouped {
 	return containers;
 }
 
-export function useGrouped(production_id?: ILabel["production_id"]) {
+export function useGrouped(): Record<ILabel["production_id"], Grouped>;
+export function useGrouped(production_id: ILabel["production_id"]): Grouped;
+export function useGrouped(
+	production_id?: ILabel["production_id"],
+): Record<ILabel["production_id"], Grouped> | Grouped {
 	const storeLabels = useStoreLabels();
 
 	const res = useMemo<Record<ILabel["production_id"], Grouped>>(() => {
@@ -68,9 +67,9 @@ export function useGrouped(production_id?: ILabel["production_id"]) {
 		);
 	}, [storeLabels.prints, storeLabels.formats, storeLabels.formatPrints]);
 
-	return useMemo<Record<ILabel["production_id"], Grouped>>(() => {
+	return useMemo<Record<ILabel["production_id"], Grouped> | Grouped>(() => {
 		if (production_id) {
-			return res[production_id] || [];
+			return res[production_id] || {};
 		} else {
 			return res || {};
 		}

@@ -1,6 +1,6 @@
 import { useStoreUserProfile } from "@/entites/auth";
 import { SelectProductions, useQueryProductions } from "@/entites/users";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export const ChangeProduct = () => {
 	const storeUserProfile = useStoreUserProfile();
@@ -13,23 +13,19 @@ export const ChangeProduct = () => {
 		setChange(false);
 	};
 
-	useEffect(() => {
-		storeUserProfile.load();
-	}, []);
-
-	useEffect(() => {
-		if (userData) {
-			if (
-				!userData?.is_superuser &&
-				!userData?.id_production?.includes(
-					Number(storeUserProfile.production_id),
-				)
-			) {
-				userData?.id_production &&
-					handleChange(String(userData?.id_production?.[0]));
-			}
-		}
-	}, [userData]);
+	// useEffect(() => {
+	// 	if (userData) {
+	// 		if (
+	// 			!userData.is_superuser &&
+	// 			!userData.id_production?.includes(
+	// 				Number(storeUserProfile.production_id),
+	// 			)
+	// 		) {
+	// 			userData.id_production?.length &&
+	// 				handleChange(String(userData.id_production?.[0]));
+	// 		}
+	// 	}
+	// }, [userData, handleChange]);
 
 	const name = useMemo(
 		() => qpl.findNameById(Number(storeUserProfile.production_id)),

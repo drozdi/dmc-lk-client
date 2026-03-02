@@ -20,11 +20,10 @@ export type LabelFormatFactory = Factory<{
 }>;
 
 export const LabelFormat = factory<LabelFormatFactory>(
-	({
-		children: _children,
-		tooltip: _tooltip,
-		..._props
-	}: LabelFormatProps) => {
+	(
+		{ children: _children, tooltip: _tooltip, ..._props }: LabelFormatProps,
+		ref,
+	) => {
 		const { children, tooltip } = useProps(
 			"LabelFormat",
 			{ tooltip: false },

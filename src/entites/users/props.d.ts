@@ -6,7 +6,7 @@ interface IUsersUser extends IUser {
 }
 
 interface IProduction {
-	production_id: number;
+	production_id: number | string;
 	production_name?: string;
 	name_production?: string;
 }

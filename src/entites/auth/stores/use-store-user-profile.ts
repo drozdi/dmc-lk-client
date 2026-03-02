@@ -15,12 +15,10 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 	userData: undefined,
 	production_id: Number($setting.get("production.id", 0)),
 	setProductionId(production_id) {
-		if (get().production_id !== production_id) {
-			set({
-				production_id,
-			});
-			$setting.set("production.id", String(production_id));
-		}
+		set({
+			production_id,
+		});
+		$setting.set("production.id", String(production_id));
 	},
 	setUserData(data: IUser) {
 		set({
@@ -158,5 +156,8 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 		set({
 			userData: undefined,
 		});
+		// queryClient.removeQueries({
+		// 	queryKey: ["user-profile"],
+		// });
 	},
 }));

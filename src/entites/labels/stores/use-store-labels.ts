@@ -31,7 +31,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 				queryKey: ["labels-prints"],
 			});
 		}
-		console.log(queryClient.getQueryData(["labels-prints"]));
+
 		set({
 			isLoading: true,
 			error: "",

@@ -3,7 +3,6 @@ import {
 	GroupedContainer,
 	GroupedItem,
 	GroupedProvider,
-	useFormats,
 	useGrouped,
 	useStoreLabels,
 } from "@/entites/labels";
@@ -29,15 +28,19 @@ import { cached, randomColor } from "@/shared/utils";
 const colors = cached<string>((name: string) => randomColor());
 
 export const LabelsGroup = () => {
-	const storeLabels = useStoreLabels();
-
-	useEffect(() => {
-		storeLabels.load();
-	}, []);
-
 	const storeUserProfile = useStoreUserProfile();
 
-	if (storeUserProfile.production_id <= 0) {
+	const containers = useGrouped(storeUserProfile.production_id);
+	const formats = Object.keys(containers).filter(
+		(item) => item !== ".default",
+	);
+
+	console.log(storeUserProfile.production_id);
+
+	if (
+		!storeUserProfile.production_id ||
+		storeUserProfile.production_id == "0"
+	) {
 		return (
 			<Center mih="50vh">
 				<Text fz="h1" c="dimmed">
@@ -46,10 +49,6 @@ export const LabelsGroup = () => {
 			</Center>
 		);
 	}
-
-	const formats = useFormats(storeUserProfile.production_id);
-
-	const containers = useGrouped(storeUserProfile.production_id);
 
 	const [newFormat, setNewFormat] = useState<string>("");
 	const [error, setError] = useState<string>("");
@@ -67,7 +66,7 @@ export const LabelsGroup = () => {
 
 	const handleAddFormat = async () => {
 		if (newFormat.trim()) {
-			const res = await storeLabels.addFormat({
+			const res = await useStoreLabels.getState().addFormat({
 				format: newFormat.trim(),
 				production_id: storeUserProfile.production_id,
 			});
@@ -88,7 +87,7 @@ export const LabelsGroup = () => {
 			labels: { confirm: "Удалить картинку", cancel: "Нет" },
 			onConfirm: async () => {
 				if (
-					await storeLabels.deleteFormat({
+					await useStoreLabels.getState().deleteFormat({
 						format,
 						production_id: storeUserProfile.production_id,
 					})
@@ -106,14 +105,18 @@ export const LabelsGroup = () => {
 		});
 	};
 
+	useEffect(() => {
+		useStoreLabels.getState().load();
+	}, []);
+
 	return (
 		<Stack gap="xs">
-			<Loading active={storeLabels.isLoading} keepMounted>
+			<Loading active={useStoreLabels.getState().isLoading} keepMounted>
 				<TextInput
 					w="100%"
 					placeholder="Добавить формат"
 					error={error}
-					disabled={storeLabels.isLoading}
+					disabled={useStoreLabels.getState().isLoading}
 					value={newFormat}
 					onChange={handleChange}
 					onKeyDown={handleKeyPress}
@@ -158,7 +161,8 @@ export const LabelsGroup = () => {
 													>
 														<ActionIcon
 															disabled={
-																storeLabels.isLoading
+																useStoreLabels.getState()
+																	.isLoading
 															}
 															color="red"
 															onClick={() =>
