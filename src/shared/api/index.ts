@@ -8,6 +8,7 @@ export const api = new AxiosInterceptor({
 		"Content-Type": "application/json",
 	},
 	//message401: 'Signature has expired.',
+	timeout: 100,
 	accessToken: "access",
 	refreshToken: "refresh",
 	accessTokenKey: "token.access",

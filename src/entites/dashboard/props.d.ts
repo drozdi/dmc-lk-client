@@ -20,15 +20,16 @@ interface IWidget {
 	description?: string;
 	type: string;
 	fixed?: string;
-	params?:
-		| {
-				label?: string;
-				field?: string;
-				type?: string;
-		  }[]
-		| Record<string, any>;
+	params?: IWidgetParam[] | Record<string, any>;
 	component?: React.ComponentType<any>;
 	children?: React.ReactNode;
+}
+
+interface IWidgetParam {
+	label?: string;
+	field: string;
+	type?: string;
+	description?: string;
 }
 
 interface DashboardContextType {

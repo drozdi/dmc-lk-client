@@ -25,6 +25,7 @@ export const useStoreDashboardMain = factoryDashboardStore({
 					label: "Описание",
 					field: "description",
 					type: "text",
+					description: "Содержимое виджета",
 				},
 			],
 		},
