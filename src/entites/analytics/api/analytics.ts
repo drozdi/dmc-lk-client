@@ -4,11 +4,13 @@ export async function requestAnalytics(
 	params: IRequestAnalytics,
 ): Promise<IResponse<IResponseAnalytics>> {
 	const arr = [];
-	for (let key in params) {
+	for (const key in params) {
 		if (Array.isArray(params[key as keyof IRequestAnalytics])) {
 			(params[key as keyof IRequestAnalytics] as string[]).forEach(
-				(item) => {
-					item && arr.push(key + "=" + item);
+				function (item) {
+					if (item) {
+						arr.push(key + "=" + item);
+					}
 				},
 			);
 		} else if (params[key as keyof IRequestAnalytics]) {

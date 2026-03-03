@@ -105,7 +105,7 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 					</Button>
 				)}
 			</Group>
-			<Table highlightOnHover={!Boolean(production_id)}>
+			<Table highlightOnHover={!production_id}>
 				<Table.Tbody>
 					{production_id ? (
 						<>

@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const VerificationForm = () => {
 	const storeAuth = useStoreAuth();
-	let [searchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const { isLoading, error } = storeAuth;
 	const [link, setLink] = useState<string>(searchParams.get("link") || "");
 	const navigate = useNavigate();

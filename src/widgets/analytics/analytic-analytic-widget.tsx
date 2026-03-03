@@ -53,8 +53,8 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 		const currProduction = Number(production_id) || 0;
 
 		if (data) {
-			for (let event of maps) {
-				for (let production of data[event as AnalyticEvent]
+			for (const event of maps) {
+				for (const production of data[event as AnalyticEvent]
 					?.production || []) {
 					if (
 						currProduction > 0 &&
@@ -62,7 +62,7 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 					) {
 						continue;
 					}
-					for (let d of production.data || []) {
+					for (const d of production.data || []) {
 						res[dayjs(d.timestamp).format("YYYY-MM-DD")][event] +=
 							d.count;
 					}
@@ -86,7 +86,7 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 				<Filterdate
 					filterdate_from={query.filterdate_from}
 					filterdate_to={query.filterdate_to}
-					editable={!Boolean(props.filterdate_from)}
+					editable={!props.filterdate_from}
 					onChange={(val) => {
 						setQuery({
 							...query,

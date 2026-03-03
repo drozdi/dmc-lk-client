@@ -49,7 +49,7 @@ export class Setting {
 			storageLocal.default(fullKey, settings[name]);
 
 			const allKey = `${this._key}..all`;
-			let allItems: string[] = storageLocal.get(allKey, []);
+			const allItems: string[] = storageLocal.get(allKey, []);
 
 			if (!allItems.includes(name)) {
 				allItems.push(name);
@@ -63,7 +63,7 @@ export class Setting {
 		storageLocal.set(fullKey, val);
 
 		const allKey = `${this._key}..all`;
-		let allItems: string[] = storageLocal.get(allKey, []);
+		const allItems: string[] = storageLocal.get(allKey, []);
 
 		if (!allItems.includes(name)) {
 			allItems.push(name);

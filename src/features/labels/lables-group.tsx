@@ -35,8 +35,6 @@ export const LabelsGroup = () => {
 		(item) => item !== ".default",
 	);
 
-	console.log(storeUserProfile.production_id);
-
 	if (
 		!storeUserProfile.production_id ||
 		storeUserProfile.production_id == "0"

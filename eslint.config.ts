@@ -17,16 +17,25 @@ export default defineConfig([
 		"reports",
 		"node_modules",
 	]),
+	js.configs.recommended,
+	tseslint.configs.recommended,
+	reactHooks.configs["recommended-latest"],
+	reactRefresh.configs.vite,
 	{
+		rules: {
+			"no-unused-expressions": "off",
+			"@typescript-eslint/no-unused-expressions": [
+				"error",
+				{
+					allowShortCircuit: false,
+					allowTernary: false,
+					allowTaggedTemplates: false,
+				},
+			],
+		},
 		files: ["**/*.{ts,tsx}"],
-		extends: [
-			js.configs.recommended,
-			tseslint.configs.recommended,
-			reactHooks.configs["recommended-latest"],
-			reactRefresh.configs.vite,
-		],
 		languageOptions: {
-			ecmaVersion: 2020,
+			ecmaVersion: 2023,
 			globals: globals.browser,
 		},
 	},

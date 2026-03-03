@@ -10,13 +10,13 @@ export function useConsumptions(production_id?: ILabel["production_id"]) {
 	const ddata = useMemo(() => {
 		const res: any = {};
 
-		for (let history of storeCountLabel.history) {
+		for (const history of storeCountLabel.history) {
 			res[history.production_id] = res[history.production_id] || {
 				production_id: history.production_id,
 				labels: {},
 			};
 
-			for (let format in formatPrints[history.production_id]) {
+			for (const format in formatPrints[history.production_id]) {
 				if (
 					formatPrints[history.production_id][format].includes(
 						history.format_template,

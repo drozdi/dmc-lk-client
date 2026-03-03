@@ -26,7 +26,7 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 		} else {
 			storeUserProfile.reset();
 		}
-	}, [storeUserProfile, storeAuth.isAuthenticated]);
+	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
 		const userData = storeUserProfile.userData;

@@ -23,7 +23,7 @@ export const LabelsCountWidget = () => {
 
 	const ddata = useMemo(() => {
 		const res = {};
-		for (let prod in formatPrints) {
+		for (const prod in formatPrints) {
 			res[prod] = res[prod] || {
 				production_id: prod,
 				production_name: qp.findNameById(Number(prod)),
@@ -32,7 +32,7 @@ export const LabelsCountWidget = () => {
 				consumptions: 0,
 				minus: 0,
 			};
-			for (let label in formatPrints[prod]) {
+			for (const label in formatPrints[prod]) {
 				if (label === ".default") {
 					continue;
 				}
@@ -44,7 +44,7 @@ export const LabelsCountWidget = () => {
 					container: true,
 				};
 			}
-			for (let label of formatPrints[prod][".default"] || []) {
+			for (const label of formatPrints[prod][".default"] || []) {
 				res[prod].labels[label] = res[prod].labels[label] || {
 					labels: [label],
 					total: 0,
@@ -77,8 +77,8 @@ export const LabelsCountWidget = () => {
 					count.sum;
 			}
 		}
-		for (let prod in res) {
-			for (let label in res[prod].labels) {
+		for (const prod in res) {
+			for (const label in res[prod].labels) {
 				if (
 					res[prod].labels[label].minus === 0 &&
 					res[prod].labels[label].total === 0 &&

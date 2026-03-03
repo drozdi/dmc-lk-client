@@ -4,9 +4,9 @@
  * @returns {Function} - Кэширующая обертка для переданной функции.
  */
 export function cached<T>(fn: Function) {
-	var cache = Object.create(null)
+	const cache = Object.create(null)
 	return function cachedFn(...args: any[]): T {
-		var hit = cache[args.join('-')]
+		const hit = cache[args.join('-')]
 		return hit || (cache[args.join('-')] = fn(...args))
 	}
 }

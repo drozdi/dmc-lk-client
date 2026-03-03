@@ -28,7 +28,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 
 	const res = useMemo(() => {
 		const res = {};
-		for (let prod in labelsFormat) {
+		for (const prod in labelsFormat) {
 			res[prod] = res[prod] || {
 				production_id: prod,
 				production_name: qp.findNameById(Number(prod)),
@@ -36,7 +36,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 				total: 0,
 				minus: 0,
 			};
-			for (let label in labelsFormat[prod]) {
+			for (const label in labelsFormat[prod]) {
 				if (label === ".default") {
 					continue;
 				}
@@ -47,7 +47,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 					container: true,
 				};
 			}
-			for (let label of labelsFormat[prod][".default"] || []) {
+			for (const label of labelsFormat[prod][".default"] || []) {
 				res[prod].labels[label.print] = res[prod].labels[label] || {
 					labels: [label],
 					total: 0,
@@ -85,8 +85,8 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 				});
 			}
 		}
-		for (let prod in res) {
-			for (let label in res[prod].labels) {
+		for (const prod in res) {
+			for (const label in res[prod].labels) {
 				if (
 					res[prod].labels[label].minus === 0 &&
 					res[prod].labels[label].total === 0

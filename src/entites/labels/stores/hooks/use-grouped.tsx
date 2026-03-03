@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useStoreLabels } from "../use-store-labels";
 
 type Grouped = Record<
@@ -29,13 +28,14 @@ function grouped(production_id: ILabel["production_id"]): Grouped {
 	}));
 
 	formatPrints.forEach((item) => {
-		item.format &&
+		if (item.format) {
 			containers[item.format]?.push({
 				id: item.statistics_print_format,
 				_id: item.id,
 				format: item.add_label_format,
 				print: item.statistics_print_format,
 			});
+		}
 		const i =
 			containers[".default"]?.findIndex((e) => e.print === item.print) ||
 			-1;
@@ -54,24 +54,16 @@ export function useGrouped(
 ): Record<ILabel["production_id"], Grouped> | Grouped {
 	const storeLabels = useStoreLabels();
 
-	const res = useMemo<Record<ILabel["production_id"], Grouped>>(() => {
-		let productions: ILabel["production_id"][] = [];
-		productions = productions.concat(Object.keys(storeLabels.formats));
-		productions = productions.concat(Object.keys(storeLabels.prints));
-		productions = [...new Set(productions)];
+	let productions: ILabel["production_id"][] = [];
+	productions = productions.concat(Object.keys(storeLabels.formats));
+	productions = productions.concat(Object.keys(storeLabels.prints));
+	productions = [...new Set(productions)];
 
-		return Object.fromEntries(
-			productions.map((production_id) => {
-				return [production_id, grouped(production_id)];
-			}),
-		);
-	}, [storeLabels.prints, storeLabels.formats, storeLabels.formatPrints]);
+	const res = Object.fromEntries(
+		productions.map((production_id) => {
+			return [production_id, grouped(production_id)];
+		}),
+	);
 
-	return useMemo<Record<ILabel["production_id"], Grouped> | Grouped>(() => {
-		if (production_id) {
-			return res[production_id] || {};
-		} else {
-			return res || {};
-		}
-	}, [res, production_id]);
+	return production_id ? res[production_id] || {} : res || {};
 }

@@ -5,12 +5,14 @@ export async function requestAnalyticsIncident(
 ): Promise<IResponse<IResponseAnalyticsIncident>> {
 	const arr = [];
 	params.limit_page = params.limit_page || 100;
-	for (let key in params) {
+	for (const key in params) {
 		if (Array.isArray(params[key as keyof IRequestAnalyticsIncident])) {
 			(
 				params[key as keyof IRequestAnalyticsIncident] as string[]
 			).forEach((item) => {
-				item && arr.push(key + "=" + item);
+				if (item) {
+					arr.push(key + "=" + item);
+				}
 			});
 		} else if (params[key as keyof IRequestAnalyticsIncident]) {
 			arr.push(

@@ -110,7 +110,7 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 				<Filterdate
 					filterdate_from={query.filterdate_from}
 					filterdate_to={query.filterdate_to}
-					editable={!Boolean(props.filterdate_from)}
+					editable={!props.filterdate_from}
 					onChange={(val) => {
 						setQuery({
 							...query,

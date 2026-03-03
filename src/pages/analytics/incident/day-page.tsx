@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function AnalyticsIncidentDayPage() {
-	let [searchParams] = useSearchParams();
+	const [searchParams] = useSearchParams();
 	const [day, setDay] = useState(
 		dayjs(searchParams.get("day") || undefined).format("YYYY-MM-DD"),
 	);

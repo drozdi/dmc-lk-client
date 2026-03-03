@@ -19,13 +19,13 @@ export function useGroupedShort(production_id?: ILabel["production_id"]) {
 		Record<IProduction["production_id"], GroupedShort>
 	>(() => {
 		const res: Record<IProduction["production_id"], GroupedShort> = {};
-		for (let prod in formatPrints) {
+		for (const prod in formatPrints) {
 			const prodData = formatPrints[prod];
 			if (!prodData) {
 				continue;
 			}
 			res[prod] = res[prod] || {};
-			for (let format in prodData) {
+			for (const format in prodData) {
 				res[prod][format] =
 					prodData[format]?.map((item) => item.print) || [];
 			}
