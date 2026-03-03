@@ -1,9 +1,17 @@
 import { useStoreCountLabel } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
+import {
+	Item,
+	ItemLabel,
+	ItemSection,
+	LabelFormat,
+	List,
+	Loading,
+} from "@/shared/ui";
 import { Accordion } from "@mantine/core";
+import "@style";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
-import { Item, ItemLabel, ItemSection, List, Loading } from "../../shared/ui";
 
 export const LabelsHistory = () => {
 	const qp = useQueryProductions();
@@ -71,11 +79,25 @@ export const LabelsHistory = () => {
 													).format(
 														"HH:mm DD-MM-YYYY",
 													)}{" "}
-													- {item.format_template}
+													-{" "}
+													<LabelFormat>
+														{item.format_template}
+													</LabelFormat>
 												</ItemLabel>
 											</ItemSection>
+
 											<ItemSection side>
-												{item.count_label}
+												{item.consumption_m !== 0 ? (
+													<>
+														-{item.consumption_m} м.
+													</>
+												) : (
+													"-"
+												)}
+											</ItemSection>
+
+											<ItemSection side className="!w-20">
+												{item.count_label} шт.
 											</ItemSection>
 										</Item>
 									))}

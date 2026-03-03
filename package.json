@@ -60,6 +60,7 @@
 		"mantine-contextmenu": "^8.3.13",
 		"mantine-datatable": "^8.3.13",
 		"mantine-form-yup-resolver": "^2.0.0",
+		"mantine-with-tailwind-preset-alpha": "^0.1.0",
 		"mobx": "^6.15.0",
 		"mobx-react-lite": "^4.1.1",
 		"react": "^19.2.4",

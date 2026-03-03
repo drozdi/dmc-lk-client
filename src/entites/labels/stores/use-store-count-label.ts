@@ -22,10 +22,19 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	},
 	async loadHistory(reloading = false) {
 		if (reloading) {
-			queryClient.invalidateQueries({
+			queryClient.removeQueries({
 				queryKey: ["labels-history"],
+				exact: false,
 			});
 		}
+		if (
+			queryClient
+				.getQueryCache()
+				.findAll({ queryKey: ["labels-history"] }).length
+		) {
+			return;
+		}
+
 		set({
 			isLoading: false,
 			error: "",
@@ -75,6 +84,12 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			queryClient.invalidateQueries({
 				queryKey: ["labels-count"],
 			});
+		}
+		if (
+			queryClient.getQueryCache().findAll({ queryKey: ["labels-count"] })
+				.length
+		) {
+			return;
 		}
 		set({
 			isLoading: false,

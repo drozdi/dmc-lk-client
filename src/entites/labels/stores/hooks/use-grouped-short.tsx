@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useGrouped } from "./use-grouped";
 
 type GroupedShort = Record<
@@ -15,32 +14,18 @@ export function useGroupedShort(
 ): GroupedShort;
 export function useGroupedShort(production_id?: ILabel["production_id"]) {
 	const formatPrints = useGrouped();
-	const res = useMemo<
-		Record<IProduction["production_id"], GroupedShort>
-	>(() => {
-		const res: Record<IProduction["production_id"], GroupedShort> = {};
-		for (const prod in formatPrints) {
-			const prodData = formatPrints[prod];
-			if (!prodData) {
-				continue;
-			}
-			res[prod] = res[prod] || {};
-			for (const format in prodData) {
-				res[prod][format] =
-					prodData[format]?.map((item) => item.print) || [];
-			}
+	const res: Record<IProduction["production_id"], GroupedShort> = {};
+	for (const prod in formatPrints) {
+		const prodData = formatPrints[prod];
+		if (!prodData) {
+			continue;
 		}
-
-		return res;
-	}, [formatPrints]);
-
-	return useMemo<
-		Record<IProduction["production_id"], GroupedShort> | GroupedShort
-	>(() => {
-		if (production_id) {
-			return res[production_id] || {};
-		} else {
-			return res || {};
+		res[prod] = res[prod] || {};
+		for (const format in prodData) {
+			res[prod][format] =
+				prodData[format]?.map((item) => item.print) || [];
 		}
-	}, [res, production_id]);
+	}
+
+	return production_id ? res[production_id] || {} : res || {};
 }

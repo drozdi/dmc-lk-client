@@ -1,4 +1,3 @@
-import { useStoreUserProfile } from "@/entites/auth";
 import { Box, Group, ThemeIcon, Tooltip } from "@mantine/core";
 import { useCallback } from "react";
 import { TbMenu } from "react-icons/tb";
@@ -47,13 +46,11 @@ const navItems: NavItem[] = [
 		icon: <TbMenu />,
 		path: "/labels/count",
 	},
-	useStoreUserProfile.getState().userData?.is_superuser
-		? {
-				label: "Пользователи",
-				icon: <TbMenu />,
-				path: "/users",
-			}
-		: {},
+	{
+		label: "Пользователи",
+		icon: <TbMenu />,
+		path: "/users",
+	},
 ];
 
 function NavbarLink({

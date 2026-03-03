@@ -10,7 +10,10 @@ export function useQueryQueryCreate() {
 			return (await requestAnalyticsQueriesAdd(data)).data;
 		},
 		onSuccess: (res, data) => {
-			queryClient.removeQueries({ queryKey: ["query_users"] });
+			queryClient.removeQueries({
+				queryKey: ["query_users"],
+				exact: false,
+			});
 			queryClient.setQueryData(["query_users", { id: res.id }], res);
 		},
 	});

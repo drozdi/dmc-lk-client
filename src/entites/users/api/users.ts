@@ -14,14 +14,22 @@ export async function requestUsersList(
 export async function requestUsersGet(
 	id: IUsersUser["id"],
 ): Promise<IResponse<IUsersUser>> {
-	const res = await api.get(`/users/user?id_user=${id}`);
+	const res = await api.get(`/users/${id}`);
 	return res.data;
 }
+
 export async function requestUsersUpdate(
-	id: number,
+	id: IUsersUser["id"],
 	data: Omit<IUsersUser, "id">,
 ): Promise<IResponse<IUsersUser>> {
-	const res = await api.patch(`/users/?id_user=${id}`, data);
+	const res = await api.patch(`/users/${id}`, data);
+	return res.data;
+}
+
+export async function requestUsersDelete(
+	id: IUsersUser["id"],
+): Promise<IResponse<string>> {
+	const res = await api.delete(`/users/${id}`);
 	return res.data;
 }
 

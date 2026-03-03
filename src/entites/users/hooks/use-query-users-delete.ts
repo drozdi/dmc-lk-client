@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { requestAnalyticsQueriesDelete } from "../../api/query_users";
+import { requestUsersDelete } from "../api/users";
 
-export function useQueryQueryDelete() {
+export function useQueryUsersDelete() {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async ({ id }: IAnalyticsElastic) => {
-			return await requestAnalyticsQueriesDelete(id);
+			return await requestUsersDelete(id);
 		},
 		onSuccess: () => {
 			queryClient.removeQueries({
-				queryKey: ["query_users"],
+				queryKey: ["users"],
 				exact: false,
 			});
 		},

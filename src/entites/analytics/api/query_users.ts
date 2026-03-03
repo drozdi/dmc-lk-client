@@ -25,10 +25,10 @@ export async function requestAnalyticsQueriesGet(
 	return res.data;
 }
 
-export async function requestAnalyticsQueriesUpdate({
-	id,
-	...data
-}: Partial<IAnalyticsElastic>): Promise<IResponse<IAnalyticsElastic>> {
+export async function requestAnalyticsQueriesUpdate(
+	id: IAnalyticsElastic["id"],
+	data: Omit<IAnalyticsElastic, "id">,
+): Promise<IResponse<IAnalyticsElastic>> {
 	const res = await api.patch(`/query_users/${id}`, data);
 	return res.data;
 }

@@ -12,16 +12,16 @@ export function factoryQuery<
 >(
 	entry: string,
 	defaultEntry: T,
-	requestList: (params: Omit<RL, "number">) => Promise<IResponseList<T>>,
-	requestRead: (id: T["id"]) => Promise<IResponse<T>>,
-	requestCreate: (data: T) => Promise<IResponse<T>>,
-	requestUpdate: (id: T["id"], data: T) => Promise<IResponse<T>>,
-	requestDelete?: (id: T["id"] | T["id"][]) => Promise<IResponse<string>>,
+	requestList?: (params: Omit<RL, "number">) => Promise<IResponseList<T>>,
+	requestRead?: (id: T["id"]) => Promise<IResponse<T>>,
+	requestCreate?: (data: T) => Promise<IResponse<T>>,
+	requestUpdate?: (id: T["id"], data: T) => Promise<IResponse<T>>,
+	requestDelete?: (id: T["id"]) => Promise<IResponse<string>>,
 ) {
 	return [
 		requestList &&
 			function useQueryList(params: Omit<RL, "number">) {
-				params.size = params.size || 100;
+				params.size = params.size || 15;
 				const q = useInfiniteQuery({
 					queryKey: [entry, { ...params, number: undefined }],
 					initialPageParam: 0,
@@ -38,14 +38,8 @@ export function factoryQuery<
 						}
 						return res;
 					},
-					getNextPageParam: (lastPage) => {
-						if (
-							lastPage.data.response.length >= lastPage.data.size
-						) {
-							return lastPage.data.next_page - 1;
-						}
-					},
-					getPreviousPageParam: (...args) => {},
+					getNextPageParam: (lastPage) => lastPage.next_page,
+					getPreviousPageParam: (lastPage) => lastPage.previous_page,
 					select({ pages, pageParams }): T[] {
 						return pages[pageParams[pageParams.length - 1]].data
 							.response;
@@ -80,7 +74,10 @@ export function factoryQuery<
 						return await requestCreate(data);
 					},
 					onSuccess: (data, {}) => {
-						queryClient.invalidateQueries({ queryKey: [entry] });
+						queryClient.removeQueries({
+							queryKey: [entry],
+							exact: false,
+						});
 					},
 				});
 			},
@@ -91,8 +88,12 @@ export function factoryQuery<
 					mutationFn: async ({ id, ...data }: T | Partial<T>) => {
 						return await requestUpdate(id, data as T);
 					},
-					onSuccess: (data, {}) => {
-						queryClient.invalidateQueries({ queryKey: [entry] });
+					onSuccess: (data, params) => {
+						queryClient.invalidateQueries({
+							queryKey: [entry],
+							exact: false,
+						});
+						queryClient.setQueryData([entry, params.id], data.data);
 					},
 				});
 			},
@@ -104,7 +105,10 @@ export function factoryQuery<
 						return await requestDelete(id);
 					},
 					onSuccess: (data, {}) => {
-						queryClient.invalidateQueries({ queryKey: [entry] });
+						queryClient.removeQueries({
+							queryKey: [entry],
+							exact: false,
+						});
 					},
 				});
 			},

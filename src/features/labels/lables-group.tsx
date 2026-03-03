@@ -28,12 +28,19 @@ import { cached, randomColor } from "@/shared/utils";
 const colors = cached<string>((name: string) => randomColor());
 
 export const LabelsGroup = () => {
+	const storeLabels = useStoreLabels();
 	const storeUserProfile = useStoreUserProfile();
-
 	const containers = useGrouped(storeUserProfile.production_id);
+	const [newFormat, setNewFormat] = useState<string>("");
+	const [error, setError] = useState<string>("");
+
 	const formats = Object.keys(containers).filter(
 		(item) => item !== ".default",
 	);
+
+	useEffect(() => {
+		storeLabels.load();
+	}, []);
 
 	if (
 		!storeUserProfile.production_id ||
@@ -48,9 +55,6 @@ export const LabelsGroup = () => {
 		);
 	}
 
-	const [newFormat, setNewFormat] = useState<string>("");
-	const [error, setError] = useState<string>("");
-
 	const handleChange = ({ target }: React.ChangeEvent) => {
 		setNewFormat(target.value);
 		setError("");
@@ -64,7 +68,7 @@ export const LabelsGroup = () => {
 
 	const handleAddFormat = async () => {
 		if (newFormat.trim()) {
-			const res = await useStoreLabels.getState().addFormat({
+			const res = await storeLabels.addFormat({
 				format: newFormat.trim(),
 				production_id: storeUserProfile.production_id,
 			});
@@ -85,7 +89,7 @@ export const LabelsGroup = () => {
 			labels: { confirm: "Удалить картинку", cancel: "Нет" },
 			onConfirm: async () => {
 				if (
-					await useStoreLabels.getState().deleteFormat({
+					await storeLabels.deleteFormat({
 						format,
 						production_id: storeUserProfile.production_id,
 					})
@@ -103,18 +107,14 @@ export const LabelsGroup = () => {
 		});
 	};
 
-	useEffect(() => {
-		useStoreLabels.getState().load();
-	}, []);
-
 	return (
 		<Stack gap="xs">
-			<Loading active={useStoreLabels.getState().isLoading} keepMounted>
+			<Loading active={storeLabels.isLoading} keepMounted>
 				<TextInput
 					w="100%"
 					placeholder="Добавить формат"
 					error={error}
-					disabled={useStoreLabels.getState().isLoading}
+					disabled={storeLabels.isLoading}
 					value={newFormat}
 					onChange={handleChange}
 					onKeyDown={handleKeyPress}
@@ -159,8 +159,7 @@ export const LabelsGroup = () => {
 													>
 														<ActionIcon
 															disabled={
-																useStoreLabels.getState()
-																	.isLoading
+																storeLabels.isLoading
 															}
 															color="red"
 															onClick={() =>

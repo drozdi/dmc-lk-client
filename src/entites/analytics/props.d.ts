@@ -76,7 +76,7 @@ interface IResponseAnalyticsElastic {
 /* ------------------------ */
 
 interface IAnalyticsDataItem {
-	data: string;
+	data: ILabel["statistics_print_format"];
 	timestamp: string;
 	count: number;
 }

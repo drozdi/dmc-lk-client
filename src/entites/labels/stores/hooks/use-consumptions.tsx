@@ -2,12 +2,19 @@ import { useMemo } from "react";
 import { useStoreCountLabel } from "../use-store-count-label";
 import { useGroupedShort } from "./use-grouped-short";
 
-export function useConsumptions(production_id?: ILabel["production_id"]) {
-	const storeCountLabel = useStoreCountLabel();
+type Grouped = any;
 
+export function useConsumptions(): Record<ILabel["production_id"], Grouped>;
+export function useConsumptions(
+	production_id: ILabel["production_id"],
+): Grouped;
+export function useConsumptions(
+	production_id?: ILabel["production_id"],
+): Record<ILabel["production_id"], Grouped> | Grouped {
+	const storeCountLabel = useStoreCountLabel();
 	const formatPrints = useGroupedShort();
 
-	const ddata = useMemo(() => {
+	const ddata = useMemo<Record<ILabel["production_id"], Grouped>>(() => {
 		const res: any = {};
 
 		for (const history of storeCountLabel.history) {

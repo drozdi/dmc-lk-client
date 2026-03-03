@@ -10,7 +10,10 @@ export function useQueryQueryUpdate() {
 			return (await requestAnalyticsQueriesUpdate(data)).data;
 		},
 		onSuccess: (res, data) => {
-			queryClient.refetchQueries({ queryKey: ["query_users"] });
+			queryClient.removeQueries({
+				queryKey: ["query_users"],
+				exact: false,
+			});
 			queryClient.setQueryData(["query_users", Number(data.id)], res);
 		},
 	});

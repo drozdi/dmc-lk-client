@@ -12,17 +12,17 @@ export function LabelsCountPage() {
 			<Tabs defaultValue="item-count">
 				<Tabs.List grow>
 					<Tabs.Tab value="item-count">Текущее состояние</Tabs.Tab>
-					<Tabs.Tab value="item-consumption">Метраж</Tabs.Tab>
+					{/* <Tabs.Tab value="item-consumption">Метраж</Tabs.Tab> */}
 					<Tabs.Tab value="item-history">История</Tabs.Tab>
 				</Tabs.List>
 				<Tabs.Panel value="item-count" pt="xs">
 					<LabelsCount />
 				</Tabs.Panel>
 				<Tabs.Panel value="item-consumption" pt="xs">
-					{<LablesConsumption />}
+					<LablesConsumption />
 				</Tabs.Panel>
 				<Tabs.Panel value="item-history" pt="xs">
-					{<LabelsHistory />}
+					<LabelsHistory />
 				</Tabs.Panel>
 			</Tabs>
 		</Paper>

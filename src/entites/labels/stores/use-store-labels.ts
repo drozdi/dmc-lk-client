@@ -27,9 +27,16 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 
 	async loadPrints(reloading = false) {
 		if (reloading) {
-			queryClient.invalidateQueries({
+			queryClient.removeQueries({
 				queryKey: ["labels-prints"],
+				exact: false,
 			});
+		}
+		if (
+			queryClient.getQueryCache().findAll({ queryKey: ["labels-prints"] })
+				.length
+		) {
+			return;
 		}
 
 		set({
@@ -64,9 +71,17 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 	async loadFormats(reloading: boolean = false) {
 		if (reloading) {
-			queryClient.invalidateQueries({
+			queryClient.removeQueries({
 				queryKey: ["labels-formats"],
+				exact: false,
 			});
+		}
+		if (
+			queryClient
+				.getQueryCache()
+				.findAll({ queryKey: ["labels-formats"] }).length
+		) {
+			return;
 		}
 		set({
 			isLoading: true,
@@ -100,9 +115,17 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 	async loadFormatPrints(reloading: boolean = false) {
 		if (reloading) {
-			queryClient.invalidateQueries({
+			queryClient.removeQueries({
 				queryKey: ["labels-format-prints"],
+				exact: false,
 			});
+		}
+		if (
+			queryClient
+				.getQueryCache()
+				.findAll({ queryKey: ["labels-format-prints"] }).length
+		) {
+			return;
 		}
 		set({
 			isLoading: true,

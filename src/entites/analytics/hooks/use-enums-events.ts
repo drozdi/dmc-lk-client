@@ -16,6 +16,7 @@ export function useEnumsEvents() {
 	return {
 		isLoading: false,
 		data: mapEvents,
+		keys: Object.keys(mapEvents),
 		dataSelect,
 		findByCode,
 		findLabelByCode,

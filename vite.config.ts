@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
 		plugins: [react(), tailwindcss(), tsconfigPaths()],
 		server: {
 			host: env.VITE_SERVER_HOST || true,
-			port: parseInt(env.VITE_SERVER_PORT || "3100", 10) || 3100,
+			port: parseInt(env.VITE_SERVER_PORT || "3200", 10) || 3200,
 			open: env.VITE_SERVER_OPEN === "true",
 		},
 		build: {
@@ -36,5 +36,8 @@ export default defineConfig(({ mode }) => {
 			include: ["axios"],
 		},
 		define: {},
+		css: {
+			postcss: "./postcss.config.js",
+		},
 	};
 });

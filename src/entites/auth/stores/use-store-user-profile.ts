@@ -31,8 +31,9 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 
 	async load(reloading = false) {
 		if (reloading) {
-			queryClient.invalidateQueries({
+			queryClient.removeQueries({
 				queryKey: ["user-profile"],
+				exact: false,
 			});
 		}
 		if (queryClient.getQueryData(["user-profile"])) {
@@ -139,6 +140,7 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 		});
 		try {
 			const res = await requestUserProfileDelete();
+			get().reset();
 			return res;
 		} catch (e: IError) {
 			console.error(e);

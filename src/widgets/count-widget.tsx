@@ -119,7 +119,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 		storeLabels.load();
 		storeCountLabel.loadCount();
 	}, []);
-
+	console.log(res);
 	return (
 		<Widget
 			loading={

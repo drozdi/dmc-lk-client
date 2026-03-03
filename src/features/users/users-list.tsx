@@ -1,4 +1,4 @@
-import { useQueryUsersList } from "@/entites/users";
+import { useQueryUsersDelete, useQueryUsersList } from "@/entites/users";
 import { $setting } from "@/shared";
 import { Template } from "@/shared/layout";
 import { notification } from "@/shared/notification";
@@ -14,6 +14,7 @@ export function UsersList({ className }: UsersListProps) {
 		"users.size",
 		$setting.get("size"),
 	);
+	const deleteQuery = useQueryUsersDelete();
 	const {
 		isLoading,
 		error,
@@ -33,6 +34,13 @@ export function UsersList({ className }: UsersListProps) {
 		notification.error("Нет прав!");
 		return;
 	}
+
+	const handleRemove = async (item: IUsersUser) => {
+		if (!confirm(`Точно хотите удалить пользователя "${item.email}"?`)) {
+			return;
+		}
+		await deleteQuery.mutate(item);
+	};
 
 	return (
 		<Paper>
