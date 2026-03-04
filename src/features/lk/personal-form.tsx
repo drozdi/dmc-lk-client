@@ -1,4 +1,5 @@
 import { useStoreUserProfile } from "@/entites/auth";
+import { Template } from "@/layout";
 import { Loading, PhoneInput } from "@/shared/ui";
 import {
 	Button,
@@ -9,7 +10,6 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { isNotEmpty, matches, useForm } from "@mantine/form";
-import { Template } from "@t";
 import { yupResolver } from "mantine-form-yup-resolver";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -66,9 +66,7 @@ export const PersonalForm = () => {
 				"Допустимые символы: буквы, цифры и спец. символы @#$%^&*",
 			),
 			re_password: (value, values) =>
-				value !== values.newPassword
-					? "Пароли должны совпадать!"
-					: null,
+				value !== values.newPassword ? "Пароли должны совпадать!" : null,
 		},
 	});
 
@@ -91,10 +89,7 @@ export const PersonalForm = () => {
 		oldPassword: string;
 		newPassword: string;
 	}) {
-		const res = await storeUserProfile.updatePassword(
-			oldPassword,
-			newPassword,
-		);
+		const res = await storeUserProfile.updatePassword(oldPassword, newPassword);
 		if (res) {
 			formPassword.setValues({
 				oldPassword: "",
@@ -176,9 +171,7 @@ export const PersonalForm = () => {
 				/>
 
 				<Group justify="end">
-					<Button
-						onClick={formPassword.onSubmit(handleChangePassword)}
-					>
+					<Button onClick={formPassword.onSubmit(handleChangePassword)}>
 						Обновить пароль
 					</Button>
 				</Group>

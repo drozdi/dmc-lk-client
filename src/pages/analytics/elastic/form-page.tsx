@@ -1,8 +1,8 @@
 import { useStoreElastic } from "@/entites/analytics/stores/use-store-elastic";
 import { AnalyticsElasticTable } from "@/features/analytics/elastic/table";
+import { Template } from "@/layout";
 import { Loading } from "@/shared/ui";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 import { useEffect, useState } from "react";
 
 export const AnalyticsElasticFormPage = () => {

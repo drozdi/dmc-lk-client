@@ -4,6 +4,7 @@ import {
 	useQueryAnalyticsFields,
 } from "@/entites/analytics";
 import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
+import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { ButtonRemove, Icon, Loading } from "@/shared/ui";
 import {
@@ -231,7 +232,6 @@ export const IncidentTable = () => {
 						onChange={(value) => handleDate(1, value as string)}
 					/>
 				</Group>
-				<Button onClick={handleSend}>Применить</Button>
 			</Group>
 			<Loading active={storeIncident.isLoading} keepMounted>
 				<Table withRowBorders>
@@ -239,38 +239,26 @@ export const IncidentTable = () => {
 						{table.getHeaderGroups().map((headerGroup) => (
 							<Table.Tr key={headerGroup.id}>
 								{headerGroup.headers.map((header: any) => (
-									<Table.Th
-										key={header.id}
-										colSpan={header.colSpan}
-									>
+									<Table.Th key={header.id} colSpan={header.colSpan}>
 										<Group justify="space-between" grow>
 											<Text>
 												{header.isPlaceholder
 													? null
 													: flexRender(
-															header.column
-																.columnDef
-																.header,
+															header.column.columnDef.header,
 															header.getContext(),
 														)}
 											</Text>
 
-											{canRemove(
-												header?.column?.columnDef,
-											) && (
+											{canRemove(header?.column?.columnDef) && (
 												<Group justify="end">
 													<ButtonRemove
 														onClick={() =>
-															handleRemove(
-																header.column
-																	.columnDef,
-															)
+															handleRemove(header.column.columnDef)
 														}
 														title={`Удалить поле "${header.column.columnDef.header}"`}
 													>
-														<Icon>
-															tb-column-remove
-														</Icon>
+														<Icon>tb-column-remove</Icon>
 													</ButtonRemove>
 												</Group>
 											)}
@@ -285,10 +273,7 @@ export const IncidentTable = () => {
 							<Table.Tr key={row.id}>
 								{row.getVisibleCells().map((cell) => (
 									<Table.Td key={cell.id}>
-										{flexRender(
-											cell.column.columnDef.cell,
-											cell.getContext(),
-										)}
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</Table.Td>
 								))}
 							</Table.Tr>
@@ -296,13 +281,16 @@ export const IncidentTable = () => {
 					</Table.Tbody>
 				</Table>
 			</Loading>
-			<Group justify="end">
-				<Select
-					value={String(limit)}
-					onChange={(value) => storeIncident.setLimit(Number(value))}
-					data={["15", "30", "50", "75", "100"]}
-				/>
-			</Group>
+			<Template.Footer>
+				<Button onClick={handleSend}>Применить</Button>
+				<Group justify="end">
+					<Select
+						value={String(limit)}
+						onChange={(value) => storeIncident.setLimit(Number(value))}
+						data={["15", "30", "50", "75", "100"]}
+					/>
+				</Group>
+			</Template.Footer>
 		</Stack>
 	);
 };

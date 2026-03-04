@@ -1,5 +1,5 @@
 import { ProtectedRoute } from "@/features/auth/protected-route";
-import { AuthLayout, MainLayout } from "@t";
+import { AuthLayout, MainLayout } from "@/layout";
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
 
 import { AnalyticsElasticFormPage } from "@/pages/analytics/elastic/form-page";

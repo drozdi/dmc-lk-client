@@ -12,13 +12,9 @@ interface IStoreElastic extends IStore {
 	name_query: IAnalyticsElastic["name_query"];
 	setNameQuery(name_query: IAnalyticsElastic["name_query"]): void;
 	limit: IAnalyticsElasticQuery["paginate"]["limit_page"];
-	setLimit(
-		limit_page: IAnalyticsElasticQuery["paginate"]["limit_page"],
-	): void;
+	setLimit(limit_page: IAnalyticsElasticQuery["paginate"]["limit_page"]): void;
 	date: IAnalyticsElasticQuery["company"]["date_limit"];
-	setDate(
-		date: Partial<IAnalyticsElasticQuery["company"]["date_limit"]>,
-	): void;
+	setDate(date: Partial<IAnalyticsElasticQuery["company"]["date_limit"]>): void;
 	last_id_record: IAnalyticsElasticQuery["paginate"]["id_record"];
 	data: IAnalyticsElasticItem[];
 	_load(
@@ -52,7 +48,7 @@ export const useStoreElastic = create<IStoreElastic>(
 				date_limit: {
 					date_from: dNow.month(-1).format("YYYY-MM-DD"),
 					date_to: dNow.format("YYYY-MM-DD"),
-					date_rounding: undefined,
+					date_rounding: "d",
 				},
 			},
 			paginate: {
@@ -140,10 +136,7 @@ export const useStoreElastic = create<IStoreElastic>(
 			} catch (e: IError) {
 				console.error(e);
 				const error =
-					e?.response?.data?.detail ||
-					e?.message ||
-					e ||
-					"Неизвестная ошибка";
+					e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 				set({
 					isLoading: false,
 					error,
@@ -224,10 +217,7 @@ export const useStoreElastic = create<IStoreElastic>(
 			} catch (e: IError) {
 				console.error(e);
 				const error =
-					e?.response?.data?.detail ||
-					e?.message ||
-					e ||
-					"Неизвестная ошибка";
+					e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 				set({
 					isLoading: false,
 					error,

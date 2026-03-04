@@ -1,6 +1,6 @@
 import { useQueryUsersDelete, useQueryUsersList } from "@/entites/users";
+import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { Template } from "@/shared/layout";
 import { notification } from "@/shared/notification";
 import { Loading } from "@/shared/ui";
 import { Button, Group, NavLink, Paper, Select, Text } from "@mantine/core";
@@ -72,10 +72,7 @@ export function UsersList({ className }: UsersListProps) {
 					>
 						Предыдущая
 					</Button>
-					<Button
-						disabled={!hasNextPage}
-						onClick={() => fetchNextPage()}
-					>
+					<Button disabled={!hasNextPage} onClick={() => fetchNextPage()}>
 						Следующая
 					</Button>
 				</Group>

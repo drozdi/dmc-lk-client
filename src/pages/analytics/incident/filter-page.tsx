@@ -1,6 +1,6 @@
 import { IncidentTable } from "@/features/analytics/incident/table";
+import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 
 export function AnalyticsIncidentFilterPage() {
 	return (

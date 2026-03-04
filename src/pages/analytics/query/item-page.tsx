@@ -4,9 +4,9 @@ import {
 	useStoreElastic,
 } from "@/entites/analytics";
 import { AnalyticsElasticTable } from "@/features/analytics/elastic/table";
+import { Template } from "@/layout";
 import { Loading } from "@/shared/ui";
 import { Paper, Select } from "@mantine/core";
-import { Template } from "@t";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 

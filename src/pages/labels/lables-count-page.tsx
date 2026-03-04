@@ -2,8 +2,8 @@ import { LablesConsumption } from "@/features/labels/lables-consumption";
 import { LabelsCount } from "@/features/labels/lables-count";
 import { LabelsHistory } from "@/features/labels/lables-history";
 
+import { Template } from "@/layout";
 import { Paper, Tabs } from "@mantine/core";
-import { Template } from "@t";
 
 export function LabelsCountPage() {
 	return (

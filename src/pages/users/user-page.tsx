@@ -1,6 +1,6 @@
 import { UserForm } from "@/features/users/user-form";
+import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 import { useParams } from "react-router-dom";
 
 export function UsersUserPage() {

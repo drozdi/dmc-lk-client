@@ -3,10 +3,10 @@ import {
 	useQueryUsersRead,
 	useQueryUsersUpdate,
 } from "@/entites/users";
+import { Template } from "@/layout";
 import { Item, ItemSection, List, Loading, PhoneInput } from "@/shared/ui";
 import { Button, Checkbox, Group, Stack, Tabs, TextInput } from "@mantine/core";
 import { isEmail, isNotEmpty, useForm } from "@mantine/form";
-import { Template } from "@t";
 import { useEffect, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -64,8 +64,8 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 				is_superuser: false,
 				...data,
 			} as IUsersUser;
-			user.id_production = (user.id_production || []).map(
-				(item: unknown) => String(item),
+			user.id_production = (user.id_production || []).map((item: unknown) =>
+				String(item),
 			);
 			form.initialize(user);
 		}
@@ -94,9 +94,7 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 		<>
 			<Template.Title>
 				Пользователь -{" "}
-				{[data?.last_name, data?.first_name, data?.father_name].join(
-					" ",
-				)}
+				{[data?.last_name, data?.first_name, data?.father_name].join(" ")}
 			</Template.Title>
 			<Loading active={isLoading} keepMounted>
 				<form>
@@ -164,27 +162,18 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 							<List dense separator>
 								{products?.length &&
 									products.map((product) => (
-										<Item
-											component="label"
-											key={product.production_id}
-										>
+										<Item component="label" key={product.production_id}>
 											<ItemSection top row>
 												{product.production_name}
 											</ItemSection>
 											<ItemSection side>
 												<input
 													type="checkbox"
-													onChange={
-														handleCheckboxChange
-													}
+													onChange={handleCheckboxChange}
 													checked={form.values.id_production.includes(
-														String(
-															product.production_id,
-														),
+														String(product.production_id),
 													)}
-													value={String(
-														product.production_id,
-													)}
+													value={String(product.production_id)}
 												/>
 											</ItemSection>
 										</Item>
@@ -197,9 +186,7 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 						<Group>
 							<Button
 								color="green"
-								onClick={() =>
-									form.onSubmit(handleSaveNavigate)()
-								}
+								onClick={() => form.onSubmit(handleSaveNavigate)()}
 								loading={isLoading}
 								disabled={isError || !isValid}
 							>

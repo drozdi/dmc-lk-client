@@ -1,6 +1,9 @@
 import { InOutLink } from "@/features/auth/in-out-link";
 import { ChangeProduct } from "@/features/lk/change-product";
 import { PersonalLink } from "@/features/lk/personal-link";
+import { useBreakpoint } from "@/shared/hooks";
+import { $setting } from "@/shared/setting";
+import { Title } from "@/shared/ui";
 import {
 	ActionIcon,
 	AppShell,
@@ -13,9 +16,6 @@ import {
 import { useMemo } from "react";
 import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useBreakpoint } from "../hooks";
-import { $setting } from "../setting";
-import { Title } from "../ui";
 import { MainMenu } from "./components/main-menu";
 import { ThemeBtn } from "./components/theme-btn";
 import { Template } from "./store";
@@ -61,11 +61,7 @@ export function MainLayout() {
 							visibleFrom="sm"
 							variant="default"
 						>
-							{desktopOpened ? (
-								<TbArrowBarLeft />
-							) : (
-								<TbArrowBarRight />
-							)}
+							{desktopOpened ? <TbArrowBarLeft /> : <TbArrowBarRight />}
 						</ActionIcon>
 						<Divider orientation="vertical" />
 						<Title order={1} size="h3" fw="400">

@@ -5,8 +5,10 @@ import {
 	useQueryQueryUpdate,
 } from "@/entites/analytics";
 import { useStoreElastic } from "@/entites/analytics/stores/use-store-elastic";
-import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
+import { Template } from "@/layout";
+import { Loading } from "@/shared/ui";
 import {
+	ActionIcon,
 	Button,
 	Group,
 	Popover,
@@ -18,14 +20,13 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { Template } from "@t";
 import {
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useMemo } from "react";
-import { TbColumnRemove } from "react-icons/tb";
+import { TbColumnRemove, TbSettings } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { ActionForm } from "./components/action-form";
 import { InForm } from "./components/in-form";
@@ -188,9 +189,7 @@ export const AnalyticsElasticTable = ({
 					<DatePickerInput
 						name="date_from"
 						value={date?.date_from}
-						onChange={(value) =>
-							handleDateChange("date_from", value)
-						}
+						onChange={(value) => handleDateChange("date_from", value)}
 					/>
 					<Text>по</Text>
 					<DatePickerInput
@@ -209,153 +208,104 @@ export const AnalyticsElasticTable = ({
 			<Loading active={isLoading} keepMounted>
 				<Table striped withColumnBorders mt="xs">
 					<Table.Thead>
-						{table.getHeaderGroups()[0]?.headers?.length ? (
-							table
-								.getHeaderGroups()
-								.map((headerGroup, index) => (
-									<Table.Tr
-										key={headerGroup.id + "-" + index}
-									>
-										{headerGroup.headers.map(
-											(header: any, index) => (
-												<Table.Th
-													key={
-														header.id + "-" + index
-													}
-													colSpan={header.colSpan}
-												>
-													<Group
-														justify="space-between"
-														grow
-													>
-														<Text>
-															{header.isPlaceholder
-																? null
-																: flexRender(
-																		header
-																			.column
-																			.columnDef
-																			.header,
-																		header.getContext(),
-																	)}
-														</Text>
-														{canEdit(
-															header.column
-																.columnDef,
-														) && (
-															<Group justify="end">
-																<Popover>
-																	<Popover.Target>
-																		<ButtonIcon>
-																			tb-settings
-																		</ButtonIcon>
-																	</Popover.Target>
-																	<Popover.Dropdown w="18rem">
-																		<Stack gap="xs">
-																			<Group justify="space-between">
-																				<ActionForm
-																					flex="1"
-																					value={
-																						whereItem(
-																							header.id,
-																						)
-																							?.single_action_list ||
-																						"and"
-																					}
-																					onChange={(
-																						single_action_list,
-																					) =>
-																						handleChangeActionField(
-																							header.id,
-																							single_action_list as SingleActionList,
-																						)
-																					}
-																				/>
+						{columns?.length ? (
+							table.getHeaderGroups().map((headerGroup, index) => (
+								<Table.Tr key={headerGroup.id + "-" + index}>
+									{headerGroup.headers.map((header: any, index) => (
+										<Table.Th
+											key={header.id + "-" + index}
+											colSpan={header.colSpan}
+										>
+											<Group justify="space-between" grow>
+												<Text>
+													{header.isPlaceholder
+														? null
+														: flexRender(
+																header.column.columnDef.header,
+																header.getContext(),
+															)}
+												</Text>
+												{canEdit(header.column.columnDef) && (
+													<Group justify="end">
+														<Popover>
+															<Popover.Target>
+																<ActionIcon>
+																	<TbSettings />
+																</ActionIcon>
+															</Popover.Target>
+															<Popover.Dropdown w="18rem">
+																<Stack gap="xs">
+																	<Group justify="space-between">
+																		<ActionForm
+																			flex="1"
+																			value={
+																				whereItem(header.id)
+																					?.single_action_list || "and"
+																			}
+																			onChange={(single_action_list) =>
+																				handleChangeActionField(
+																					header.id,
+																					single_action_list as SingleActionList,
+																				)
+																			}
+																		/>
 
-																				<SignForm
-																					flex="1"
-																					value={
-																						whereItem(
-																							header.id,
-																						)
-																							?.sing_action ||
-																						"="
-																					}
-																					onChange={(
-																						sing_action,
-																					) =>
-																						handleChangeSignField(
-																							header.id,
-																							sing_action as PermittedActions,
-																						)
-																					}
-																				/>
-																			</Group>
-																			{whereItem(
-																				header.id,
-																			)
-																				?.sing_action ===
-																				"in" ||
-																			whereItem(
-																				header.id,
-																			)
-																				?.sing_action ===
-																				"not_in" ? (
-																				<InForm
-																					values={
-																						whereItem(
-																							header.id,
-																						)
-																							?.search_value as string[]
-																					}
-																					onChange={(
-																						values,
-																					) =>
-																						handleChangeInField(
-																							header.id,
-																							values,
-																						)
-																					}
-																				/>
-																			) : (
-																				<TextInput
-																					value={
-																						whereItem(
-																							header.id,
-																						)
-																							?.search_value as string[]
-																					}
-																					onChange={({
-																						target,
-																					}) =>
-																						handleChangeValueField(
-																							header.id,
-																							target.value,
-																						)
-																					} ///
-																				/>
-																			)}
-																		</Stack>
-																	</Popover.Dropdown>
-																</Popover>
-																<ButtonRemove
-																	onClick={() =>
-																		handleRemoveField(
-																			header.id,
-																		)
-																	}
-																	title="Удалить поле"
-																>
-																	<TbColumnRemove />
-																</ButtonRemove>
-															</Group>
-														)}
+																		<SignForm
+																			flex="1"
+																			value={
+																				whereItem(header.id)?.sing_action || "="
+																			}
+																			onChange={(sing_action) =>
+																				handleChangeSignField(
+																					header.id,
+																					sing_action as PermittedActions,
+																				)
+																			}
+																		/>
+																	</Group>
+																	{whereItem(header.id)?.sing_action === "in" ||
+																	whereItem(header.id)?.sing_action ===
+																		"not_in" ? (
+																		<InForm
+																			values={
+																				whereItem(header.id)
+																					?.search_value as string[]
+																			}
+																			onChange={(values) =>
+																				handleChangeInField(header.id, values)
+																			}
+																		/>
+																	) : (
+																		<TextInput
+																			value={
+																				whereItem(header.id)
+																					?.search_value as string[]
+																			}
+																			onChange={({ target }) =>
+																				handleChangeValueField(
+																					header.id,
+																					target.value,
+																				)
+																			} ///
+																		/>
+																	)}
+																</Stack>
+															</Popover.Dropdown>
+														</Popover>
+														<ActionIcon
+															onClick={() => handleRemoveField(header.id)}
+															color="red"
+															title="Удалить поле"
+														>
+															<TbColumnRemove />
+														</ActionIcon>
 													</Group>
-												</Table.Th>
-											),
-										)}
-									</Table.Tr>
-								))
+												)}
+											</Group>
+										</Table.Th>
+									))}
+								</Table.Tr>
+							))
 						) : (
 							<Table.Tr>
 								<Table.Th ta="center" fz="h2" c="dimmed">
@@ -366,23 +316,16 @@ export const AnalyticsElasticTable = ({
 					</Table.Thead>
 					<Table.Tbody>
 						{table.getRowModel().rows.map((row) => (
-							<Tooltip
-								key={row.id}
-								label={`Ошибка #${row.original.id}`}
-							>
+							<Tooltip key={row.id} label={`Ошибка #${row.original.id}`}>
 								<Table.Tr>
-									{row
-										.getVisibleCells()
-										.map((cell, index) => (
-											<Table.Td
-												key={cell.id + "-" + index}
-											>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext(),
-												)}
-											</Table.Td>
-										))}
+									{row.getVisibleCells().map((cell, index) => (
+										<Table.Td key={cell.id + "-" + index}>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</Table.Td>
+									))}
 								</Table.Tr>
 							</Tooltip>
 						))}
@@ -398,10 +341,7 @@ export const AnalyticsElasticTable = ({
 					>
 						Сохранить
 					</Button>
-					<Button
-						onClick={() => storeElastic.reset()}
-						loading={isLoading}
-					>
+					<Button onClick={() => storeElastic.reset()} loading={isLoading}>
 						Применить
 					</Button>
 				</Group>

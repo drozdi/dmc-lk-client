@@ -1,7 +1,7 @@
 import { IncidentDay } from "@/features/analytics/incident/day";
+import { Template } from "@/layout";
 import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { Template } from "@t";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";

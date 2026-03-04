@@ -1,8 +1,8 @@
 import { useQueryQueryDelete, useQueryQueryList } from "@/entites/analytics";
+import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { Item, ItemLabel, ItemSection, List, Loading } from "@/shared/ui";
 import { ActionIcon, Button, Group, Select, Stack, Text } from "@mantine/core";
-import { Template } from "@t";
 import { TbCircleMinus } from "react-icons/tb";
 import { Link as LinkRouter } from "react-router-dom";
 

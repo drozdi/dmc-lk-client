@@ -1,6 +1,6 @@
 import { AnalyticsQueryList } from "@/features/analytics/query/list";
+import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 
 export function AnalyticsQueryListPage() {
 	return (

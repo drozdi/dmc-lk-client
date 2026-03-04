@@ -1,6 +1,6 @@
 import { UsersList } from "@/features/users/users-list";
+import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 export function UsersListPage() {
 	return (
 		<Paper>

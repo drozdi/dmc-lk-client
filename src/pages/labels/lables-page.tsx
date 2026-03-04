@@ -1,7 +1,7 @@
 import { useConsumptions, useGrouped } from "@/entites/labels";
 import { LabelsGroup } from "@/features/labels/lables-group";
+import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { Template } from "@t";
 
 export function LabelsPage() {
 	console.log(useGrouped());

@@ -2,6 +2,7 @@ import { DashboardProvider, UiDashBoard } from "@/entites/dashboard";
 import { useStoreDashboardMain } from "@/entites/dashboard/stores/use-store-dashboard-main";
 import { AddWidget } from "@/features/dashboard/add-widget";
 import { BtnClear } from "@/features/dashboard/btn-clear";
+import { Template } from "@/layout";
 import {
 	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
@@ -12,7 +13,6 @@ import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { Group, Paper, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { Template } from "@t";
 import dayjs from "dayjs";
 import { useState } from "react";
 
