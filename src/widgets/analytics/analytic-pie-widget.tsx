@@ -68,10 +68,7 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 	}, [data, production_id]);
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
 
-	const total = useMemo(
-		() => ddata.reduce((a, b) => a + b.value, 0),
-		[ddata],
-	);
+	const total = useMemo(() => ddata.reduce((a, b) => a + b.value, 0), [ddata]);
 
 	useEffect(() => {
 		const send = async () => {
@@ -94,14 +91,12 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 			loading={isLoading}
 			title={
 				<Filterdate
-					filterdate_from={query.filterdate_from}
-					filterdate_to={query.filterdate_to}
-					editable={!props.filterdate_from}
-					onChange={(val) => {
+					filterdate={query.filterdate}
+					editable={!props.filterdate?.[0]}
+					onChange={(filterdate) => {
 						setQuery({
 							...query,
-							filterdate_from: val[0] || "",
-							filterdate_to: val[1] || "",
+							filterdate,
 						});
 					}}
 				/>
@@ -138,13 +133,8 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 								/> */}
 								<Legend
 									formatter={(_: string, entry: any) => {
-										const { color, name, value } =
-											entry.payload;
-										return (
-											<span style={{ color }}>
-												{name}
-											</span>
-										);
+										const { color, name, value } = entry.payload;
+										return <span style={{ color }}>{name}</span>;
 									}}
 									layout="vertical"
 									verticalAlign="middle"
@@ -158,10 +148,7 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 									dataKey="value"
 								>
 									{ddata.map((entry) => (
-										<Cell
-											key={`cell-${entry.name}`}
-											fill={entry.color}
-										/>
+										<Cell key={`cell-${entry.name}`} fill={entry.color} />
 									))}
 								</Pie>
 							</PieChart>

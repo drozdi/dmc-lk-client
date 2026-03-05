@@ -3,9 +3,7 @@ import { AuthLayout, MainLayout } from "@/layout";
 import { Navigate, Outlet, useRoutes } from "react-router-dom";
 
 import { AnalyticsElasticFormPage } from "@/pages/analytics/elastic/form-page";
-import { AnalyticsIncidentDayPage } from "@/pages/analytics/incident/day-page";
-import { AnalyticsIncidentFilterPage } from "@/pages/analytics/incident/filter-page";
-import { AnalyticsIncidentListPage } from "@/pages/analytics/incident/list-page";
+import { AnalyticsIncidentPage } from "@/pages/analytics/incident";
 import { AnalyticsQueryItemPage } from "@/pages/analytics/query/item-page";
 import { AnalyticsQueryListPage } from "@/pages/analytics/query/list-page";
 import { DashboardPage } from "@/pages/dashboard-page";
@@ -73,20 +71,24 @@ const routes = () => [
 				element: <LabelsCountPage />,
 			},
 			{
-				path: "analytics/incident",
+				path: "analytics",
 				element: <Outlet />,
 				children: [
 					{
-						path: "",
-						element: <AnalyticsIncidentFilterPage />,
+						path: "incident",
+						element: <AnalyticsIncidentPage />,
 					},
 					{
-						path: "list",
-						element: <AnalyticsIncidentListPage />,
+						path: "elastic",
+						element: <AnalyticsElasticFormPage />,
 					},
 					{
-						path: "day",
-						element: <AnalyticsIncidentDayPage />,
+						path: "queries",
+						element: <AnalyticsQueryListPage />,
+					},
+					{
+						path: ":id_query",
+						element: <AnalyticsQueryItemPage />,
 					},
 				],
 			},
@@ -94,18 +96,7 @@ const routes = () => [
 				path: "dashboard",
 				element: <DashboardPage />,
 			},
-			{
-				path: "analytics/elastic",
-				element: <AnalyticsElasticFormPage />,
-			},
-			{
-				path: "analytics/queries",
-				element: <AnalyticsQueryListPage />,
-			},
-			{
-				path: "analytics/:id_query",
-				element: <AnalyticsQueryItemPage />,
-			},
+
 			{
 				path: "users",
 				element: <Outlet />,

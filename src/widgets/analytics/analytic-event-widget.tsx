@@ -54,8 +54,7 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 		let res: string[] = [];
 		if (data) {
 			for (const event in ee.data) {
-				for (const p of data[event as AnalyticEvent]?.production ||
-					[]) {
+				for (const p of data[event as AnalyticEvent]?.production || []) {
 					res = res.concat(p.data.map((item) => item.timestamp));
 				}
 			}
@@ -67,9 +66,7 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 		const initialData = Object.fromEntries(
 			labels.map((item) => [
 				item,
-				Object.fromEntries(
-					Object.keys(ee.data).map((item) => [item, 0]),
-				),
+				Object.fromEntries(Object.keys(ee.data).map((item) => [item, 0])),
 			]),
 		);
 		const currProduction = Number(production_id || 0);
@@ -120,15 +117,13 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 			setQuery({
 				...query,
 				step: "mon",
-				filterdate_from: dFrom.format("YYYY-MM-DD"),
-				filterdate_to: dTo.format("YYYY-MM-DD"),
+				filterdate: [dFrom.format("YYYY-MM-DD"), dTo.format("YYYY-MM-DD")],
 			});
 		} else if (d > 7) {
 			setQuery({
 				...query,
 				step: "d",
-				filterdate_from: dFrom.format("YYYY-MM-DD"),
-				filterdate_to: dTo.format("YYYY-MM-DD"),
+				filterdate: [dFrom.format("YYYY-MM-DD"), dTo.format("YYYY-MM-DD")],
 			});
 		} else {
 			d *= 24;
@@ -136,8 +131,10 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 				setQuery({
 					...query,
 					step: "h",
-					filterdate_from: dFrom.format("YYYY-MM-DD HH:mm"),
-					filterdate_to: dTo.format("YYYY-MM-DD HH:mm"),
+					filterdate: [
+						dFrom.format("YYYY-MM-DD HH:mm"),
+						dTo.format("YYYY-MM-DD HH:mm"),
+					],
 				});
 			} else {
 				d *= 60;
@@ -145,16 +142,20 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 					setQuery({
 						...query,
 						step: "m",
-						filterdate_from: dFrom.format("YYYY-MM-DD HH:mm:ss"),
-						filterdate_to: dTo.format("YYYY-MM-DD HH:mm:ss"),
+						filterdate: [
+							dFrom.format("YYYY-MM-DD HH:mm:ss"),
+							dTo.format("YYYY-MM-DD HH:mm:ss"),
+						],
 					});
 				} else {
 					d *= 60;
 					setQuery({
 						...query,
 						step: "s",
-						filterdate_from: dFrom.format("YYYY-MM-DD HH:mm:ss"),
-						filterdate_to: dTo.format("YYYY-MM-DD HH:mm:ss"),
+						filterdate: [
+							dFrom.format("YYYY-MM-DD HH:mm:ss"),
+							dTo.format("YYYY-MM-DD HH:mm:ss"),
+						],
 					});
 				}
 			}
@@ -210,14 +211,12 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 			dragable
 			title={
 				<Filterdate
-					filterdate_from={query.filterdate_from}
-					filterdate_to={query.filterdate_to}
-					editable={!props.filterdate_from}
-					onChange={(val) => {
+					filterdate={query.filterdate}
+					editable={!props.filterdate?.[0]}
+					onChange={(filterdate) => {
 						setQuery({
 							...query,
-							filterdate_from: val[0] || "",
-							filterdate_to: val[1] || "",
+							filterdate,
 						});
 					}}
 				/>
@@ -236,10 +235,7 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 								onMouseMove={handleMouseMove}
 								onMouseUp={handleMouseUp}
 							>
-								<CartesianGrid
-									stroke="#aaa"
-									strokeDasharray="5 5"
-								/>
+								<CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
 								<XAxis dataKey="name" />
 								<YAxis />
 								<Tooltip />

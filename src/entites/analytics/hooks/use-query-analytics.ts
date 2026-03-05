@@ -39,7 +39,7 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 				const res = await queryClient.fetchQuery({
 					queryKey: ["analytics", JSON.stringify(_query)],
 					queryFn: async (): Promise<IResponseAnalytics> =>
-						(await requestAnalytics(_query)).message,
+						(await requestAnalytics(_query)).data,
 				});
 				setData(res);
 				setIsLoading(false);
@@ -47,10 +47,7 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 			} catch (e: IError) {
 				console.error(e);
 				const error =
-					e?.response?.data?.detail ||
-					e?.message ||
-					e ||
-					"Неизвестная ошибка";
+					e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 				setError(error);
 				setIsLoading(false);
 			}

@@ -4,7 +4,6 @@ interface LoadingProps extends BoxProps {
 	children: React.ReactNode;
 	active?: boolean;
 	keepMounted?: boolean;
-	[key: string]: any;
 }
 
 export function Loading({

@@ -126,7 +126,7 @@ export const useStoreElastic = create<IStoreElastic>(
 				set({
 					isLoading: false,
 					last_id_record: res.last_id_record,
-					data: res.message,
+					data: res.data,
 					...(histrory
 						? {
 								history: [...get().history, id_record],

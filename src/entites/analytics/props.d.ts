@@ -15,20 +15,22 @@ type PermittedActions =
 interface IAnalyticsIncidentItem {
 	total_counter: integer;
 	data: string;
-	id?: string;
+	timestamp: string;
+	id: string;
 	[key: string]: string | number;
 }
 
 interface IRequestAnalyticsIncident {
-	filterdate?: string[];
+	filterdate: [DateType, DateType];
 	data?: string[];
 	fields_name?: string[];
-	details_field?: string[];
-	id_record?: IAnalyticsIncidentItem["id"];
-	limit_page?: number;
 }
 
-type IResponseAnalyticsIncident = IAnalyticsIncidentItem[];
+interface IResponseAnalyticsIncident extends IResponse<
+	IAnalyticsIncidentItem[]
+> {
+	len_answer: number;
+}
 
 interface IAnalyticsField {
 	type_field: "str" | "int";
@@ -67,8 +69,7 @@ interface IAnalyticsElasticItem {
 	[key: string]: string | number;
 }
 
-interface IResponseAnalyticsElastic {
-	message: IAnalyticsElasticItem[];
+interface IResponseAnalyticsElastic extends IResponse<IAnalyticsElasticItem[]> {
 	len_answer: number;
 	last_id_record?: IAnalyticsElasticItem["id"];
 }
@@ -91,9 +92,7 @@ interface IAnalyticsProductionData extends IAnalyticsProduction {
 }
 
 interface IRequestAnalytics {
-	filterdate: string[];
-	filterdate_from?: string;
-	filterdate_to?: string;
+	filterdate: [string | Date | null, string | Date | null];
 	step: SliceStep;
 	event: AnalyticEvent;
 }

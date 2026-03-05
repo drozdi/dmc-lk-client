@@ -8,7 +8,7 @@ export function useQueryAnalyticsFields() {
 		queryKey: ["analytics", "fields"],
 		queryFn: async () => await requestAnalyticsFields(),
 		select(data): IResponseAnalyticsFields {
-			return data.message;
+			return data.data;
 		},
 	});
 	const findByCode = useCallback((code: string) => q.data?.[code], [q.data]);

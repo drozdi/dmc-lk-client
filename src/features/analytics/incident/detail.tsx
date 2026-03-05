@@ -1,25 +1,39 @@
 import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
 import { Loading } from "@/shared/ui";
 import { Accordion, Center } from "@mantine/core";
+import { type DateValue } from "@mantine/dates";
 import { useEffect, useState } from "react";
-import { IncidentDetail } from "./components/incident-detail";
+import { IncidentDetail as SubIncidentDetail } from "./components/incident-detail";
 
 let i = 0;
 
-export const IncidentAll = ({
-	query = {},
+export const IncidentDetail = ({
+	filterdate,
 	...props
 }: {
-	query: IRequestAnalyticsIncident;
+	filterdate: [DateValue, DateValue];
 	[key: string]: any;
 }) => {
-	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
 	const storeIncident = useStoreIncident();
-
 	const [openend, setOpenend] = useState<string[]>([]);
 
+	const [query, setQuery] = useState({
+		filterdate,
+		data: [],
+		fields_name: [],
+	});
+
+	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
+
 	useEffect(() => {
-		storeIncident.send(query).then((data) => {
+		setQuery((v) => ({
+			...v,
+			filterdate,
+		}));
+	}, [filterdate]);
+
+	useEffect(() => {
+		storeIncident.send(query).then(({ data }) => {
 			setData(data || []);
 		});
 	}, [query]);
@@ -28,11 +42,7 @@ export const IncidentAll = ({
 		<>
 			<Loading {...props} active={storeIncident.isLoading} keepMounted>
 				{data?.length ? (
-					<Accordion
-						multiple
-						chevronPosition="left"
-						onChange={setOpenend}
-					>
+					<Accordion multiple chevronPosition="left" onChange={setOpenend}>
 						{data.map((item: IAnalyticsIncidentItem) => (
 							<Accordion.Item
 								key={item.data || `acc-${i++}`}
@@ -44,10 +54,7 @@ export const IncidentAll = ({
 								<Accordion.Panel>
 									<div style={{ minHeight: 100 }}>
 										{openend.includes(item.data) && (
-											<IncidentDetail
-												{...query}
-												data={[item.data]}
-											/>
+											<SubIncidentDetail {...query} />
 										)}
 									</div>
 								</Accordion.Panel>

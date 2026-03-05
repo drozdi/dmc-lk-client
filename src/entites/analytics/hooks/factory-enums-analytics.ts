@@ -1,5 +1,5 @@
 import { type ComboboxItem } from "@mantine/core";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useQueryAnalyticsFields } from "./use-query-analytics-fields";
 
 export function factoryEnumsAnalytics(fields: string[]) {
@@ -19,6 +19,24 @@ export function factoryEnumsAnalytics(fields: string[]) {
 			[qaf.dataSelect],
 		);
 
-		return { ...qaf, data, dataSelect };
+		const filter = useCallback<(fields: string[]) => string[]>(
+			(fields: string[]) => {
+				// console.log([...new Set(dataSelect.map((item) => item.value))]);
+				// console.log([...new Set(fields)]);
+				// console.log([
+				// 	...new Set(dataSelect.map((item) => item.value)).intersection(
+				// 		new Set(fields),
+				// 	),
+				// ]);
+				return [
+					...new Set(dataSelect.map((item) => item.value)).intersection(
+						new Set(fields),
+					),
+				];
+			},
+			[dataSelect],
+		);
+
+		return { ...qaf, data, fields, filter, dataSelect };
 	};
 }

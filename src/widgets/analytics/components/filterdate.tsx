@@ -1,33 +1,30 @@
 import { $setting } from "@/shared";
-import { DatePickerInput } from "@mantine/dates";
+import { DatePickerInput, type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 
 interface FilterdateProps {
-	filterdate?: string[];
-	filterdate_from?: string;
-	filterdate_to?: string;
-	onChange?: (val: Array<string | null>) => void;
+	filterdate?: [DateValue, DateValue];
+	onChange?: (val: [DateValue, DateValue]) => void;
 	editable?: boolean;
 }
 
 export function Filterdate({
-	filterdate_from,
-	filterdate_to,
+	filterdate,
 	editable,
 	onChange,
 }: FilterdateProps) {
-	if (!editable && filterdate_from) {
+	if (!editable && filterdate?.[0]) {
 		return (
-			dayjs(filterdate_from).format($setting.get("formatDate")) +
+			dayjs(filterdate[0]).format($setting.get("formatDate")) +
 			" - " +
-			dayjs(filterdate_to || "").format($setting.get("formatDate"))
+			dayjs(filterdate[1] || "").format($setting.get("formatDate"))
 		);
 	}
 	return (
 		<DatePickerInput
 			type="range"
 			placeholder="Pick dates range"
-			value={[filterdate_from || "", filterdate_to || ""]}
+			value={filterdate}
 			onChange={onChange}
 		/>
 	);

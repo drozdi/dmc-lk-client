@@ -76,13 +76,13 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 		}
 		for (const production of qa.data.production || []) {
 			for (const data of production.data || []) {
-				Object.entries(
-					res[production.production_id]?.labels || {},
-				).forEach(([label, labels]) => {
-					if (labels.labels.includes(data.data)) {
-						labels.minus += data.count;
-					}
-				});
+				Object.entries(res[production.production_id]?.labels || {}).forEach(
+					([label, labels]) => {
+						if (labels.labels.includes(data.data)) {
+							labels.minus += data.count;
+						}
+					},
+				);
 			}
 		}
 		for (const prod in res) {
@@ -119,13 +119,11 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 		storeLabels.load();
 		storeCountLabel.loadCount();
 	}, []);
-	console.log(res);
+
 	return (
 		<Widget
 			loading={
-				qa.isLoading ||
-				storeCountLabel.isLoading ||
-				storeLabels.isLoading
+				qa.isLoading || storeCountLabel.isLoading || storeLabels.isLoading
 			}
 			title={""}
 			dragable
@@ -142,17 +140,11 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 						<Group justify="space-between" miw="50%">
 							<Text>
 								расход:{" "}
-								{Object.values(res).reduce(
-									(acc, item) => acc + item.minus,
-									0,
-								)}
+								{Object.values(res).reduce((acc, item) => acc + item.minus, 0)}
 							</Text>
 							<Text miw="50%">
 								остаток:{" "}
-								{Object.values(res).reduce(
-									(acc, item) => acc + item.total,
-									0,
-								)}
+								{Object.values(res).reduce((acc, item) => acc + item.total, 0)}
 							</Text>
 						</Group>
 					</Group>
@@ -167,23 +159,16 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 							<Accordion.Control>
 								<Group my="-xs" justify="space-between">
 									<Text>
-										{production.production_name} (
-										{production.production_id})
+										{production.production_name} ({production.production_id})
 									</Text>
 									<Group justify="space-between" miw="50%">
 										<Text>расход: {production.minus}</Text>
-										<Text miw="50%">
-											остаток: {production.total}
-										</Text>
+										<Text miw="50%">остаток: {production.total}</Text>
 									</Group>
 								</Group>
 							</Accordion.Control>
 							<Accordion.Panel>
-								<Table
-									withTableBorder
-									withRowBorders
-									withColumnBorders
-								>
+								<Table withTableBorder withRowBorders withColumnBorders>
 									<Table.Thead>
 										<Table.Tr>
 											<Table.Th w="2rem"></Table.Th>
@@ -193,18 +178,11 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 										</Table.Tr>
 									</Table.Thead>
 									<GroupedProvider
-										production_id={Number(
-											production.production_id,
-										)}
+										production_id={Number(production.production_id)}
 									>
 										<Table.Tbody>
-											{Object.entries(
-												production.labels,
-											).map(
-												([
-													label,
-													{ total, minus, container },
-												]) => {
+											{Object.entries(production.labels).map(
+												([label, { total, minus, container }]) => {
 													const Wrap = container
 														? GroupedContainer
 														: GroupedItem;
@@ -216,30 +194,18 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 															};
 													return (
 														<Wrap
-															key={
-																production.production_id +
-																label
-															}
+															key={production.production_id + label}
 															{...props}
 														>
 															<Table.Tr>
 																<Table.Td ta="center">
-																	{container ===
-																		false && (
-																		<TbList />
-																	)}
+																	{container === false && <TbList />}
 																</Table.Td>
 																<Table.Td>
-																	<LabelFormat>
-																		{label}
-																	</LabelFormat>
+																	<LabelFormat>{label}</LabelFormat>
 																</Table.Td>
-																<Table.Td>
-																	{minus}
-																</Table.Td>
-																<Table.Td>
-																	{total}
-																</Table.Td>
+																<Table.Td>{minus}</Table.Td>
+																<Table.Td>{total}</Table.Td>
 															</Table.Tr>
 														</Wrap>
 													);

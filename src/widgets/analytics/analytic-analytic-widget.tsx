@@ -1,5 +1,6 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { $setting } from "@/shared";
 import { Widget } from "@/shared/ui";
 import { Table } from "@mantine/core";
 import dayjs from "dayjs";
@@ -10,11 +11,14 @@ import { Filterdate } from "./components/filterdate";
 const nDow = dayjs("2025-05-02");
 const sDay = nDow.day(nDow.day() - 7);
 
-export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
+export const AnalyticAnalyticWidget = ({
+	filterdate,
+	step,
+	...props
+}: Partial<IRequestAnalytics>) => {
 	const { production_id } = useStoreUserProfile();
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
-		filterdate_from: sDay.format("YYYY-MM-DD"),
-		filterdate_to: nDow.format("YYYY-MM-DD"),
+		filterdate: [sDay.format("YYYY-MM-DD"), nDow.format("YYYY-MM-DD")],
 		step: "d",
 	});
 
@@ -54,8 +58,8 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 
 		if (data) {
 			for (const event of maps) {
-				for (const production of data[event as AnalyticEvent]
-					?.production || []) {
+				for (const production of data[event as AnalyticEvent]?.production ||
+					[]) {
 					if (
 						currProduction > 0 &&
 						production.production_id === currProduction
@@ -63,8 +67,7 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 						continue;
 					}
 					for (const d of production.data || []) {
-						res[dayjs(d.timestamp).format("YYYY-MM-DD")][event] +=
-							d.count;
+						res[dayjs(d.timestamp).format("YYYY-MM-DD")][event] += d.count;
 					}
 				}
 			}
@@ -84,14 +87,12 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 			loading={isLoading}
 			title={
 				<Filterdate
-					filterdate_from={query.filterdate_from}
-					filterdate_to={query.filterdate_to}
-					editable={!props.filterdate_from}
-					onChange={(val) => {
+					filterdate={query.filterdate}
+					editable={!filterdate?.[0]}
+					onChange={(filterdate) => {
 						setQuery({
 							...query,
-							filterdate_from: val[0] || "",
-							filterdate_to: val[1] || "",
+							filterdate,
 						});
 					}}
 				/>
@@ -102,9 +103,7 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 					<Table.Tr>
 						<Table.Th>Дата</Table.Th>
 						{maps.map((key) => (
-							<Table.Th key={key}>
-								{ee.findLabelByCode(key)}
-							</Table.Th>
+							<Table.Th key={key}>{ee.findLabelByCode(key)}</Table.Th>
 						))}
 					</Table.Tr>
 				</Table.Thead>
@@ -113,11 +112,19 @@ export const AnalyticAnalyticWidget = (props: Partial<IRequestAnalytics>) => {
 						<Table.Tr
 							key={label}
 							onClick={() =>
-								navigate(`/analytics/incident/day?day=${label}`)
+								navigate(
+									`/analytics/incident/?from=${dayjs(label).format("YYYY-MM-DD")}&to=${dayjs(
+										label,
+									)
+										.day(dayjs(label).day() + 1)
+										.format("YYYY-MM-DD")}`,
+								)
 							}
 							style={{ cursor: "pointer" }}
 						>
-							<Table.Td>{label}</Table.Td>
+							<Table.Td>
+								{dayjs(label).format($setting.get("formatDate"))}
+							</Table.Td>
 							{maps.map((key) => (
 								<Table.Td key={key}>{values[key]}</Table.Td>
 							))}

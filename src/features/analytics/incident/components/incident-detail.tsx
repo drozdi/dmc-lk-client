@@ -1,4 +1,5 @@
-import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
+import { useEnumsFields, useStoreIncident } from "@/entites/analytics";
+import { useQueryLoading } from "@/shared/hooks";
 import { Loading } from "@/shared/ui";
 import { Button, Group, Table } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
@@ -6,11 +7,15 @@ import { TbX } from "react-icons/tb";
 
 export function IncidentDetail(props: IRequestAnalyticsIncident) {
 	const storeIncident = useStoreIncident();
+	const ef = useEnumsFields();
+
+	const isLoading = useQueryLoading(storeIncident, ef);
+
 	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
 
 	const [{ name_production, production_id }, setProduction] = useState<{
-		name_production: string;
-		production_id: number;
+		name_production: IProduction["production_name"];
+		production_id: IProduction["production_id"];
 	}>({
 		name_production: "",
 		production_id: 0,
@@ -18,31 +23,24 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 
 	const [query] = useState<IRequestAnalyticsIncident>({
 		...props,
-		fields_name: [
-			...new Set([
-				...(props.fields_name || []),
-				"name_production",
-				"address_production",
-				"event_name",
-				"device_name",
-				"device_type",
-				"node_name",
-				"place_name",
-			]),
-		],
-		details_field: [
-			...new Set([
-				...(props.details_field || []),
-				"production_id",
-				"device_id",
-				"node_id",
-				"place_id",
-			]),
-		],
+		fields_name: ef.filter([
+			...(props.fields_name || []),
+			"name_production",
+			"address_production",
+			"event_name",
+			"device_name",
+			"device_type",
+			"node_name",
+			"place_name",
+			"production_id",
+			"device_id",
+			"node_id",
+			"place_id",
+		]),
 	});
 
 	useEffect(() => {
-		storeIncident.send(query).then((data) => {
+		storeIncident.send(query).then(({ data }) => {
 			setData(data || []);
 		});
 	}, [query]);
@@ -56,8 +54,7 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 					res[item.device_id] = {
 						...item,
 						total_counter:
-							(res[item.device_id]?.total_counter || 0) +
-							item.total_counter,
+							(res[item.device_id]?.total_counter || 0) + item.total_counter,
 					};
 				}
 			});
@@ -69,8 +66,7 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 				res[item.production_id] = {
 					...item,
 					total_counter:
-						(res[item.production_id]?.total_counter || 0) +
-						item.total_counter,
+						(res[item.production_id]?.total_counter || 0) + item.total_counter,
 				};
 			});
 			return Object.values(res).sort(
@@ -81,18 +77,18 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 		return data;
 	}, [data, production_id]);
 
-	async function handleProduction(
-		production_id: number,
-		name_production: string,
-	) {
+	const handleProduction = (
+		production_id: IProduction["production_id"],
+		name_production: IProduction["production_name"],
+	) => {
 		setProduction({
 			name_production,
 			production_id,
 		});
-	}
+	};
 
 	return (
-		<Loading mih="100" keepMounted active={storeIncident.isLoading}>
+		<Loading keepMounted active={isLoading}>
 			<Group justify="center">
 				{production_id && (
 					<Button
@@ -134,16 +130,11 @@ export function IncidentDetail(props: IRequestAnalyticsIncident) {
 									className="cursor-pointer"
 									key={item.production_id}
 									onClick={() =>
-										handleProduction(
-											item.production_id,
-											item.name_production,
-										)
+										handleProduction(item.production_id, item.name_production)
 									}
 								>
 									<Table.Td>{item.name_production}</Table.Td>
-									<Table.Td>
-										{item.address_production}
-									</Table.Td>
+									<Table.Td>{item.address_production}</Table.Td>
 									<Table.Td>{item.total_counter}</Table.Td>
 								</Table.Tr>
 							))}

@@ -22,17 +22,7 @@ const navItems: NavItem[] = [
 		path: "/analytics/queries",
 	},
 	{
-		label: "Инциденты за день",
-		icon: <TbMenu />,
-		path: "/analytics/incident/day",
-	},
-	{
-		label: "Инциденты список",
-		icon: <TbMenu />,
-		path: "/analytics/incident/list",
-	},
-	{
-		label: "Формируемые инциденты",
+		label: "Инциденты",
 		icon: <TbMenu />,
 		path: "/analytics/incident",
 	},

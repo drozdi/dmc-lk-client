@@ -1,5 +1,6 @@
 export * from "./button";
 export * from "./expandable-panel";
+export * from "./history-pagination";
 export * from "./icon";
 export * from "./input";
 export * from "./item";
@@ -8,5 +9,6 @@ export * from "./list";
 export * from "./loading";
 export * from "./progress";
 export * from "./spinner";
+export * from "./table";
 export * from "./title";
 export * from "./widget";

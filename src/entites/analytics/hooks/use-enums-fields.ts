@@ -1,6 +1,7 @@
 import { factoryEnumsAnalytics } from "./factory-enums-analytics";
 
 export const useEnumsFields = factoryEnumsAnalytics([
+	"timestamp",
 	"inn_company",
 	"production_id",
 	"taskid",

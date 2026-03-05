@@ -108,14 +108,12 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 			loading={isLoading}
 			title={
 				<Filterdate
-					filterdate_from={query.filterdate_from}
-					filterdate_to={query.filterdate_to}
-					editable={!props.filterdate_from}
-					onChange={(val) => {
+					filterdate={query.filterdate}
+					editable={!props.filterdate?.[0]}
+					onChange={(filterdate) => {
 						setQuery({
 							...query,
-							filterdate_from: val[0] || "",
-							filterdate_to: val[1] || "",
+							filterdate,
 						});
 					}}
 				/>
@@ -139,16 +137,9 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis dataKey="name" />
 								<YAxis />
-								<Bar
-									dataKey="value"
-									fill="#8884d8"
-									label={{ position: "top" }}
-								>
+								<Bar dataKey="value" fill="#8884d8" label={{ position: "top" }}>
 									{ddata.map((entry, index) => (
-										<Cell
-											key={`cell-${index}`}
-											fill={entry.color}
-										/>
+										<Cell key={`cell-${index}`} fill={entry.color} />
 									))}
 								</Bar>
 							</BarChart>
