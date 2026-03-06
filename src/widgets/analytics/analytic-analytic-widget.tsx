@@ -8,8 +8,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filterdate } from "./components/filterdate";
 
-const nDow = dayjs("2025-05-02");
-const sDay = nDow.day(nDow.day() - 7);
+const nDow = dayjs();
+const sDay = nDow.day(-7);
 
 export const AnalyticAnalyticWidget = ({
 	filterdate,
@@ -86,16 +86,19 @@ export const AnalyticAnalyticWidget = ({
 			dragable
 			loading={isLoading}
 			title={
-				<Filterdate
-					filterdate={query.filterdate}
-					editable={!filterdate?.[0]}
-					onChange={(filterdate) => {
-						setQuery({
-							...query,
-							filterdate,
-						});
-					}}
-				/>
+				<>
+					Этикетки за{" "}
+					<Filterdate
+						filterdate={query.filterdate}
+						editable={!filterdate?.[0]}
+						onChange={(filterdate) => {
+							setQuery({
+								...query,
+								filterdate,
+							});
+						}}
+					/>
+				</>
 			}
 		>
 			<Table>

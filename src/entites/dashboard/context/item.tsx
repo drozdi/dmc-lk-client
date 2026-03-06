@@ -26,13 +26,13 @@ export function DashBoardItem({
 }: DashBoardItemProps<object> | DashBoardItemParamsProps<object>) {
 	const dashboard = useDashboard();
 	if (id) {
-		dashboard.addWidget({
-			id,
-			children,
-			fixed,
-			type,
-			params,
-		});
+		// dashboard.addWidget({
+		// 	id,
+		// 	children,
+		// 	fixed,
+		// 	type,
+		// 	params,
+		// });
 		return null;
 	}
 	return <div {...props}>{children}</div>;

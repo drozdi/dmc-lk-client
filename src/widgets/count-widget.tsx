@@ -125,7 +125,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 			loading={
 				qa.isLoading || storeCountLabel.isLoading || storeLabels.isLoading
 			}
-			title={""}
+			title="Расход этикеток"
 			dragable
 		>
 			<NavLink

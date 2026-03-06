@@ -54,8 +54,7 @@ export const LabelsCountWidget = () => {
 				};
 			}
 			(formatСonsumptions[prod]?.labels || []).forEach((item) => {
-				res[prod].labels[item.label] =
-					res[prod].labels[item.label] || {};
+				res[prod].labels[item.label] = res[prod].labels[item.label] || {};
 				res[prod].labels[item.label].consumptions = item.consumption_m;
 			});
 		}
@@ -65,7 +64,7 @@ export const LabelsCountWidget = () => {
 			}
 			if (res[count.production_id]?.labels?.[count.add_label_format]) {
 				res[count.production_id].labels[count.add_label_format].total +=
-					count.sum;
+					count.sum === NaN ? 0 : count.sum;
 			}
 		}
 		for (const count of counts.not_distributed) {
@@ -74,7 +73,7 @@ export const LabelsCountWidget = () => {
 			}
 			if (res[count.production_id]?.labels?.[count.add_label_format]) {
 				res[count.production_id].labels[count.add_label_format].total +=
-					count.sum;
+					count.sum === NaN ? 0 : count.sum;
 			}
 		}
 		for (const prod in res) {
@@ -96,16 +95,17 @@ export const LabelsCountWidget = () => {
 		Object.values(res).forEach((production) => {
 			if (production) {
 				production.total = Object.values(production.labels).reduce(
-					(acc, item) => acc + item.total,
+					(acc, item) => acc + (item?.total || 0),
 					0,
 				);
 				production.minus = Object.values(production.labels).reduce(
-					(acc, item) => acc + item.minus,
+					(acc, item) => acc + item?.minus || 0,
 					0,
 				);
-				production.consumptions = Object.values(
-					production.labels,
-				).reduce((acc, item) => acc + item.consumptions, 0);
+				production.consumptions = Object.values(production.labels).reduce(
+					(acc, item) => acc + item.consumptions,
+					0,
+				);
 			}
 		});
 		return Object.values(res);
@@ -115,7 +115,8 @@ export const LabelsCountWidget = () => {
 		storeLabels.load();
 		storeCountLabel.load();
 	}, []);
-
+	console.log(storeCountLabel.count);
+	console.log(ddata);
 	return (
 		<Widget loading={isLoading} title="Сводная история" dragable>
 			<Accordion>
@@ -128,16 +129,12 @@ export const LabelsCountWidget = () => {
 							<Box my="-xs">{production.production_name}</Box>
 						</Accordion.Control>
 						<Accordion.Panel>
-							<Table
-								withTableBorder
-								withRowBorders
-								withColumnBorders
-							>
+							<Table withTableBorder withRowBorders withColumnBorders>
 								<Table.Thead>
 									<Table.Tr>
 										<Table.Th>Этикетка</Table.Th>
 										<Table.Th>Расход ленты(м)</Table.Th>
-										<Table.Th>Остаток</Table.Th>
+										<Table.Th>Остаток этикеток</Table.Th>
 									</Table.Tr>
 								</Table.Thead>
 								<Table.Tbody>
@@ -146,9 +143,7 @@ export const LabelsCountWidget = () => {
 											return (
 												<Table.Tr>
 													<Table.Td>{label}</Table.Td>
-													<Table.Td>
-														{consumptions}
-													</Table.Td>
+													<Table.Td>{consumptions}</Table.Td>
 													<Table.Td>{total}</Table.Td>
 												</Table.Tr>
 											);

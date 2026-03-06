@@ -5,6 +5,7 @@ import {
 } from "@/entites/analytics";
 import { IncidentDetail } from "@/features/analytics/incident/detail";
 import { IncidentGenerate } from "@/features/analytics/incident/generate";
+import { IncidentShort } from "@/features/analytics/incident/short";
 import { Template } from "@/layout";
 import { useQueryLoading } from "@/shared/hooks";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
@@ -25,6 +26,12 @@ export function AnalyticsIncidentPage() {
 		fromDay.format("YYYY-MM-DD"),
 		toDay.format("YYYY-MM-DD"),
 	]);
+
+	const handleChange = (filterdate: [DateValue, DateValue]) => {
+		if (filterdate[0] && filterdate[1]) {
+			setFilterdate(filterdate);
+		}
+	};
 
 	const storeIncident = useStoreIncident();
 
@@ -51,26 +58,29 @@ export function AnalyticsIncidentPage() {
 			dayjs().format("YYYY-MM-DD"),
 		]);
 	};
-	console.log(filterdate);
+
 	return (
 		<Paper>
 			<Template.Title>Жупнал инцидентов</Template.Title>
 			<Group justify="flex-end">
 				<DatePickerInput
 					type="range"
-					value={filterdate}
-					onChange={setFilterdate}
+					defaultValue={filterdate}
+					onChange={handleChange}
 				/>
 			</Group>
-			<Tabs defaultValue="short" mt="xs">
+			<Tabs defaultValue="detail" mt="xs">
 				<Tabs.List>
-					<Tabs.Tab value="short">Кратко</Tabs.Tab>
-					<Tabs.Tab value="detail">Детально</Tabs.Tab>
+					<Tabs.Tab value="detail">Кратко</Tabs.Tab>
+					<Tabs.Tab value="generate">Детально</Tabs.Tab>
 				</Tabs.List>
-				<Tabs.Panel value="short">
+				<Tabs.Panel value="detail">
 					<IncidentDetail filterdate={filterdate} />
 				</Tabs.Panel>
-				<Tabs.Panel value="detail">
+				<Tabs.Panel value="short">
+					<IncidentShort filterdate={filterdate} />
+				</Tabs.Panel>
+				<Tabs.Panel value="generate">
 					<IncidentGenerate filterdate={filterdate} />
 				</Tabs.Panel>
 			</Tabs>

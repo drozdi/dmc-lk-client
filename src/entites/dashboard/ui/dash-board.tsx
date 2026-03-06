@@ -26,7 +26,7 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 						cols={12}
 						rowHeight={60}
 						margin={[10, 10]}
-						rows={10}
+						rows={24}
 						color="#f0f0f0"
 						borderRadius={4}
 					/>

@@ -26,10 +26,6 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 		...props,
 	});
 
-	function reset() {
-		setQuery({ ...props });
-	}
-
 	const [filterGap, setFilterGap] = useState<boolean>(true);
 	const formatName = useCallback(
 		(name: string) => {
@@ -107,16 +103,19 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 			dragable
 			loading={isLoading}
 			title={
-				<Filterdate
-					filterdate={query.filterdate}
-					editable={!props.filterdate?.[0]}
-					onChange={(filterdate) => {
-						setQuery({
-							...query,
-							filterdate,
-						});
-					}}
-				/>
+				<>
+					Напечатано за{" "}
+					<Filterdate
+						filterdate={query.filterdate}
+						editable={!props.filterdate?.[0]}
+						onChange={(filterdate) => {
+							setQuery({
+								...query,
+								filterdate,
+							});
+						}}
+					/>
+				</>
 			}
 		>
 			<Stack h="100%">

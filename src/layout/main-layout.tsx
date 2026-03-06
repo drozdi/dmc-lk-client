@@ -1,6 +1,8 @@
 import { InOutLink } from "@/features/auth/in-out-link";
 import { ChangeProduct } from "@/features/lk/change-product";
 import { PersonalLink } from "@/features/lk/personal-link";
+import { Logo } from "@/features/logo/Logo";
+import { MainMenu } from "@/features/menu/main-menu";
 import { useBreakpoint } from "@/shared/hooks";
 import { $setting } from "@/shared/setting";
 import { Title } from "@/shared/ui";
@@ -16,7 +18,6 @@ import {
 import { useMemo } from "react";
 import { TbArrowBarLeft, TbArrowBarRight } from "react-icons/tb";
 import { Outlet, useNavigate } from "react-router-dom";
-import { MainMenu } from "./components/main-menu";
 import { ThemeBtn } from "./components/theme-btn";
 import { Template } from "./store";
 
@@ -87,6 +88,7 @@ export function MainLayout() {
 					/>
 				</AppShell.Section>
 				<AppShell.Section grow my="xs" component={ScrollArea} px="xs">
+					<Logo />
 					<MainMenu mini={!breakpoint && !desktopOpened} />
 				</AppShell.Section>
 				<AppShell.Section p="xs"></AppShell.Section>

@@ -6,6 +6,7 @@ import { Template } from "@/layout";
 import {
 	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
+	AnalyticIncidentWidget,
 	AnalyticPieWidget,
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
@@ -22,8 +23,10 @@ export const DashboardPage = () => {
 	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
 		{
 			filterdate: [
-				dNow.month(dNow.month() - 6).format("YYYY-MM-DD"),
-				dNow.format("YYYY-MM-DD"),
+				"2025-04-02",
+				"2025-04-30",
+				// dNow.month(dNow.month() - 6).format("YYYY-MM-DD"),
+				// dNow.format("YYYY-MM-DD"),
 			],
 		},
 	);
@@ -34,7 +37,7 @@ export const DashboardPage = () => {
 			<Group justify="flex-end">
 				<DatePickerInput
 					type="range"
-					value={query.filterdate}
+					defaultValue={query.filterdate}
 					onChange={(filterdate) => {
 						if (filterdate[0] && filterdate[1]) {
 							setQuery((v) => ({
@@ -121,6 +124,17 @@ export const DashboardPage = () => {
 						}}
 					>
 						<LabelsCountWidget {...query} step="d" />
+					</div>
+					<div
+						key="incident"
+						data-grid={{
+							x: 12,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<AnalyticIncidentWidget {...query} />
 					</div>
 				</UiDashBoard>
 			</DashboardProvider>

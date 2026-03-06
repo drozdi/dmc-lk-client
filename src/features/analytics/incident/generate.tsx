@@ -22,7 +22,7 @@ import { TbColumnRemove, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 interface IncidentGenerateProps {
 	filterdate: [DateValue, DateValue];
 	filter?: boolean;
-	fields: string[];
+	fields?: string[];
 }
 
 export const IncidentGenerate = ({
@@ -77,34 +77,21 @@ export const IncidentGenerate = ({
 					sortable: true,
 				},
 			].concat(
-				(template.fields_name || []).map((field) => ({
+				...(template.fields_name || []).map((field) => ({
 					accessor: field,
 					title: (
-						/**<HoverCard disabled={!canRemove(field)} position="right">
-							<HoverCard.Target>
-								<Text flex="1">{ef.findLabelByCode(field)}</Text>
-							</HoverCard.Target>
-							<HoverCard.Dropdown>
-								<ActionIcon
-									color="red"
-									onClick={() => handleRemove(field)}
-									title={`Удалить поле "${ef.findLabelByCode(field)}"`}
-								>
-									<TbColumnRemove />
-								</ActionIcon>
-							</HoverCard.Dropdown>
-						</HoverCard> */
 						<Group justify="space-between" grow>
 							<Text flex="1">{ef.findLabelByCode(field)}</Text>
 							{canRemove(field) && (
-								<ActionIcon
-									flex="0"
-									color="red"
-									onClick={() => handleRemove(field)}
-									title={`Удалить поле "${ef.findLabelByCode(field)}"`}
-								>
-									<TbColumnRemove />
-								</ActionIcon>
+								<Tooltip label="Удалить">
+									<ActionIcon
+										flex="0"
+										color="red"
+										onClick={() => handleRemove(field)}
+									>
+										<TbColumnRemove />
+									</ActionIcon>
+								</Tooltip>
 							)}
 						</Group>
 					),

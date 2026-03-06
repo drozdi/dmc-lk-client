@@ -14,7 +14,7 @@ const navItems: NavItem[] = [
 	{
 		label: "Dashboard",
 		icon: <TbMenu />,
-		path: "/dashboard",
+		path: "/",
 	},
 	{
 		label: "Отчеты",

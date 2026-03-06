@@ -43,14 +43,12 @@ export const IncidentShort = ({
 	// }, [fields, ef.filter]);
 
 	useEffect(() => {
-		if (filterdate[0] && filterdate[1]) {
-			setQuery(
-				(v: IRequestAnalyticsIncident): IRequestAnalyticsIncident => ({
-					...v,
-					filterdate,
-				}),
-			);
-		}
+		setQuery(
+			(v: IRequestAnalyticsIncident): IRequestAnalyticsIncident => ({
+				...v,
+				filterdate,
+			}),
+		);
 	}, [filterdate]);
 
 	useEffect(() => {

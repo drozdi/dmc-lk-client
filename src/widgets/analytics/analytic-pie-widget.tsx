@@ -90,16 +90,19 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 			dragable
 			loading={isLoading}
 			title={
-				<Filterdate
-					filterdate={query.filterdate}
-					editable={!props.filterdate?.[0]}
-					onChange={(filterdate) => {
-						setQuery({
-							...query,
-							filterdate,
-						});
-					}}
-				/>
+				<>
+					Соотношение за{" "}
+					<Filterdate
+						filterdate={query.filterdate}
+						editable={!props.filterdate?.[0]}
+						onChange={(filterdate) => {
+							setQuery({
+								...query,
+								filterdate,
+							});
+						}}
+					/>
+				</>
 			}
 		>
 			<Stack h="100%">
