@@ -60,20 +60,12 @@ export function Widget({
 					<Group mr="-xs">
 						<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
 							<ActionIcon variant="subtle" onClick={toggle}>
-								{isExpanded ? (
-									<TbArrowsMinimize />
-								) : (
-									<TbArrowsMaximize />
-								)}
+								{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
 							</ActionIcon>
 						</Tooltip>
 						{onRemove && (
 							<Tooltip label="Убрать">
-								<ActionIcon
-									color="red"
-									variant="subtle"
-									onClick={onRemove}
-								>
+								<ActionIcon color="red" variant="subtle" onClick={onRemove}>
 									<TbX />
 								</ActionIcon>
 							</Tooltip>
@@ -81,18 +73,17 @@ export function Widget({
 					</Group>
 				</Group>
 			</Card.Section>
-			{(keepMounted || isExpanded) && (
-				<Card.Section
-					inheritPadding
-					component={component}
-					mih={loading ? 300 : undefined}
-					miw={loading ? 300 : undefined}
-					h="100%"
-				>
-					{children}
-				</Card.Section>
-			)}
-			<LoadingOverlay visible={loading} zIndex={1000} />
+			<Card.Section
+				inheritPadding
+				component={component}
+				mih={loading ? "100%" : undefined}
+				miw={loading ? "100%" : undefined}
+				h="100%"
+				pos="relative"
+			>
+				{keepMounted || isExpanded ? children : null}
+				<LoadingOverlay visible={loading} zIndex={1000} />
+			</Card.Section>
 			<Modal
 				opened={isExpanded}
 				onClose={close}

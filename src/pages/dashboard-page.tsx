@@ -2,6 +2,7 @@ import { DashboardProvider, UiDashBoard } from "@/entites/dashboard";
 import { useStoreDashboardMain } from "@/entites/dashboard/stores/use-store-dashboard-main";
 import { AddWidget } from "@/features/dashboard/add-widget";
 import { BtnClear } from "@/features/dashboard/btn-clear";
+import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
 import { Template } from "@/layout";
 import {
 	AnalyticAnalyticWidget,
@@ -142,6 +143,7 @@ export const DashboardPage = () => {
 				<Group>
 					<AddWidget store={useStoreDashboardMain} />
 					<BtnClear store={useStoreDashboardMain} />
+					<BtnEditMode store={useStoreDashboardMain} />
 				</Group>
 			</Template.Footer>
 		</Paper>

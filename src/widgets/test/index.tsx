@@ -15,7 +15,7 @@ export const TesstWidget = ({
 		}, timeout * 1000);
 	}, []);
 	return (
-		<Widget {...props} loading={isLoading} title={title}>
+		<Widget dragable {...props} loading={isLoading} title={title}>
 			<Center h="100%">
 				<Text>{description}</Text>
 			</Center>

@@ -1,5 +1,14 @@
-import { Button, Group, Select, Stack, type ComboboxItem } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
+import {
+	Button,
+	Checkbox,
+	Group,
+	Select,
+	Stack,
+	Text,
+	type ComboboxItem,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
 import { FieldNumber } from "./components/field-number";
@@ -9,30 +18,51 @@ import { FieldWrap } from "./components/field-wrarp";
 
 interface WidgetFormProps {
 	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	onAdd?: (widget: IWidget) => void;
 }
 
-export function WidgetForm({ store: useStore }: WidgetFormProps) {
+export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
 	const store = useStore();
 	const { availableWidgets } = store;
-	const [widget, updateWidget] = useSetState<IWidget>({
-		type: Object.values(availableWidgets)[0]?.type || "",
-		params: {},
-	});
-	const params = availableWidgets[widget.type]?.params as IWidgetParam[];
-	function handleAdd() {
-		store.addWidget(widget);
-		updateWidget({
+	const [params, setParams] = useState<IWidgetParam[]>([]);
+
+	const form = useForm<Partial<IWidgetItem>>({
+		mode: "uncontrolled",
+		initialValues: {
 			type: Object.values(availableWidgets)[0]?.type || "",
+			fixed: true,
 			params: {},
+		},
+	});
+	form.watch("type", ({ value }) => {
+		setParams(availableWidgets[value]?.params || []);
+	});
+
+	useEffect(() => {
+		form.initialize({
+			type: Object.values(availableWidgets)[0].type || "",
+			fixed: true,
 		});
+		setParams(availableWidgets[form.values.type].params || []);
+	}, []);
+
+	function handleAdd(widget: IWidget) {
+		store.addWidget(widget);
+		onAdd?.(widget);
 	}
+
 	return (
 		<>
 			<Stack gap="xs">
+				<Text fz="xl">Добавить виджет</Text>
+				<Checkbox
+					label="Зафиксировать"
+					key={form.key("fixed")}
+					{...form.getInputProps("fixed", { type: "checkbox" })}
+				/>
 				<Select
-					label="Добавить виджет"
-					placeholder="Select widget"
-					value={widget.type}
+					placeholder="Выбрать виджет"
+					comboboxProps={{ withinPortal: false }}
 					data={
 						Object.entries(availableWidgets).map(
 							([type, { label }]: [string, IWidget]) => ({
@@ -41,57 +71,41 @@ export function WidgetForm({ store: useStore }: WidgetFormProps) {
 							}),
 						) as ComboboxItem[]
 					}
-					onChange={(value) =>
-						updateWidget({
-							type: value,
-							params: {},
-						})
-					}
+					key={form.key("type")}
+					{...form.getInputProps("type")}
 				/>
-				{params.map((param) => (
+
+				{params.map(({ label, description, field, type, ...param }) => (
 					<FieldWrap
-						label={param.label}
-						description={param.description}
+						key={field}
+						label={label}
+						description={description}
+						required={param.required}
 					>
-						{param.type === "number" ? (
+						{type === "number" ? (
 							<FieldNumber
-								onChange={(value) => {
-									updateWidget({
-										params: {
-											...widget.params,
-											[param.field]: value,
-										},
-									});
-								}}
+								key={form.key(`param.${field}`)}
+								{...form.getInputProps(`params.${field}`, param)}
 							/>
-						) : param.type === "text" ? (
+						) : type === "text" ? (
 							<FieldText
-								onChange={(value) => {
-									updateWidget({
-										params: {
-											...widget.params,
-											[param.field]: value,
-										},
-									});
-								}}
+								key={form.key(`param.${field}`)}
+								{...form.getInputProps(`params.${field}`, param)}
 							/>
 						) : (
 							<FieldString
-								onChange={(value) => {
-									updateWidget({
-										params: {
-											...widget.params,
-											[param.field]: value,
-										},
-									});
-								}}
+								key={form.key(`param.${field}`)}
+								{...form.getInputProps(`params.${field}`, param)}
 							/>
 						)}
 					</FieldWrap>
 				))}
 			</Stack>
 			<Group mt="xs" justify="flex-end">
-				<Button rightSection={<TbPlus />} onClick={handleAdd}>
+				<Button
+					rightSection={<TbPlus />}
+					onClick={() => form.onSubmit(handleAdd)()}
+				>
 					Добавить
 				</Button>
 			</Group>

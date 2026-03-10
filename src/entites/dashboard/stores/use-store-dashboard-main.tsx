@@ -15,6 +15,7 @@ export const useStoreDashboardMain = factoryDashboardStore({
 					label: "Время загрузки",
 					field: "timeout",
 					type: "number",
+					required: true,
 				},
 				{
 					label: "Заголовок",

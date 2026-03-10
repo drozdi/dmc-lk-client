@@ -19,6 +19,12 @@ export const factoryDashboardStore = ({
 				layouts: [],
 				availableWidgets,
 				showed: [],
+				edit: false,
+				toggleEdit() {
+					set((state) => ({
+						edit: !state.edit,
+					}));
+				},
 				addShowed: (id) => {
 					set((state) => ({
 						showed: [...state.showed, id],
@@ -36,14 +42,10 @@ export const factoryDashboardStore = ({
 						},
 					}));
 				},
-				addWidget: (widget) => {
+				addWidget: (widget, layout = {}) => {
 					const key = get().key;
 					widget.id = widget.id || `widget.${Date.now()}`;
-					if (
-						get().widgets.findIndex(
-							(item) => item.id === widget.id,
-						) > -1
-					) {
+					if (get().widgets.findIndex((item) => item.id === widget.id) > -1) {
 						return;
 					}
 					set((state) => ({
@@ -51,11 +53,14 @@ export const factoryDashboardStore = ({
 						layouts: [
 							...state.layouts,
 							{
-								[key]: widget.id,
-								x: (state.layouts.length * 2) % 12,
-								y: Infinity,
-								w: 3,
-								h: 2,
+								...{
+									[key]: widget.id,
+									x: (state.layouts.length * 2) % 12,
+									y: Infinity,
+									w: 3,
+									h: 2,
+								},
+								...layout,
 							} as ILayoutItem,
 						],
 					}));
@@ -63,22 +68,17 @@ export const factoryDashboardStore = ({
 				removeWidget: (widget) => {
 					const key = get().key;
 					set((state) => ({
-						widgets: state.widgets.filter(
-							(w) => w.id !== widget.id,
-						),
-						layouts: state.layouts.filter(
-							(l) => l[key] !== widget.id,
-						),
+						widgets: state.widgets.filter((w) => w.id !== widget.id),
+						layouts: state.layouts.filter((l) => l[key] !== widget.id),
 					}));
 				},
 				renderWidget: (widget) => {
-					const Component =
-						get().availableWidgets[widget.type]?.component;
+					const Component = get().availableWidgets[widget.type]?.component;
 					if (!Component) {
 						return undefined;
 					}
 					const params = widget.params;
-					if (!widget.fixed && widget.id) {
+					if (get().edit || (!widget.fixed && widget.id)) {
 						params.onRemove = () => {
 							get().removeWidget(widget);
 						};

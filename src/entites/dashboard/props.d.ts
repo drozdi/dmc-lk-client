@@ -14,13 +14,19 @@ type ILayoutItem = (
 	minH?: number;
 };
 
+interface IWidgetItem {
+	id: ILayoutItem["i"] | ILayoutItem["id"];
+	type: string;
+	fixed?: boolean;
+	params?: Record<string, any>;
+}
+
 interface IWidget {
-	id?: ILayoutItem["i"] | ILayoutItem["id"];
+	id?: IWidgetItem["id"];
 	label?: string;
 	description?: string;
-	type: string;
-	fixed?: string;
-	params?: IWidgetParam[] | Record<string, any>;
+	type: IWidgetItem["type"];
+	params?: IWidgetParam[];
 	component?: React.ComponentType<any>;
 	children?: React.ReactNode;
 }
@@ -30,6 +36,7 @@ interface IWidgetParam {
 	field: string;
 	type?: string;
 	description?: string;
+	required?: boolean;
 }
 
 interface DashboardContextType {
@@ -38,8 +45,10 @@ interface DashboardContextType {
 	layouts: ILayoutItem[];
 	showed: IWidget["id"][];
 	availableWidgets: Record<IWidget["type"], IWidget>;
+	edit: boolean;
+	toggleEdit: () => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
-	addWidget: (widget: IWidget) => void;
+	addWidget: (widget: IWidget, layout?: Partial<ILayoutItem>) => void;
 	removeWidget: (widget: IWidget) => void;
 	renderWidget: (widget: IWidget) => React.ReactNode | undefined;
 	hasWidget: (type: IWidget["type"]) => boolean;
