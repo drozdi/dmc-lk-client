@@ -13,7 +13,7 @@ import { useStoreUserProfile } from "@/entites/auth";
 import { useQueryLoading } from "@/shared/hooks";
 import { Widget } from "@/shared/ui";
 import { cached, randomColor } from "@/shared/utils";
-import { AspectRatio, Stack } from "@mantine/core";
+import { AspectRatio, Center, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
 
 const colors = cached<string>((name: string) => randomColor());
@@ -65,7 +65,9 @@ export const AnalyticIncidentWidget = (
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
-						<span>Данные ненашлись!</span>
+						<Center w="100%" h="100%" fz="h1" c="dimmed">
+							Данные ненашлись!
+						</Center>
 					) : (
 						<ResponsiveContainer>
 							<PieChart>

@@ -8,6 +8,7 @@ import { useQueryLoading } from "@/shared/hooks";
 import { ButtonRemove, DataTable, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
+	Center,
 	Group,
 	HoverCard,
 	Stack,
@@ -16,6 +17,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
+import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { TbColumnRemove, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 
@@ -81,22 +83,27 @@ export const IncidentGenerate = ({
 					accessor: field,
 					title: (
 						<Group justify="space-between" grow>
-							<Text flex="1">{ef.findLabelByCode(field)}</Text>
-							{canRemove(field) && (
-								<Tooltip label="Удалить">
-									<ActionIcon
-										flex="0"
-										color="red"
-										onClick={() => handleRemove(field)}
-									>
-										<TbColumnRemove />
-									</ActionIcon>
-								</Tooltip>
-							)}
+							<HoverCard disabled={!canRemove(field)} position="top">
+								<HoverCard.Target>
+									<Text flex="1">{ef.findLabelByCode(field)}</Text>
+								</HoverCard.Target>
+								<HoverCard.Dropdown>
+									<Tooltip label="Удалить">
+										<ActionIcon
+											flex="0"
+											color="red"
+											onClick={() => handleRemove(field)}
+										>
+											<TbColumnRemove />
+										</ActionIcon>
+									</Tooltip>
+								</HoverCard.Dropdown>
+							</HoverCard>
 						</Group>
 					),
 					sortKey: field,
 					sortable: true,
+					ellipsis: true,
 				})),
 				{
 					accessor: "actions",
@@ -208,12 +215,20 @@ export const IncidentGenerate = ({
 				</Group>
 			)}
 			<Loading active={isLoading} keepMounted>
-				<DataTable<IAnalyticsIncidentItem>
-					miw={640}
-					pinLastColumn
-					columns={computedColumns}
-					records={data}
-				/>
+				{data?.length ? (
+					<DataTable<IAnalyticsIncidentItem>
+						miw={640}
+						pinLastColumn
+						columns={computedColumns}
+						records={data}
+					/>
+				) : (
+					<Center w="100%" h="10rem" fz="h1" c="dimmed">
+						Данные отсутствуют за период{" "}
+						{dayjs(filterdate[0]).format($setting.get("formatDate"))} -{" "}
+						{dayjs(filterdate[1]).format($setting.get("formatDate"))}
+					</Center>
+				)}
 			</Loading>
 		</Stack>
 	);

@@ -23,12 +23,11 @@ interface IWidgetItem {
 
 interface IWidget {
 	id?: IWidgetItem["id"];
+	type: IWidgetItem["type"];
 	label?: string;
 	description?: string;
-	type: IWidgetItem["type"];
 	params?: IWidgetParam[];
 	component?: React.ComponentType<any>;
-	children?: React.ReactNode;
 }
 
 interface IWidgetParam {

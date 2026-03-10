@@ -18,14 +18,16 @@ import { DatePickerInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useState } from "react";
 
-const dNow = dayjs("2025-05-02");
+const dNow = dayjs();
 
 export const DashboardPage = () => {
 	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
 		{
 			filterdate: [
-				"2025-04-02",
-				"2025-04-30",
+				dayjs()
+					.month(dayjs().month() - 1)
+					.format("YYYY-MM-DD"),
+				dayjs().format("YYYY-MM-DD"),
 				// dNow.month(dNow.month() - 6).format("YYYY-MM-DD"),
 				// dNow.format("YYYY-MM-DD"),
 			],
@@ -139,13 +141,15 @@ export const DashboardPage = () => {
 					</div>
 				</UiDashBoard>
 			</DashboardProvider>
-			<Template.Footer>
-				<Group>
-					<AddWidget store={useStoreDashboardMain} />
-					<BtnClear store={useStoreDashboardMain} />
-					<BtnEditMode store={useStoreDashboardMain} />
-				</Group>
-			</Template.Footer>
+			{import.meta.env.DEV && (
+				<Template.Footer>
+					<Group>
+						<AddWidget store={useStoreDashboardMain} />
+						<BtnClear store={useStoreDashboardMain} />
+						<BtnEditMode store={useStoreDashboardMain} />
+					</Group>
+				</Template.Footer>
+			)}
 		</Paper>
 	);
 };

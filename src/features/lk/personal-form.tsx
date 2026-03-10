@@ -193,14 +193,6 @@ export const PersonalForm = () => {
 							Применить
 						</Button>
 					</Group>
-					<Button
-						color="red"
-						onClick={handleRemove}
-						loading={isLoading}
-						disabled={!isValid}
-					>
-						Удалить
-					</Button>
 				</Template>
 			</Stack>
 		</Loading>

@@ -1,7 +1,9 @@
 import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
+import { $setting } from "@/shared";
 import { Loading } from "@/shared/ui";
 import { Accordion, Center } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { IncidentDetail as SubIncidentDetail } from "./components/incident-detail";
 
@@ -62,8 +64,10 @@ export const IncidentDetail = ({
 						))}
 					</Accordion>
 				) : (
-					<Center w="100%" h="10rem" fz="h1">
-						Данные отсутствуют
+					<Center w="100%" h="10rem" fz="h1" c="dimmed">
+						Данные отсутствуют за период{" "}
+						{dayjs(filterdate[0]).format($setting.get("formatDate"))} -{" "}
+						{dayjs(filterdate[1]).format($setting.get("formatDate"))}
 					</Center>
 				)}
 			</Loading>

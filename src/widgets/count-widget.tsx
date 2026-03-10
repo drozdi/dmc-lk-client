@@ -9,7 +9,7 @@ import {
 } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import { LabelFormat, Widget } from "@/shared/ui";
-import { Accordion, Group, NavLink, Table, Text } from "@mantine/core";
+import { Accordion, Group, Table, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbList } from "react-icons/tb";
 
@@ -125,100 +125,82 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 			loading={
 				qa.isLoading || storeCountLabel.isLoading || storeLabels.isLoading
 			}
-			title="Расход этикеток"
+			title={
+				<>
+					Расход этикеток: расход:{" "}
+					{Object.values(res).reduce((acc, item) => acc + item.minus, 0)}{" "}
+					остаток:{" "}
+					{Object.values(res).reduce((acc, item) => acc + item.total, 0)}
+				</>
+			}
 			dragable
 		>
-			<NavLink
-				active={active}
-				variant="light"
-				href="#"
-				onChange={(v) => setActive(v)}
-				childrenOffset="0"
-				label={
-					<Group justify="space-between">
-						<Text>Площадка</Text>
-						<Group justify="space-between" miw="50%">
-							<Text>
-								расход:{" "}
-								{Object.values(res).reduce((acc, item) => acc + item.minus, 0)}
-							</Text>
-							<Text miw="50%">
-								остаток:{" "}
-								{Object.values(res).reduce((acc, item) => acc + item.total, 0)}
-							</Text>
-						</Group>
-					</Group>
-				}
-			>
-				<Accordion chevronPosition="left">
-					{Object.values(res).map((production) => (
-						<Accordion.Item
-							key={production.production_id}
-							value={"acc-" + production.production_id}
-						>
-							<Accordion.Control>
-								<Group my="-xs" justify="space-between">
-									<Text>
-										{production.production_name} ({production.production_id})
-									</Text>
-									<Group justify="space-between" miw="50%">
-										<Text>расход: {production.minus}</Text>
-										<Text miw="50%">остаток: {production.total}</Text>
-									</Group>
+			<Accordion chevronPosition="left">
+				{Object.values(res).map((production) => (
+					<Accordion.Item
+						key={production.production_id}
+						value={"acc-" + production.production_id}
+					>
+						<Accordion.Control>
+							<Group my="-xs" justify="space-between">
+								<Text>
+									{production.production_name} ({production.production_id})
+								</Text>
+								<Group justify="space-between" miw="50%">
+									<Text>расход: {production.minus}</Text>
+									<Text miw="50%">остаток: {production.total}</Text>
 								</Group>
-							</Accordion.Control>
-							<Accordion.Panel>
-								<Table withTableBorder withRowBorders withColumnBorders>
-									<Table.Thead>
-										<Table.Tr>
-											<Table.Th w="2rem"></Table.Th>
-											<Table.Th>Этикетка</Table.Th>
-											<Table.Th>Расход</Table.Th>
-											<Table.Th>Остаток</Table.Th>
-										</Table.Tr>
-									</Table.Thead>
-									<GroupedProvider
-										production_id={Number(production.production_id)}
-									>
-										<Table.Tbody>
-											{Object.entries(production.labels).map(
-												([label, { total, minus, container }]) => {
-													const Wrap = container
-														? GroupedContainer
-														: GroupedItem;
-													const props = container
-														? { column: label }
-														: {
-																id: label,
-																data: label,
-															};
-													return (
-														<Wrap
-															key={production.production_id + label}
-															{...props}
-														>
-															<Table.Tr>
-																<Table.Td ta="center">
-																	{container === false && <TbList />}
-																</Table.Td>
-																<Table.Td>
-																	<LabelFormat>{label}</LabelFormat>
-																</Table.Td>
-																<Table.Td>{minus}</Table.Td>
-																<Table.Td>{total}</Table.Td>
-															</Table.Tr>
-														</Wrap>
-													);
-												},
-											)}
-										</Table.Tbody>
-									</GroupedProvider>
-								</Table>
-							</Accordion.Panel>
-						</Accordion.Item>
-					))}
-				</Accordion>
-			</NavLink>
+							</Group>
+						</Accordion.Control>
+						<Accordion.Panel>
+							<Table withTableBorder withRowBorders withColumnBorders>
+								<Table.Thead>
+									<Table.Tr>
+										<Table.Th w="2rem"></Table.Th>
+										<Table.Th>Этикетка</Table.Th>
+										<Table.Th>Расход</Table.Th>
+										<Table.Th>Остаток</Table.Th>
+									</Table.Tr>
+								</Table.Thead>
+								<GroupedProvider
+									production_id={Number(production.production_id)}
+								>
+									<Table.Tbody>
+										{Object.entries(production.labels).map(
+											([label, { total, minus, container }]) => {
+												const Wrap = container ? GroupedContainer : GroupedItem;
+												const props = container
+													? { column: label }
+													: {
+															id: label,
+															data: label,
+														};
+												return (
+													<Wrap
+														key={production.production_id + label}
+														{...props}
+													>
+														<Table.Tr>
+															<Table.Td ta="center">
+																{container === false && <TbList />}
+															</Table.Td>
+															<Table.Td>
+																<LabelFormat>{label}</LabelFormat>
+															</Table.Td>
+															<Table.Td>{minus}</Table.Td>
+															<Table.Td>{total}</Table.Td>
+														</Table.Tr>
+													</Wrap>
+												);
+											},
+										)}
+									</Table.Tbody>
+								</GroupedProvider>
+							</Table>
+						</Accordion.Panel>
+					</Accordion.Item>
+				))}
+			</Accordion>
 		</Widget>
 	);
 };

@@ -8,10 +8,12 @@ export async function requestUserProfileGet(): Promise<
 	const res = await api.get("/user_profile/");
 	return res.data;
 }
+
 export async function requestUserProfileDelete() {
 	const res = await api.delete("/user_profile/");
 	return res.data;
 }
+
 export async function requestUserProfileUpdate(userData: IUser) {
 	const res = await api.patch("/user_profile/", userData);
 	return res.data;

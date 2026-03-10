@@ -1,8 +1,8 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { Widget } from "@/shared/ui";
+import { LabelFormat, Widget } from "@/shared/ui";
 import { randomColor } from "@/shared/utils";
-import { AspectRatio, Checkbox, Group, Stack } from "@mantine/core";
+import { AspectRatio, Center, Checkbox, Group, Stack } from "@mantine/core";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Bar,
@@ -128,15 +128,22 @@ export const AnalyticTypeWidget = memo((props: Partial<ChartAnalyticProps>) => {
 				</Group>
 				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
-						<span>Данные ненашлись!</span>
+						<Center w="100%" h="100%" fz="h1" c="dimmed">
+							Данные ненашлись!
+						</Center>
 					) : (
 						<ResponsiveContainer>
 							<BarChart data={ddata}>
-								<Tooltip />
+								<Tooltip
+									labelFormatter={(name) => {
+										return <LabelFormat>{name}</LabelFormat>;
+									}}
+								/>
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis dataKey="name" />
 								<YAxis />
-								<Bar dataKey="value" fill="#8884d8" label={{ position: "top" }}>
+
+								<Bar dataKey="value" fill="#8884d8">
 									{ddata.map((entry, index) => (
 										<Cell key={`cell-${index}`} fill={entry.color} />
 									))}

@@ -1,7 +1,7 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { Widget } from "@/shared/ui";
-import { AspectRatio, Stack } from "@mantine/core";
+import { AspectRatio, Center, Stack } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import {
 	Cell,
@@ -66,7 +66,11 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 			color,
 		}));
 	}, [data, production_id]);
-	const isEmpty = useMemo(() => !ddata.length, [ddata]);
+
+	const isEmpty = useMemo(
+		() => !ddata.reduce((acc, { value }) => acc && value > 0, true),
+		[ddata],
+	);
 
 	const total = useMemo(() => ddata.reduce((a, b) => a + b.value, 0), [ddata]);
 
@@ -108,7 +112,9 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
-						<span>Данные ненашлись!</span>
+						<Center w="100%" h="100%" fz="h1" c="dimmed">
+							Данные ненашлись!
+						</Center>
 					) : (
 						<ResponsiveContainer>
 							<PieChart>

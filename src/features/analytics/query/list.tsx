@@ -22,6 +22,8 @@ export const AnalyticsQueryList = ({ className }: ListQueriesProps) => {
 		fetchPreviousPage,
 		isLoading,
 		error,
+		goToNext,
+		goToPrevious,
 	} = useQueryQueryList({
 		size,
 	});
@@ -82,14 +84,14 @@ export const AnalyticsQueryList = ({ className }: ListQueriesProps) => {
 					<Button
 						disabled={!hasPreviousPage}
 						loading={isFetchingPreviousPage}
-						onClick={() => fetchPreviousPage()}
+						onClick={() => goToPrevious()}
 					>
 						Предыдущая
 					</Button>
 					<Button
 						disabled={!hasNextPage}
 						loading={isFetchingNextPage}
-						onClick={() => fetchNextPage()}
+						onClick={() => goToNext()}
 					>
 						Следующая
 					</Button>

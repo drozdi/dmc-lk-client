@@ -41,7 +41,7 @@ export function MainLayout() {
 			header={{ height: { base: 60, md: 70, lg: 80 } }}
 			footer={{ height: 60 }}
 			navbar={{
-				width: desktopOpened ? 300 : 64,
+				width: desktopOpened ? 300 : 80,
 				breakpoint: "sm",
 				collapsed: {
 					mobile: !mobileOpened,

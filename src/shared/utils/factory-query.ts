@@ -4,7 +4,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export function factoryQuery<
 	T extends { id?: number; name?: string },
@@ -23,7 +23,7 @@ export function factoryQuery<
 			function useQueryList(params: Omit<RL, "number">) {
 				params.size = params.size || 15;
 				const q = useInfiniteQuery({
-					queryKey: [entry, { ...params, number: undefined }],
+					queryKey: [entry, "infinite"],
 					initialPageParam: 0,
 					queryFn: async ({ pageParam }) => {
 						const res = await requestList({
@@ -32,38 +32,76 @@ export function factoryQuery<
 						});
 						if (!res.success) {
 							throw new Error(
-								res.message ||
-									"Список запросов: подумать над ошибкой!",
+								res.message || "Список запросов: подумать над ошибкой!",
 							);
 						}
 						return res;
 					},
-					getNextPageParam: (lastPage) => lastPage.next_page,
-					getPreviousPageParam: (lastPage) => lastPage.previous_page,
-					select({ pages, pageParams }): T[] {
-						return pages[pageParams[pageParams.length - 1]].data
-							.response;
+					getNextPageParam: (lastPage) => {
+						return lastPage.data.response &&
+							lastPage.data.response.length >= params.size
+							? lastPage.data.next_page - 1
+							: undefined;
 					},
+					getPreviousPageParam: (firstPage) => {
+						return firstPage.data.page > 1
+							? firstPage.data.previous_page - 1
+							: undefined;
+					},
+					// select({ pages, pageParams }): T[] {
+					// 	return pages[pageParams[pageParams.length - 1]].data.response;
+					// },
 				});
+
+				const [currentPageIndex, setCurrentPageIndex] = useState(0);
+				const currentPage = q.data?.pages[currentPageIndex];
+
+				const goToPrevious = async () => {
+					if (currentPageIndex > 0) {
+						setCurrentPageIndex((prev) => prev - 1);
+					} else if (q.hasPreviousPage) {
+						await q.fetchPreviousPage();
+					}
+				};
+
+				// Обработчик "Следующая"
+				const goToNext = async () => {
+					const lastIndex = (q.data?.pages.length ?? 1) - 1;
+					if (currentPageIndex < lastIndex) {
+						setCurrentPageIndex((prev) => prev + 1);
+					} else if (q.hasNextPage) {
+						// Иначе загружаем следующую страницу
+						await q.fetchNextPage();
+						setCurrentPageIndex((prev) => prev + 1);
+					}
+				};
+
 				const findById = useCallback(
-					(id: T["id"]) =>
-						(q.data || []).find((item) => item.id === id),
+					(id: T["id"]) => (q.data || []).find((item) => item.id === id),
 					[q.data],
 				);
+
 				return {
 					...q,
 					findById,
+					goToNext,
+					goToPrevious,
+					hasPreviousPage: currentPageIndex > 0,
+					hasNextPage:
+						q.hasNextPage ||
+						currentPageIndex === ((q.data?.pages || []).length ?? 1) - 1,
+					data: q.data?.pages[currentPageIndex].data.response || [],
 				};
 			},
 		requestRead &&
 			function useQueryRead(id: T["id"]) {
 				return useQuery({
 					queryKey: [entry, id],
-					queryFn: async () =>
-						id ? await requestRead(id) : { data: defaultEntry },
+					queryFn: () => requestRead(id),
 					select(data): T {
 						return data.data;
 					},
+					placeholderData: { data: defaultEntry },
 				});
 			},
 		requestCreate &&

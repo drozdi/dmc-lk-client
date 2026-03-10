@@ -1,6 +1,9 @@
 import { useEnumsFields, useStoreIncident } from "@/entites/analytics";
+import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { Loading } from "@/shared/ui";
+import { Center } from "@mantine/core";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { ListShort } from "./ui/list-short";
 
@@ -61,7 +64,15 @@ export const IncidentShort = ({
 
 	return (
 		<Loading active={isLoading} keepMounted>
-			<ListShort fields={query.fields_name} data={data} />
+			{data?.length ? (
+				<ListShort fields={query.fields_name} data={data} />
+			) : (
+				<Center w="100%" h="10rem" fz="h1" c="dimmed">
+					Данные отсутствуют за период{" "}
+					{dayjs(filterdate[0]).format($setting.get("formatDate"))} -{" "}
+					{dayjs(filterdate[1]).format($setting.get("formatDate"))}
+				</Center>
+			)}
 		</Loading>
 	);
 };

@@ -78,10 +78,12 @@ export const factoryDashboardStore = ({
 						return undefined;
 					}
 					const params = widget.params;
-					if (get().edit || (!widget.fixed && widget.id)) {
+					if (get().edit) {
 						params.onRemove = () => {
 							get().removeWidget(widget);
 						};
+					} else {
+						params.onRemove = undefined;
 					}
 					return <Component {...params} />;
 				},

@@ -6,7 +6,7 @@ import {
 } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import { useQueryLoading } from "@/shared/hooks";
-import { Widget } from "@/shared/ui";
+import { LabelFormat, Widget } from "@/shared/ui";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 
@@ -115,8 +115,7 @@ export const LabelsCountWidget = () => {
 		storeLabels.load();
 		storeCountLabel.load();
 	}, []);
-	console.log(storeCountLabel.count);
-	console.log(ddata);
+
 	return (
 		<Widget loading={isLoading} title="Сводная история" dragable>
 			<Accordion>
@@ -142,7 +141,9 @@ export const LabelsCountWidget = () => {
 										([label, { total, consumptions }]) => {
 											return (
 												<Table.Tr>
-													<Table.Td>{label}</Table.Td>
+													<Table.Td>
+														<LabelFormat>{label}</LabelFormat>
+													</Table.Td>
 													<Table.Td>{consumptions}</Table.Td>
 													<Table.Td>{total}</Table.Td>
 												</Table.Tr>

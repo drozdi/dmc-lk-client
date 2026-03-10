@@ -15,7 +15,7 @@ import {
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { Widget } from "@/shared/ui";
-import { AspectRatio, Stack } from "@mantine/core";
+import { AspectRatio, Center, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
 
 const ee = useEnumsEvents();
@@ -226,7 +226,9 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>
 					{isEmpty ? (
-						<span>Данные ненашлись!</span>
+						<Center w="100%" h="100%" fz="h1" c="dimmed">
+							Данные ненашлись!
+						</Center>
 					) : (
 						<ResponsiveContainer>
 							<LineChart

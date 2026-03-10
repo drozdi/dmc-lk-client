@@ -10,6 +10,8 @@ const DashboardContext = createContext<DashboardContextType | undefined>(
 	undefined,
 );
 
+const DashboardItemContext = createContext<IWidgetItem | undefined>(undefined);
+
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 	children,
 	store,
@@ -21,10 +23,30 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({
 	);
 };
 
+export const DashboardItemProvider: React.FC<
+	IWidgetItem & {
+		children: React.ReactNode;
+	}
+> = ({ children, ...props }) => {
+	return (
+		<DashboardItemContext.Provider value={props}>
+			{children}
+		</DashboardItemContext.Provider>
+	);
+};
+
 export const useDashboard = () => {
 	const context = useContext(DashboardContext);
 	if (!context) {
 		throw new Error("useDashboard must be used within DashboardProvider");
+	}
+	return context;
+};
+
+export const useDashboardItem = () => {
+	const context = useContext(DashboardItemContext);
+	if (!context) {
+		throw new Error("useDashboard must be used within DashboardProviderItem");
 	}
 	return context;
 };

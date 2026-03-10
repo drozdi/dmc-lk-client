@@ -46,7 +46,7 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 			};
 		});
 	}, [layouts, widgets, edit]);
-	console.log(layouts_);
+
 	return (
 		<div ref={containerRef} style={{ position: "relative" }}>
 			{mounted && (
@@ -80,7 +80,7 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 							return child?.key ? child : null;
 						})}
 						{widgets.map((widget) => (
-							<div key={widget.id}>{renderWidget(widget)}</div>
+							<div key={widget.id}>{renderWidget(widget, edit)}</div>
 						))}
 						{/* {edit && (
 							<div

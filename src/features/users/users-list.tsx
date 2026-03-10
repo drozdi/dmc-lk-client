@@ -3,7 +3,16 @@ import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { notification } from "@/shared/notification";
 import { Loading } from "@/shared/ui";
-import { Button, Group, NavLink, Paper, Select, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	Group,
+	NavLink,
+	Paper,
+	Select,
+	Text,
+} from "@mantine/core";
+import { TbCircleMinus } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
 interface UsersListProps {
@@ -15,6 +24,11 @@ export function UsersList({ className }: UsersListProps) {
 		$setting.get("size"),
 	);
 	const deleteQuery = useQueryUsersDelete();
+
+	const sss = useQueryUsersList({
+		size,
+	});
+
 	const {
 		isLoading,
 		error,
@@ -23,9 +37,9 @@ export function UsersList({ className }: UsersListProps) {
 		hasNextPage,
 		fetchNextPage,
 		fetchPreviousPage,
-	} = useQueryUsersList({
-		size,
-	});
+		goToNext,
+		goToPrevious,
+	} = sss;
 
 	const navigate = useNavigate();
 
@@ -55,6 +69,20 @@ export function UsersList({ className }: UsersListProps) {
 								${[item.last_name, item.first_name, item.father_name].join(
 									" ",
 								)} (${item.email})`}
+							rightSection={
+								<ActionIcon
+									color="red"
+									title="Удалить"
+									loading={deleteQuery.isPending}
+									onClick={(event) => {
+										event.stopPropagation();
+										event.preventDefault();
+										handleRemove(item);
+									}}
+								>
+									<TbCircleMinus />
+								</ActionIcon>
+							}
 						/>
 					))
 				) : (
@@ -66,13 +94,10 @@ export function UsersList({ className }: UsersListProps) {
 
 			<Template.Footer>
 				<Group>
-					<Button
-						disabled={!hasPreviousPage}
-						onClick={() => fetchPreviousPage()}
-					>
+					<Button disabled={!hasPreviousPage} onClick={() => goToPrevious()}>
 						Предыдущая
 					</Button>
-					<Button disabled={!hasNextPage} onClick={() => fetchNextPage()}>
+					<Button disabled={!hasNextPage} onClick={() => goToNext()}>
 						Следующая
 					</Button>
 				</Group>

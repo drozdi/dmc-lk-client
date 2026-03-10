@@ -1,6 +1,13 @@
 import { Box, Group, ThemeIcon, Tooltip } from "@mantine/core";
 import { useCallback } from "react";
-import { TbMenu } from "react-icons/tb";
+import {
+	TbLabel,
+	TbMenu,
+	TbMessageReport,
+	TbReport,
+	TbReportAnalytics,
+	TbUsersGroup,
+} from "react-icons/tb";
 import { Link, useLocation } from "react-router-dom";
 import classes from "./main-menu.module.css";
 
@@ -13,32 +20,32 @@ interface NavItem {
 const navItems: NavItem[] = [
 	{
 		label: "Dashboard",
-		icon: <TbMenu />,
+		icon: <TbReportAnalytics />,
 		path: "/",
 	},
 	{
 		label: "Отчеты",
-		icon: <TbMenu />,
+		icon: <TbReport />,
 		path: "/analytics/queries",
 	},
 	{
 		label: "Инциденты",
-		icon: <TbMenu />,
+		icon: <TbMessageReport />,
 		path: "/analytics/incident",
 	},
 	{
-		label: "Labels",
+		label: "Групировка этикеток",
 		icon: <TbMenu />,
 		path: "/labels",
 	},
 	{
-		label: "Labels Count",
-		icon: <TbMenu />,
+		label: "Склад этикеток",
+		icon: <TbLabel />,
 		path: "/labels/count",
 	},
 	{
 		label: "Пользователи",
-		icon: <TbMenu />,
+		icon: <TbUsersGroup />,
 		path: "/users",
 	},
 ];
@@ -73,7 +80,7 @@ function NavbarLink({
 				aria-label={label}
 			>
 				<Box style={{ display: "flex", alignItems: "center" }}>
-					<ThemeIcon variant="light" size={26}>
+					<ThemeIcon variant="light" size={40} fz={30}>
 						{icon}
 					</ThemeIcon>
 					{!mini && <Box ml="md">{label}</Box>}
