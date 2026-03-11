@@ -1,21 +1,25 @@
-import React from "react";
-
-class FactoryWidget {
-	private static registry: Map<IWidget["type"], React.ComponentType<any>> =
-		new Map();
-	static register(type: IWidget["type"], component: React.ComponentType<any>) {
-		this.registry.set(type, component);
+export class FactoryWidget {
+	private static registry: Map<IWidget["type"], IWidget> = new Map();
+	static register(widget: IWidget) {
+		if (this.registry.has(widget.type)) {
+			console.warn(`Widget type: "${widget.type}" is registered`);
+			return;
+		}
+		this.registry.set(widget.type, widget);
 	}
-	static create(type: IWidget["type"], props: any) {
-		const Component = this.registry.get(type);
+
+	static create(type: IWidgetItem["type"], params: IWidgetItem["params"]) {
+		const Component = this.registry.get(type)?.component;
 		if (!Component) {
 			return <div>Unknown widget type: {type}</div>;
 		}
-		return <Component {...props} />;
+		return <Component {...params} />;
 	}
-	static getAvailableTypes(): string[] {
-		return Array.from(this.registry.keys());
+
+	static getAvailableTypes(): IWidget["type"][] {
+		return Object.keys(this.registry);
+	}
+	static getWidget(type: IWidget["type"]): IWidget {
+		return this.registry.get(type) as IWidget;
 	}
 }
-
-export default FactoryWidget;

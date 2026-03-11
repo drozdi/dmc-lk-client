@@ -25,10 +25,6 @@ export function UsersList({ className }: UsersListProps) {
 	);
 	const deleteQuery = useQueryUsersDelete();
 
-	const sss = useQueryUsersList({
-		size,
-	});
-
 	const {
 		isLoading,
 		error,
@@ -39,7 +35,9 @@ export function UsersList({ className }: UsersListProps) {
 		fetchPreviousPage,
 		goToNext,
 		goToPrevious,
-	} = sss;
+	} = useQueryUsersList({
+		size,
+	});
 
 	const navigate = useNavigate();
 

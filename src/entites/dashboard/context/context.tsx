@@ -50,3 +50,7 @@ export const useDashboardItem = () => {
 	}
 	return context;
 };
+
+export const useDashboardItemParams = () => {
+	return useDashboardItem().params;
+};

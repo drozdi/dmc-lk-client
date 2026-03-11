@@ -36,7 +36,7 @@ export const PersonalForm = () => {
 	const storeUserProfile = useStoreUserProfile();
 	const { isLoading, userData } = storeUserProfile;
 	const navigate = useNavigate();
-	const form = useForm({
+	const form = useForm<Partial<IUser>>({
 		mode: "uncontrolled",
 		name: "personalForm",
 		initialValues: {
@@ -51,7 +51,11 @@ export const PersonalForm = () => {
 			storeUserProfile.setUserData(values);
 		},
 	});
-	const formPassword = useForm({
+	const formPassword = useForm<{
+		oldPassword: string;
+		newPassword: string;
+		re_password: string;
+	}>({
 		mode: "uncontrolled",
 		name: "passwordFormPassword",
 		initialValues: {
@@ -70,17 +74,12 @@ export const PersonalForm = () => {
 		},
 	});
 
-	async function handleSave(formData: IUser) {
+	async function handleSave(formData: Partial<IUser>) {
 		await storeUserProfile.update(formData);
 	}
-	async function handleSaveNavigate(formData: IUser) {
+	async function handleSaveNavigate(formData: Partial<IUser>) {
 		await storeUserProfile.update(formData);
 		navigate("/");
-	}
-	async function handleRemove() {
-		if (!confirm("Вы уверены что хотите удалить себя?")) {
-			return;
-		}
 	}
 	async function handleChangePassword({
 		oldPassword,
@@ -171,7 +170,7 @@ export const PersonalForm = () => {
 				/>
 
 				<Group justify="end">
-					<Button onClick={formPassword.onSubmit(handleChangePassword)}>
+					<Button onClick={() => formPassword.onSubmit(handleChangePassword)()}>
 						Обновить пароль
 					</Button>
 				</Group>
@@ -179,14 +178,14 @@ export const PersonalForm = () => {
 					<Group>
 						<Button
 							color="green"
-							onClick={form.onSubmit(handleSaveNavigate)}
+							onClick={() => form.onSubmit(handleSaveNavigate)()}
 							loading={isLoading}
 							disabled={!isValid}
 						>
 							Сохранить
 						</Button>
 						<Button
-							onClick={form.onSubmit(handleSave)}
+							onClick={() => form.onSubmit(handleSave)()}
 							loading={isLoading}
 							disabled={!isValid}
 						>

@@ -1,7 +1,7 @@
 import { api } from "@/shared/api";
 
 export async function requestAnalyticsQueriesList(
-	params: IRequestList = {},
+	params: Partial<IRequestList> = {},
 ): Promise<IResponseList<IAnalyticsElastic>> {
 	params.size = params.size || 100;
 	params.number = params.number || 0;
@@ -12,7 +12,7 @@ export async function requestAnalyticsQueriesList(
 }
 
 export async function requestAnalyticsQueriesAdd(
-	data: Partial<IAnalyticsElastic>,
+	data: IAnalyticsElastic | Partial<IAnalyticsElastic>,
 ): Promise<IResponse<IAnalyticsElastic>> {
 	const res = await api.post(`/query_users/`, data);
 	return res.data;
@@ -27,7 +27,7 @@ export async function requestAnalyticsQueriesGet(
 
 export async function requestAnalyticsQueriesUpdate(
 	id: IAnalyticsElastic["id"],
-	data: Omit<IAnalyticsElastic, "id">,
+	data: IAnalyticsElastic | Partial<IAnalyticsElastic>,
 ): Promise<IResponse<IAnalyticsElastic>> {
 	const res = await api.patch(`/query_users/${id}`, data);
 	return res.data;

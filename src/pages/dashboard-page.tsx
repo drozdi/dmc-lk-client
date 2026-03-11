@@ -18,18 +18,14 @@ import { DatePickerInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useState } from "react";
 
-const dNow = dayjs();
-
 export const DashboardPage = () => {
 	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
 		{
 			filterdate: [
 				dayjs()
-					.month(dayjs().month() - 1)
+					.month(dayjs().month() - 3)
 					.format("YYYY-MM-DD"),
 				dayjs().format("YYYY-MM-DD"),
-				// dNow.month(dNow.month() - 6).format("YYYY-MM-DD"),
-				// dNow.format("YYYY-MM-DD"),
 			],
 		},
 	);

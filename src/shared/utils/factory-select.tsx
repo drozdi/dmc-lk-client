@@ -12,7 +12,7 @@ interface Props {
 	load?: (...args: unknown[]) => Promise<void>;
 }
 
-interface SelectCustomProps extends SelectProps {
+export interface SelectCustomProps extends SelectProps {
 	excludeds?: string[];
 }
 
@@ -45,9 +45,7 @@ export function factorySelect(
 		return (
 			<Select
 				disabled={store.isLoading || disabled}
-				leftSection={
-					store.isLoading ? <Loader size="xs" /> : leftSection
-				}
+				leftSection={store.isLoading ? <Loader size="xs" /> : leftSection}
 				data={dataSelect}
 				searchable
 				{...other}

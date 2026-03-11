@@ -133,7 +133,6 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 					{Object.values(res).reduce((acc, item) => acc + item.total, 0)}
 				</>
 			}
-			dragable
 		>
 			<Accordion chevronPosition="left">
 				{Object.values(res).map((production) => (

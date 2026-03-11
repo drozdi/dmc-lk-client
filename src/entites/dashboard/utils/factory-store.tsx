@@ -1,15 +1,16 @@
 import { $setting } from "@/shared";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { FactoryWidget } from "./factory-widget";
 
 export const factoryDashboardStore = ({
 	storageKey = "",
-	availableWidgets = {},
+	availableWidgets = [],
 	key = "i",
 }: {
 	storageKey?: string;
-	availableWidgets?: Record<IWidget["type"], IWidget>;
-	key?: string;
+	availableWidgets?: DashboardContextType["availableWidgets"];
+	key?: DashboardContextType["key"];
 }) => {
 	return create<DashboardContextType>()(
 		persist(
@@ -18,28 +19,19 @@ export const factoryDashboardStore = ({
 				widgets: [],
 				layouts: [],
 				availableWidgets,
-				showed: [],
 				edit: false,
 				toggleEdit() {
 					set((state) => ({
 						edit: !state.edit,
 					}));
 				},
-				addShowed: (id) => {
-					set((state) => ({
-						showed: [...state.showed, id],
-					}));
-				},
 				updateLayout: (layouts) => set({ layouts }),
-				registerWidget: (widget: IWidget) => {
+				registerWidget: (widget) => {
 					if (!widget.type) {
 						return;
 					}
 					set((state) => ({
-						availableWidgets: {
-							...state.availableWidgets,
-							[widget.type]: widget,
-						},
+						availableWidgets: [...state.availableWidgets, widget.type],
 					}));
 				},
 				addWidget: (widget, layout = {}) => {
@@ -73,27 +65,16 @@ export const factoryDashboardStore = ({
 					}));
 				},
 				renderWidget: (widget) => {
-					const Component = get().availableWidgets[widget.type]?.component;
-					if (!Component) {
-						return undefined;
-					}
-					const params = widget.params;
-					if (get().edit) {
-						params.onRemove = () => {
-							get().removeWidget(widget);
-						};
-					} else {
-						params.onRemove = undefined;
-					}
-					return <Component {...params} />;
+					return FactoryWidget.create(widget.type, widget.params || {});
 				},
 				hasWidget: (type: IWidget["type"]) => {
-					return Boolean(get().availableWidgets[type]);
+					return (
+						FactoryWidget.getAvailableTypes().includes(type) &&
+						get().availableWidgets.includes(type)
+					);
 				},
-				findWidget: (id: IWidget["id"]) => {
-					return get().showed.includes(id)
-						? undefined
-						: get().widgets.find((w) => w.id === id);
+				findWidget(id) {
+					return get().widgets.find((w) => w.id === id);
 				},
 				clear: () => {
 					set({ widgets: [], layouts: [] });

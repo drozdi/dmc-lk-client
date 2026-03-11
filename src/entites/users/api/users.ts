@@ -1,7 +1,7 @@
 import { api } from "@/shared/api";
 
 export async function requestUsersList(
-	params: IRequestList = {},
+	params: Partial<IRequestList> = {},
 ): Promise<IResponseList<IUsersUser>> {
 	params.size = params.size || 15;
 	params.number = params.number || 0;
@@ -20,7 +20,7 @@ export async function requestUsersGet(
 
 export async function requestUsersUpdate(
 	id: IUsersUser["id"],
-	data: Omit<IUsersUser, "id">,
+	data: IUsersUser | Partial<IUsersUser>,
 ): Promise<IResponse<IUsersUser>> {
 	const res = await api.patch(`/users/${id}`, data);
 	return res.data;

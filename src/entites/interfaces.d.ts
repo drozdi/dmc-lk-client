@@ -1,11 +1,11 @@
 interface IRequestList {
-	size?: number;
-	number?: number;
+	size: number;
+	number: number;
 }
 
 interface IResponse<T> {
 	success: boolean;
-	message: string | null | T | IError;
+	message: IError | null | undefined;
 	data: T;
 	response: T;
 }

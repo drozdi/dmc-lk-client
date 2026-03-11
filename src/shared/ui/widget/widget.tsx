@@ -10,26 +10,24 @@ import {
 	type CardProps,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { TbArrowsMaximize, TbArrowsMinimize, TbX } from "react-icons/tb";
+import { TbArrowsMaximize, TbArrowsMinimize } from "react-icons/tb";
 
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
 	loading?: boolean;
 	keepMounted?: boolean;
-	dragable?: boolean;
 	children: React.ReactNode;
+	preview?: React.ReactNode;
 	component?: any;
-	onRemove?: () => void;
 }
 
 export function Widget({
-	onRemove,
 	title,
 	loading = false,
 	children,
+	preview = children,
 	keepMounted = true,
 	component = ScrollArea,
-	dragable = false,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -48,11 +46,7 @@ export function Widget({
 				...otherProps?.style,
 			}}
 		>
-			<Card.Section
-				inheritPadding
-				py="xs"
-				className={dragable ? "drag-handle" : ""}
-			>
+			<Card.Section inheritPadding py="xs" className={"drag-handle"}>
 				<Group justify="space-between">
 					<Text fw={500} flex="1">
 						{title}
@@ -63,13 +57,6 @@ export function Widget({
 								{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
 							</ActionIcon>
 						</Tooltip>
-						{onRemove && (
-							<Tooltip label="Убрать">
-								<ActionIcon color="red" variant="subtle" onClick={onRemove}>
-									<TbX />
-								</ActionIcon>
-							</Tooltip>
-						)}
 					</Group>
 				</Group>
 			</Card.Section>
@@ -81,7 +68,7 @@ export function Widget({
 				h="100%"
 				pos="relative"
 			>
-				{keepMounted || isExpanded ? children : null}
+				{keepMounted || isExpanded ? preview : null}
 				<LoadingOverlay visible={loading} zIndex={1000} />
 			</Card.Section>
 			<Modal

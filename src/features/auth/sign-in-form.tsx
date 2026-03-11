@@ -1,12 +1,21 @@
 import { useStoreAuth } from "@/entites/auth";
 import { Loading } from "@/shared/ui";
-import { Box, Button, PasswordInput, Stack, TextInput } from "@mantine/core";
+import {
+	type BoxProps,
+	Box,
+	Button,
+	PasswordInput,
+	Stack,
+	TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useNavigate } from "react-router-dom";
 
-export const SignInForm = (props) => {
+interface SignInFormProps extends BoxProps {}
+
+export const SignInForm = (props: SignInFormProps) => {
 	const storeAuth = useStoreAuth();
-	const form = useForm({
+	const form = useForm<Partial<IUser>>({
 		mode: "uncontrolled",
 		name: "signUp",
 		initialValues: {
@@ -16,8 +25,8 @@ export const SignInForm = (props) => {
 	});
 	const { isLoading } = storeAuth;
 	const navigate = useNavigate();
-	const handleSubmit = async ({ email, password }) => {
-		const res = await storeAuth.login(email, password);
+	const handleSubmit = async ({ email, password }: Partial<IUser>) => {
+		const res = await storeAuth.login(email as string, password as string);
 		if (true === res) {
 			navigate("/", { replace: true });
 		}
@@ -25,11 +34,7 @@ export const SignInForm = (props) => {
 
 	return (
 		<Box {...props}>
-			<Stack
-				component="form"
-				name="signIn"
-				onSubmit={form.onSubmit(handleSubmit)}
-			>
+			<Stack>
 				<Loading active={isLoading} keepMounted>
 					<TextInput
 						label="Email"
@@ -48,7 +53,11 @@ export const SignInForm = (props) => {
 						{...form.getInputProps("password")}
 					/>
 				</Loading>
-				<Button type="submit" fullWidth loading={isLoading}>
+				<Button
+					onClick={() => form.onSubmit(handleSubmit)()}
+					fullWidth
+					loading={isLoading}
+				>
 					Войти
 				</Button>
 			</Stack>

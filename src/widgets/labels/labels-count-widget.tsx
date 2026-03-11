@@ -7,6 +7,7 @@ import {
 import { useQueryProductions } from "@/entites/users";
 import { useQueryLoading } from "@/shared/hooks";
 import { LabelFormat, Widget } from "@/shared/ui";
+import { round } from "@/shared/utils";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 
@@ -117,7 +118,7 @@ export const LabelsCountWidget = () => {
 	}, []);
 
 	return (
-		<Widget loading={isLoading} title="Сводная история" dragable>
+		<Widget loading={isLoading} title="Сводная история">
 			<Accordion>
 				{ddata.map((production) => (
 					<Accordion.Item
@@ -132,8 +133,8 @@ export const LabelsCountWidget = () => {
 								<Table.Thead>
 									<Table.Tr>
 										<Table.Th>Этикетка</Table.Th>
-										<Table.Th>Расход ленты(м)</Table.Th>
-										<Table.Th>Остаток этикеток</Table.Th>
+										<Table.Th>Расход ленты (м)</Table.Th>
+										<Table.Th>Остаток этикеток (шт.)</Table.Th>
 									</Table.Tr>
 								</Table.Thead>
 								<Table.Tbody>
@@ -144,8 +145,10 @@ export const LabelsCountWidget = () => {
 													<Table.Td>
 														<LabelFormat>{label}</LabelFormat>
 													</Table.Td>
-													<Table.Td>{consumptions}</Table.Td>
-													<Table.Td>{total}</Table.Td>
+													<Table.Td>{round(consumptions)}</Table.Td>
+													<Table.Td>
+														{total && total !== NaN ? total : 0}
+													</Table.Td>
 												</Table.Tr>
 											);
 										},

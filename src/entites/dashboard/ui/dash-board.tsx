@@ -4,11 +4,11 @@ import {
 	useContainerWidth,
 	type Layout,
 } from "react-grid-layout";
-import { GridBackground } from "react-grid-layout/extras";
-
 import "react-grid-layout/css/styles.css";
+import { GridBackground } from "react-grid-layout/extras";
 import "react-resizable/css/styles.css";
 import { useDashboard } from "../context";
+import { DashBoardItem } from "./item";
 
 interface UiDashBoardProps {
 	children: React.ReactNode;
@@ -80,7 +80,9 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 							return child?.key ? child : null;
 						})}
 						{widgets.map((widget) => (
-							<div key={widget.id}>{renderWidget(widget, edit)}</div>
+							<div key={widget.id}>
+								<DashBoardItem id={widget.id} />
+							</div>
 						))}
 						{/* {edit && (
 							<div

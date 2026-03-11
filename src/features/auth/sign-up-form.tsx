@@ -1,7 +1,8 @@
 import { useStoreAuth, useStoreUserProfile } from "@/entites/auth";
 import {
+	type BoxProps,
+	Box,
 	Button,
-	Notification,
 	PasswordInput,
 	Stack,
 	TextInput,
@@ -52,14 +53,12 @@ const fieldsSchema = yup.object().shape({
  * }
  */
 
-export const SignUpForm = () => {
+interface SignUpFormProps extends BoxProps {}
+
+export const SignUpForm = (props: SignUpFormProps) => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
-	const form = useForm<
-		IUser & {
-			re_password?: string;
-		}
-	>({
+	const form = useForm<Partial<IUserPassword>>({
 		mode: "uncontrolled",
 		name: "signUp",
 		initialValues: {
@@ -69,24 +68,24 @@ export const SignUpForm = () => {
 			email: "",
 			phone: "",
 			password: "",
+			re_password: "",
 		},
 		validate: yupResolver(fieldsSchema),
 	});
-	const { isLoading, error } = storeAuth;
+	const { isLoading } = storeAuth;
 	const navigate = useNavigate();
 
-	async function sendFormData(formData: IUserPassword) {
+	async function sendFormData(formData: Partial<IUserPassword>) {
 		const res = await storeAuth.register(formData);
 		storeUserProfile.setUserData(res.user);
 		if (res) {
-			navigate("/analytics", { replace: true });
+			navigate("/", { replace: true });
 		}
 	}
 
 	return (
-		<>
-			{error && <Notification color="red">{error}</Notification>}
-			<Stack component="form" name="signUp">
+		<Box {...props}>
+			<Stack>
 				<TextInput
 					placeholder="Имя"
 					type="text"
@@ -140,6 +139,6 @@ export const SignUpForm = () => {
 					Войти
 				</Button>
 			</Stack>
-		</>
+		</Box>
 	);
 };

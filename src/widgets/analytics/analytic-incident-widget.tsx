@@ -44,7 +44,6 @@ export const AnalyticIncidentWidget = (
 
 	return (
 		<Widget
-			dragable
 			title={
 				<>
 					Инциденты за{" "}

@@ -19,7 +19,12 @@ export const api = new AxiosInterceptor({
 		});
 		return res.data.data.token;
 	},
-	message401: async (error: AxiosError, axios: Axios) => {
+	message401: async (
+		error: AxiosError<{
+			detail: string;
+		}>,
+		axios: Axios,
+	) => {
 		return (
 			error.response?.config?.url !== "/registration/refresh" &&
 			error.response?.data?.detail === "Signature has expired."

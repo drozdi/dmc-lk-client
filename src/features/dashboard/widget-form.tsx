@@ -1,12 +1,5 @@
-import {
-	Button,
-	Checkbox,
-	Group,
-	Select,
-	Stack,
-	Text,
-	type ComboboxItem,
-} from "@mantine/core";
+import { FactoryWidget } from "@/entites/dashboard/utils";
+import { Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
@@ -18,7 +11,7 @@ import { FieldWrap } from "./components/field-wrarp";
 
 interface WidgetFormProps {
 	store: UseBoundStore<StoreApi<DashboardContextType>>;
-	onAdd?: (widget: IWidget) => void;
+	onAdd?: (widget: IWidgetItem) => void;
 }
 
 export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
@@ -29,24 +22,24 @@ export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
 	const form = useForm<Partial<IWidgetItem>>({
 		mode: "uncontrolled",
 		initialValues: {
-			type: Object.values(availableWidgets)[0]?.type || "",
+			type: availableWidgets[0] || "",
 			fixed: true,
 			params: {},
 		},
 	});
 	form.watch("type", ({ value }) => {
-		setParams(availableWidgets[value]?.params || []);
+		setParams(FactoryWidget.getWidget(value)?.params || []);
 	});
 
 	useEffect(() => {
 		form.initialize({
-			type: Object.values(availableWidgets)[0].type || "",
+			type: availableWidgets[0] || "",
 			fixed: true,
 		});
-		setParams(availableWidgets[form.values.type].params || []);
+		setParams(FactoryWidget.getWidget(form.values.type || "")?.params || []);
 	}, []);
 
-	function handleAdd(widget: IWidget) {
+	function handleAdd(widget: IWidgetItem) {
 		store.addWidget(widget);
 		onAdd?.(widget);
 	}
@@ -63,14 +56,10 @@ export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
 				<Select
 					placeholder="Выбрать виджет"
 					comboboxProps={{ withinPortal: false }}
-					data={
-						Object.entries(availableWidgets).map(
-							([type, { label }]: [string, IWidget]) => ({
-								value: type,
-								label,
-							}),
-						) as ComboboxItem[]
-					}
+					data={availableWidgets.map((type) => ({
+						value: type,
+						label: FactoryWidget.getWidget(type).label,
+					}))}
 					key={form.key("type")}
 					{...form.getInputProps("type")}
 				/>

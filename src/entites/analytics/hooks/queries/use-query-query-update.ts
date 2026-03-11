@@ -4,10 +4,11 @@ import { requestAnalyticsQueriesUpdate } from "../../api/query_users";
 export function useQueryQueryUpdate() {
 	const queryClient = useQueryClient();
 	return useMutation({
-		mutationFn: async (
-			data: Partial<IAnalyticsElastic>,
-		): Promise<IAnalyticsElastic> => {
-			return (await requestAnalyticsQueriesUpdate(data)).data;
+		mutationFn: async ({
+			id,
+			...data
+		}: IAnalyticsElastic): Promise<IAnalyticsElastic> => {
+			return (await requestAnalyticsQueriesUpdate(id, data)).data;
 		},
 		onSuccess: (res, data) => {
 			queryClient.removeQueries({

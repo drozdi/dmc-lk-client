@@ -1,22 +1,22 @@
-import { useStoreCountLabel } from '@/entites/labels'
-import { ButtonIcon, Item, ItemSection } from '@/shared/ui'
-import { NumberInput } from '@mantine/core'
-import { forwardRef, useRef, useState } from 'react'
-import { TbList } from 'react-icons/tb'
+import { useStoreCountLabel } from "@/entites/labels";
+import { ButtonIcon, Item, ItemSection, LabelFormat } from "@/shared/ui";
+import { NumberInput } from "@mantine/core";
+import { forwardRef, useRef, useState } from "react";
+import { TbList } from "react-icons/tb";
 
 interface LabelItemProps {
-	groupable?: boolean
-	editable?: boolean
-	bg?: string
+	groupable?: boolean;
+	editable?: boolean;
+	bg?: string;
 	item: {
-		add_label_format: string
-		sum: number
-		production_id: number
-	}
-	warningLimits?: number
-	dangerLimits?: number
-	warningColor?: string
-	dangerColor?: string
+		add_label_format: string;
+		sum: number;
+		production_id: number;
+	};
+	warningLimits?: number;
+	dangerLimits?: number;
+	warningColor?: string;
+	dangerColor?: string;
 }
 
 export const LabelItem = forwardRef(
@@ -25,43 +25,50 @@ export const LabelItem = forwardRef(
 			item,
 			dangerLimits = 0,
 			warningLimits = -50,
-			warningColor = 'red',
-			dangerColor = 'orange',
+			warningColor = "red",
+			dangerColor = "orange",
 			groupable,
 			editable,
 			bg,
 			...props
 		}: LabelItemProps,
-		ref
+		ref,
 	) => {
-
 		const storeCountLabel = useStoreCountLabel();
-		const inputRef = useRef<HTMLElement>(null)
-		const [editMode, setEditMode] = useState<boolean>(false)
+		const inputRef = useRef<HTMLElement>(null);
+		const [editMode, setEditMode] = useState<boolean>(false);
 		const handleSave = async () => {
 			if (inputRef.current?.value) {
 				await storeCountLabel.addCount({
 					count_label: Number(inputRef.current?.value),
-					place_name: 'Пополнение этикеток',
+					place_name: "Пополнение этикеток",
 					label_format: item.add_label_format,
 					production_id: item.production_id,
-				})
+				});
 			}
-			setEditMode(false)
-		}
+			setEditMode(false);
+		};
 		const handleKeyPress = (e: any) => {
-			if (e.key === 'Enter') {
-				handleSave()
+			if (e.key === "Enter") {
+				handleSave();
 			}
-		}
+		};
 		return (
 			<Item
-				component='div'
+				component="div"
 				{...props}
-				bg={bg ? bg : item.sum < dangerLimits ? (item.sum < warningLimits ? warningColor : dangerColor) : ''}
+				bg={
+					bg
+						? bg
+						: item.sum < dangerLimits
+							? item.sum < warningLimits
+								? warningColor
+								: dangerColor
+							: ""
+				}
 				ref={ref}
 				style={{
-					...(groupable ? { cursor: 'move' } : {}),
+					...(groupable ? { cursor: "move" } : {}),
 				}}
 			>
 				{groupable && (
@@ -69,13 +76,15 @@ export const LabelItem = forwardRef(
 						<TbList />
 					</ItemSection>
 				)}
-				<ItemSection>{item.add_label_format}</ItemSection>
+				<ItemSection>
+					<LabelFormat>{item.add_label_format}</LabelFormat>
+				</ItemSection>
 				{editable && editMode && (
 					<ItemSection>
 						<NumberInput
 							ref={inputRef}
-							w='100%'
-							color='info'
+							w="100%"
+							color="info"
 							autoFocus
 							onKeyPress={handleKeyPress}
 							onBlur={() => handleSave()}
@@ -86,12 +95,15 @@ export const LabelItem = forwardRef(
 				<ItemSection side>{item.sum}</ItemSection>
 				{editable && (
 					<ItemSection side>
-						<ButtonIcon loading={storeCountLabel.isLoading} onClick={() => setEditMode(true)}>
+						<ButtonIcon
+							loading={storeCountLabel.isLoading}
+							onClick={() => setEditMode(true)}
+						>
 							tb-circle-plus
 						</ButtonIcon>
 					</ItemSection>
 				)}
 			</Item>
-		)
-	}
-)
+		);
+	},
+);

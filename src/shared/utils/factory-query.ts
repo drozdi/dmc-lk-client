@@ -7,20 +7,20 @@ import {
 import { useCallback, useState } from "react";
 
 export function factoryQuery<
-	T extends { id?: number; name?: string },
+	T extends { id?: number },
 	RL extends IRequestList,
 >(
 	entry: string,
 	defaultEntry: T,
-	requestList?: (params: Omit<RL, "number">) => Promise<IResponseList<T>>,
+	requestList?: (params: Partial<RL>) => Promise<IResponseList<T>>,
 	requestRead?: (id: T["id"]) => Promise<IResponse<T>>,
-	requestCreate?: (data: T) => Promise<IResponse<T>>,
-	requestUpdate?: (id: T["id"], data: T) => Promise<IResponse<T>>,
+	requestCreate?: (data: T | Partial<T>) => Promise<IResponse<T>>,
+	requestUpdate?: (id: T["id"], data: T | Partial<T>) => Promise<IResponse<T>>,
 	requestDelete?: (id: T["id"]) => Promise<IResponse<string>>,
 ) {
 	return [
 		requestList &&
-			function useQueryList(params: Omit<RL, "number">) {
+			function useQueryList(params: Partial<RL>) {
 				params.size = params.size || 15;
 				const q = useInfiniteQuery({
 					queryKey: [entry, "infinite"],
@@ -39,7 +39,7 @@ export function factoryQuery<
 					},
 					getNextPageParam: (lastPage) => {
 						return lastPage.data.response &&
-							lastPage.data.response.length >= params.size
+							lastPage.data.response.length >= (params.size || 15)
 							? lastPage.data.next_page - 1
 							: undefined;
 					},
@@ -54,7 +54,6 @@ export function factoryQuery<
 				});
 
 				const [currentPageIndex, setCurrentPageIndex] = useState(0);
-				const currentPage = q.data?.pages[currentPageIndex];
 
 				const goToPrevious = async () => {
 					if (currentPageIndex > 0) {
@@ -77,8 +76,11 @@ export function factoryQuery<
 				};
 
 				const findById = useCallback(
-					(id: T["id"]) => (q.data || []).find((item) => item.id === id),
-					[q.data],
+					(id: T["id"]) =>
+						(q.data?.pages[currentPageIndex]?.data.response || []).find(
+							(item) => item.id === id,
+						),
+					[q.data, currentPageIndex],
 				);
 
 				return {
@@ -90,14 +92,14 @@ export function factoryQuery<
 					hasNextPage:
 						q.hasNextPage ||
 						currentPageIndex === ((q.data?.pages || []).length ?? 1) - 1,
-					data: q.data?.pages[currentPageIndex].data.response || [],
+					data: q.data?.pages[currentPageIndex]?.data.response || [],
 				};
 			},
 		requestRead &&
 			function useQueryRead(id: T["id"]) {
 				return useQuery({
 					queryKey: [entry, id],
-					queryFn: () => requestRead(id),
+					queryFn: async () => await requestRead(id),
 					select(data): T {
 						return data.data;
 					},
@@ -142,7 +144,7 @@ export function factoryQuery<
 					mutationFn: async ({ id }: T | Partial<T>) => {
 						return await requestDelete(id);
 					},
-					onSuccess: (data, {}) => {
+					onSuccess: (data, params) => {
 						queryClient.removeQueries({
 							queryKey: [entry],
 							exact: false,

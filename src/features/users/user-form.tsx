@@ -18,7 +18,7 @@ interface UserFormProps {
 export const UserForm = ({ id, className }: UserFormProps) => {
 	const { data: products } = useQueryProductions();
 	const naigate = useNavigate();
-	const { isLoading, error, isError, data } = useQueryUsersRead(Number(id));
+	const { isLoading, error, isError, data } = useQueryUsersRead?.(Number(id));
 
 	const { mutate } = useQueryUsersUpdate();
 	// const reqUserGet = useQuery(requestUsersGet, 'Пользователь не найден')
@@ -88,7 +88,7 @@ export const UserForm = ({ id, className }: UserFormProps) => {
 		);
 	};
 
-	const isValid = !(Number(form.errors.length) > 0);
+	const isValid = !(Number(Object.keys(form.errors).length) > 0);
 
 	return (
 		<>

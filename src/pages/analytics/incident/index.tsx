@@ -22,12 +22,16 @@ export function AnalyticsIncidentPage() {
 	);
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
 
-	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>([
+	const [defFilterdate, setDefFilterdate] = useState<[DateValue, DateValue]>([
 		fromDay.format("YYYY-MM-DD"),
 		toDay.format("YYYY-MM-DD"),
 	]);
 
+	const [filterdate, setFilterdate] =
+		useState<[DateValue, DateValue]>(defFilterdate);
+
 	const handleChange = (filterdate: [DateValue, DateValue]) => {
+		setDefFilterdate(filterdate);
 		if (filterdate[0] && filterdate[1]) {
 			setFilterdate(filterdate);
 		}
@@ -53,10 +57,12 @@ export function AnalyticsIncidentPage() {
 		]);
 	};
 	const handleMonth = () => {
-		setFilterdate([
+		const filterdate: [DateValue, DateValue] = [
 			dayjs().day(-28).format("YYYY-MM-DD"),
 			dayjs().format("YYYY-MM-DD"),
-		]);
+		];
+		setFilterdate(filterdate);
+		setDefFilterdate(filterdate);
 	};
 
 	return (
@@ -65,7 +71,7 @@ export function AnalyticsIncidentPage() {
 			<Group justify="flex-end">
 				<DatePickerInput
 					type="range"
-					defaultValue={filterdate}
+					value={defFilterdate}
 					onChange={handleChange}
 				/>
 			</Group>

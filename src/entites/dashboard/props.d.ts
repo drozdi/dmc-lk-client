@@ -18,41 +18,42 @@ interface IWidgetItem {
 	id: ILayoutItem["i"] | ILayoutItem["id"];
 	type: string;
 	fixed?: boolean;
-	params?: Record<string, any>;
+	params?: {
+		onRemove?: () => void;
+		[key: string]: any;
+	};
 }
 
 interface IWidget {
-	id?: IWidgetItem["id"];
 	type: IWidgetItem["type"];
-	label?: string;
+	label: string;
 	description?: string;
 	params?: IWidgetParam[];
 	component?: React.ComponentType<any>;
 }
 
 interface IWidgetParam {
-	label?: string;
 	field: string;
+	label?: string;
 	type?: string;
 	description?: string;
 	required?: boolean;
+	default?: any;
 }
 
 interface DashboardContextType {
-	key: string;
-	widgets: IWidget[];
+	key: "i" | "id";
+	widgets: IWidgetItem[];
 	layouts: ILayoutItem[];
-	showed: IWidget["id"][];
-	availableWidgets: Record<IWidget["type"], IWidget>;
+	availableWidgets: IWidget["type"][];
 	edit: boolean;
 	toggleEdit: () => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
-	addWidget: (widget: IWidget, layout?: Partial<ILayoutItem>) => void;
-	removeWidget: (widget: IWidget) => void;
-	renderWidget: (widget: IWidget) => React.ReactNode | undefined;
-	hasWidget: (type: IWidget["type"]) => boolean;
+	addWidget: (widget: IWidgetItem, layout?: Partial<ILayoutItem>) => void;
+	removeWidget: (widget: IWidgetItem) => void;
+	renderWidget: (widget: IWidgetItem) => React.ReactNode | undefined;
+	findWidget: (id: IWidgetItem["id"]) => IWidgetItem | undefined;
+	hasWidget: (type: IWidgetItem["type"]) => boolean;
 	registerWidget: (widget: IWidget) => void;
 	clear: () => void;
-	addShowed: (id: IWidget["id"]) => void;
-	findWidget: (id: IWidget["id"]) => IWidget | undefined;
 }

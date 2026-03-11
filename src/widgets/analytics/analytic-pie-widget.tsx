@@ -91,7 +91,6 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 
 	return (
 		<Widget
-			dragable
 			loading={isLoading}
 			title={
 				<>

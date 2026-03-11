@@ -9,6 +9,10 @@ interface IUser {
 	id_production: IProduction["production_id"][];
 }
 
+interface IUserPassword extends IUser {
+	re_password: IUser["password"];
+}
+
 interface IStoreAuth extends IStore {
 	isAuthenticated: boolean;
 	isAuth: boolean;
@@ -17,7 +21,7 @@ interface IStoreAuth extends IStore {
 	refreshAuth(): Promise<{ accessToken: string; refreshToken: string }>;
 	verification(link: string): Promise<any>;
 	login(email: string, password: string): Promise<boolean>;
-	register(userData: IUser): Promise<any>;
+	register(userData: Partial<IUser>): Promise<any>;
 	logout(): Promise<void>;
 }
 
@@ -27,7 +31,7 @@ interface IStoreUserProfile extends IStore {
 	setProductionId(id: IProduction["production_id"]): void;
 	setUserData(data: Partial<IUser>): void;
 	load(reloading?: boolean): Promise<IUser | undefined>;
-	update(userData: IUser): Promise<IUser | undefined>;
+	update(userData: IUser | Partial<IUser>): Promise<IUser | undefined>;
 	updatePassword(oldPassword: string, newPassword: string): Promise<boolean>;
 	delete(): Promise<any>;
 	reset(): void;

@@ -208,7 +208,6 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 
 	return (
 		<Widget
-			dragable
 			title={
 				<Filterdate
 					filterdate={query.filterdate}

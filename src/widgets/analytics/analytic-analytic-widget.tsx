@@ -83,7 +83,6 @@ export const AnalyticAnalyticWidget = ({
 
 	return (
 		<Widget
-			dragable
 			loading={isLoading}
 			title={
 				<>
