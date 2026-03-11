@@ -14,13 +14,14 @@ import {
 
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { Widget } from "@/shared/ui";
+import { Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
 
 const ee = useEnumsEvents();
 
-interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
+interface ChartAnalyticProps
+	extends WidgetProps, Omit<IRequestAnalytics, "event"> {}
 
 const initialState = {
 	refAreaLeft: "",
@@ -28,7 +29,11 @@ const initialState = {
 	animation: true,
 };
 
-export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
+export const AnalyticEventWidget = ({
+	filterdate,
+	step,
+	...props
+}: Partial<ChartAnalyticProps>) => {
 	const { production_id } = useStoreUserProfile();
 	const { isLoading, fetch, error } = useQueryAnalytics();
 
@@ -42,7 +47,8 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 	}>();
 
 	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
-		...props,
+		filterdate,
+		step,
 	});
 
 	async function sendRequest(event: AnalyticEvent) {
@@ -104,8 +110,8 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 	}, [query]);
 
 	useEffect(() => {
-		setQuery(props);
-	}, [props]);
+		setQuery({ filterdate, step });
+	}, [filterdate, step]);
 
 	const stepLow = (from: string, to: string) => {
 		const dFrom = dayjs(from);
@@ -208,10 +214,11 @@ export const AnalyticEventWidget = (props: Partial<ChartAnalyticProps>) => {
 
 	return (
 		<Widget
+			{...props}
 			title={
 				<Filterdate
 					filterdate={query.filterdate}
-					editable={!props.filterdate?.[0]}
+					editable={!filterdate?.[0]}
 					onChange={(filterdate) => {
 						setQuery({
 							...query,

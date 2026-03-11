@@ -6,12 +6,14 @@ import {
 } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import { useQueryLoading } from "@/shared/hooks";
-import { LabelFormat, Widget } from "@/shared/ui";
+import { LabelFormat, Widget, type WidgetProps } from "@/shared/ui";
 import { round } from "@/shared/utils";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 
-export const LabelsCountWidget = () => {
+interface LabelsCountWidgetProps extends WidgetProps {}
+
+export const LabelsCountWidget = (props: LabelsCountWidgetProps) => {
 	const qp = useQueryProductions();
 	const storeLabels = useStoreLabels();
 	const storeCountLabel = useStoreCountLabel();
@@ -118,7 +120,7 @@ export const LabelsCountWidget = () => {
 	}, []);
 
 	return (
-		<Widget loading={isLoading} title="Сводная история">
+		<Widget {...props} loading={isLoading} title="Сводная история">
 			<Accordion>
 				{ddata.map((production) => (
 					<Accordion.Item

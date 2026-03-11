@@ -1,6 +1,6 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { Widget } from "@/shared/ui";
+import { Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -16,8 +16,13 @@ import { Filterdate } from "./components/filterdate";
 const ee = useEnumsEvents();
 
 interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
+interface AnalyticPieWidgetProps extends WidgetProps, ChartAnalyticProps {}
 
-export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
+export const AnalyticPieWidget = ({
+	filterdate,
+	step,
+	...props
+}: AnalyticPieWidgetProps) => {
 	const { production_id } = useStoreUserProfile();
 	const { isLoading, fetch } = useQueryAnalytics();
 	//return ''
@@ -29,7 +34,8 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 		p?: IResponseAnalytics;
 	}>({});
 	const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
-		...props,
+		filterdate,
+		step,
 	});
 
 	async function sendRequest(event: AnalyticEvent) {
@@ -86,18 +92,19 @@ export const AnalyticPieWidget = (props: Partial<ChartAnalyticProps>) => {
 		send();
 	}, [query]);
 	useEffect(() => {
-		setQuery(props);
-	}, [props]);
+		setQuery({ filterdate, step });
+	}, [filterdate, step]);
 
 	return (
 		<Widget
+			{...props}
 			loading={isLoading}
 			title={
 				<>
 					Соотношение за{" "}
 					<Filterdate
 						filterdate={query.filterdate}
-						editable={!props.filterdate?.[0]}
+						editable={!filterdate?.[0]}
 						onChange={(filterdate) => {
 							setQuery({
 								...query,

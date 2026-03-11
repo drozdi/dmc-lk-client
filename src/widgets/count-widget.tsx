@@ -8,18 +8,25 @@ import {
 	useStoreLabels,
 } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
-import { LabelFormat, Widget } from "@/shared/ui";
+import { LabelFormat, Widget, type WidgetProps } from "@/shared/ui";
 import { Accordion, Group, Table, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbList } from "react-icons/tb";
 
-export const CountWidget = (props: Partial<IRequestAnalytics>) => {
+interface CountWidgetProps extends WidgetProps, Partial<IRequestAnalytics> {}
+
+export const CountWidget = ({
+	filterdate,
+	step = "d",
+	event = "p",
+	...props
+}: CountWidgetProps) => {
 	const storeCountLabel = useStoreCountLabel();
 	const storeLabels = useStoreLabels();
 	const qa = useQueryAnalytics({
-		...props,
-		step: "d",
-		event: "p",
+		filterdate,
+		step,
+		event,
 	});
 	const qp = useQueryProductions();
 
@@ -122,6 +129,7 @@ export const CountWidget = (props: Partial<IRequestAnalytics>) => {
 
 	return (
 		<Widget
+			{...props}
 			loading={
 				qa.isLoading || storeCountLabel.isLoading || storeLabels.isLoading
 			}

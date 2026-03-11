@@ -11,20 +11,24 @@ import {
 import { useStoreIncident } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { useQueryLoading } from "@/shared/hooks";
-import { Widget } from "@/shared/ui";
+import { Widget, type WidgetProps } from "@/shared/ui";
 import { cached, randomColor } from "@/shared/utils";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
 
 const colors = cached<string>((name: string) => randomColor());
 
-export const AnalyticIncidentWidget = (
-	props: Partial<IRequestAnalyticsIncident>,
-) => {
+interface AnalyticIncidentWidgetProps
+	extends WidgetProps, Partial<IRequestAnalyticsIncident> {}
+
+export const AnalyticIncidentWidget = ({
+	filterdate,
+	...props
+}: AnalyticIncidentWidgetProps) => {
 	const storeIncident = useStoreIncident();
 	const { production_id } = useStoreUserProfile();
 	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
-		filterdate: props.filterdate || [null, null],
+		filterdate: filterdate || [null, null],
 		data: [],
 		fields_name: [],
 	});
@@ -44,12 +48,13 @@ export const AnalyticIncidentWidget = (
 
 	return (
 		<Widget
+			{...props}
 			title={
 				<>
 					Инциденты за{" "}
 					<Filterdate
 						filterdate={query.filterdate}
-						editable={!props.filterdate?.[0]}
+						editable={!filterdate?.[0]}
 						onChange={(filterdate) => {
 							setQuery({
 								...query,

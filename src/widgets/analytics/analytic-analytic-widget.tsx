@@ -1,7 +1,7 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
-import { Widget } from "@/shared/ui";
+import { Widget, type WidgetProps } from "@/shared/ui";
 import { Table } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
@@ -11,15 +11,18 @@ import { Filterdate } from "./components/filterdate";
 const nDow = dayjs();
 const sDay = nDow.day(-7);
 
+interface AnalyticAnalyticWidgetProps
+	extends WidgetProps, Partial<IRequestAnalytics> {}
+
 export const AnalyticAnalyticWidget = ({
 	filterdate,
-	step,
+	step = "d",
 	...props
-}: Partial<IRequestAnalytics>) => {
+}: AnalyticAnalyticWidgetProps) => {
 	const { production_id } = useStoreUserProfile();
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate: [sDay.format("YYYY-MM-DD"), nDow.format("YYYY-MM-DD")],
-		step: "d",
+		step,
 	});
 
 	const ee = useEnumsEvents();
@@ -83,6 +86,7 @@ export const AnalyticAnalyticWidget = ({
 
 	return (
 		<Widget
+			{...props}
 			loading={isLoading}
 			title={
 				<>
