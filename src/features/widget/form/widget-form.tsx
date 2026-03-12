@@ -1,5 +1,5 @@
 import { FactoryWidget } from "@/entites/dashboard/utils";
-import { Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
+import { Button, Checkbox, Group, Select, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
@@ -10,12 +10,18 @@ import { FieldText } from "./components/field-text";
 import { FieldWrap } from "./components/field-wrarp";
 
 interface WidgetFormProps {
-	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	store: UseBoundStore<StoreApi<WidgetContextType>>;
 	id?: IWidgetItem["id"];
-	onAdd?: (widget: IWidgetItem) => void;
+	onSave?: (widget: IWidgetItem) => void;
+	layout?: Partial<ILabelItem>;
 }
 
-export function WidgetForm({ store: useStore, id, onAdd }: WidgetFormProps) {
+export function WidgetForm({
+	store: useStore,
+	id,
+	onSave,
+	layout = {},
+}: WidgetFormProps) {
 	const store = useStore();
 	const { availableWidgets } = store;
 	const [params, setParams] = useState<IWidgetParam[]>([]);
@@ -24,7 +30,7 @@ export function WidgetForm({ store: useStore, id, onAdd }: WidgetFormProps) {
 		mode: "uncontrolled",
 		initialValues: {
 			type: availableWidgets[0] || "",
-			fixed: true,
+			fixed: false,
 			params: {},
 		},
 	});
@@ -35,20 +41,20 @@ export function WidgetForm({ store: useStore, id, onAdd }: WidgetFormProps) {
 	useEffect(() => {
 		form.initialize({
 			type: store.findWidget(id)?.type || availableWidgets[0],
-			fixed: true,
+			fixed: false,
 		});
 		setParams(FactoryWidget.getWidget(form.values.type || "")?.params || []);
 	}, [id]);
 
 	function handleAdd(widget: IWidgetItem) {
-		store.addWidget(widget);
-		onAdd?.(widget);
+		store.addWidget(widget, layout);
+		store.clear();
+		onSave?.(widget);
 	}
 
 	return (
 		<>
 			<Stack gap="xs">
-				<Text fz="xl">Добавить виджет</Text>
 				<Checkbox
 					label="Зафиксировать"
 					key={form.key("fixed")}
@@ -61,6 +67,7 @@ export function WidgetForm({ store: useStore, id, onAdd }: WidgetFormProps) {
 						value: type,
 						label: FactoryWidget.getWidget(type).label,
 					}))}
+					readOnly={id}
 					key={form.key("type")}
 					{...form.getInputProps("type")}
 				/>

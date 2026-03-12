@@ -1,4 +1,4 @@
-import { useDashboard } from "./context";
+import { useWidgets } from "./context";
 
 type DashBoardWidgetProps = {
 	children: React.ReactNode;
@@ -16,7 +16,7 @@ export function DashBoardWidget({
 	params,
 	component,
 }: DashBoardWidgetProps | DashBoardWidgeComponentProps) {
-	const dashboard = useDashboard();
+	const dashboard = useWidgets();
 	dashboard.registerWidget({
 		type,
 		params,

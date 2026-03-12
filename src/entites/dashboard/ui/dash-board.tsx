@@ -1,4 +1,5 @@
-import { Children, useMemo } from "react";
+import { Center } from "@mantine/core";
+import { Children, useCallback, useMemo, useRef, useState } from "react";
 import {
 	ReactGridLayout,
 	useContainerWidth,
@@ -6,18 +7,35 @@ import {
 } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import { GridBackground } from "react-grid-layout/extras";
+import { TbCirclePlus } from "react-icons/tb";
 import "react-resizable/css/styles.css";
-import { useDashboard } from "../context";
+import { useWidgets } from "../context";
 import { DashBoardItem } from "./item";
 
 interface UiDashBoardProps {
 	children: React.ReactNode;
+	onSelection?: (react: Partial<ILayoutItem>) => void;
 }
 
-export function UiDashBoard({ children }: UiDashBoardProps) {
+export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
+	const [isSelecting, setIsSelecting] = useState(false);
+	const [selectionStart, setSelectionStart] = useState<{
+		x: number;
+		y: number;
+	} | null>(null);
+	const [selectionEnd, setSelectionEnd] = useState<{
+		x: number;
+		y: number;
+	} | null>(null);
+
+	const gridPropsRef = useRef({
+		cols: 12,
+		rowHeight: 60,
+		margin: [10, 10] as [number, number],
+	});
 	const { width, containerRef, mounted } = useContainerWidth();
 	const { layouts, updateLayout, widgets, renderWidget, edit, key } =
-		useDashboard();
+		useWidgets();
 
 	const layouts_ = useMemo(() => {
 		if (edit) {
@@ -47,8 +65,158 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 		});
 	}, [layouts, widgets, edit]);
 
+	// Проверка, занята ли ячейка (или область) существующим виджетом
+	const isCellFree = (x: number, y: number) => {
+		return !layouts.some((item) => {
+			return (
+				x >= item.x && x < item.x + item.w && y >= item.y && y < item.y + item.h
+			);
+		});
+	};
+
+	const getCellFromMouseEvent = useCallback((e: MouseEvent) => {
+		if (!containerRef.current) {
+			return null;
+		}
+
+		const rect = containerRef.current.getBoundingClientRect();
+		const { cols, rowHeight, margin } = gridPropsRef.current;
+
+		const containerWidth = rect.width;
+		const colWidth = (containerWidth - (cols + 1) * margin[0]) / cols;
+
+		const relativeX = e.clientX - rect.left;
+		const relativeY = e.clientY - rect.top;
+
+		let x = Math.floor(relativeX / (colWidth + margin[0]));
+		let y = Math.floor(relativeY / (rowHeight + margin[1]));
+
+		x = Math.min(x, cols - 1);
+		y = Math.max(y, 0);
+
+		if (x >= 0 && x < cols) {
+			return { x, y };
+		}
+		return null;
+	}, []);
+
+	const isAreaFree = (x: number, y: number, w: number, h: number) => {
+		for (let dx = 0; dx < w; dx++) {
+			for (let dy = 0; dy < h; dy++) {
+				if (!isCellFree(x + dx, y + dy)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+
+	const handleMouseDown = (e: MouseEvent) => {
+		// Если клик на виджете — не начинаем выделение, пусть RGL работает
+		if ((e.target as HTMLElement).closest(".react-grid-item") || !edit) {
+			return;
+		}
+
+		const cell = getCellFromMouseEvent(e);
+		if (cell && isCellFree(cell.x, cell.y)) {
+			setIsSelecting(true);
+			setSelectionStart(cell);
+			setSelectionEnd(cell);
+		}
+	};
+
+	const handleMouseMove = (e: MouseEvent) => {
+		if (!isSelecting || !selectionStart) {
+			return;
+		}
+		const cell = getCellFromMouseEvent(e);
+		if (!cell) {
+			return;
+		}
+
+		const x1 = Math.min(selectionStart.x, cell.x);
+		const y1 = Math.min(selectionStart.y, cell.y);
+		const x2 = Math.max(selectionStart.x, cell.x);
+		const y2 = Math.max(selectionStart.y, cell.y);
+
+		const w = x2 - x1 + 1;
+		const h = y2 - y1 + 1;
+
+		if (cell && isAreaFree(x1, y1, w, h)) {
+			setSelectionEnd(cell);
+		}
+	};
+
+	const handleMouseUp = () => {
+		if (isSelecting && selectionStart && selectionEnd) {
+			const x1 = Math.min(selectionStart.x, selectionEnd.x);
+			const y1 = Math.min(selectionStart.y, selectionEnd.y);
+			const x2 = Math.max(selectionStart.x, selectionEnd.x);
+			const y2 = Math.max(selectionStart.y, selectionEnd.y);
+
+			const width = x2 - x1 + 1;
+			const height = y2 - y1 + 1;
+
+			if (isAreaFree(x1, y1, width, height)) {
+				onSelection?.({ x: x1, y: y1, w: width, h: height });
+			}
+		}
+
+		setIsSelecting(false);
+		setSelectionStart(null);
+		setSelectionEnd(null);
+	};
+
+	const handleMouseLeave = () => {
+		handleMouseUp();
+	};
+
+	const getSelectionStyle = () => {
+		if (
+			!isSelecting ||
+			!selectionStart ||
+			!selectionEnd ||
+			!containerRef.current
+		)
+			return {};
+
+		const containerWidth = containerRef.current.getBoundingClientRect().width;
+
+		const x1 = Math.min(selectionStart.x, selectionEnd.x);
+		const y1 = Math.min(selectionStart.y, selectionEnd.y);
+		const x2 = Math.max(selectionStart.x, selectionEnd.x);
+		const y2 = Math.max(selectionStart.y, selectionEnd.y);
+
+		const w = x2 - x1 + 1;
+		const h = y2 - y1 + 1;
+
+		const { cols, rowHeight, margin } = gridPropsRef.current;
+		const colWidth = (containerWidth - (cols + 1) * margin[0]) / cols;
+
+		return {
+			position: "absolute",
+			left: `${x1 * colWidth + (x1 + 1) * margin[0]}px`,
+			top: `${y1 * rowHeight + (y1 + 1) * margin[1]}px`,
+			width: `${colWidth * w + (w - 1) * margin[0]}px`,
+			height: `${h * rowHeight + (h - 1) * margin[1]}px`,
+			backgroundColor: "rgba(0, 120, 255, 0.2)",
+			border: "2px solid #0078ff",
+			borderRadius: "4px",
+			pointerEvents: "none",
+			zIndex: 10,
+			transition: "none",
+		};
+	};
+
 	return (
-		<div ref={containerRef} style={{ position: "relative" }}>
+		<div
+			ref={containerRef}
+			style={{ position: "relative", userSelect: "none" }}
+			onMouseDown={handleMouseDown}
+			onMouseMove={handleMouseMove}
+			onMouseUp={handleMouseUp}
+			onMouseLeave={handleMouseLeave}
+		>
 			{mounted && (
 				<>
 					{Children.map(children, (child) => {
@@ -57,10 +225,8 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 					{import.meta.env.DEV && (
 						<GridBackground
 							width={width}
-							cols={12}
-							rowHeight={60}
-							margin={[10, 10]}
 							rows={24}
+							{...gridPropsRef.current}
 							color="#f0f0f0"
 							borderRadius={4}
 						/>
@@ -68,7 +234,7 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 					<ReactGridLayout
 						layout={layouts_ as Layout}
 						width={width}
-						gridConfig={{ cols: 12, rowHeight: 60 }}
+						gridConfig={gridPropsRef.current}
 						onLayoutChange={(layout) => {
 							updateLayout(layout as ILayoutItem[]);
 						}}
@@ -84,23 +250,15 @@ export function UiDashBoard({ children }: UiDashBoardProps) {
 								<DashBoardItem id={widget.id} />
 							</div>
 						))}
-						{/* {edit && (
-							<div
-								key=".new"
-								data-grid={{
-									x: 0,
-									y: Infinity,
-									w: 1,
-									h: 1,
-								}}
-							>
-								<Center w="100%" h="100%" c="red" fz="h1">
-									<TbCirclePlus />
-								</Center>
-							</div>
-						)} */}
 					</ReactGridLayout>
 				</>
+			)}
+			{isSelecting && edit && (
+				<div style={getSelectionStyle()}>
+					<Center w="100%" h="100%" c="red" fz="h1">
+						<TbCirclePlus />
+					</Center>
+				</div>
 			)}
 		</div>
 	);

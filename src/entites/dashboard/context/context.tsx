@@ -1,56 +1,54 @@
 import { createContext, useContext } from "react";
 import { type StoreApi, type UseBoundStore, useStore } from "zustand";
 
-interface DashboardProviderProps {
+interface WidgetsProviderProps {
 	children: React.ReactNode;
-	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	store: UseBoundStore<StoreApi<WidgetContextType>>;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(
-	undefined,
-);
+const WidgetsContext = createContext<WidgetContextType | undefined>(undefined);
 
-const DashboardItemContext = createContext<IWidgetItem | undefined>(undefined);
+const WidgetItemContext = createContext<IWidgetItem | undefined>(undefined);
 
-export const DashboardProvider: React.FC<DashboardProviderProps> = ({
+export const WidgetsProvider: React.FC<WidgetsProviderProps> = ({
 	children,
 	store,
 }) => {
 	return (
-		<DashboardContext.Provider value={useStore(store)}>
+		<WidgetsContext.Provider value={useStore(store)}>
 			{children}
-		</DashboardContext.Provider>
+		</WidgetsContext.Provider>
 	);
 };
 
-export const DashboardItemProvider: React.FC<
+export const WidgetItemProvider: React.FC<
 	IWidgetItem & {
 		children: React.ReactNode;
 	}
 > = ({ children, ...props }) => {
 	return (
-		<DashboardItemContext.Provider value={props}>
+		<WidgetItemContext.Provider value={props}>
 			{children}
-		</DashboardItemContext.Provider>
+		</WidgetItemContext.Provider>
 	);
 };
 
-export const useDashboard = () => {
-	const context = useContext(DashboardContext);
+export const useWidgets = () => {
+	const context = useContext(WidgetsContext);
 	if (!context) {
-		throw new Error("useDashboard must be used within DashboardProvider");
+		throw new Error("useWidgets must be used within WidgetsProvider");
 	}
 	return context;
 };
 
-export const useDashboardItem = () => {
-	const context = useContext(DashboardItemContext);
+export const useWidgetItem = () => {
+	const context = useContext(WidgetItemContext);
 	if (!context) {
-		throw new Error("useDashboard must be used within DashboardProviderItem");
+		throw new Error("useWidgetItem must be used within WidgetItemProvider");
 	}
 	return context;
 };
 
-export const useDashboardItemParams = () => {
-	return useDashboardItem().params;
+export const useWidgetItemParams = () => {
+	return useWidgetItem().params;
 };

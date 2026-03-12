@@ -1,8 +1,8 @@
-import { DashboardProvider, UiDashBoard } from "@/entites/dashboard";
+import { UiDashBoard, WidgetsProvider } from "@/entites/dashboard";
 import { useStoreDashboardMain } from "@/entites/dashboard/stores/use-store-dashboard-main";
-import { AddWidget } from "@/features/dashboard/add-widget";
-import { BtnClear } from "@/features/dashboard/btn-clear";
-import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
+import { BtnClear } from "@/features/widget/btn-clear";
+import { BtnEditMode } from "@/features/widget/btn-edit-mod";
+import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import {
 	AnalyticAnalyticWidget,
@@ -13,12 +13,15 @@ import {
 } from "@/widgets/analytics";
 import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
-import { Group, Paper } from "@mantine/core";
+import { Group, Modal, Paper } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
+import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useState } from "react";
 
 export const DashboardPage = () => {
+	const [opened, { open, close }] = useDisclosure(false);
+	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
 		{
 			filterdate: [
@@ -47,8 +50,13 @@ export const DashboardPage = () => {
 					}}
 				/>
 			</Group>
-			<DashboardProvider store={useStoreDashboardMain}>
-				<UiDashBoard>
+			<WidgetsProvider store={useStoreDashboardMain}>
+				<UiDashBoard
+					onSelection={(react: Partial<ILayoutItem>) => {
+						setLayout(react);
+						open();
+					}}
+				>
 					{/* <DashBoardItem
 						id="w-1"
 						type="test"
@@ -136,11 +144,17 @@ export const DashboardPage = () => {
 						<AnalyticIncidentWidget {...query} />
 					</div>
 				</UiDashBoard>
-			</DashboardProvider>
+			</WidgetsProvider>
+			<Modal title="Добавить виджет" opened={opened} onClose={close}>
+				<WidgetForm
+					store={useStoreDashboardMain}
+					onSave={close}
+					layout={layout}
+				/>
+			</Modal>
 			{import.meta.env.DEV && (
 				<Template.Footer>
 					<Group>
-						<AddWidget store={useStoreDashboardMain} />
 						<BtnClear store={useStoreDashboardMain} />
 						<BtnEditMode store={useStoreDashboardMain} />
 					</Group>

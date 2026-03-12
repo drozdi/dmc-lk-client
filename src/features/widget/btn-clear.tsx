@@ -3,17 +3,14 @@ import { TbRestore } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
 
 interface BtnClearProps {
-	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	store: UseBoundStore<StoreApi<WidgetContextType>>;
 }
 
 export function BtnClear({ store: useStore }: BtnClearProps) {
 	const store = useStore();
 	return (
 		<Group>
-			{/* <ActionIcon onClick={() => dashboard.reset()}>
-				<TbReload />
-			</ActionIcon> */}
-			<ActionIcon onClick={() => store.clear()}>
+			<ActionIcon onClick={() => store.reset()}>
 				<TbRestore />
 			</ActionIcon>
 		</Group>

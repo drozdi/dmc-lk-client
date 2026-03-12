@@ -3,7 +3,7 @@ import { TbEdit } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
 
 interface BtnClearProps {
-	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	store: UseBoundStore<StoreApi<WidgetContextType>>;
 }
 
 export function BtnEditMode({ store: useStore }: BtnClearProps) {

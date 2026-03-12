@@ -41,19 +41,22 @@ interface IWidgetParam {
 	default?: any;
 }
 
-interface DashboardContextType {
+interface WidgetContextType {
 	key: "i" | "id";
 	widgets: IWidgetItem[];
 	layouts: ILayoutItem[];
 	availableWidgets: IWidget["type"][];
 	edit: boolean;
+	id: IWidgetItem["id"];
 	toggleEdit: () => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
 	addWidget: (widget: IWidgetItem, layout?: Partial<ILayoutItem>) => void;
 	removeWidget: (widget: IWidgetItem) => void;
 	renderWidget: (widget: IWidgetItem) => React.ReactNode | undefined;
+	updateWidget: (widget: IWidgetItem, layout?: Partial<ILayoutItem>) => void;
 	findWidget: (id: IWidgetItem["id"]) => IWidgetItem | undefined;
 	hasWidget: (type: IWidgetItem["type"]) => boolean;
 	registerWidget: (widget: IWidget) => void;
 	clear: () => void;
+	reset: () => void;
 }

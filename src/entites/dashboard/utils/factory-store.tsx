@@ -9,10 +9,10 @@ export const factoryDashboardStore = ({
 	key = "i",
 }: {
 	storageKey?: string;
-	availableWidgets?: DashboardContextType["availableWidgets"];
-	key?: DashboardContextType["key"];
+	availableWidgets?: WidgetContextType["availableWidgets"];
+	key?: WidgetContextType["key"];
 }) => {
-	return create<DashboardContextType>()(
+	return create<WidgetContextType>()(
 		persist(
 			(set, get) => ({
 				key,
@@ -20,7 +20,13 @@ export const factoryDashboardStore = ({
 				layouts: [],
 				availableWidgets,
 				edit: false,
-				toggleEdit() {
+				id: 0,
+				clear: () => {
+					set({
+						id: 0,
+					});
+				},
+				toggleEdit: () => {
 					set((state) => ({
 						edit: !state.edit,
 					}));
@@ -64,6 +70,17 @@ export const factoryDashboardStore = ({
 						layouts: state.layouts.filter((l) => l[key] !== widget.id),
 					}));
 				},
+				updateWidget: (widget, layout = {}) => {
+					const key = get().key;
+					set((state) => ({
+						widgets: state.widgets.map((item) =>
+							item.id === widget.id ? widget : item,
+						),
+						layouts: state.layouts.map((item) =>
+							item[key] === widget.id ? { ...item, ...layout } : item,
+						),
+					}));
+				},
 				renderWidget: (widget) => {
 					return FactoryWidget.create(widget.type, widget.params || {});
 				},
@@ -76,7 +93,7 @@ export const factoryDashboardStore = ({
 				findWidget(id) {
 					return get().widgets.find((w) => w.id === id);
 				},
-				clear: () => {
+				reset: () => {
 					set({ widgets: [], layouts: [] });
 				},
 			}),

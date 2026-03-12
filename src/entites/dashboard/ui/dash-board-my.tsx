@@ -1,7 +1,7 @@
 import "@dnd-grid/react/styles.css";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { useDashboard } from "../context";
+import { useWidgets } from "../context";
 
 interface UiDashBoardProps {
 	children: React.ReactNode;
@@ -13,7 +13,7 @@ import { GridItem, useContainerWidth, useDndGrid } from "@dnd-grid/react";
 
 export function DashBoardUi({ children }: UiDashBoardProps) {
 	const { width, containerRef, mounted } = useContainerWidth();
-	const { layouts, updateLayout, widgets, renderWidget } = useDashboard();
+	const { layouts, updateLayout, widgets, renderWidget } = useWidgets();
 
 	const { gridProps, itemProps, liveRegionElement } = useDndGrid({
 		layout: layouts,
