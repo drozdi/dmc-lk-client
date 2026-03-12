@@ -7,13 +7,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), "");
 	return {
-		//base: "/lk",
+		base: env.NODE_ENV === "development" ? "" : "/lk",
 		resolve: {
 			alias: {
-				"@style": path.resolve(
-					__dirname,
-					"./src/shared/style/index.css",
-				),
+				"@style": path.resolve(__dirname, "./src/shared/style/index.css"),
 				"@ui": path.resolve(__dirname, "./src/shared/ui"),
 				"@t": path.resolve(__dirname, "./src/shared/layout"),
 

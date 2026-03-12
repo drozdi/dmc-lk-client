@@ -11,10 +11,11 @@ import { FieldWrap } from "./components/field-wrarp";
 
 interface WidgetFormProps {
 	store: UseBoundStore<StoreApi<DashboardContextType>>;
+	id?: IWidgetItem["id"];
 	onAdd?: (widget: IWidgetItem) => void;
 }
 
-export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
+export function WidgetForm({ store: useStore, id, onAdd }: WidgetFormProps) {
 	const store = useStore();
 	const { availableWidgets } = store;
 	const [params, setParams] = useState<IWidgetParam[]>([]);
@@ -33,11 +34,11 @@ export function WidgetForm({ store: useStore, onAdd }: WidgetFormProps) {
 
 	useEffect(() => {
 		form.initialize({
-			type: availableWidgets[0] || "",
+			type: store.findWidget(id)?.type || availableWidgets[0],
 			fixed: true,
 		});
 		setParams(FactoryWidget.getWidget(form.values.type || "")?.params || []);
-	}, []);
+	}, [id]);
 
 	function handleAdd(widget: IWidgetItem) {
 		store.addWidget(widget);

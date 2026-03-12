@@ -1,3 +1,4 @@
+import { $setting } from "@/shared";
 import { Box, Image } from "@mantine/core";
 import { Link } from "react-router-dom";
 
@@ -11,7 +12,13 @@ export function Logo({ className }: { className?: string }) {
 			pos="relative"
 			display="block"
 		>
-			<Image w="100%" src="/assets/Logo_DMC_512.png" />
+			<Image
+				w="100%"
+				src={
+					($setting.get("base.url") === "/" ? "" : $setting.get("base.url")) +
+					"/assets/Logo_DMC_512.png"
+				}
+			/>
 			<div
 				style={{
 					color: "rgba(192,192,192,0.7)",
