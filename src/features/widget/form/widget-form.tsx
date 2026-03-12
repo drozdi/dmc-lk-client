@@ -1,4 +1,4 @@
-import { FactoryWidget } from "@/entites/dashboard/utils";
+import { FactoryWidget } from "@/entites/widget/utils";
 import { Button, Checkbox, Group, Select, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";

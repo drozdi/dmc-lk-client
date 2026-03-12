@@ -1,4 +1,4 @@
-import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
+import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
 import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { TesstWidget } from "@/widgets/test";

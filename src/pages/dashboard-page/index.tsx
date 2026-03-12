@@ -1,5 +1,5 @@
-import { UiDashBoard, WidgetsProvider } from "@/entites/dashboard";
-import { useStoreDashboardMain } from "@/entites/dashboard/stores/use-store-dashboard-main";
+import { UiDashBoard, WidgetsProvider } from "@/entites/widget";
+import { useStoreDashboardMain } from "@/entites/widget/stores/use-store-dashboard-main";
 import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
