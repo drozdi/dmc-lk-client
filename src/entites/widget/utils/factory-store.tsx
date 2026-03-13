@@ -18,12 +18,14 @@ export const factoryDashboardStore = ({
 				key,
 				widgets: [],
 				layouts: [],
+				preview: {},
 				availableWidgets,
 				edit: false,
 				id: 0,
 				clear: () => {
 					set({
 						id: 0,
+						preview: {},
 					});
 				},
 				toggleEdit: () => {

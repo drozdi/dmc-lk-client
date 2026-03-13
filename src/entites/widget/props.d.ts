@@ -45,6 +45,7 @@ interface WidgetContextType {
 	key: "i" | "id";
 	widgets: IWidgetItem[];
 	layouts: ILayoutItem[];
+	preview: Partial<ILayoutItem> | null;
 	availableWidgets: IWidget["type"][];
 	edit: boolean;
 	id: IWidgetItem["id"];

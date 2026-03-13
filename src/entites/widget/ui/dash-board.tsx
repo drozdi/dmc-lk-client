@@ -34,8 +34,9 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		margin: [10, 10] as [number, number],
 	});
 	const { width, containerRef, mounted } = useContainerWidth();
-	const { layouts, updateLayout, widgets, renderWidget, edit, key } =
-		useWidgets();
+	const { layouts, updateLayout, widgets, edit, key, preview } = useWidgets();
+
+	const isPreview = preview && Object.keys(preview).length > 0;
 
 	const layouts_ = useMemo(() => {
 		if (edit) {
@@ -177,26 +178,35 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 			!selectionStart ||
 			!selectionEnd ||
 			!containerRef.current
-		)
+		) {
+			if (isPreview) {
+				return _getSelectionStyle(preview as ILayoutItem);
+			}
 			return {};
-
-		const containerWidth = containerRef.current.getBoundingClientRect().width;
+		}
 
 		const x1 = Math.min(selectionStart.x, selectionEnd.x);
 		const y1 = Math.min(selectionStart.y, selectionEnd.y);
 		const x2 = Math.max(selectionStart.x, selectionEnd.x);
 		const y2 = Math.max(selectionStart.y, selectionEnd.y);
 
-		const w = x2 - x1 + 1;
-		const h = y2 - y1 + 1;
+		return _getSelectionStyle({
+			x: x1,
+			y: y1,
+			w: x2 - x1 + 1,
+			h: y2 - y1 + 1,
+		} as ILayoutItem);
+	};
 
+	const _getSelectionStyle = ({ x, y, w, h }: ILayoutItem) => {
+		const containerWidth = containerRef.current?.getBoundingClientRect()
+			.width as number;
 		const { cols, rowHeight, margin } = gridPropsRef.current;
 		const colWidth = (containerWidth - (cols + 1) * margin[0]) / cols;
-
 		return {
 			position: "absolute",
-			left: `${x1 * colWidth + (x1 + 1) * margin[0]}px`,
-			top: `${y1 * rowHeight + (y1 + 1) * margin[1]}px`,
+			left: `${x * colWidth + (x + 1) * margin[0]}px`,
+			top: `${y * rowHeight + (y + 1) * margin[1]}px`,
 			width: `${colWidth * w + (w - 1) * margin[0]}px`,
 			height: `${h * rowHeight + (h - 1) * margin[1]}px`,
 			backgroundColor: "rgba(0, 120, 255, 0.2)",
@@ -253,7 +263,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 					</ReactGridLayout>
 				</>
 			)}
-			{isSelecting && edit && (
+			{((isSelecting && edit) || isPreview) && (
 				<div style={getSelectionStyle()}>
 					<Center w="100%" h="100%" c="red" fz="h1">
 						<TbCirclePlus />

@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 
 export const DashboardPage = () => {
+	const storeDashboardMain = useStoreDashboardMain();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
@@ -32,7 +33,7 @@ export const DashboardPage = () => {
 			],
 		},
 	);
-
+	console.log(storeDashboardMain);
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -54,6 +55,9 @@ export const DashboardPage = () => {
 				<UiDashBoard
 					onSelection={(react: Partial<ILayoutItem>) => {
 						setLayout(react);
+						useStoreDashboardMain.setState({
+							preview: react,
+						});
 						open();
 					}}
 				>
@@ -148,7 +152,10 @@ export const DashboardPage = () => {
 			<Modal title="Добавить виджет" opened={opened} onClose={close}>
 				<WidgetForm
 					store={useStoreDashboardMain}
-					onSave={close}
+					onSave={() => {
+						useStoreDashboardMain.getState().clear();
+						close();
+					}}
 					layout={layout}
 				/>
 			</Modal>
