@@ -37,6 +37,10 @@ export const AnalyticIncidentWidget = ({
 	const isLoading = useQueryLoading(storeIncident);
 
 	useEffect(() => {
+		setQuery((v) => ({ ...v, filterdate }));
+	}, [filterdate]);
+
+	useEffect(() => {
 		storeIncident
 			.send(query)
 			.then(({ data }: IResponseAnalyticsIncident) =>

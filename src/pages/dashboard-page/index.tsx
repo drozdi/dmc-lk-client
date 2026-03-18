@@ -4,6 +4,7 @@ import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
+import { $setting } from "@/shared";
 import {
 	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
@@ -23,16 +24,16 @@ export const DashboardPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
-	const [query, setQuery] = useState<Omit<IRequestAnalytics, "step" | "event">>(
-		{
-			filterdate: [
-				dayjs()
-					.month(dayjs().month() - 3)
-					.format("YYYY-MM-DD"),
-				dayjs().format("YYYY-MM-DD"),
-			],
-		},
-	);
+	const [query, setQuery] = $setting.useState<
+		Omit<IRequestAnalytics, "step" | "event">
+	>("dashboard-main", {
+		filterdate: [
+			dayjs()
+				.month(dayjs().month() - 3)
+				.format("YYYY-MM-DD"),
+			dayjs().format("YYYY-MM-DD"),
+		],
+	});
 	console.log(storeDashboardMain);
 	return (
 		<Paper>
@@ -40,6 +41,7 @@ export const DashboardPage = () => {
 			<Group justify="flex-end">
 				<DatePickerInput
 					type="range"
+					numberOfColumns={2}
 					defaultValue={query.filterdate}
 					onChange={(filterdate) => {
 						if (filterdate[0] && filterdate[1]) {
@@ -112,7 +114,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticAnalyticWidget {...query} step="mon" />
+						<AnalyticAnalyticWidget />
 					</div>
 					<div
 						key="count"

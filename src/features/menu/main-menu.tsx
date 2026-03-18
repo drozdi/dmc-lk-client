@@ -19,7 +19,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
 	{
-		label: "Dashboard",
+		label: "Доска",
 		icon: <TbReportAnalytics />,
 		path: "/",
 	},

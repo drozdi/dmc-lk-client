@@ -36,18 +36,13 @@ export const ChangeProduct = () => {
 		<>
 			{change ? (
 				<SelectProductions
-					excludeds={
-						storeUserProfile.userData?.is_superuser ? [] : ["0"]
-					}
+					excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
 					variant="underline"
 					value={String(storeUserProfile.production_id)}
 					onChange={(value) => handleChange(value as string)}
 				/>
 			) : (
-				<span
-					className="cursor-pointer"
-					onClick={() => setChange(true)}
-				>
+				<span className="cursor-pointer" onClick={() => setChange(true)}>
 					{name}
 				</span>
 			)}

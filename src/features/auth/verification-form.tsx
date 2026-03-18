@@ -32,8 +32,12 @@ export const VerificationForm = () => {
 
 	return (
 		<>
-			{error && <Notification color="red">{error}</Notification>}
-			<Stack component="form" name="verification" onSubmit={handleSubmit}>
+			{error && (
+				<Notification color="red" withCloseButton={false}>
+					{error}
+				</Notification>
+			)}
+			<Stack component="form" onSubmit={handleSubmit}>
 				<TextInput
 					placeholder="Код"
 					id="link-code"

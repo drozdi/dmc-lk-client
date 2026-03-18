@@ -8,7 +8,6 @@ export function PersonalLink() {
 		<ActionIcon
 			onClick={() => navigate("/lk")}
 			variant="default"
-			aria-label="Toggle color scheme"
 			size="xl"
 			radius="100%"
 		>

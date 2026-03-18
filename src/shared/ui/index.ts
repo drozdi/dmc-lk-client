@@ -1,4 +1,5 @@
 export * from "./button";
+export * from "./date";
 export * from "./expandable-panel";
 export * from "./history-pagination";
 export * from "./icon";

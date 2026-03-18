@@ -7,11 +7,12 @@ import { IncidentDetail } from "@/features/analytics/incident/detail";
 import { IncidentGenerate } from "@/features/analytics/incident/generate";
 import { IncidentShort } from "@/features/analytics/incident/short";
 import { Template } from "@/layout";
+import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
 import { DatePickerInput, type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function AnalyticsIncidentPage() {
@@ -22,7 +23,9 @@ export function AnalyticsIncidentPage() {
 	);
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
 
-	const [defFilterdate, setDefFilterdate] = useState<[DateValue, DateValue]>([
+	const [defFilterdate, setDefFilterdate] = $setting.useState<
+		[DateValue, DateValue]
+	>("incident.filterdate", [
 		fromDay.format("YYYY-MM-DD"),
 		toDay.format("YYYY-MM-DD"),
 	]);
@@ -36,6 +39,16 @@ export function AnalyticsIncidentPage() {
 			setFilterdate(filterdate);
 		}
 	};
+
+	useEffect(() => {
+		if (searchParams.get("from")) {
+			setDefFilterdate([
+				fromDay.format("YYYY-MM-DD"),
+				toDay.format("YYYY-MM-DD"),
+			]);
+			setFilterdate([fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")]);
+		}
+	}, []);
 
 	const storeIncident = useStoreIncident();
 
@@ -68,7 +81,18 @@ export function AnalyticsIncidentPage() {
 	return (
 		<Paper>
 			<Template.Title>Жупнал инцидентов</Template.Title>
-			<Group justify="flex-end">
+			<Group justify="space-between">
+				<Group>
+					<Button loading={isLoading} onClick={handleYesterday}>
+						Вчера
+					</Button>
+					<Button loading={isLoading} onClick={handleWeek}>
+						Неделя
+					</Button>
+					<Button loading={isLoading} onClick={handleMonth}>
+						Месяц
+					</Button>
+				</Group>
 				<DatePickerInput
 					type="range"
 					value={defFilterdate}
@@ -90,19 +114,6 @@ export function AnalyticsIncidentPage() {
 					<IncidentGenerate filterdate={filterdate} />
 				</Tabs.Panel>
 			</Tabs>
-			<Template.Footer>
-				<Group>
-					<Button loading={isLoading} onClick={handleYesterday}>
-						Вчера
-					</Button>
-					<Button loading={isLoading} onClick={handleWeek}>
-						Неделя
-					</Button>
-					<Button loading={isLoading} onClick={handleMonth}>
-						Месяц
-					</Button>
-				</Group>
-			</Template.Footer>
 		</Paper>
 	);
 }

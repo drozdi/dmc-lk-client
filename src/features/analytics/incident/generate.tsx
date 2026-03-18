@@ -104,6 +104,7 @@ export const IncidentGenerate = ({
 					sortKey: field,
 					sortable: true,
 					ellipsis: true,
+					noWrap: true,
 				})),
 				{
 					accessor: "actions",

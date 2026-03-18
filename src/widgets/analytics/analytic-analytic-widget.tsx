@@ -6,23 +6,17 @@ import { Table } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Filterdate } from "./components/filterdate";
 
 const nDow = dayjs();
 const sDay = nDow.day(-7);
 
-interface AnalyticAnalyticWidgetProps
-	extends WidgetProps, Partial<IRequestAnalytics> {}
+interface AnalyticAnalyticWidgetProps extends WidgetProps {}
 
-export const AnalyticAnalyticWidget = ({
-	filterdate,
-	step = "d",
-	...props
-}: AnalyticAnalyticWidgetProps) => {
+export const AnalyticAnalyticWidget = (props: AnalyticAnalyticWidgetProps) => {
 	const { production_id } = useStoreUserProfile();
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate: [sDay.format("YYYY-MM-DD"), nDow.format("YYYY-MM-DD")],
-		step,
+		step: "d",
 	});
 
 	const ee = useEnumsEvents();
@@ -90,8 +84,8 @@ export const AnalyticAnalyticWidget = ({
 			loading={isLoading}
 			title={
 				<>
-					Этикетки за{" "}
-					<Filterdate
+					Этикетки за последние 7 дней
+					{/* <Filterdate
 						filterdate={query.filterdate}
 						editable={!filterdate?.[0]}
 						onChange={(filterdate) => {
@@ -100,7 +94,7 @@ export const AnalyticAnalyticWidget = ({
 								filterdate,
 							});
 						}}
-					/>
+					/> */}
 				</>
 			}
 		>

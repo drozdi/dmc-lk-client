@@ -21,7 +21,7 @@ interface IAnalyticsIncidentItem {
 }
 
 interface IRequestAnalyticsIncident {
-	filterdate: [DateType, DateType];
+	filterdate: [string | Date | null, string | Date | null];
 	data?: string[];
 	fields_name?: string[];
 }

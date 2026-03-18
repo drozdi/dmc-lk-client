@@ -9,28 +9,9 @@ import {
 	Stack,
 	TextInput,
 } from "@mantine/core";
-import { isNotEmpty, matches, useForm } from "@mantine/form";
-import { yupResolver } from "mantine-form-yup-resolver";
+import { isEmail, isNotEmpty, matches, useForm } from "@mantine/form";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import * as yup from "yup";
-
-const fieldsSchema = yup.object().shape({
-	first_name: yup.string().required("Заполните имя"),
-	last_name: yup.string().required("Заполните фамилию"),
-	father_name: yup.string().required("Заполните отчество"),
-	email: yup
-		.string()
-		.email("Введите корректный email")
-		.required("Заполните email"),
-	/*phone: yup
-		.string()
-		.matches(
-			/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
-			'Неверный номер телефона'
-		)
-		.required('Заполните телефон'),*/
-});
 
 export const PersonalForm = () => {
 	const storeUserProfile = useStoreUserProfile();
@@ -46,7 +27,20 @@ export const PersonalForm = () => {
 			email: userData?.email || "",
 			phone: userData?.phone || "",
 		},
-		validate: yupResolver(fieldsSchema),
+
+		validate: {
+			first_name: isNotEmpty("Заполните имя"),
+			last_name: isNotEmpty("Заполните фамилию"),
+			father_name: isNotEmpty("Заполните отчество"),
+			email: isEmail("Введите корректный email"),
+			phone: (value) =>
+				/^(?:\+?[0-9]{1,4}[\s\-]?[0-9]{2,3}[\s\-]?[0-9]{2,4}[\s\-]?[0-9]{2,4}[\s\-]?[0-9]{2,4})$/.test(
+					value || "",
+				)
+					? null
+					: "Неверный телефон",
+		},
+
 		onValuesChange: (values) => {
 			storeUserProfile.setUserData(values);
 		},
@@ -66,8 +60,8 @@ export const PersonalForm = () => {
 		validate: {
 			oldPassword: isNotEmpty("Введите пароль"),
 			newPassword: matches(
-				/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/,
-				"Допустимые символы: буквы, цифры и спец. символы @#$%^&*",
+				/(?:.*[0-9])(?:.*[a-zA-Z])(?=.*[$&+,:;=?@#|'<>.^*()%!-])(?:.*)/,
+				"Допустимые символы: буквы, цифры и спец. символы $&+,:;=?@#|'<>.^*()%!-",
 			),
 			re_password: (value, values) =>
 				value !== values.newPassword ? "Пароли должны совпадать!" : null,
@@ -114,18 +108,18 @@ export const PersonalForm = () => {
 		<Loading active={isLoading} keepMounted>
 			<Stack component="form">
 				<TextInput
-					placeholder="Имя"
-					size="md"
-					type="text"
-					variant="underline"
-					{...form.getInputProps("first_name")}
-				/>
-				<TextInput
 					placeholder="Фамилия"
 					type="text"
 					size="md"
 					variant="underline"
 					{...form.getInputProps("last_name")}
+				/>
+				<TextInput
+					placeholder="Имя"
+					size="md"
+					type="text"
+					variant="underline"
+					{...form.getInputProps("first_name")}
 				/>
 				<TextInput
 					placeholder="Отчество"

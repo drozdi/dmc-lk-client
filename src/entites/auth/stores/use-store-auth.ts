@@ -24,8 +24,7 @@ export const useStoreAuth = create<IStoreAuth>(
 			api.clearTokens();
 		},
 		async load() {
-			const isAuthenticated =
-				!!api.getRefreshToken() && !!api.getAccessToken();
+			const isAuthenticated = !!api.getRefreshToken() && !!api.getAccessToken();
 			if (!isAuthenticated) {
 				get().clearAuth();
 			}
@@ -56,13 +55,18 @@ export const useStoreAuth = create<IStoreAuth>(
 			});
 			try {
 				const response = requestRegistrationVerification(link);
+				let error = "";
+				if (!response.data?.token) {
+					error = "Токен не верен";
+				}
 				set({
 					isLoading: false,
+					error,
 				});
+
 				return response;
 			} catch (e: IError) {
-				const error =
-					e.response?.data?.detail || e?.message || "Ошибка входа";
+				const error = e.response?.data?.detail || e?.message || "Ошибка входа";
 				set({
 					isLoading: false,
 					error,
@@ -91,8 +95,7 @@ export const useStoreAuth = create<IStoreAuth>(
 				return true;
 			} catch (e: IError) {
 				console.error(e);
-				const error =
-					e.response?.data?.detail || e?.message || "Ошибка входа";
+				const error = e.response?.data?.detail || e?.message || "Ошибка входа";
 				notification.error(error);
 				set({
 					isLoading: false,
@@ -119,9 +122,7 @@ export const useStoreAuth = create<IStoreAuth>(
 			} catch (e: IError) {
 				console.error(e);
 				const error =
-					e.response?.data?.detail ||
-					e?.message ||
-					"Ошибка регистрации";
+					e.response?.data?.detail || e?.message || "Ошибка регистрации";
 				notification.error(error);
 				set({
 					isLoading: false,

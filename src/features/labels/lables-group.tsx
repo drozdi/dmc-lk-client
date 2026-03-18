@@ -6,6 +6,7 @@ import {
 	useGrouped,
 	useStoreLabels,
 } from "@/entites/labels";
+import { SelectProductions } from "@/entites/users";
 import { LabelFormat, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
@@ -34,9 +35,7 @@ export const LabelsGroup = () => {
 	const [newFormat, setNewFormat] = useState<string>("");
 	const [error, setError] = useState<string>("");
 
-	const formats = Object.keys(containers).filter(
-		(item) => item !== ".default",
-	);
+	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
 	useEffect(() => {
 		storeLabels.load();
@@ -47,11 +46,23 @@ export const LabelsGroup = () => {
 		storeUserProfile.production_id == "0"
 	) {
 		return (
-			<Center mih="50vh">
-				<Text fz="h1" c="dimmed">
-					Нужно выбрать площадку
-				</Text>
-			</Center>
+			<>
+				<Center mih="50vh">
+					<Stack>
+						<Text fz="h1" c="dimmed">
+							Нужно выбрать площадку
+						</Text>
+						<SelectProductions
+							excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
+							variant="underline"
+							value={String(storeUserProfile.production_id)}
+							onChange={(value) =>
+								storeUserProfile.setProductionId(Number(value))
+							}
+						/>
+					</Stack>
+				</Center>
+			</>
 		);
 	}
 
@@ -122,10 +133,7 @@ export const LabelsGroup = () => {
 						<Tooltip
 							label={`Добавить группу! Можно нажать и на Enter после ввода!`}
 						>
-							<ActionIcon
-								disabled={Boolean(error)}
-								onClick={handleAddFormat}
-							>
+							<ActionIcon disabled={Boolean(error)} onClick={handleAddFormat}>
 								<TbPlus />
 							</ActionIcon>
 						</Tooltip>
@@ -139,34 +147,20 @@ export const LabelsGroup = () => {
 							}}
 						>
 							{formats.map((item) => (
-								<GroupedContainer
-									key={item}
-									column={item}
-									color={colors(item)}
-								>
+								<GroupedContainer key={item} column={item} color={colors(item)}>
 									<Table striped={false}>
 										<Table.Thead>
 											<Table.Tr>
 												<Table.Td w="2rem"></Table.Td>
 												<Table.Td>
-													<LabelFormat>
-														{item}
-													</LabelFormat>
+													<LabelFormat>{item}</LabelFormat>
 												</Table.Td>
 												<Table.Td align="right">
-													<Tooltip
-														label={`Удалить "${item}"`}
-													>
+													<Tooltip label={`Удалить "${item}"`}>
 														<ActionIcon
-															disabled={
-																storeLabels.isLoading
-															}
+															disabled={storeLabels.isLoading}
 															color="red"
-															onClick={() =>
-																handleDeleteFormat(
-																	item,
-																)
-															}
+															onClick={() => handleDeleteFormat(item)}
 														>
 															<TbX />
 														</ActionIcon>
@@ -175,37 +169,24 @@ export const LabelsGroup = () => {
 											</Table.Tr>
 										</Table.Thead>
 										<Table.Tbody>
-											{(containers[item] || []).map(
-												(item) => (
-													<GroupedItem
-														key={item.id}
-														id={item.id}
-														data={item}
-													>
-														<Table.Tr>
-															<Table.Td ta="center">
-																<TbList />
-															</Table.Td>
-															<Table.Td
-																colSpan={2}
-															>
-																<LabelFormat>
-																	{item.id}
-																</LabelFormat>
-															</Table.Td>
-														</Table.Tr>
-													</GroupedItem>
-												),
-											)}
+											{(containers[item] || []).map((item) => (
+												<GroupedItem key={item.id} id={item.id} data={item}>
+													<Table.Tr>
+														<Table.Td ta="center">
+															<TbList />
+														</Table.Td>
+														<Table.Td colSpan={2}>
+															<LabelFormat>{item.id}</LabelFormat>
+														</Table.Td>
+													</Table.Tr>
+												</GroupedItem>
+											))}
 										</Table.Tbody>
 									</Table>
 								</GroupedContainer>
 							))}
 						</Stack>
-						<GroupedContainer
-							column=".default"
-							color={colors(".default")}
-						>
+						<GroupedContainer column=".default" color={colors(".default")}>
 							<Table
 								striped={false}
 								style={{
@@ -219,26 +200,18 @@ export const LabelsGroup = () => {
 									</Table.Tr>
 								</Table.Thead>
 								<Table.Tbody>
-									{(containers[".default"] || []).map(
-										(item) => (
-											<GroupedItem
-												key={item.id}
-												id={item.id}
-												data={item}
-											>
-												<Table.Tr>
-													<Table.Td ta="center">
-														<TbList />
-													</Table.Td>
-													<Table.Td>
-														<LabelFormat>
-															{item.id}
-														</LabelFormat>
-													</Table.Td>
-												</Table.Tr>
-											</GroupedItem>
-										),
-									)}
+									{(containers[".default"] || []).map((item) => (
+										<GroupedItem key={item.id} id={item.id} data={item}>
+											<Table.Tr>
+												<Table.Td ta="center">
+													<TbList />
+												</Table.Td>
+												<Table.Td>
+													<LabelFormat>{item.id}</LabelFormat>
+												</Table.Td>
+											</Table.Tr>
+										</GroupedItem>
+									))}
 								</Table.Tbody>
 							</Table>
 						</GroupedContainer>

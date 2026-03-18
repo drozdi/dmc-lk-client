@@ -67,7 +67,7 @@ export const LabelsCountWidget = (props: LabelsCountWidgetProps) => {
 			}
 			if (res[count.production_id]?.labels?.[count.add_label_format]) {
 				res[count.production_id].labels[count.add_label_format].total +=
-					count.sum === NaN ? 0 : count.sum;
+					Number.isNaN(count.sum) ? 0 : count.sum;
 			}
 		}
 		for (const count of counts.not_distributed) {
@@ -76,7 +76,7 @@ export const LabelsCountWidget = (props: LabelsCountWidgetProps) => {
 			}
 			if (res[count.production_id]?.labels?.[count.add_label_format]) {
 				res[count.production_id].labels[count.add_label_format].total +=
-					count.sum === NaN ? 0 : count.sum;
+					Number.isNaN(count.sum) ? 0 : count.sum;
 			}
 		}
 		for (const prod in res) {
@@ -149,7 +149,7 @@ export const LabelsCountWidget = (props: LabelsCountWidgetProps) => {
 													</Table.Td>
 													<Table.Td>{round(consumptions)}</Table.Td>
 													<Table.Td>
-														{total && total !== NaN ? total : 0}
+														{total && !Number.isNaN(total) ? total : 0}
 													</Table.Td>
 												</Table.Tr>
 											);
