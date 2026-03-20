@@ -15,8 +15,8 @@ import {
 import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { Group, Modal, Paper } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
+import { DualCalendarRange } from "@ui";
 import dayjs from "dayjs";
 import { useState } from "react";
 
@@ -34,15 +34,14 @@ export const DashboardPage = () => {
 			dayjs().format("YYYY-MM-DD"),
 		],
 	});
-	console.log(storeDashboardMain);
+
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
+
 			<Group justify="flex-end">
-				<DatePickerInput
-					type="range"
-					numberOfColumns={2}
-					defaultValue={query.filterdate}
+				<DualCalendarRange
+					value={query.filterdate}
 					onChange={(filterdate) => {
 						if (filterdate[0] && filterdate[1]) {
 							setQuery((v) => ({

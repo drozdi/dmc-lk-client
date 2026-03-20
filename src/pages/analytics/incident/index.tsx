@@ -10,7 +10,8 @@ import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
-import { DatePickerInput, type DateValue } from "@mantine/dates";
+import { type DateValue } from "@mantine/dates";
+import { DualCalendarRange } from "@ui";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -93,11 +94,7 @@ export function AnalyticsIncidentPage() {
 						Месяц
 					</Button>
 				</Group>
-				<DatePickerInput
-					type="range"
-					value={defFilterdate}
-					onChange={handleChange}
-				/>
+				<DualCalendarRange value={defFilterdate} onChange={handleChange} />
 			</Group>
 			<Tabs defaultValue="detail" mt="xs">
 				<Tabs.List>

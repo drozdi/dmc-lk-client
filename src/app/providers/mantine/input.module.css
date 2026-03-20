@@ -1,5 +1,5 @@
 .input {
-	&[data-variant='underline'] {
+	&[data-variant="underline"] {
 		--input-bg: var(--mantine-color-gray-1);
 		border-bottom: 3px solid;
 		border-radius: 0;
@@ -14,4 +14,30 @@
 			border-color: var(--mantine-primary-color-filled);
 		}
 	}
+}
+
+.root[data-variant="сontained"] {
+	--input-bg: var(--mantine-color-gray-1);
+
+	position: relative;
+	border-color: var(--mantine-color-gray-3);
+
+	@mixin dark {
+		--input-bg: var(--mantine-color-dark-5);
+		border-color: var(--mantine-color-dark-3);
+	}
+}
+
+.input[data-variant="сontained"] {
+	height: 54px;
+	padding-top: 18px;
+}
+
+.label[data-variant="сontained"] {
+	position: absolute;
+	pointer-events: none;
+	font-size: var(--mantine-font-size-xs);
+	padding-left: var(--mantine-spacing-sm);
+	padding-top: calc(var(--mantine-spacing-sm) / 2);
+	z-index: 1;
 }

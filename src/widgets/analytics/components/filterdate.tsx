@@ -1,5 +1,6 @@
 import { $setting } from "@/shared";
-import { DatePickerInput, type DateValue } from "@mantine/dates";
+import { type DateValue } from "@mantine/dates";
+import { DualCalendarRange } from "@ui";
 import dayjs from "dayjs";
 
 interface FilterdateProps {
@@ -21,11 +22,12 @@ export function Filterdate({
 		);
 	}
 	return (
-		<DatePickerInput
-			type="range"
-			placeholder="Pick dates range"
-			value={filterdate}
-			onChange={onChange}
-		/>
+		<DualCalendarRange value={filterdate} onChange={onChange} />
+		// <DatePickerInput
+		// 	type="range"
+		// 	placeholder="Pick dates range"
+		// 	value={filterdate}
+		// 	onChange={onChange}
+		// />
 	);
 }

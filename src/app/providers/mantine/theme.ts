@@ -14,6 +14,7 @@ import {
 	Switch,
 	Table,
 	Tabs,
+	TextInput,
 } from "@mantine/core";
 
 export const themeMantine = createTheme({
@@ -236,6 +237,9 @@ export const themeMantine = createTheme({
 			},
 		}),
 		Input: Input.extend({
+			classNames: inputClasses,
+		}),
+		TextInput: TextInput.extend({
 			classNames: inputClasses,
 		}),
 		Switch: Switch.extend({

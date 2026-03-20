@@ -63,6 +63,25 @@ export function DualCalendarRange({
 		// }
 	};
 
+	const handleLeftCalendarClick = (date: DateValue) => {
+		setStartDate(date);
+		if (endDate && date > endDate) {
+			setEndDate(null);
+		}
+	};
+
+	const handleRightCalendarClick = (date: DateValue) => {
+		// Клик по правому календарю – устанавливаем конец
+		if (!startDate) {
+			setStartDate(date);
+		} else if (date < startDate) {
+			setStartDate(date);
+			setEndDate(null);
+		} else {
+			setEndDate(date);
+		}
+	};
+
 	// Подсветка для любого календаря
 	const getDayStyle = (date: DateValue) => {
 		if (!startDate) return {};
@@ -96,12 +115,20 @@ export function DualCalendarRange({
 	};
 
 	return (
-		<Popover opened={true}>
+		<Popover>
 			<Popover.Target>
 				<Group justify="center" gap="0">
-					<TextInput value={formatDate(startDate)} readOnly style={{}} />
 					<TextInput
+						label="От"
+						value={formatDate(startDate)}
+						variant="сontained"
+						readOnly
+						style={{}}
+					/>
+					<TextInput
+						label="До"
 						value={formatDate(endDate)}
+						variant="сontained"
 						readOnly
 						style={{
 							borderLeft: "0 none",
@@ -113,22 +140,19 @@ export function DualCalendarRange({
 			<Popover.Dropdown>
 				<Group>
 					<Calendar
+						defaultDate={startDate}
 						getDayProps={(date) => ({
-							onClick: () => handleDateClick(date),
+							onClick: () => handleLeftCalendarClick(date),
 							style: getDayStyle(date),
 						})}
 					/>
 					<Divider orientation="vertical" mx="xs" />
 					<Calendar
+						defaultDate={endDate}
 						getDayProps={(date) => ({
-							onClick: () => handleDateClick(date),
+							onClick: () => handleRightCalendarClick(date),
 							style: getDayStyle(date),
 						})}
-						month={
-							startDate
-								? dayjs(startDate).add(1, "month").toDate()
-								: dayjs().add(1, "month").toDate()
-						}
 					/>
 				</Group>
 			</Popover.Dropdown>
