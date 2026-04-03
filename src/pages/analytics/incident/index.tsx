@@ -81,7 +81,7 @@ export function AnalyticsIncidentPage() {
 
 	return (
 		<Paper>
-			<Template.Title>Жупнал инцидентов</Template.Title>
+			<Template.Title>Журнал инцидентов</Template.Title>
 			<Group justify="space-between">
 				<Group>
 					<Button loading={isLoading} onClick={handleYesterday}>
