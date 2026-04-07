@@ -1,22 +1,22 @@
-import { Textarea, type TextareaProps } from "@mantine/core";
+import { Select, type SelectProps } from "@mantine/core";
 import { FieldWrap, type FieldWrapProps } from "./field-wrarp";
 
-export interface FieldTextProps
+export interface FieldSelectProps
 	extends
 		Omit<FieldWrapProps, "children" | "onChange" | "value" | "defaultValue">,
-		Omit<TextareaProps, "onChange" | "description" | "label" | "type"> {
+		Omit<SelectProps, "onChange" | "description" | "label" | "type"> {
 	onChange: (value: string) => void;
 }
 
-export function FieldText({
-	store,
+export function FieldSelect({
 	type,
+	store,
 	label,
 	description,
 	required,
 	onChange,
 	...props
-}: FieldTextProps) {
+}: FieldSelectProps) {
 	return (
 		<FieldWrap
 			type={type}
@@ -28,11 +28,10 @@ export function FieldText({
 			defaultValue={props.defaultValue}
 			onChange={onChange}
 		>
-			<Textarea
+			<Select
 				{...props}
-				onChange={({ target }) => {
-					onChange(target.value);
-				}}
+				onChange={(...args) => onChange?.(...args)}
+				required={required}
 			/>
 		</FieldWrap>
 	);

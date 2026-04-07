@@ -13,9 +13,8 @@ export default defineConfig(() => {
 		resolve: {
 			preserveSymlinks: true,
 			alias: {
-				"#test": path.resolve(__dirname, "./test"),
-				"#dev": path.resolve(__dirname, "./dev"),
 				"@": path.resolve(__dirname, "./src"),
+				"#": path.resolve(__dirname, "."),
 			},
 		},
 		test: {

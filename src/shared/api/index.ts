@@ -1,9 +1,11 @@
 import { type Axios, type AxiosError } from "axios";
-import { $setting } from "../setting";
 import { AxiosInterceptor } from "../utils";
 
 export const api = new AxiosInterceptor({
-	baseURL: $setting.get("api.host") as string,
+	// baseURL: import.meta.env.DEV
+	// 	? "http://10.76.10.145:5054/lk_api/v1/"
+	// 	: "https://dmc-mact.ru/lk_api/v1/",
+	baseURL: "https://dmc-mact.ru/lk_api/v1/",
 	headers: {
 		"Content-Type": "application/json",
 	},

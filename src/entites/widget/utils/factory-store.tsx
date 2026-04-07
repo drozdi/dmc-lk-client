@@ -6,10 +6,12 @@ import { FactoryWidget } from "./factory-widget";
 export const factoryDashboardStore = ({
 	storageKey = "",
 	availableWidgets = [],
+	varibles = {},
 	key = "i",
 }: {
 	storageKey?: string;
 	availableWidgets?: WidgetContextType["availableWidgets"];
+	varibles?: WidgetContextType["varibles"];
 	key?: WidgetContextType["key"];
 }) => {
 	return create<WidgetContextType>()(
@@ -18,10 +20,26 @@ export const factoryDashboardStore = ({
 				key,
 				widgets: [],
 				layouts: [],
+				varibles,
 				preview: {},
 				availableWidgets,
 				edit: false,
 				id: 0,
+				values: {},
+				setValue: (key, val) => {
+					set((state) => ({
+						values: {
+							...state.values,
+							[key.startsWith("$") ? key : "$" + key]: val,
+						},
+					}));
+				},
+				getValue: (varible) => {
+					if (typeof varible === "string" && varible.startsWith("$")) {
+						return get().values[varible] ?? get().varibles[varible]?.default;
+					}
+					return varible;
+				},
 				clear: () => {
 					set({
 						id: 0,
@@ -84,13 +102,20 @@ export const factoryDashboardStore = ({
 					}));
 				},
 				renderWidget: (widget) => {
-					return FactoryWidget.create(widget.type, widget.params || {});
+					const params = { ...widget.params };
+					for (let key in params) {
+						params[key] = get().getValue(params[key]);
+					}
+					return FactoryWidget.create(widget.type, params || {});
 				},
 				hasWidget: (type: IWidget["type"]) => {
 					return (
 						FactoryWidget.getAvailableTypes().includes(type) &&
 						get().availableWidgets.includes(type)
 					);
+				},
+				editWidget: (widget) => {
+					set({ id: widget.id });
 				},
 				findWidget(id) {
 					return get().widgets.find((w) => w.id === id);
@@ -104,6 +129,7 @@ export const factoryDashboardStore = ({
 				partialize: (state) => ({
 					widgets: state.widgets,
 					layouts: state.layouts,
+					values: state.values,
 				}),
 			},
 		),

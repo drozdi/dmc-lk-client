@@ -1,6 +1,6 @@
 import { $setting } from "@/shared";
+import { DualCalendarRange } from "@/shared/ui";
 import { type DateValue } from "@mantine/dates";
-import { DualCalendarRange } from "@ui";
 import dayjs from "dayjs";
 
 interface FilterdateProps {

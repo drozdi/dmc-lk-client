@@ -1,6 +1,6 @@
-import { ActionIcon, HoverCard, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, HoverCard, Tooltip } from "@mantine/core";
 import { Children } from "react";
-import { TbX } from "react-icons/tb";
+import { TbEdit, TbX } from "react-icons/tb";
 import { WidgetItemProvider, useWidgets } from "../context";
 
 type DashBoardItemProps = (
@@ -28,14 +28,21 @@ export function DashBoardItem({ id, children }: DashBoardItemProps) {
 						{Children.only(children || dashboard.renderWidget(widget))}
 					</HoverCard.Target>
 					<HoverCard.Dropdown p="xs">
-						<Tooltip label="Удалить">
-							<ActionIcon
-								color="red"
-								onClick={() => dashboard.removeWidget(widget)}
-							>
-								<TbX />
-							</ActionIcon>
-						</Tooltip>
+						<Group>
+							<Tooltip label="Изменить">
+								<ActionIcon onClick={() => dashboard.editWidget(widget)}>
+									<TbEdit />
+								</ActionIcon>
+							</Tooltip>
+							<Tooltip label="Удалить">
+								<ActionIcon
+									color="red"
+									onClick={() => dashboard.removeWidget(widget)}
+								>
+									<TbX />
+								</ActionIcon>
+							</Tooltip>
+						</Group>
 					</HoverCard.Dropdown>
 				</HoverCard>
 			</WidgetItemProvider>

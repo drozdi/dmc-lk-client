@@ -1,19 +1,20 @@
-import { NumberInput, type NumberInputProps } from "@mantine/core";
+import { DualCalendarRange } from "@/shared/ui";
+import { DateInput, type DateInputProps } from "@mantine/dates";
 import { FieldWrap, type FieldWrapProps } from "./field-wrarp";
 
-export interface FieldNumberProps
+export interface FieldDateProps
 	extends
 		Omit<FieldWrapProps, "children" | "onChange" | "value" | "defaultValue">,
-		Omit<NumberInputProps, "description" | "label" | "type"> {}
+		Omit<DateInputProps, "description" | "label" | "type"> {}
 
-export function FieldNumber({
+export function FieldDate({
 	type,
 	store,
 	label,
 	description,
 	required,
 	...props
-}: FieldNumberProps) {
+}: FieldDateProps) {
 	return (
 		<FieldWrap
 			type={type}
@@ -25,7 +26,11 @@ export function FieldNumber({
 			defaultValue={props.defaultValue}
 			onChange={props.onChange}
 		>
-			<NumberInput required={required} {...props} />
+			{type.startsWith("range:") ? (
+				<DualCalendarRange required={required} {...props} />
+			) : (
+				<DateInput required={required} {...props} />
+			)}
 		</FieldWrap>
 	);
 }

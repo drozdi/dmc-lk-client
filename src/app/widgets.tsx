@@ -1,6 +1,5 @@
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { CountWidget } from "@/widgets/count-widget";
-import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
+import { AnalyticPieWidget } from "@/widgets/analytics";
 import { TesstWidget } from "@/widgets/test";
 
 FactoryWidget.register({
@@ -14,6 +13,11 @@ FactoryWidget.register({
 			field: "timeout",
 			type: "number",
 			required: true,
+		},
+		{
+			label: "Дата",
+			field: "date",
+			type: "date",
 		},
 		{
 			label: "Заголовок",
@@ -30,17 +34,63 @@ FactoryWidget.register({
 });
 
 FactoryWidget.register({
-	type: "labels-count-widget",
-	component: LabelsCountWidget,
-	label: "Сводная история",
-	description: "Сводная история (Description)",
-	params: [],
+	type: "analytic-pie-widget",
+	component: AnalyticPieWidget,
+	label: "Соотношение за",
+	description: "Соотношение за (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Шаг",
+			field: "step",
+			type: "select",
+			data: [
+				{
+					label: "Секунда",
+					value: "s",
+				},
+				{
+					label: "Минута",
+					value: "m",
+				},
+				{
+					label: "Час",
+					value: "h",
+				},
+				{
+					label: "День",
+					value: "d",
+				},
+				{
+					label: "Месяц",
+					value: "mon",
+				},
+				{
+					label: "Год",
+					value: "y",
+				},
+			],
+		},
+	],
 });
+//"s" | "m" | "h" | "d" | "mon" | "y"
 
-FactoryWidget.register({
-	type: "count-widget",
-	component: CountWidget,
-	label: "Расход этикеток",
-	description: "Расход этикеток (Description)",
-	params: [],
-});
+// FactoryWidget.register({
+// 	type: "labels-count-widget",
+// 	component: LabelsCountWidget,
+// 	label: "Сводная история",
+// 	description: "Сводная история (Description)",
+// 	params: [],
+// });
+
+// FactoryWidget.register({
+// 	type: "count-widget",
+// 	component: CountWidget,
+// 	label: "Расход этикеток",
+// 	description: "Расход этикеток (Description)",
+// 	params: [],
+// });

@@ -5,6 +5,7 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
+import { DualCalendarRange } from "@/shared/ui";
 import {
 	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
@@ -16,9 +17,8 @@ import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { DualCalendarRange } from "@ui";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const DashboardPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
@@ -34,11 +34,12 @@ export const DashboardPage = () => {
 			dayjs().format("YYYY-MM-DD"),
 		],
 	});
-
+	useEffect(() => {
+		storeDashboardMain.id && open();
+	}, [storeDashboardMain.id]);
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
-
 			<Group justify="flex-end">
 				<DualCalendarRange
 					value={query.filterdate}
@@ -48,6 +49,7 @@ export const DashboardPage = () => {
 								...v,
 								filterdate,
 							}));
+							storeDashboardMain.setValue("filterdate", filterdate);
 						}
 					}}
 				/>
@@ -150,15 +152,26 @@ export const DashboardPage = () => {
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>
-			<Modal title="Добавить виджет" opened={opened} onClose={close}>
-				<WidgetForm
-					store={useStoreDashboardMain}
-					onSave={() => {
-						useStoreDashboardMain.getState().clear();
-						close();
-					}}
-					layout={layout}
-				/>
+			<Modal
+				title="Настройка виджета"
+				opened={opened}
+				keepMounted={false}
+				onClose={() => {
+					storeDashboardMain.clear();
+					close();
+				}}
+			>
+				{opened && (
+					<WidgetForm
+						id={storeDashboardMain.id}
+						store={useStoreDashboardMain}
+						onSave={() => {
+							storeDashboardMain.clear();
+							close();
+						}}
+						layout={layout}
+					/>
+				)}
 			</Modal>
 			{import.meta.env.DEV && (
 				<Template.Footer>

@@ -4,10 +4,13 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
-import { FieldNumber } from "./components/field-number";
-import { FieldString } from "./components/field-string";
-import { FieldText } from "./components/field-text";
-import { FieldWrap } from "./components/field-wrarp";
+import {
+	FieldDate,
+	FieldNumber,
+	FieldSelect,
+	FieldString,
+	FieldText,
+} from "./components";
 
 interface WidgetFormProps {
 	store: UseBoundStore<StoreApi<WidgetContextType>>;
@@ -39,18 +42,24 @@ export function WidgetForm({
 	});
 
 	useEffect(() => {
-		form.initialize({
-			type: store.findWidget(id)?.type || availableWidgets[0],
-			fixed: false,
-		});
+		const widget = store.findWidget(id);
+		if (widget?.id) {
+			form.setValues(widget);
+		}
 		setParams(FactoryWidget.getWidget(form.values.type || "")?.params || []);
 	}, [id]);
 
 	function handleAdd(widget: IWidgetItem) {
-		store.addWidget(widget, layout);
+		if (id) {
+			store.updateWidget(widget);
+		} else {
+			store.addWidget(widget, layout);
+		}
 		store.clear();
 		onSave?.(widget);
 	}
+
+	console.log(id);
 
 	return (
 		<>
@@ -65,45 +74,63 @@ export function WidgetForm({
 					comboboxProps={{ withinPortal: false }}
 					data={availableWidgets.map((type) => ({
 						value: type,
-						label: FactoryWidget.getWidget(type).label,
+						label: FactoryWidget.getWidget(type)?.label || type,
 					}))}
 					readOnly={id}
 					key={form.key("type")}
 					{...form.getInputProps("type")}
 				/>
 
-				{params.map(({ label, description, field, type, ...param }) => (
-					<FieldWrap
-						key={field}
-						label={label}
-						description={description}
-						required={param.required}
-					>
-						{type === "number" ? (
-							<FieldNumber
-								key={form.key(`param.${field}`)}
-								{...form.getInputProps(`params.${field}`, param)}
-							/>
-						) : type === "text" ? (
-							<FieldText
-								key={form.key(`param.${field}`)}
-								{...form.getInputProps(`params.${field}`, param)}
-							/>
-						) : (
-							<FieldString
-								key={form.key(`param.${field}`)}
-								{...form.getInputProps(`params.${field}`, param)}
-							/>
-						)}
-					</FieldWrap>
-				))}
+				{params.map(({ field, type, ...param }) =>
+					type === "date" || type === "range:date" ? (
+						<FieldDate
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+						/>
+					) : type === "number" ? (
+						<FieldNumber
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+						/>
+					) : type === "text" ? (
+						<FieldText
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+						/>
+					) : type === "select" ? (
+						<FieldSelect
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+						/>
+					) : (
+						<FieldString
+							type={type as string}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+						/>
+					),
+				)}
 			</Stack>
 			<Group mt="xs" justify="flex-end">
 				<Button
 					rightSection={<TbPlus />}
 					onClick={() => form.onSubmit(handleAdd)()}
 				>
-					Добавить
+					{id ? "Изменить" : "Добавить"}
 				</Button>
 			</Group>
 		</>

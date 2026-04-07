@@ -11,12 +11,8 @@ export default defineConfig(({ mode }) => {
 		resolve: {
 			alias: {
 				"@style": path.resolve(__dirname, "./src/shared/style/index.css"),
-				"@ui": path.resolve(__dirname, "./src/shared/ui"),
-				"@t": path.resolve(__dirname, "./src/shared/layout"),
-
-				"#test": path.resolve(__dirname, "./test"),
-				"#dev": path.resolve(__dirname, "./dev"),
 				"@": path.resolve(__dirname, "./src"),
+				"#": path.resolve(__dirname, "."),
 			},
 		},
 		plugins: [react(), tailwindcss(), tsconfigPaths()],

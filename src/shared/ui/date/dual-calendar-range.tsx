@@ -7,12 +7,14 @@ interface DualCalendarRangeProps {
 	defaultValue?: [DateValue, DateValue];
 	value?: [DateValue, DateValue];
 	onChange?: (value: [DateValue, DateValue]) => void;
+	[key: string]: any;
 }
 
 export function DualCalendarRange({
 	defaultValue = [null, null],
 	value = [null, null],
 	onChange,
+	...props
 }: DualCalendarRangeProps) {
 	const [startDate, setStartDate] = useState<DateValue>(
 		value?.[0] || defaultValue?.[0] || null,
@@ -117,7 +119,7 @@ export function DualCalendarRange({
 	return (
 		<Popover>
 			<Popover.Target>
-				<Group justify="center" gap="0">
+				<Group justify="center" gap="0" {...props}>
 					<TextInput
 						label="От"
 						value={formatDate(startDate)}

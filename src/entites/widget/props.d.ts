@@ -49,12 +49,25 @@ interface WidgetContextType {
 	availableWidgets: IWidget["type"][];
 	edit: boolean;
 	id: IWidgetItem["id"];
+	values: Record<string, any>;
+	varibles: Record<
+		string,
+		{
+			label: IWidgetParam["label"];
+			type: IWidgetParam["type"];
+			default: IWidgetParam["default"];
+			required: IWidgetParam["required"];
+		}
+	>;
+	getValue: (val: unknown) => unknown;
+	setValue: (key: string, val: unknown) => void;
 	toggleEdit: () => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;
 	addWidget: (widget: IWidgetItem, layout?: Partial<ILayoutItem>) => void;
 	removeWidget: (widget: IWidgetItem) => void;
 	renderWidget: (widget: IWidgetItem) => React.ReactNode | undefined;
 	updateWidget: (widget: IWidgetItem, layout?: Partial<ILayoutItem>) => void;
+	editWidget: (widget: IWidgetItem) => void;
 	findWidget: (id: IWidgetItem["id"]) => IWidgetItem | undefined;
 	hasWidget: (type: IWidgetItem["type"]) => boolean;
 	registerWidget: (widget: IWidget) => void;
