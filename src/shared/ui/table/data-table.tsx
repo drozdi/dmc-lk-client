@@ -1,6 +1,7 @@
 import { keys } from "@mantine/core";
 import {
 	DataTable as MantineDataTable,
+	useDataTableColumns,
 	type DataTableProps,
 	type DataTableSortStatus,
 } from "mantine-datatable";
@@ -39,9 +40,11 @@ function sortData<T>(
 
 export function DataTable<T = Record<string, any>>({
 	className,
+	columns,
 	records = [],
 	...props
 }: DataTableProps<T>) {
+	const key = "draggable-example";
 	const [sortStatus, setSortStatus] = useState<DataTableSortStatus<T>>({
 		columnAccessor: "",
 		direction: "asc",
@@ -57,10 +60,17 @@ export function DataTable<T = Record<string, any>>({
 		[records, sortStatus],
 	);
 
+	const { effectiveColumns } = useDataTableColumns<T>({
+		key,
+		columns: columns,
+	});
+
 	return (
 		<MantineDataTable<T>
 			className={className}
 			minHeight={300}
+			columns={effectiveColumns}
+			storeColumnsKey={key}
 			{...props}
 			records={sortedData}
 			sortStatus={sortStatus}

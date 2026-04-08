@@ -31,22 +31,36 @@ export function WidgetForm({
 
 	const form = useForm<Partial<IWidgetItem>>({
 		mode: "uncontrolled",
-		initialValues: {
-			type: availableWidgets[0] || "",
-			fixed: false,
-			params: {},
-		},
 	});
 	form.watch("type", ({ value }) => {
+		form.setFieldValue("params", {});
 		setParams(FactoryWidget.getWidget(value)?.params || []);
 	});
 
 	useEffect(() => {
 		const widget = store.findWidget(id);
+
 		if (widget?.id) {
+			form.initialize(widget);
+			form.setInitialValues(widget);
 			form.setValues(widget);
+		} else {
+			form.initialize({
+				type: availableWidgets[0] || "",
+				fixed: false,
+				params: {},
+			});
+			form.setInitialValues({
+				type: availableWidgets[0] || "",
+				fixed: false,
+				params: {},
+			});
+			form.setValues({
+				type: availableWidgets[0] || "",
+				fixed: false,
+				params: {},
+			});
 		}
-		setParams(FactoryWidget.getWidget(form.values.type || "")?.params || []);
 	}, [id]);
 
 	function handleAdd(widget: IWidgetItem) {
@@ -59,8 +73,6 @@ export function WidgetForm({
 		onSave?.(widget);
 	}
 
-	console.log(id);
-
 	return (
 		<>
 			<Stack gap="xs">
@@ -70,13 +82,13 @@ export function WidgetForm({
 					{...form.getInputProps("fixed", { type: "checkbox" })}
 				/>
 				<Select
+					allowDeselect={false}
 					placeholder="Выбрать виджет"
 					comboboxProps={{ withinPortal: false }}
 					data={availableWidgets.map((type) => ({
 						value: type,
 						label: FactoryWidget.getWidget(type)?.label || type,
 					}))}
-					readOnly={id}
 					key={form.key("type")}
 					{...form.getInputProps("type")}
 				/>

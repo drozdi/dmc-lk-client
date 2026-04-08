@@ -1,13 +1,12 @@
 import {
 	Group,
-	Popover,
+	HoverCard,
 	SegmentedControl,
 	Select,
 	Text,
 	Tooltip,
 	type ComboboxItem,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { cloneElement, useEffect, useMemo, useState } from "react";
 import { TbInfoCircle } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
@@ -40,8 +39,6 @@ export function FieldWrap({
 	const [mode, setMode] = useState<"field" | "select">(
 		typeof v === "string" && v.startsWith("$") ? "select" : "field",
 	);
-	const [opened, { open, close }] = useDisclosure(false);
-
 	const varibles = useMemo(() => {
 		return Object.fromEntries(
 			Object.entries(store.varibles).filter(
@@ -85,18 +82,11 @@ export function FieldWrap({
 					)}
 				</Group>
 			)}
-			<Popover
-				disabled={!isMakeVarible}
-				opened={opened}
-				position="right"
-				withArrow
-			>
-				<Popover.Target>
+			<HoverCard disabled={!isMakeVarible} position="right" withArrow>
+				<HoverCard.Target>
 					{mode === "field" ? (
 						cloneElement(children as any, {
 							flex: 1,
-							onMouseEnter: open,
-							onMouseLeave: close,
 						})
 					) : (
 						<Select
@@ -110,12 +100,10 @@ export function FieldWrap({
 								})) as ComboboxItem[]
 							}
 							onChange={(value) => onChange?.(value)}
-							onMouseEnter={open}
-							onMouseLeave={close}
 						/>
 					)}
-				</Popover.Target>
-				<Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>
+				</HoverCard.Target>
+				<HoverCard.Dropdown>
 					<SegmentedControl
 						orientation="vertical"
 						defaultValue={mode}
@@ -134,8 +122,8 @@ export function FieldWrap({
 							setMode(val as any);
 						}}
 					/>
-				</Popover.Dropdown>
-			</Popover>
+				</HoverCard.Dropdown>
+			</HoverCard>
 		</Group>
 	);
 }

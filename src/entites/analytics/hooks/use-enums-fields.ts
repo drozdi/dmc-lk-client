@@ -19,7 +19,6 @@ export const useEnumsFields = factoryEnumsAnalytics([
 	"data",
 	"exported",
 	"created",
-	"company_id",
 	"name_production",
 	"address_production",
 	"id_company",

@@ -6,25 +6,20 @@ import {
 } from "@/entites/analytics";
 import { useStoreElastic } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
-import { Loading } from "@/shared/ui";
+import { ButtonRemove, DataTable, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
 	Button,
 	Group,
+	HoverCard,
 	Popover,
 	Select,
 	Stack,
-	Table,
 	Text,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useEffect, useMemo } from "react";
 import { TbColumnRemove, TbSettings } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
@@ -175,6 +170,88 @@ export const AnalyticsElasticTable = ({
 		}
 	};
 
+	const computedColumns = useMemo(
+		() =>
+			(template.company?.select_field || []).map((item) => ({
+				accessor: item,
+				title: (
+					<HoverCard position="top-end">
+						<HoverCard.Target>
+							<Text>{qaf.findLabelByCode(item)}</Text>
+						</HoverCard.Target>
+						<HoverCard.Dropdown p="xs">
+							<Group gap="xs">
+								<Popover>
+									<Popover.Target>
+										<ActionIcon>
+											<TbSettings />
+										</ActionIcon>
+									</Popover.Target>
+									<Popover.Dropdown w="18rem">
+										<Stack gap="xs">
+											<Group justify="space-between">
+												<ActionForm
+													flex="1"
+													value={whereItem(item)?.single_action_list || "and"}
+													onChange={(single_action_list) =>
+														handleChangeActionField(
+															item,
+															single_action_list as SingleActionList,
+														)
+													}
+												/>
+
+												<SignForm
+													flex="1"
+													value={whereItem(item)?.sing_action || "="}
+													onChange={(sing_action) =>
+														handleChangeSignField(
+															item,
+															sing_action as PermittedActions,
+														)
+													}
+												/>
+											</Group>
+											{whereItem(item)?.sing_action === "in" ||
+											whereItem(item)?.sing_action === "not_in" ? (
+												<InForm
+													values={whereItem(item)?.search_value as string[]}
+													onChange={(values) =>
+														handleChangeInField(item, values)
+													}
+												/>
+											) : (
+												<TextInput
+													value={whereItem(item)?.search_value as string[]}
+													onChange={({ target }) =>
+														handleChangeValueField(item, target.value)
+													} ///
+												/>
+											)}
+										</Stack>
+									</Popover.Dropdown>
+								</Popover>
+								<ButtonRemove
+									tooltip="Удалить поле"
+									onClick={() => handleRemoveField(item)}
+								>
+									<TbColumnRemove />
+								</ButtonRemove>
+							</Group>
+						</HoverCard.Dropdown>
+					</HoverCard>
+				),
+				ellipsis: true,
+				noWrap: true,
+				sortKey: item,
+				resizable: true,
+				sortable: true,
+				toggleable: true,
+				draggable: true,
+			})),
+		[template, qaf.findLabelByCode],
+	);
+
 	useEffect(() => {
 		if (storeElastic.id) {
 			storeElastic.reset();
@@ -206,7 +283,15 @@ export const AnalyticsElasticTable = ({
 				/>
 			</Group>
 			<Loading active={isLoading} keepMounted>
-				<Table striped withColumnBorders mt="xs">
+				<DataTable
+					withRowBorders={false}
+					withColumnBorders
+					miw={640}
+					pinLastColumn
+					columns={computedColumns}
+					records={data}
+				/>
+				{/* <Table striped withColumnBorders mt="xs">
 					<Table.Thead>
 						{columns?.length ? (
 							table.getHeaderGroups().map((headerGroup, index) => (
@@ -330,7 +415,7 @@ export const AnalyticsElasticTable = ({
 							</Tooltip>
 						))}
 					</Table.Tbody>
-				</Table>
+				</Table> */}
 			</Loading>
 			<Template.Footer>
 				<Group>

@@ -1,20 +1,15 @@
-import { UiDashBoard, WidgetsProvider } from "@/entites/widget";
-import { useStoreDashboardMain } from "@/entites/widget/stores/use-store-dashboard-main";
+import {
+	DashBoardWidget,
+	UiDashBoard,
+	useStoreDashboardMain,
+	WidgetsProvider,
+} from "@/entites/widget";
 import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { DualCalendarRange } from "@/shared/ui";
-import {
-	AnalyticAnalyticWidget,
-	AnalyticEventWidget,
-	AnalyticIncidentWidget,
-	AnalyticPieWidget,
-	AnalyticTypeWidget,
-} from "@/widgets/analytics";
-import { CountWidget } from "@/widgets/count-widget";
-import { LabelsCountWidget } from "@/widgets/labels/labels-count-widget";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -82,7 +77,11 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticEventWidget {...query} step="mon" />
+						<DashBoardWidget
+							type="AnalyticEventWidget"
+							filterdate="$filterdate"
+							step="mon"
+						/>
 					</div>
 					<div
 						key="pie"
@@ -93,7 +92,11 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticPieWidget {...query} step="mon" />
+						<DashBoardWidget
+							type="AnalyticPieWidget"
+							filterdate="$filterdate"
+							step="mon"
+						/>
 					</div>
 					<div
 						key="type"
@@ -104,7 +107,11 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticTypeWidget {...query} step="mon" />
+						<DashBoardWidget
+							type="AnalyticTypeWidget"
+							filterdate="$filterdate"
+							step="mon"
+						/>
 					</div>
 					<div
 						key="analytic"
@@ -115,7 +122,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticAnalyticWidget />
+						<DashBoardWidget type="AnalyticAnalyticWidget" />
 					</div>
 					<div
 						key="count"
@@ -126,7 +133,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<CountWidget {...query} step="d" />
+						<DashBoardWidget type="CountWidget" filterdate="$filterdate" />
 					</div>
 					<div
 						key="labels-count"
@@ -137,7 +144,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<LabelsCountWidget {...query} step="d" />
+						<DashBoardWidget type="LabelsCountWidget" />
 					</div>
 					<div
 						key="incident"
@@ -148,7 +155,10 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<AnalyticIncidentWidget {...query} />
+						<DashBoardWidget
+							type="AnalyticIncidentWidget"
+							filterdate="$filterdate"
+						/>
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>
@@ -173,14 +183,12 @@ export const DashboardPage = () => {
 					/>
 				)}
 			</Modal>
-			{import.meta.env.DEV && (
-				<Template.Footer>
-					<Group>
-						<BtnClear store={useStoreDashboardMain} />
-						<BtnEditMode store={useStoreDashboardMain} />
-					</Group>
-				</Template.Footer>
-			)}
+			<Template.Footer>
+				<Group>
+					<BtnClear store={useStoreDashboardMain} />
+					<BtnEditMode store={useStoreDashboardMain} />
+				</Group>
+			</Template.Footer>
 		</Paper>
 	);
 };

@@ -25113,11 +25113,7 @@
 						"id": 5,
 						"name_query": "444",
 						"company": {
-							"select_field": [
-								"inn_company",
-								"taskid",
-								"counter"
-							],
+							"select_field": ["inn_company", "taskid", "counter"],
 							"list_where": [
 								{
 									"name_field_table": "counter",
@@ -25147,12 +25143,7 @@
 				"id": 3,
 				"name_query": "123",
 				"company": {
-					"select_field": [
-						"inn_company",
-						"taskid",
-						"counter",
-						"event_name"
-					],
+					"select_field": ["inn_company", "taskid", "counter", "event_name"],
 					"list_where": [
 						{
 							"name_field_table": "counter",
@@ -25179,321 +25170,127 @@
 			"message": {
 				"id": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "идентификатор"
 				},
 				"inn_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "инн компании"
 				},
 				"production_id": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "идентификатор производства"
 				},
 				"taskid": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "номер задания"
 				},
 				"counter": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "количество"
 				},
 				"place_id": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "идентификатор линии"
 				},
 				"place_name": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "название линии"
 				},
 				"place_type": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "тип линии"
 				},
 				"device_id": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "идентификатор оборудования"
 				},
 				"device_name": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "название оборудования"
 				},
 				"device_type": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "тип оборудования"
 				},
 				"event_id": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "идентификатор действия"
 				},
 				"event_name": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "описание действия"
 				},
 				"node_id": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "идентификатор события"
 				},
 				"node_name": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "описание события"
 				},
 				"node_level": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "уровень события"
 				},
 				"format_template": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "формат шаблона"
 				},
-				"company_id": {
+				"id_company": {
 					"type_field": "int",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in"],
 					"label": "идентификатор компании"
 				},
 				"name_production": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "название производства"
 				},
 				"address_production": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "адрес производства"
 				},
 				"kpp_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "кпп компании"
 				},
 				"name_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "название компании"
 				},
 				"address_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "адрес компании"
 				},
 				"descriptions_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "описание компании"
 				},
 				"phone_company": {
 					"type_field": "str",
-					"permitted_actions": [
-						"=",
-						">=",
-						"<=",
-						"!=",
-						"in",
-						"not_in",
-						"like"
-					],
+					"permitted_actions": ["=", ">=", "<=", "!=", "in", "not_in", "like"],
 					"label": "телефон компании"
 				}
 			}

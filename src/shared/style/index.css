@@ -10,8 +10,16 @@
 @import "@mantine/core/styles.layer.css";
 @import "mantine-datatable/styles.layer.css";
 
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+
 .react-draggable .drag-handle {
 	cursor: move;
+}
+
+.react-grid-item.react-grid-placeholder {
+	background: red;
+	opacity: 0.1;
 }
 /* @custom-variant dark (&:where([data-mantine-color-scheme="dark"], [data-mantine-color-scheme="dark"] *));
 

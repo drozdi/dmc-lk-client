@@ -1,14 +1,12 @@
-import { Center } from "@mantine/core";
+import { Center, useMantineColorScheme } from "@mantine/core";
 import { Children, useCallback, useMemo, useRef, useState } from "react";
 import {
 	ReactGridLayout,
 	useContainerWidth,
 	type Layout,
 } from "react-grid-layout";
-import "react-grid-layout/css/styles.css";
 import { GridBackground } from "react-grid-layout/extras";
 import { TbCirclePlus } from "react-icons/tb";
-import "react-resizable/css/styles.css";
 import { useWidgets } from "../context";
 import { DashBoardItem } from "./item";
 
@@ -18,6 +16,7 @@ interface UiDashBoardProps {
 }
 
 export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
+	const { colorScheme } = useMantineColorScheme();
 	const [isSelecting, setIsSelecting] = useState(false);
 	const [selectionStart, setSelectionStart] = useState<{
 		x: number;
@@ -28,10 +27,14 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		y: number;
 	} | null>(null);
 
-	const gridPropsRef = useRef({
+	const gridPropsRef = useRef<{
+		cols: number;
+		rowHeight: number;
+		margin: [number, number];
+	}>({
 		cols: 12,
 		rowHeight: 60,
-		margin: [10, 10] as [number, number],
+		margin: [10, 10],
 	});
 	const { width, containerRef, mounted } = useContainerWidth();
 	const { layouts, updateLayout, widgets, edit, key, preview } = useWidgets();
@@ -218,6 +221,11 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		};
 	};
 
+	const maxRows = useMemo(
+		() => Math.max(...layouts.map((l) => l.y + l.h)),
+		[layouts],
+	);
+
 	return (
 		<div
 			ref={containerRef}
@@ -232,12 +240,16 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 					{Children.map(children, (child) => {
 						return child?.key ? null : child;
 					})}
-					{import.meta.env.DEV && (
+					{edit && (
 						<GridBackground
 							width={width}
-							rows={24}
+							rows={maxRows}
 							{...gridPropsRef.current}
-							color="#f0f0f0"
+							color={
+								colorScheme === "dark"
+									? "var(--mantine-color-dark-4)"
+									: "var(--mantine-color-blue-1)"
+							}
 							borderRadius={4}
 						/>
 					)}

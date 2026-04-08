@@ -13,7 +13,7 @@ import { DualCalendarRange } from "@/shared/ui";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function AnalyticsIncidentPage() {
@@ -24,18 +24,12 @@ export function AnalyticsIncidentPage() {
 	);
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
 
-	const [defFilterdate, setDefFilterdate] = $setting.useState<
-		[DateValue, DateValue]
-	>("incident.filterdate", [
-		fromDay.format("YYYY-MM-DD"),
-		toDay.format("YYYY-MM-DD"),
-	]);
-
-	const [filterdate, setFilterdate] =
-		useState<[DateValue, DateValue]>(defFilterdate);
+	const [filterdate, setFilterdate] = $setting.useState<[DateValue, DateValue]>(
+		"incident.filterdate",
+		[fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")],
+	);
 
 	const handleChange = (filterdate: [DateValue, DateValue]) => {
-		setDefFilterdate(filterdate);
 		if (filterdate[0] && filterdate[1]) {
 			setFilterdate(filterdate);
 		}
@@ -43,10 +37,6 @@ export function AnalyticsIncidentPage() {
 
 	useEffect(() => {
 		if (searchParams.get("from")) {
-			setDefFilterdate([
-				fromDay.format("YYYY-MM-DD"),
-				toDay.format("YYYY-MM-DD"),
-			]);
 			setFilterdate([fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")]);
 		}
 	}, []);
@@ -76,7 +66,6 @@ export function AnalyticsIncidentPage() {
 			dayjs().format("YYYY-MM-DD"),
 		];
 		setFilterdate(filterdate);
-		setDefFilterdate(filterdate);
 	};
 
 	return (
@@ -94,7 +83,7 @@ export function AnalyticsIncidentPage() {
 						Месяц
 					</Button>
 				</Group>
-				<DualCalendarRange value={defFilterdate} onChange={handleChange} />
+				<DualCalendarRange value={filterdate} onChange={handleChange} />
 			</Group>
 			<Tabs defaultValue="detail" mt="xs">
 				<Tabs.List>
