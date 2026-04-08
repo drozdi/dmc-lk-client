@@ -16,6 +16,24 @@ function filterData<T>(data: T[], search: string): T[] {
 	);
 }
 
+// declare function DataTable<T>({
+// 	onSelectedRecordsChange,
+// 	onSortStatusChange,
+// 	onPageChange,
+// 	onRecordsPerPageChange,
+// 	onRowClick,
+// 	onRowDoubleClick,
+// 	onRowContextMenu,
+// 	onCellClick,
+// 	onCellDoubleClick,
+// 	onCellContextMenu,
+// 	onScroll,
+// 	onScrollToTop,
+// 	onScrollToBottom,
+// 	onScrollToLeft,
+// 	onScrollToRight,
+// 	}: DataTableProps<T>): react.JSX.Element;
+
 function sortData<T>(
 	data: T[],
 	payload: { sortBy: keyof T | null; reversed: boolean; search: string },
