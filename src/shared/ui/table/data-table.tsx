@@ -57,12 +57,12 @@ function sortData<T>(
 }
 
 export function DataTable<T = Record<string, any>>({
+	storeColumnsKey,
 	className,
 	columns,
 	records = [],
 	...props
 }: DataTableProps<T>) {
-	const key = "draggable-example";
 	const [sortStatus, setSortStatus] = useState<DataTableSortStatus<T>>({
 		columnAccessor: "",
 		direction: "asc",
@@ -78,8 +78,8 @@ export function DataTable<T = Record<string, any>>({
 		[records, sortStatus],
 	);
 
-	const { effectiveColumns } = useDataTableColumns<T>({
-		key,
+	const { effectiveColumns, setColumnsToggle } = useDataTableColumns<T>({
+		key: storeColumnsKey,
 		columns: columns,
 	});
 
@@ -88,7 +88,7 @@ export function DataTable<T = Record<string, any>>({
 			className={className}
 			minHeight={300}
 			columns={effectiveColumns}
-			storeColumnsKey={key}
+			storeColumnsKey={storeColumnsKey}
 			{...props}
 			records={sortedData}
 			sortStatus={sortStatus}

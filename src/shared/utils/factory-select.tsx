@@ -14,6 +14,7 @@ interface Props {
 
 export interface SelectCustomProps extends SelectProps {
 	excludeds?: string[];
+	includes?: string[];
 }
 
 export function factorySelect(
@@ -24,19 +25,26 @@ export function factorySelect(
 		leftSection,
 		disabled,
 		excludeds,
+		includes,
 		...other
 	}: SelectCustomProps = {}) => {
 		const store = typeof props === "function" ? props(...params) : props;
 
 		const dataSelect = useMemo(() => {
+			let dataSelect = store.dataSelect;
+			if (includes?.length) {
+				dataSelect = dataSelect.filter((item: ComboboxItem | string) =>
+					includes.includes(item.value || item),
+				);
+			}
 			if (excludeds?.length) {
-				return store.dataSelect.filter(
+				dataSelect = dataSelect.filter(
 					(item: ComboboxItem | string) =>
 						!excludeds.includes(item.value || item),
 				);
 			}
-			return store.dataSelect;
-		}, [store.dataSelect, excludeds]);
+			return dataSelect;
+		}, [store.dataSelect, includes, excludeds]);
 
 		useEffect(() => {
 			store?.load?.();

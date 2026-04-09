@@ -1,31 +1,34 @@
 import {
+	SelectActions,
 	SelectAnalyticsFields,
+	SelectSingleAction,
 	useQueryAnalyticsFields,
 	useQueryQueryCreate,
 	useQueryQueryUpdate,
 } from "@/entites/analytics";
 import { useStoreElastic } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
-import { ButtonRemove, DataTable, Loading } from "@/shared/ui";
+import { ButtonRemove, Loading } from "@/shared/ui";
 import {
-	ActionIcon,
 	Button,
 	Group,
-	HoverCard,
-	Popover,
 	Select,
 	Stack,
+	Table,
+	TagsInput,
 	Text,
 	TextInput,
+	Tooltip,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useEffect, useMemo } from "react";
-import { TbColumnRemove, TbSettings } from "react-icons/tb";
+import {
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { useMemo } from "react";
+import { TbColumnRemove } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
-import { ActionForm } from "./components/action-form";
-import { InForm } from "./components/in-form";
-import { SignForm } from "./components/sign-form";
 
 interface AnalyticsElasticTableProps {
 	className?: string;
@@ -47,15 +50,9 @@ export const AnalyticsElasticTable = ({
 
 	const columns = useMemo(
 		() => [
-			// {
-			// 	accessorKey: "id",
-			// 	header: "#",
-			// 	type: "main",
-			// },
 			...(template.company?.select_field || []).map((item) => ({
 				accessorKey: item,
 				header: qaf.findLabelByCode(item),
-				type: "field",
 			})),
 		],
 		[template, qaf.findLabelByCode],
@@ -170,137 +167,119 @@ export const AnalyticsElasticTable = ({
 		}
 	};
 
-	const computedColumns = useMemo(
+	/*const computedColumns = useMemo(
 		() =>
-			(template.company?.select_field || []).map((item) => ({
-				accessor: item,
-				title: (
-					<HoverCard position="top-end">
-						<HoverCard.Target>
-							<Text>{qaf.findLabelByCode(item)}</Text>
-						</HoverCard.Target>
-						<HoverCard.Dropdown p="xs">
-							<Group gap="xs">
-								<Popover>
-									<Popover.Target>
-										<ActionIcon>
-											<TbSettings />
-										</ActionIcon>
-									</Popover.Target>
-									<Popover.Dropdown w="18rem">
-										<Stack gap="xs">
-											<Group justify="space-between">
-												<ActionForm
-													flex="1"
-													value={whereItem(item)?.single_action_list || "and"}
-													onChange={(single_action_list) =>
-														handleChangeActionField(
-															item,
-															single_action_list as SingleActionList,
-														)
-													}
-												/>
-
-												<SignForm
-													flex="1"
-													value={whereItem(item)?.sing_action || "="}
-													onChange={(sing_action) =>
-														handleChangeSignField(
-															item,
-															sing_action as PermittedActions,
-														)
-													}
-												/>
-											</Group>
-											{whereItem(item)?.sing_action === "in" ||
-											whereItem(item)?.sing_action === "not_in" ? (
-												<InForm
-													values={whereItem(item)?.search_value as string[]}
-													onChange={(values) =>
-														handleChangeInField(item, values)
-													}
-												/>
-											) : (
-												<TextInput
-													value={whereItem(item)?.search_value as string[]}
-													onChange={({ target }) =>
-														handleChangeValueField(item, target.value)
-													} ///
-												/>
-											)}
-										</Stack>
-									</Popover.Dropdown>
-								</Popover>
-								<ButtonRemove
-									tooltip="Удалить поле"
-									onClick={() => handleRemoveField(item)}
-								>
-									<TbColumnRemove />
-								</ButtonRemove>
-							</Group>
-						</HoverCard.Dropdown>
-					</HoverCard>
-				),
+			Object.entries(qaf.data || {}).map(([key, item]) => ({
+				accessor: key,
+				title: item.label,
 				ellipsis: true,
 				noWrap: true,
-				sortKey: item,
-				resizable: true,
-				sortable: true,
+				sortKey: key,
+				// resizable: true,
+				// sortable: true,
 				toggleable: true,
-				draggable: true,
+				defaultToggle: false,
+				// filter: ({ close }) => {
+				// 	return <></>;
+				// },
+				// draggable: true,
 			})),
-		[template, qaf.findLabelByCode],
-	);
+		[qaf.data, qaf.findLabelByCode],
+	);*/
 
-	useEffect(() => {
-		if (storeElastic.id) {
-			storeElastic.reset();
-		}
-	}, [storeElastic.id]);
+	// useEffect(() => {
+	// 	if (storeElastic.id) {
+	// 		storeElastic.reset();
+	// 	}
+	// }, [storeElastic.id]);
 
 	return (
 		<>
 			<Group className={className} justify="space-between">
-				<Group>
-					<Text>С</Text>
-					<DatePickerInput
-						name="date_from"
-						value={date?.date_from}
-						onChange={(value) => handleDateChange("date_from", value)}
+				<Stack>
+					<Group>
+						<Text>С</Text>
+						<DatePickerInput
+							name="date_from"
+							value={date?.date_from}
+							onChange={(value) => handleDateChange("date_from", value)}
+						/>
+						<Text>по</Text>
+						<DatePickerInput
+							name="date_to"
+							value={date?.date_to}
+							onChange={(value) => handleDateChange("date_to", value)}
+						/>
+					</Group>
+					<SelectAnalyticsFields
+						flex="1"
+						value={""}
+						excludeds={columns.map((item) => item.accessorKey)}
+						onChange={(value) => handleAddField(value as string)}
+						placeholder="Добавить поле"
 					/>
-					<Text>по</Text>
-					<DatePickerInput
-						name="date_to"
-						value={date?.date_to}
-						onChange={(value) => handleDateChange("date_to", value)}
+				</Stack>
+				<Stack mt="xs" flex="1">
+					{(template.company.list_where || []).map((item, index) => (
+						<Group key={index}>
+							<Text>{qaf.findLabelByCode(item.name_field_table)}</Text>
+							<SelectActions
+								flex="1"
+								value={item.sing_action || "="}
+								includes={qaf.findActionByCode(item.name_field_table)}
+								onChange={(sing_action) =>
+									handleChangeSignField(
+										item.name_field_table,
+										sing_action as PermittedActions,
+									)
+								}
+							/>
+							{item.sing_action === "in" || item.sing_action === "not_in" ? (
+								<TagsInput
+									value={item.search_value as string[]}
+									onChange={(value) =>
+										handleChangeInField(item.name_field_table, value)
+									}
+									placeholder="Enter поиск"
+								/>
+							) : (
+								<TextInput
+									value={item.search_value as string[]}
+									onChange={({ target }) =>
+										handleChangeValueField(item.name_field_table, target.value)
+									} ///
+								/>
+							)}
+							<SelectSingleAction
+								flex="0"
+								value={item.single_action_list || "and"}
+								onChange={(single_action_list) =>
+									handleChangeActionField(
+										item.name_field_table,
+										single_action_list as SingleActionList,
+									)
+								}
+							/>
+							<ButtonRemove />
+						</Group>
+					))}
+					<SelectAnalyticsFields
+						flex="1"
+						value={""}
+						onChange={(value) => handleAddField(value as string)}
+						placeholder="Добавить поле"
 					/>
-				</Group>
-				<SelectAnalyticsFields
-					flex="1"
-					value={""}
-					onChange={(value) => handleAddField(value as string)}
-					placeholder="Добавить поле"
-				/>
+				</Stack>
 			</Group>
+
 			<Loading active={isLoading} keepMounted>
-				<DataTable
-					withRowBorders={false}
-					withColumnBorders
-					miw={640}
-					pinLastColumn
-					columns={computedColumns}
-					records={data}
-				/>
-				{/* <Table striped withColumnBorders mt="xs">
+				<Table striped withColumnBorders mt="xs">
 					<Table.Thead>
 						{columns?.length ? (
 							table.getHeaderGroups().map((headerGroup, index) => (
 								<Table.Tr key={headerGroup.id + "-" + index}>
-									{headerGroup.headers.map((header: any, index) => (
-										<Table.Th
-											key={header.id + "-" + index}
-											colSpan={header.colSpan}
-										>
+									{headerGroup.headers.map((header) => (
+										<Table.Th key={header.id} colSpan={header.colSpan}>
 											<Group justify="space-between" grow>
 												<Text>
 													{header.isPlaceholder
@@ -310,82 +289,14 @@ export const AnalyticsElasticTable = ({
 																header.getContext(),
 															)}
 												</Text>
-												{canEdit(header.column.columnDef) && (
-													<Group justify="end">
-														<Popover>
-															<Popover.Target>
-																<ActionIcon>
-																	<TbSettings />
-																</ActionIcon>
-															</Popover.Target>
-															<Popover.Dropdown w="18rem">
-																<Stack gap="xs">
-																	<Group justify="space-between">
-																		<ActionForm
-																			flex="1"
-																			value={
-																				whereItem(header.id)
-																					?.single_action_list || "and"
-																			}
-																			onChange={(single_action_list) =>
-																				handleChangeActionField(
-																					header.id,
-																					single_action_list as SingleActionList,
-																				)
-																			}
-																		/>
-
-																		<SignForm
-																			flex="1"
-																			value={
-																				whereItem(header.id)?.sing_action || "="
-																			}
-																			onChange={(sing_action) =>
-																				handleChangeSignField(
-																					header.id,
-																					sing_action as PermittedActions,
-																				)
-																			}
-																		/>
-																	</Group>
-																	{whereItem(header.id)?.sing_action === "in" ||
-																	whereItem(header.id)?.sing_action ===
-																		"not_in" ? (
-																		<InForm
-																			values={
-																				whereItem(header.id)
-																					?.search_value as string[]
-																			}
-																			onChange={(values) =>
-																				handleChangeInField(header.id, values)
-																			}
-																		/>
-																	) : (
-																		<TextInput
-																			value={
-																				whereItem(header.id)
-																					?.search_value as string[]
-																			}
-																			onChange={({ target }) =>
-																				handleChangeValueField(
-																					header.id,
-																					target.value,
-																				)
-																			} ///
-																		/>
-																	)}
-																</Stack>
-															</Popover.Dropdown>
-														</Popover>
-														<ActionIcon
-															onClick={() => handleRemoveField(header.id)}
-															color="red"
-															title="Удалить поле"
-														>
-															<TbColumnRemove />
-														</ActionIcon>
-													</Group>
-												)}
+												<ButtonRemove
+													flex="0"
+													tooltip="Удалить поле"
+													size="xs"
+													onClick={() => handleRemoveField(header.id)}
+												>
+													<TbColumnRemove />
+												</ButtonRemove>
 											</Group>
 										</Table.Th>
 									))}
@@ -415,7 +326,7 @@ export const AnalyticsElasticTable = ({
 							</Tooltip>
 						))}
 					</Table.Tbody>
-				</Table> */}
+				</Table>
 			</Loading>
 			<Template.Footer>
 				<Group>

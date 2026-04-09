@@ -13,7 +13,11 @@ export function useQueryAnalyticsFields() {
 	});
 	const findByCode = useCallback((code: string) => q.data?.[code], [q.data]);
 	const findLabelByCode = useCallback(
-		(code: string) => findByCode(code)?.label || code,
+		(code: string): string => findByCode(code)?.label || code,
+		[findByCode],
+	);
+	const findActionByCode = useCallback(
+		(code: string): string[] => findByCode(code)?.permitted_actions || [],
 		[findByCode],
 	);
 	const dataSelect = useMemo<ComboboxItem[]>(
@@ -25,5 +29,5 @@ export function useQueryAnalyticsFields() {
 		[q.data],
 	);
 
-	return { ...q, dataSelect, findByCode, findLabelByCode };
+	return { ...q, dataSelect, findByCode, findLabelByCode, findActionByCode };
 }

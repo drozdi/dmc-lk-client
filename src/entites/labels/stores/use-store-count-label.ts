@@ -28,9 +28,8 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			});
 		}
 		if (
-			queryClient
-				.getQueryCache()
-				.findAll({ queryKey: ["labels-history"] }).length
+			queryClient.getQueryCache().findAll({ queryKey: ["labels-history"] })
+				.length
 		) {
 			return;
 		}
@@ -58,10 +57,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 				});
 				history = [...history, ...res.data.response];
 				params.number++;
-			} while (
-				history.length % params.size === 0 &&
-				res.data.response.length
-			);
+			} while (history.length % params.size === 0 && res.data.response.length);
 			set({
 				isLoading: false,
 				history,
@@ -69,10 +65,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		} catch (e: IError) {
 			console.error(e);
 			const error =
-				e?.response?.data?.detail ||
-				e?.message ||
-				e ||
-				"Неизвестная ошибка";
+				e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 			set({
 				isLoading: false,
 				error,
@@ -86,8 +79,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			});
 		}
 		if (
-			queryClient.getQueryCache().findAll({ queryKey: ["labels-count"] })
-				.length
+			queryClient.getQueryCache().findAll({ queryKey: ["labels-count"] }).length
 		) {
 			return;
 		}
@@ -111,10 +103,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		} catch (e: IError) {
 			console.error(e);
 			const error =
-				e?.response?.data?.detail ||
-				e?.message ||
-				e ||
-				"Неизвестная ошибка";
+				e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 			set({
 				isLoading: false,
 				error,
@@ -147,10 +136,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		} catch (e: IError) {
 			console.error(e);
 			const error =
-				e?.response?.data?.detail ||
-				e?.message ||
-				e ||
-				"Неизвестная ошибка";
+				e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 			set({
 				isLoading: false,
 				error,
@@ -167,10 +153,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		} catch (e: IError) {
 			console.error(e);
 			const error =
-				e?.response?.data?.detail ||
-				e?.message ||
-				e ||
-				"Неизвестная ошибка";
+				e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
 			set({
 				isLoading: false,
 				error,
@@ -178,8 +161,6 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		}
 	},
 	selectHistory(production_id) {
-		return get().history.filter(
-			(item) => item.production_id === production_id,
-		);
+		return get().history.filter((item) => item.production_id === production_id);
 	},
 }));
