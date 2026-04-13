@@ -11,6 +11,8 @@ import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels";
 import { TesstWidget } from "@/widgets/test";
 
+import { WidgetMainItogSet } from "@/widgets/main";
+
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
@@ -52,6 +54,44 @@ FactoryWidget.register({
 // 	description: "Сводная история (Description)",
 // 	params: [],
 // });
+
+FactoryWidget.register({
+	type: "main-itog-set",
+	component: WidgetMainItogSet,
+	label: "Итоговая информация",
+	description: "Итоговая информация (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Шаг",
+			field: "type",
+			type: "select",
+			default: "sum",
+			data: [
+				{
+					label: "Сумма",
+					value: "sum",
+				},
+				{
+					label: "Минимальное",
+					value: "min",
+				},
+				{
+					label: "Максимальное",
+					value: "max",
+				},
+				{
+					label: "Среднее",
+					value: "avg",
+				},
+			],
+		},
+	],
+});
 
 FactoryWidget.register({
 	type: "analytic-event-widget",

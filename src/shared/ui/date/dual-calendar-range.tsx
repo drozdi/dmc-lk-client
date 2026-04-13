@@ -112,7 +112,7 @@ export function DualCalendarRange({
 		return {};
 	};
 
-	const formatDate = (date: DateValue) => {
+	const formatDate = (date: DateValue): string => {
 		return date ? dayjs(date).format("LL") : "";
 	};
 
@@ -142,7 +142,7 @@ export function DualCalendarRange({
 			<Popover.Dropdown>
 				<Group>
 					<Calendar
-						defaultDate={startDate}
+						defaultDate={dayjs(startDate).toDate()}
 						getDayProps={(date) => ({
 							onClick: () => handleLeftCalendarClick(date),
 							style: getDayStyle(date),
@@ -150,7 +150,7 @@ export function DualCalendarRange({
 					/>
 					<Divider orientation="vertical" mx="xs" />
 					<Calendar
-						defaultDate={endDate}
+						defaultDate={dayjs(endDate).toDate()}
 						getDayProps={(date) => ({
 							onClick: () => handleRightCalendarClick(date),
 							style: getDayStyle(date),

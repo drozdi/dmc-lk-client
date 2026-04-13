@@ -5,29 +5,35 @@ import {
 	LoadingOverlay,
 	Modal,
 	ScrollArea,
-	Text,
 	Tooltip,
 	type CardProps,
 } from "@mantine/core";
+
+import { Text, Title } from "@/shared/ui";
+
 import { useDisclosure } from "@mantine/hooks";
 import { TbArrowsMaximize, TbArrowsMinimize } from "react-icons/tb";
 
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
+	subTitle?: React.ReactNode;
 	loading?: boolean;
 	keepMounted?: boolean;
 	children: React.ReactNode;
 	preview?: React.ReactNode;
 	component?: any;
+	expanded?: boolean;
 }
 
 export function Widget({
 	title,
+	subTitle,
 	loading = false,
 	children,
 	preview = children,
 	keepMounted = true,
 	component = ScrollArea,
+	expanded = true,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -38,7 +44,7 @@ export function Widget({
 			p="xs"
 			w="100%"
 			h="100%"
-			bd="1px solid var(--mantine-color-default-border)"
+			withBorder
 			{...otherProps}
 			style={{
 				position: "relative",
@@ -46,19 +52,25 @@ export function Widget({
 				...otherProps?.style,
 			}}
 		>
-			<Card.Section inheritPadding py="xs" className={"drag-handle"}>
+			<Card.Section inheritPadding py="xs" className={"drag-handle"} withBorder>
 				<Group justify="space-between">
-					<Text fw={500} flex="1">
+					<Title fw={500} lh="1" flex="1" order={6} tt="uppercase">
 						{title}
-					</Text>
-					<Group mr="-xs">
-						<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
-							<ActionIcon variant="subtle" onClick={toggle}>
-								{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
-							</ActionIcon>
-						</Tooltip>
-					</Group>
+					</Title>
+
+					{expanded && (
+						<Group mr="-xs">
+							<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
+								<ActionIcon variant="subtle" onClick={toggle}>
+									{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
+								</ActionIcon>
+							</Tooltip>
+						</Group>
+					)}
 				</Group>
+				<Text fw={500} lh="1" flex="1">
+					{subTitle}
+				</Text>
 			</Card.Section>
 			<Card.Section
 				inheritPadding

@@ -3,6 +3,7 @@ import {
 	useMutation,
 	useQuery,
 	useQueryClient,
+	type UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
@@ -20,7 +21,14 @@ export function factoryQuery<
 ) {
 	return [
 		requestList &&
-			function useQueryList(params: Partial<RL>) {
+			function useQueryList(params: Partial<RL>): UseInfiniteQueryResult<T> & {
+				findById: (id: T["id"]) => T | undefined;
+				goToNext: () => Promise<void>;
+				goToPrevious: () => Promise<void>;
+				hasPreviousPage: boolean;
+				hasNextPage: boolean;
+				data: T[];
+			} {
 				params.size = params.size || 15;
 				const q = useInfiniteQuery({
 					queryKey: [entry, "infinite"],

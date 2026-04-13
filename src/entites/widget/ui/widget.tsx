@@ -2,22 +2,22 @@ import { hyphenate } from "@/shared/utils";
 import { WidgetItemProvider, useWidgets } from "../context";
 
 interface DashBoardWidgetProps {
-	type: IWidgetItem["type"];
+	widget: IWidgetItem["type"];
 	fixed?: IWidgetItem["fixed"];
 	[key: string]: any;
 }
 
 export function DashBoardWidget({
 	id = "",
-	type,
+	widget,
 	fixed,
 	...params
 }: DashBoardWidgetProps) {
 	const dashboard = useWidgets();
-	type = hyphenate(type);
+	widget = hyphenate(widget);
 	return (
-		<WidgetItemProvider id={id} type={type} fixed={fixed} params={params}>
-			{dashboard.renderWidget({ id, type, fixed, params })}
+		<WidgetItemProvider id={id} type={widget} fixed={fixed} params={params}>
+			{dashboard.renderWidget({ id, type: widget, fixed, params })}
 		</WidgetItemProvider>
 	);
 }

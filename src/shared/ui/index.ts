@@ -11,5 +11,6 @@ export * from "./loading";
 export * from "./progress";
 export * from "./spinner";
 export * from "./table";
+export * from "./text";
 export * from "./title";
 export * from "./widget";

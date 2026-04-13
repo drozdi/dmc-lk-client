@@ -14,6 +14,7 @@ import { SignUpPage } from "@/pages/auth/sign-up-page";
 import { VerificationPage } from "@/pages/auth/verification-page";
 import { LabelsCountPage } from "@/pages/labels/lables-count-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
+import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
 import { UsersListPage } from "@/pages/users/list-page";
 import { UsersUserPage } from "@/pages/users/user-page";
@@ -55,6 +56,10 @@ const routes = () => [
 		children: [
 			{
 				path: "",
+				element: <MainPage />,
+			},
+			{
+				path: "dashboard",
 				element: <DashboardPage />,
 			},
 			{

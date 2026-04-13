@@ -1,7 +1,7 @@
 import {
 	DashBoardWidget,
 	UiDashBoard,
-	useStoreDashboardMain,
+	useStoreDashboardSecond,
 	WidgetsProvider,
 } from "@/entites/widget";
 import { BtnClear } from "@/features/widget/btn-clear";
@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 export const DashboardPage = () => {
-	const storeDashboardMain = useStoreDashboardMain();
+	const storeDashboardMain = useStoreDashboardSecond();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = $setting.useState<
@@ -49,11 +49,11 @@ export const DashboardPage = () => {
 					}}
 				/>
 			</Group>
-			<WidgetsProvider store={useStoreDashboardMain}>
+			<WidgetsProvider store={useStoreDashboardSecond}>
 				<UiDashBoard
 					onSelection={(react: Partial<ILayoutItem>) => {
 						setLayout(react);
-						useStoreDashboardMain.setState({
+						useStoreDashboardSecond.setState({
 							preview: react,
 						});
 						open();
@@ -61,7 +61,7 @@ export const DashboardPage = () => {
 				>
 					{/* <DashBoardItem
 						id="w-1"
-						type="test"
+						widget="test"
 						params={{
 							timeout: 10,
 							title: "Title",
@@ -78,7 +78,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							type="AnalyticEventWidget"
+							widget="AnalyticEventWidget"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -93,7 +93,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							type="AnalyticPieWidget"
+							widget="AnalyticPieWidget"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -108,7 +108,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							type="AnalyticTypeWidget"
+							widget="AnalyticTypeWidget"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -122,7 +122,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget type="AnalyticAnalyticWidget" />
+						<DashBoardWidget widget="AnalyticAnalyticWidget" />
 					</div>
 					<div
 						key="count"
@@ -133,7 +133,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget type="CountWidget" filterdate="$filterdate" />
+						<DashBoardWidget widget="CountWidget" filterdate="$filterdate" />
 					</div>
 					<div
 						key="labels-count"
@@ -144,7 +144,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget type="LabelsCountWidget" />
+						<DashBoardWidget widget="LabelsCountWidget" />
 					</div>
 					<div
 						key="incident"
@@ -156,7 +156,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							type="AnalyticIncidentWidget"
+							widget="AnalyticIncidentWidget"
 							filterdate="$filterdate"
 						/>
 					</div>
@@ -174,7 +174,7 @@ export const DashboardPage = () => {
 				{opened && (
 					<WidgetForm
 						id={storeDashboardMain.id}
-						store={useStoreDashboardMain}
+						store={useStoreDashboardSecond}
 						onSave={() => {
 							storeDashboardMain.clear();
 							close();
@@ -185,8 +185,8 @@ export const DashboardPage = () => {
 			</Modal>
 			<Template.Footer>
 				<Group>
-					<BtnClear store={useStoreDashboardMain} />
-					<BtnEditMode store={useStoreDashboardMain} />
+					<BtnClear store={useStoreDashboardSecond} />
+					<BtnEditMode store={useStoreDashboardSecond} />
 				</Group>
 			</Template.Footer>
 		</Paper>

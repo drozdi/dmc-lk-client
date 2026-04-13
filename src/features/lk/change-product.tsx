@@ -36,6 +36,7 @@ export const ChangeProduct = () => {
 		<>
 			{change ? (
 				<SelectProductions
+					allowDeselect={false}
 					excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
 					variant="underline"
 					value={String(storeUserProfile.production_id)}

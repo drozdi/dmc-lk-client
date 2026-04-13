@@ -16,7 +16,7 @@ interface WidgetFormProps {
 	store: UseBoundStore<StoreApi<WidgetContextType>>;
 	id?: IWidgetItem["id"];
 	onSave?: (widget: IWidgetItem) => void;
-	layout?: Partial<ILabelItem>;
+	layout?: Partial<ILayoutItem>;
 }
 
 export function WidgetForm({
@@ -45,32 +45,34 @@ export function WidgetForm({
 			form.setInitialValues(widget);
 			form.setValues(widget);
 		} else {
+			const params = {};
+
 			form.initialize({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params: {},
+				params,
 			});
 			form.setInitialValues({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params: {},
+				params,
 			});
 			form.setValues({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params: {},
+				params,
 			});
 		}
 	}, [id]);
 
-	function handleAdd(widget: IWidgetItem) {
+	function handleAdd(widget: Partial<IWidgetItem>) {
 		if (id) {
-			store.updateWidget(widget);
+			store.updateWidget(widget as IWidgetItem);
 		} else {
-			store.addWidget(widget, layout);
+			store.addWidget(widget as IWidgetItem, layout);
 		}
 		store.clear();
-		onSave?.(widget);
+		onSave?.(widget as IWidgetItem);
 	}
 
 	return (
@@ -93,7 +95,7 @@ export function WidgetForm({
 					{...form.getInputProps("type")}
 				/>
 
-				{params.map(({ field, type, ...param }) =>
+				{params.map(({ field, type, default: def, ...param }) =>
 					type === "date" || type === "range:date" ? (
 						<FieldDate
 							type={type}
@@ -101,6 +103,7 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
 						/>
 					) : type === "number" ? (
 						<FieldNumber
@@ -109,6 +112,7 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
 						/>
 					) : type === "text" ? (
 						<FieldText
@@ -117,14 +121,17 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
 						/>
 					) : type === "select" ? (
 						<FieldSelect
+							allowDeselect={false}
 							type={type}
 							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
 						/>
 					) : (
 						<FieldString
@@ -133,6 +140,7 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
 						/>
 					),
 				)}
