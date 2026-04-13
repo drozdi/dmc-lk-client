@@ -1,8 +1,11 @@
 import { $setting } from "@/shared";
 import { Box, Image } from "@mantine/core";
+import { useResizeObserver } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
 export function Logo({ className }: { className?: string }) {
+	const [ref, rect] = useResizeObserver();
+
 	return (
 		<Box
 			component={Link}
@@ -11,6 +14,7 @@ export function Logo({ className }: { className?: string }) {
 			className={className}
 			pos="relative"
 			display="block"
+			ref={ref}
 		>
 			<Image
 				w="100%"
@@ -26,7 +30,8 @@ export function Logo({ className }: { className?: string }) {
 					top: "25%",
 					left: "50%",
 					transform: "translate(-50%, -50%)",
-					fontSize: 100,
+					fontSize: rect.height,
+					maxWidth: "100%",
 				}}
 			>
 				beta
