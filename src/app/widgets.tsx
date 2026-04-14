@@ -11,7 +11,7 @@ import { CountWidget } from "@/widgets/count-widget";
 import { LabelsCountWidget } from "@/widgets/labels";
 import { TesstWidget } from "@/widgets/test";
 
-import { WidgetMainItogSet } from "@/widgets/main";
+import { WidgetMainItogSet, WidgetMainType } from "@/widgets/main";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
@@ -54,6 +54,27 @@ FactoryWidget.register({
 // 	description: "Сводная история (Description)",
 // 	params: [],
 // });
+
+FactoryWidget.register({
+	type: "main-type",
+	component: WidgetMainType,
+	label: "Информация, печати",
+	description: "Информация, печати (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Шаг (разрез)",
+			field: "step",
+			type: "select",
+			default: "d",
+			data: es.dataSelect,
+		},
+	],
+});
 
 FactoryWidget.register({
 	type: "main-itog-set",

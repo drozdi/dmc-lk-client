@@ -6,7 +6,7 @@ const nDate = dayjs();
 export const useStoreDashboardMain = factoryDashboardStore({
 	storageKey: "main",
 	key: "i",
-	availableWidgets: ["main-itog-set"],
+	availableWidgets: ["main-itog-set", "main-type"],
 	varibles: {
 		$filterdate: {
 			label: "Диапозон времени",
