@@ -16,6 +16,7 @@ import {
 	XAxis,
 	YAxis,
 	type LegendPayload,
+	type TooltipContentProps,
 } from "recharts";
 
 const colors = cached<string>((name: string) => randomColor());
@@ -32,10 +33,47 @@ const stepLabel = {
 export interface WidgetMainTypeProps
 	extends Omit<WidgetProps, "children">, Omit<IRequestAnalytics, "event"> {
 	filterdate: IRequestAnalytics["filterdate"];
+	type: "stack" | "default";
 }
 
+const TooltipPanel = ({ active, payload, separator }: TooltipContentProps) => {
+	if (active && payload && payload.length) {
+		return (
+			<div
+				style={{
+					backgroundColor: "white",
+					border: "1px solid #ccc",
+					padding: "0.5em 1em",
+				}}
+			>
+				<p>
+					Всего{separator} {payload.reduce((acc, { value }) => acc + value, 0)}
+				</p>
+				{payload.map(({ color, name, value, hide }) => (
+					<p
+						key={name}
+						style={{
+							color,
+							textDecoration: hide ? "line-through" : undefined,
+						}}
+					>
+						{name}
+						{separator} {value}
+					</p>
+				))}
+			</div>
+		);
+	}
+	return null;
+};
+
 export const WidgetMainType = memo(
-	({ filterdate, step = "d", ...props }: WidgetMainTypeProps) => {
+	({
+		filterdate,
+		step = "d",
+		type = "default",
+		...props
+	}: WidgetMainTypeProps) => {
 		const { production_id } = useStoreUserProfile();
 
 		const { isLoading, fetch, data, error } = useQueryAnalytics({
@@ -204,7 +242,7 @@ export const WidgetMainType = memo(
 								>
 									<XAxis dataKey="date" />
 									<YAxis />
-									<Tooltip />
+									<Tooltip content={TooltipPanel} />
 									<Legend
 										verticalAlign="top"
 										formatter={(value, { color, inactive }) =>
@@ -248,9 +286,10 @@ export const WidgetMainType = memo(
 										endIndex={endIndex}
 									/>
 
-									{bars.map((bar) => (
+									{bars.map((bar, index) => (
 										<Bar
 											key={bar}
+											stackId={type === "stack" ? "a" : undefined}
 											dataKey={bar}
 											hide={hide.includes(bar)}
 											fill={colors(bar)}

@@ -20,15 +20,8 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 			const _query = {
 				...params,
 				filterdate: [
-					params.filterdate_from ||
-						params.filterdate?.[0] ||
-						query.filterdate_from ||
-						query.filterdate?.[0],
-					params.filterdate_to ||
-						params.filterdate?.[1] ||
-						query.filterdate_to ||
-						query.filterdate?.[1] ||
-						"",
+					params.filterdate?.[0] || query.filterdate?.[0],
+					params.filterdate?.[1] || query.filterdate?.[1] || "",
 				],
 				...query,
 			} as IRequestAnalytics;

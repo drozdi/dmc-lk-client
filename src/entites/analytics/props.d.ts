@@ -86,8 +86,11 @@ interface IAnalyticsProduction extends IProduction {
 	address?: string;
 }
 interface IAnalyticsProductionData extends IAnalyticsProduction {
-	event_name: "PRINT" | "DEFECT" | "INCIDENT" | "VERIFY";
-	all_label_prod: number;
+	all_records: number;
+	min_production: number;
+	max_production: number;
+	average_production: number;
+	sum_production: number;
 	data: IAnalyticsDataItem[];
 }
 
@@ -95,9 +98,15 @@ interface IRequestAnalytics {
 	filterdate: [string | Date | null, string | Date | null];
 	step: SliceStep;
 	event: AnalyticEvent;
+	production_id?: number | number[];
+	place_id?: number | number[];
 }
 interface IResponseAnalytics {
 	id: number;
+	all_records: number;
 	sum_company: number;
+	min_company: number;
+	max_company: number;
+	average_company: number;
 	production: IAnalyticsProductionData[];
 }

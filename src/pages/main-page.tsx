@@ -118,6 +118,7 @@ export const MainPage = () => {
 						}}
 					>
 						<WidgetMainType
+							type="stack"
 							filterdate={storeDashboardMain.getValue("$filterdate")}
 						/>
 					</div>

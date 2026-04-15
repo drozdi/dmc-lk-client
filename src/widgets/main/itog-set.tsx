@@ -30,6 +30,7 @@ export const WidgetMainItogSet = ({
 	useEffect(() => {
 		fetch();
 	}, [filterdate]);
+
 	let value = useMemo(() => {
 		if (!data) {
 			return 0;
@@ -60,18 +61,30 @@ export const WidgetMainItogSet = ({
 				});
 			});
 		}
+
 		min = min === -1 ? 0 : min;
 		max = max === -1 ? 0 : max;
 		sum = sum === 0 ? 0 : sum;
 		cnt = cnt === 0 ? 1 : cnt;
+
+		/**
+		 * 
+		 * "sum_company": 17,
+    "min_company": 1,
+    "max_company": 8,
+    "average_company": 4.25,
+		 * 
+		 */
 		return type === "min"
-			? min
+			? data.min_company
 			: type === "max"
-				? max
+				? data.max_company
 				: type === "avg"
-					? Math.round(sum / cnt)
-					: sum;
+					? Math.round(data.average_company * 1)
+					: data.sum_company;
 	}, [type, data, production_id]);
+
+	console.log(data);
 
 	return (
 		<Widget

@@ -73,6 +73,22 @@ FactoryWidget.register({
 			default: "d",
 			data: es.dataSelect,
 		},
+		{
+			label: "Тип",
+			field: "type",
+			type: "select",
+			default: "default",
+			data: [
+				{
+					label: "Разбивать",
+					value: "default",
+				},
+				{
+					label: "Объединять",
+					value: "stack",
+				},
+			],
+		},
 	],
 });
 
