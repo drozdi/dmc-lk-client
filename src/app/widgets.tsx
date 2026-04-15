@@ -104,7 +104,14 @@ FactoryWidget.register({
 			type: "range:date",
 		},
 		{
-			label: "Шаг",
+			label: "Событие",
+			field: "event",
+			type: "select",
+			default: "d",
+			data: ee.dataSelect,
+		},
+		{
+			label: "Тип",
 			field: "type",
 			type: "select",
 			default: "sum",

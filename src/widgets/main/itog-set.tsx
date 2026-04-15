@@ -1,7 +1,9 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { Text, Widget, type WidgetProps } from "@/shared/ui";
-import { NumberFormatter } from "@mantine/core";
+import { $setting } from "@/shared";
+import { LabelFormat, Text, Widget, type WidgetProps } from "@/shared/ui";
+import { Group, HoverCard, NumberFormatter } from "@mantine/core";
+import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
 
 export interface WidgetMainItogSetProps extends Omit<
@@ -9,6 +11,7 @@ export interface WidgetMainItogSetProps extends Omit<
 	"title" | "children"
 > {
 	filterdate: IRequestAnalytics["filterdate"];
+	event?: IRequestAnalytics["event"];
 	title?: WidgetProps["title"];
 	type?: "avg" | "min" | "max" | "sum";
 }
@@ -16,6 +19,7 @@ export interface WidgetMainItogSetProps extends Omit<
 export const WidgetMainItogSet = ({
 	title,
 	type = "sum",
+	event = "p",
 	filterdate,
 	...props
 }: WidgetMainItogSetProps) => {
@@ -23,8 +27,8 @@ export const WidgetMainItogSet = ({
 
 	const { data, isLoading, error, fetch } = useQueryAnalytics({
 		filterdate,
+		event,
 		step: "d",
-		event: "p",
 	});
 
 	useEffect(() => {
@@ -35,65 +39,63 @@ export const WidgetMainItogSet = ({
 		if (!data) {
 			return 0;
 		}
-		const currProduction = Number(production_id) || 0;
-		let cnt = 0;
-		let min = -1;
-		let max = -1;
-		let sum = 0;
-		if (["min", "max"].includes(type)) {
-			data.production.forEach((item) => {
-				if (currProduction > 0 && item.production_id !== currProduction) {
-					return;
-				}
-				item.data.forEach((item) => {
-					min = min === -1 ? item.count : Math.min(min, item.count);
-					max = Math.max(max, item.count);
-				});
-			});
-		} else {
-			data.production.forEach((item) => {
-				if (currProduction > 0 && item.production_id !== currProduction) {
-					return;
-				}
-				item.data.forEach((item) => {
-					sum += item.count;
-					cnt += 1;
-				});
-			});
-		}
-
-		min = min === -1 ? 0 : min;
-		max = max === -1 ? 0 : max;
-		sum = sum === 0 ? 0 : sum;
-		cnt = cnt === 0 ? 1 : cnt;
-
-		/**
-		 * 
-		 * "sum_company": 17,
-    "min_company": 1,
-    "max_company": 8,
-    "average_company": 4.25,
-		 * 
-		 */
 		return type === "min"
 			? data.min_company
 			: type === "max"
 				? data.max_company
 				: type === "avg"
-					? Math.round(data.average_company * 1)
+					? Math.round(data.all_records)
 					: data.sum_company;
 	}, [type, data, production_id]);
 
-	console.log(data);
+	const info = useMemo<
+		{
+			date: string;
+			label: string;
+		}[]
+	>(() => {
+		if (!data || ["avg", "sum"].includes(type)) {
+			return [];
+		}
+
+		const info: {
+			date: string;
+			label: string;
+		}[] = [];
+
+		data.production.forEach((production) => {
+			production.data.forEach((item) => {
+				if (item.count === value) {
+					info.push({
+						date: dayjs(item.timestamp).format($setting.get("formatDate")),
+						label: item.data,
+					});
+				}
+			});
+		});
+		return info;
+	}, [value, data, type, production_id]);
+
+	const computedTitle = useMemo(() => {
+		if (title) {
+			return title;
+		}
+		if (event === "d") {
+			return "Дефект";
+		} else if (event === "i") {
+			return "Инциденты";
+		} else if (event === "v") {
+			return "Проверенно";
+		}
+		return type === "sum" ? "Итого по сериям" : "Cумма всех серий";
+	}, [title, type, event]);
 
 	return (
 		<Widget
 			loading={isLoading}
 			{...props}
 			expanded={false}
-			title={
-				title ? title : type === "sum" ? "Итого по сериям" : "Cумма всех серий"
-			}
+			title={computedTitle}
 			subTitle={
 				type === "sum"
 					? "Сумма за период"
@@ -105,9 +107,23 @@ export const WidgetMainItogSet = ({
 			}
 		>
 			<Text c="red">{error?.message}</Text>
-			<Text fz="3rem" ta="right">
-				<NumberFormatter value={value} thousandSeparator=" " />
-			</Text>
+			<HoverCard disabled={info.length === 0}>
+				<HoverCard.Target>
+					<Text fz="3rem" ta="right">
+						<NumberFormatter value={value} thousandSeparator=" " />
+					</Text>
+				</HoverCard.Target>
+				<HoverCard.Dropdown>
+					{info.map((item) => (
+						<Group key={item.date + item.label}>
+							<Text>
+								<LabelFormat>{item.label}</LabelFormat> -
+							</Text>
+							<Text>{item.date}</Text>
+						</Group>
+					))}
+				</HoverCard.Dropdown>
+			</HoverCard>
 		</Widget>
 	);
 };

@@ -1,5 +1,4 @@
 import {
-	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
 	WidgetsProvider,
@@ -9,7 +8,7 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { DualCalendarRange } from "@/shared/ui";
-import { WidgetMainType } from "@/widgets/main";
+import { WidgetMainItogAnalytics } from "@/widgets/main";
 import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
@@ -48,12 +47,12 @@ export const MainPage = () => {
 						open();
 					}}
 				>
-					<div
+					{/* <div
 						key="itog.sum"
 						data-grid={{
 							x: 0,
 							y: 0,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
@@ -66,9 +65,9 @@ export const MainPage = () => {
 					<div
 						key="itog.avg"
 						data-grid={{
-							x: 2,
+							x: 3,
 							y: 0,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
@@ -81,9 +80,9 @@ export const MainPage = () => {
 					<div
 						key="itog.min"
 						data-grid={{
-							x: 4,
+							x: 6,
 							y: 0,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
@@ -96,9 +95,9 @@ export const MainPage = () => {
 					<div
 						key="itog.max"
 						data-grid={{
-							x: 6,
+							x: 9,
 							y: 0,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
@@ -107,21 +106,36 @@ export const MainPage = () => {
 							filterdate="$filterdate"
 							type="max"
 						/>
-					</div>
+					</div> */}
 					<div
-						key="type"
+						key="itog.analytics"
 						data-grid={{
 							x: 0,
-							y: 2,
-							w: 6,
-							h: 6,
+							y: Infinity,
+							w: 10,
+							h: 10,
 						}}
 					>
-						<WidgetMainType
-							type="stack"
+						<WidgetMainItogAnalytics
+							widget="main-itog-analytics"
 							filterdate={storeDashboardMain.getValue("$filterdate")}
 						/>
 					</div>
+					{/* <div
+						key="type"
+						data-grid={{
+							x: 0,
+							y: Infinity,
+							w: 10,
+							h: 10,
+						}}
+					>
+						<DashBoardWidget
+							widget="main-type"
+							type="stack"
+							filterdate="$filterdate"
+						/>
+					</div> */}
 				</UiDashBoard>
 			</WidgetsProvider>
 			<Modal
