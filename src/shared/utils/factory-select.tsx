@@ -29,13 +29,24 @@ export function factorySelect(
 		const store = typeof props === "function" ? props(...params) : props;
 
 		const dataSelect = useMemo(() => {
+			let set = [...new Set(store.dataSelect.map((item) => item.value))];
+			let dataSelect: ComboboxItem[] = set.map((id) => {
+				let label = store.dataSelect
+					.filter((item) => item.value == id)
+					.map((item) => item.label)
+					.join(", ");
+				return {
+					value: id,
+					label,
+				};
+			});
 			if (excludeds?.length) {
-				return store.dataSelect.filter(
+				dataSelect = dataSelect.filter(
 					(item: ComboboxItem | string) =>
 						!excludeds.includes(item.value || item),
 				);
 			}
-			return store.dataSelect;
+			return dataSelect;
 		}, [store.dataSelect, excludeds]);
 
 		useEffect(() => {
