@@ -4,7 +4,7 @@ import { $setting } from "@/shared";
 import { LabelFormat, Text, Widget, type WidgetProps } from "@/shared/ui";
 import { Group, HoverCard, NumberFormatter } from "@mantine/core";
 import dayjs from "dayjs";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface WidgetMainItogSetProps extends Omit<
 	WidgetProps,
@@ -24,16 +24,12 @@ export const WidgetMainItogSet = ({
 	...props
 }: WidgetMainItogSetProps) => {
 	const { production_id } = useStoreUserProfile();
-
-	const { data, isLoading, error, fetch } = useQueryAnalytics({
+	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		event,
 		step: "d",
 	});
-
-	useEffect(() => {
-		fetch();
-	}, [filterdate]);
+	const { data, isLoading, error, fetch } = useQueryAnalytics(query);
 
 	let value = useMemo(() => {
 		if (!data) {
@@ -66,6 +62,9 @@ export const WidgetMainItogSet = ({
 		data.production.forEach((production) => {
 			production.data.forEach((item) => {
 				if (item.count === value) {
+					if (item.data.length > 10) {
+						return;
+					}
 					info.push({
 						date: dayjs(item.timestamp).format($setting.get("formatDate")),
 						label: item.data,
@@ -90,8 +89,21 @@ export const WidgetMainItogSet = ({
 		return type === "sum" ? "Итого по сериям" : "Cумма всех серий";
 	}, [title, type, event]);
 
+	useEffect(() => {
+		setQuery((v) => ({
+			...v,
+			filterdate,
+			event,
+		}));
+	}, [filterdate, event]);
+
+	useEffect(() => {
+		fetch();
+	}, [query]);
+
 	return (
 		<Widget
+			error={error}
 			loading={isLoading}
 			{...props}
 			expanded={false}
@@ -106,7 +118,6 @@ export const WidgetMainItogSet = ({
 							: "Максимальное значение"
 			}
 		>
-			<Text c="red">{error?.message}</Text>
 			<HoverCard disabled={info.length === 0}>
 				<HoverCard.Target>
 					<Text fz="3rem" ta="right">

@@ -7,6 +7,7 @@ import { AspectRatio, Center, NumberFormatter, Stack } from "@mantine/core";
 import type { DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
+import { TbReload } from "react-icons/tb";
 import {
 	Bar,
 	BarChart,
@@ -144,15 +145,22 @@ export const WidgetMainItogAnalytics = ({
 	return (
 		<Widget
 			{...props}
+			error={error}
 			loading={isLoading}
 			title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
-			onClick={() => {
-				setQuery({
-					filterdate,
-					step,
-					event,
-				});
-			}}
+			menu={[
+				{
+					children: "Обнавить",
+					onClick: () => {
+						setQuery({
+							filterdate,
+							step,
+							event,
+						});
+					},
+					leftSection: <TbReload />,
+				},
+			]}
 		>
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>

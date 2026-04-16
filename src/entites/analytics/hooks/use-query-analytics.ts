@@ -1,10 +1,15 @@
+import { queryClient } from "@/shared/api/query-client";
 import { useState } from "react";
 import { requestAnalytics } from "../api/analytics";
 
 export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 	const [data, setData] = useState<IResponseAnalytics>({
 		id: 0,
+		all_records: 0,
 		sum_company: 0,
+		min_company: 0,
+		max_company: 0,
+		average_company: 0,
 		production: [],
 	});
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -28,7 +33,11 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 
 			setIsLoading(true);
 			try {
-				const res = (await requestAnalytics(_query)).data;
+				const res = await queryClient.fetchQuery({
+					queryKey: ["analytics", JSON.stringify(_query)],
+					queryFn: async (): Promise<IResponseAnalytics> =>
+						(await requestAnalytics(_query)).data,
+				});
 				setData(res);
 				setIsLoading(false);
 				return res;

@@ -1,92 +1,20 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
+import "@/widgets/analytics";
 import {
 	AnalyticAnalyticWidget,
 	AnalyticEventWidget,
 	AnalyticIncidentWidget,
-	AnalyticPieWidget,
 	AnalyticTypeWidget,
 } from "@/widgets/analytics";
 import { CountWidget } from "@/widgets/count-widget";
-import { LabelsCountWidget } from "@/widgets/labels";
+import "@/widgets/labels";
 import "@/widgets/main";
 import { TesstWidget } from "@/widgets/test";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
-// FactoryWidget.register({
-// 	type: "labels-count-widget",
-// 	component: LabelsCountWidget,
-// 	label: "Сводная история",
-// 	description: "Сводная история (Description)",
-// 	params: [],
-// });
-
-FactoryWidget.register({
-	type: "analytic-event-widget",
-	component: AnalyticEventWidget,
-	label: "График событий",
-	description: "График событий (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
-		},
-	],
-});
-FactoryWidget.register({
-	type: "analytic-pie-widget",
-	component: AnalyticPieWidget,
-	label: "Соотношение за",
-	description: "Соотношение за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
-		},
-	],
-});
-FactoryWidget.register({
-	type: "analytic-type-widget",
-	component: AnalyticTypeWidget,
-	label: "Напечатано за",
-	description: "Напечатано за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
-		},
-	],
-});
-FactoryWidget.register({
-	type: "analytic-analytic-widget",
-	component: AnalyticAnalyticWidget,
-	label: "Этикетки за последние 7 дней",
-	description: "Этикетки за последние 7 дней (Description)",
-	params: [],
-});
 FactoryWidget.register({
 	type: "count-widget",
 	component: CountWidget,
@@ -112,11 +40,51 @@ FactoryWidget.register({
 		},
 	],
 });
+
 FactoryWidget.register({
-	type: "labels-count-widget",
-	component: LabelsCountWidget,
-	label: "Сводная история",
-	description: "Сводная история (Description)",
+	type: "analytic-event-widget",
+	component: AnalyticEventWidget,
+	label: "График событий",
+	description: "График событий (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Шаг",
+			field: "step",
+			type: "select",
+			data: es.dataSelect,
+		},
+	],
+});
+
+FactoryWidget.register({
+	type: "analytic-type-widget",
+	component: AnalyticTypeWidget,
+	label: "Напечатано за",
+	description: "Напечатано за (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Шаг",
+			field: "step",
+			type: "select",
+			data: es.dataSelect,
+		},
+	],
+});
+FactoryWidget.register({
+	type: "analytic-analytic-widget",
+	component: AnalyticAnalyticWidget,
+	label: "Этикетки за последние 7 дней",
+	description: "Этикетки за последние 7 дней (Description)",
 	params: [],
 });
 FactoryWidget.register({

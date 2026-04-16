@@ -2,9 +2,7 @@ import { cached } from "./cached";
 
 export const labelName = cached<string>((name: string): string => {
 	const res =
-		/(?:[Ww])(?<w>[0-9,.\s]*)(?:[Hh])(?<h>[0-9,.\s]*)(?:[Gg]*).*/.exec(
-			name,
-		);
+		/(?:[Ww])(?<w>[0-9,.\s]*)(?:[Hh])(?<h>[0-9,.\s]*)(?:[Gg]*).*/.exec(name);
 	if (!res) {
 		return name;
 	}

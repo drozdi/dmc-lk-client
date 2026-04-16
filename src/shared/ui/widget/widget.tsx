@@ -3,17 +3,24 @@ import {
 	Card,
 	Group,
 	LoadingOverlay,
+	Menu,
 	Modal,
 	ScrollArea,
 	Tooltip,
 	type CardProps,
+	type MenuItemProps,
 } from "@mantine/core";
 
-import { Text, Title } from "@/shared/ui";
-
 import { useDisclosure } from "@mantine/hooks";
-import { TbArrowsMaximize, TbArrowsMinimize, TbReload } from "react-icons/tb";
+import { TbArrowsMaximize, TbArrowsMinimize, TbDots } from "react-icons/tb";
+import { Text } from "../text";
+import { Title } from "../title";
 
+export interface WidgetMenuItem extends MenuItemProps {}
+
+export interface WidgetMenuProps {
+	options?: WidgetMenuItem[];
+}
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
 	subTitle?: React.ReactNode;
@@ -23,7 +30,28 @@ export interface WidgetProps extends CardProps {
 	preview?: React.ReactNode;
 	component?: any;
 	expanded?: boolean;
-	onClick?: () => void;
+	menu?: WidgetMenuItem[];
+	error?: React.ReactNode | IError;
+}
+
+function WidgetMenu({ options = [] }: WidgetMenuProps) {
+	if (!options?.length) {
+		return null;
+	}
+	return (
+		<Menu withinPortal trigger="hover" position="bottom-start" shadow="sm">
+			<Menu.Target>
+				<ActionIcon variant="subtle">
+					<TbDots size={16} />
+				</ActionIcon>
+			</Menu.Target>
+			<Menu.Dropdown>
+				{options.map((item) => (
+					<Menu.Item leftSection={<></>} {...item} />
+				))}
+			</Menu.Dropdown>
+		</Menu>
+	);
 }
 
 export function Widget({
@@ -35,7 +63,8 @@ export function Widget({
 	keepMounted = true,
 	component = ScrollArea,
 	expanded = true,
-	onClick,
+	error,
+	menu = [],
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -59,15 +88,9 @@ export function Widget({
 					<Title fw={500} lh="1" flex="1" order={6} tt="uppercase">
 						{title}
 					</Title>
-					{(expanded || onClick) && (
+					{(expanded || menu?.length) && (
 						<Group mr="-xs" gap="0">
-							{onClick && (
-								<Tooltip label="Обновить">
-									<ActionIcon variant="subtle" onClick={onClick}>
-										<TbReload />
-									</ActionIcon>
-								</Tooltip>
-							)}
+							{menu?.length && <WidgetMenu options={menu} />}
 							{expanded && (
 								<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
 									<ActionIcon variant="subtle" onClick={toggle}>
@@ -90,6 +113,7 @@ export function Widget({
 				h="100%"
 				pos="relative"
 			>
+				<Text c="red">{error?.message || error}</Text>
 				{keepMounted || isExpanded ? preview : null}
 				<LoadingOverlay visible={loading} zIndex={1000} />
 			</Card.Section>
@@ -100,6 +124,7 @@ export function Widget({
 				size="100vw"
 				scrollAreaComponent={ScrollArea.Autosize}
 			>
+				<Text c="red">{error?.message || error}</Text>
 				{children}
 			</Modal>
 		</Card>

@@ -59,15 +59,6 @@ export const DashboardPage = () => {
 						open();
 					}}
 				>
-					{/* <DashBoardItem
-						id="w-1"
-						widget="test"
-						params={{
-							timeout: 10,
-							title: "Title",
-							description: "Описание виджета",
-						}}
-					/> */}
 					<div
 						key="event"
 						data-grid={{
@@ -77,11 +68,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget
-							widget="AnalyticEventWidget"
-							filterdate="$filterdate"
-							step="mon"
-						/>
+						<DashBoardWidget widget="labels-count" />
 					</div>
 					<div
 						key="pie"
@@ -93,7 +80,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="AnalyticPieWidget"
+							widget="analytic-pie"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -144,7 +131,11 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="LabelsCountWidget" />
+						<DashBoardWidget
+							widget="AnalyticEventWidget"
+							filterdate="$filterdate"
+							step="mon"
+						/>
 					</div>
 					<div
 						key="incident"

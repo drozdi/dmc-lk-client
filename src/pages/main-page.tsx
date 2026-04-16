@@ -108,6 +108,17 @@ export const MainPage = () => {
 						/>
 					</div>
 					<div
+						key="itog.count"
+						data-grid={{
+							x: 0,
+							y: Infinity,
+							w: 12,
+							h: 10,
+						}}
+					>
+						<DashBoardWidget widget="main-count" filterdate="$filterdate" />
+					</div>
+					<div
 						key="itog.analytics"
 						data-grid={{
 							x: 0,

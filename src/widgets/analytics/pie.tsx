@@ -16,13 +16,13 @@ import { Filterdate } from "./components/filterdate";
 const ee = useEnumsEvents();
 
 interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
-interface AnalyticPieWidgetProps extends WidgetProps, ChartAnalyticProps {}
+interface WidgetAnalyticPieProps extends WidgetProps, ChartAnalyticProps {}
 
-export const AnalyticPieWidget = ({
+export const WidgetAnalyticPie = ({
 	filterdate,
 	step,
 	...props
-}: AnalyticPieWidgetProps) => {
+}: WidgetAnalyticPieProps) => {
 	const { production_id } = useStoreUserProfile();
 	const { isLoading, fetch } = useQueryAnalytics();
 	//return ''
@@ -57,7 +57,7 @@ export const AnalyticPieWidget = ({
 					res[event as "v" | "i" | "d"].value =
 						data?.[event as AnalyticEvent]?.production?.find(
 							(item) => item.production_id === currProduction,
-						)?.all_label_prod || 0;
+						)?.sum_production || 0;
 				} else {
 					res[event as "v" | "i" | "d"].value = Number(
 						data[event as AnalyticEvent]?.sum_company,

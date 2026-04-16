@@ -1,5 +1,6 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
+import { WidgetMainCount } from "./count";
 import { WidgetMainItogAnalytics } from "./itog-analytics";
 import { WidgetMainItogSet } from "./itog-set";
 import { WidgetMainType } from "./type";
@@ -114,7 +115,28 @@ FactoryWidget.register({
 		},
 	],
 });
+FactoryWidget.register({
+	type: "main-count",
+	component: WidgetMainCount,
+	label: "Статистика, таблица",
+	description: "Статистика, таблица (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "range:date",
+		},
+		{
+			label: "Событие",
+			field: "event",
+			type: "select",
+			default: "p",
+			data: ee.dataSelect,
+		},
+	],
+});
 
+export * from "./count";
 export * from "./itog-analytics";
 export * from "./itog-set";
 export * from "./type";

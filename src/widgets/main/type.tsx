@@ -181,6 +181,7 @@ export const WidgetMainType = memo(
 
 		return (
 			<Widget
+				error={error}
 				{...props}
 				loading={isLoading}
 				title={`Напечатано за ${filterdate[0]}-${filterdate[1]} по ${stepLabel[step]}`}

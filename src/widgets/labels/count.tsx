@@ -11,9 +11,9 @@ import { round } from "@/shared/utils";
 import { Accordion, Box, Table } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 
-interface LabelsCountWidgetProps extends WidgetProps {}
+export interface WidgetLabelsCountProps extends WidgetProps {}
 
-export const LabelsCountWidget = (props: LabelsCountWidgetProps) => {
+export const WidgetLabelsCount = (props: WidgetLabelsCountProps) => {
 	const qp = useQueryProductions();
 	const storeLabels = useStoreLabels();
 	const storeCountLabel = useStoreCountLabel();
