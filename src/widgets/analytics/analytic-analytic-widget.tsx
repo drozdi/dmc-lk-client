@@ -64,6 +64,8 @@ export const AnalyticAnalyticWidget = (props: AnalyticAnalyticWidgetProps) => {
 						continue;
 					}
 					for (const d of production.data || []) {
+						res[dayjs(d.timestamp).format("YYYY-MM-DD")] =
+							res[dayjs(d.timestamp).format("YYYY-MM-DD")] || {};
 						res[dayjs(d.timestamp).format("YYYY-MM-DD")][event] += d.count;
 					}
 				}

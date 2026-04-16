@@ -31,7 +31,17 @@ export function factorySelect(
 		const store = typeof props === "function" ? props(...params) : props;
 
 		const dataSelect = useMemo(() => {
-			let dataSelect = store.dataSelect;
+			let set = [...new Set(store.dataSelect.map((item) => item.value))];
+			let dataSelect: ComboboxItem[] = set.map((id) => {
+				let label = store.dataSelect
+					.filter((item) => item.value == id)
+					.map((item) => item.label)
+					.join(", ");
+				return {
+					value: id,
+					label,
+				};
+			});
 			if (includes?.length) {
 				dataSelect = dataSelect.filter((item: ComboboxItem | string) =>
 					includes.includes(item.value || item),
