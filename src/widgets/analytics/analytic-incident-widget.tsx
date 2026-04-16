@@ -10,13 +10,11 @@ import {
 
 import { useStoreIncident } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { randomColorLabel } from "@/entites/labels";
 import { useQueryLoading } from "@/shared/hooks";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { cached, randomColor } from "@/shared/utils";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { Filterdate } from "./components/filterdate";
-
-const colors = cached<string>((name: string) => randomColor());
 
 interface AnalyticIncidentWidgetProps
 	extends WidgetProps, Partial<IRequestAnalyticsIncident> {}
@@ -87,7 +85,10 @@ export const AnalyticIncidentWidget = ({
 									fill="#8884d8"
 									shape={(props: PieSectorShapeProps) => {
 										return (
-											<Sector {...props} fill={colors(props.payload.data)} />
+											<Sector
+												{...props}
+												fill={randomColorLabel(props.payload.data)}
+											/>
 										);
 									}}
 									nameKey="data"

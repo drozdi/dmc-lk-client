@@ -17,8 +17,6 @@ if (typeof TouchEvent === "undefined") {
 	};
 }
 
-window.fake = true;
-
 createRoot(document.querySelector("body")!).render(
 	<AppProvider>
 		<AppLoader>

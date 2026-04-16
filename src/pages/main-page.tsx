@@ -1,4 +1,5 @@
 import {
+	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
 	WidgetsProvider,
@@ -8,7 +9,6 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { DualCalendarRange } from "@/shared/ui";
-import { WidgetMainItogAnalytics } from "@/widgets/main";
 import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
@@ -47,7 +47,7 @@ export const MainPage = () => {
 						open();
 					}}
 				>
-					{/* <div
+					<div
 						key="itog.sum"
 						data-grid={{
 							x: 0,
@@ -106,7 +106,7 @@ export const MainPage = () => {
 							filterdate="$filterdate"
 							type="max"
 						/>
-					</div> */}
+					</div>
 					<div
 						key="itog.analytics"
 						data-grid={{
@@ -116,12 +116,12 @@ export const MainPage = () => {
 							h: 10,
 						}}
 					>
-						<WidgetMainItogAnalytics
+						<DashBoardWidget
 							widget="main-itog-analytics"
-							filterdate={storeDashboardMain.getValue("$filterdate")}
+							filterdate="$filterdate"
 						/>
 					</div>
-					{/* <div
+					<div
 						key="type"
 						data-grid={{
 							x: 0,
@@ -135,7 +135,7 @@ export const MainPage = () => {
 							type="stack"
 							filterdate="$filterdate"
 						/>
-					</div> */}
+					</div>
 				</UiDashBoard>
 			</WidgetsProvider>
 			<Modal

@@ -1,7 +1,7 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { randomColorLabel } from "@/entites/labels";
 import { LabelFormat, Widget, type WidgetProps } from "@/shared/ui";
-import { cached, randomColor } from "@/shared/utils";
 import { AspectRatio, Center, Checkbox, Group, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -19,8 +19,6 @@ import {
 	type TooltipContentProps,
 } from "recharts";
 
-const colors = cached<string>((name: string) => randomColor());
-
 const stepLabel = {
 	s: "секундам",
 	m: "минутам",
@@ -35,37 +33,6 @@ export interface WidgetMainTypeProps
 	filterdate: IRequestAnalytics["filterdate"];
 	type: "stack" | "default";
 }
-
-const TooltipPanel = ({ active, payload, separator }: TooltipContentProps) => {
-	if (active && payload && payload.length) {
-		return (
-			<div
-				style={{
-					backgroundColor: "white",
-					border: "1px solid #ccc",
-					padding: "0.5em 1em",
-				}}
-			>
-				<p>
-					Всего{separator} {payload.reduce((acc, { value }) => acc + value, 0)}
-				</p>
-				{payload.map(({ color, name, value, hide }) => (
-					<p
-						key={name}
-						style={{
-							color,
-							textDecoration: hide ? "line-through" : undefined,
-						}}
-					>
-						{name}
-						{separator} {value}
-					</p>
-				))}
-			</div>
-		);
-	}
-	return null;
-};
 
 export const WidgetMainType = memo(
 	({
@@ -242,7 +209,47 @@ export const WidgetMainType = memo(
 								>
 									<XAxis dataKey="date" />
 									<YAxis />
-									<Tooltip content={TooltipPanel} />
+									<Tooltip
+										content={({
+											active,
+											payload,
+											separator,
+										}: TooltipContentProps) => {
+											if (active && payload && payload.length) {
+												return (
+													<div
+														style={{
+															backgroundColor: "white",
+															border: "1px solid #ccc",
+															padding: "0.5em 1em",
+														}}
+													>
+														<p>
+															Всего{separator}{" "}
+															{payload.reduce(
+																(acc, { value }) => acc + value,
+																0,
+															)}
+														</p>
+														{payload.map(({ color, name, value, hide }) => (
+															<p
+																key={name}
+																style={{
+																	color,
+																	textDecoration: hide
+																		? "line-through"
+																		: undefined,
+																}}
+															>
+																{name} {separator} {value}
+															</p>
+														))}
+													</div>
+												);
+											}
+											return null;
+										}}
+									/>
 									<Legend
 										verticalAlign="top"
 										formatter={(value, { color, inactive }) =>
@@ -292,7 +299,8 @@ export const WidgetMainType = memo(
 											stackId={type === "stack" ? "a" : undefined}
 											dataKey={bar}
 											hide={hide.includes(bar)}
-											fill={colors(bar)}
+											fill={randomColorLabel(bar)}
+											background
 										/>
 									))}
 								</BarChart>

@@ -12,7 +12,7 @@ import {
 import { Text, Title } from "@/shared/ui";
 
 import { useDisclosure } from "@mantine/hooks";
-import { TbArrowsMaximize, TbArrowsMinimize } from "react-icons/tb";
+import { TbArrowsMaximize, TbArrowsMinimize, TbReload } from "react-icons/tb";
 
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
@@ -23,6 +23,7 @@ export interface WidgetProps extends CardProps {
 	preview?: React.ReactNode;
 	component?: any;
 	expanded?: boolean;
+	onClick?: () => void;
 }
 
 export function Widget({
@@ -34,6 +35,7 @@ export function Widget({
 	keepMounted = true,
 	component = ScrollArea,
 	expanded = true,
+	onClick,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -57,14 +59,22 @@ export function Widget({
 					<Title fw={500} lh="1" flex="1" order={6} tt="uppercase">
 						{title}
 					</Title>
-
-					{expanded && (
-						<Group mr="-xs">
-							<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
-								<ActionIcon variant="subtle" onClick={toggle}>
-									{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
-								</ActionIcon>
-							</Tooltip>
+					{(expanded || onClick) && (
+						<Group mr="-xs" gap="0">
+							{onClick && (
+								<Tooltip label="Обновить">
+									<ActionIcon variant="subtle" onClick={onClick}>
+										<TbReload />
+									</ActionIcon>
+								</Tooltip>
+							)}
+							{expanded && (
+								<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
+									<ActionIcon variant="subtle" onClick={toggle}>
+										{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
+									</ActionIcon>
+								</Tooltip>
+							)}
 						</Group>
 					)}
 				</Group>

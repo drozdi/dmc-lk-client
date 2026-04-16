@@ -3,10 +3,12 @@ import {
 	GroupedContainer,
 	GroupedItem,
 	GroupedProvider,
+	randomColorLabel,
 	useGrouped,
 	useStoreLabels,
 } from "@/entites/labels";
 import { SelectProductions } from "@/entites/users";
+import { notification } from "@/shared/notification";
 import { LabelFormat, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
@@ -21,12 +23,6 @@ import {
 import { modals } from "@mantine/modals";
 import { useEffect, useState } from "react";
 import { TbList, TbPlus, TbX } from "react-icons/tb";
-
-import { notification } from "@/shared/notification";
-
-import { cached, randomColor } from "@/shared/utils";
-
-const colors = cached<string>((name: string) => randomColor());
 
 export const LabelsGroup = () => {
 	const storeLabels = useStoreLabels();
@@ -147,7 +143,11 @@ export const LabelsGroup = () => {
 							}}
 						>
 							{formats.map((item) => (
-								<GroupedContainer key={item} column={item} color={colors(item)}>
+								<GroupedContainer
+									key={item}
+									column={item}
+									color={randomColorLabel(item)}
+								>
 									<Table striped={false}>
 										<Table.Thead>
 											<Table.Tr>
@@ -186,7 +186,10 @@ export const LabelsGroup = () => {
 								</GroupedContainer>
 							))}
 						</Stack>
-						<GroupedContainer column=".default" color={colors(".default")}>
+						<GroupedContainer
+							column=".default"
+							color={randomColorLabel(".default")}
+						>
 							<Table
 								striped={false}
 								style={{

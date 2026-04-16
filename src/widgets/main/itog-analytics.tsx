@@ -1,11 +1,12 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { randomColorLabel } from "@/entites/labels";
+import { $setting } from "@/shared";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { cached, randomColor } from "@/shared/utils";
-import { AspectRatio, Center, Stack } from "@mantine/core";
+import { AspectRatio, Center, NumberFormatter, Stack } from "@mantine/core";
 import type { DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	Bar,
 	BarChart,
@@ -16,9 +17,8 @@ import {
 	XAxis,
 	YAxis,
 	type MouseHandlerDataParam,
+	type TooltipContentProps,
 } from "recharts";
-
-const colors = cached<string>((name: string) => randomColor());
 
 const stepLabel = {
 	s: "секундам",
@@ -32,14 +32,12 @@ const stepLabel = {
 export interface WidgetMainItogAnalyticsProps
 	extends Omit<WidgetProps, "children">, Partial<IRequestAnalytics> {
 	filterdate: IRequestAnalytics["filterdate"];
-	type: "stack" | "default";
 }
 
 export const WidgetMainItogAnalytics = ({
 	filterdate,
 	step = "d",
 	event = "p",
-	type = "default",
 	...props
 }: WidgetMainItogAnalyticsProps) => {
 	const { production_id } = useStoreUserProfile();
@@ -103,9 +101,7 @@ export const WidgetMainItogAnalytics = ({
 		return ddata;
 	}, [data, labels, query.step]);
 
-	const middle = useMemo(() => Math.round(data.average_company), [data]);
-
-	console.log(middle);
+	const middle = useMemo(() => Math.round(data.average_company) || 0, [data]);
 
 	const bars = useMemo(() => {
 		const bars = [];
@@ -129,18 +125,9 @@ export const WidgetMainItogAnalytics = ({
 		}));
 	}, [filterdate, step, event]);
 
-	const [{ startIndex, endIndex }, setIndex] = useState<{
-		startIndex: number;
-		endIndex: number;
-	}>({
-		startIndex: 0,
-		endIndex: labels.length - 1,
-	});
-
-	const handleClick = (arg: MouseHandlerDataParam) => {
-		console.log(arg);
-		console.log(ref);
-		if (query.step === "h") {
+	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
+		const target = e.target as HTMLElement;
+		if (query.step === "h" || target?.closest(".recharts-brush")) {
 			return;
 		}
 		const filterdate: [DateValue, DateValue] = [
@@ -154,13 +141,18 @@ export const WidgetMainItogAnalytics = ({
 		}));
 	};
 
-	const ref = useRef<HTMLElement>(null);
-
 	return (
 		<Widget
 			{...props}
 			loading={isLoading}
-			title={`Работа за ${query.filterdate[0]}-${query.filterdate[1]} по ${stepLabel[query.step]}`}
+			title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
+			onClick={() => {
+				setQuery({
+					filterdate,
+					step,
+					event,
+				});
+			}}
 		>
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>
@@ -171,23 +163,77 @@ export const WidgetMainItogAnalytics = ({
 					) : (
 						<ResponsiveContainer>
 							<BarChart responsive data={ddata} onClick={handleClick}>
-								<XAxis dataKey="date" />
+								<XAxis
+									dataKey="date"
+									tickFormatter={(date) =>
+										query.step === "d"
+											? dayjs(date).format($setting.get("formatDate"))
+											: date
+									}
+								/>
 								<YAxis />
-								<Tooltip />
+								<Tooltip
+									content={(props: TooltipContentProps) => {
+										//console.log(props);
+										const { label, active, payload, separator } = props;
+										if (active && payload && payload.length) {
+											return (
+												<div
+													style={{
+														backgroundColor: "white",
+														border: "1px solid #ccc",
+														padding: "0.5em 1em",
+													}}
+												>
+													<p>
+														{query.step === "d"
+															? dayjs(label).format($setting.get("formatDate"))
+															: label}
+													</p>
+													{payload.map(({ color, name, value, hide }) => (
+														<p
+															key={name}
+															style={{
+																color,
+																textDecoration: hide
+																	? "line-through"
+																	: undefined,
+															}}
+														>
+															{name} {separator}{" "}
+															<NumberFormatter
+																value={value as number}
+																thousandSeparator=" "
+															/>
+														</p>
+													))}
+												</div>
+											);
+										}
+										return null;
+									}}
+								/>
 
-								<ReferenceLine y={middle} stroke="red" strokeDasharray="3 3" />
+								{middle > 0 && (
+									<ReferenceLine
+										y={middle}
+										stroke="red"
+										strokeDasharray="3 3"
+									/>
+								)}
 
 								<Brush
 									dataKey="date"
 									height={20}
-									startIndex={startIndex}
-									endIndex={endIndex}
-									ref={ref}
+									startIndex={0}
+									endIndex={labels.length - 1}
 								/>
 
 								<Bar
 									dataKey="data"
-									label={event === "p" ? "Напечатано" : event}
+									name="Напечатано"
+									fill={randomColorLabel("def")}
+									background
 								/>
 							</BarChart>
 						</ResponsiveContainer>
