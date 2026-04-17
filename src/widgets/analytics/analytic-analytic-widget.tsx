@@ -11,15 +11,16 @@ const nDow = dayjs();
 const sDay = nDow.day(-7);
 
 interface AnalyticAnalyticWidgetProps extends WidgetProps {}
+const ee = useEnumsEvents();
 
 export const AnalyticAnalyticWidget = (props: AnalyticAnalyticWidgetProps) => {
+	return "";
 	const { production_id } = useStoreUserProfile();
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate: [sDay.format("YYYY-MM-DD"), nDow.format("YYYY-MM-DD")],
 		step: "d",
 	});
 
-	const ee = useEnumsEvents();
 	const maps = Object.keys(ee.data) as AnalyticEvent[];
 
 	const navigate = useNavigate();

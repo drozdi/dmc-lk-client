@@ -8,6 +8,7 @@ import {
 	FieldDate,
 	FieldNumber,
 	FieldSelect,
+	FieldSelectArray,
 	FieldString,
 	FieldText,
 } from "./components";
@@ -96,8 +97,17 @@ export function WidgetForm({
 				/>
 
 				{params.map(({ field, type, default: def, ...param }) =>
-					type === "date" || type === "range:date" ? (
+					type === "date" || type === "date:range" ? (
 						<FieldDate
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
+							defaultValue={def}
+						/>
+					) : type === "select:array" ? (
+						<FieldSelectArray
 							type={type}
 							store={useStore}
 							{...param}

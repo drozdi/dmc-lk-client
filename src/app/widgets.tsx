@@ -3,9 +3,7 @@ import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
 import "@/widgets/analytics";
 import {
 	AnalyticAnalyticWidget,
-	AnalyticEventWidget,
 	AnalyticIncidentWidget,
-	AnalyticTypeWidget,
 } from "@/widgets/analytics";
 import { CountWidget } from "@/widgets/count-widget";
 import "@/widgets/labels";
@@ -24,7 +22,7 @@ FactoryWidget.register({
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
+			type: "date:range",
 		},
 		{
 			label: "Шаг",
@@ -42,45 +40,6 @@ FactoryWidget.register({
 });
 
 FactoryWidget.register({
-	type: "analytic-event-widget",
-	component: AnalyticEventWidget,
-	label: "График событий",
-	description: "График событий (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
-		},
-	],
-});
-
-FactoryWidget.register({
-	type: "analytic-type-widget",
-	component: AnalyticTypeWidget,
-	label: "Напечатано за",
-	description: "Напечатано за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
-		},
-	],
-});
-FactoryWidget.register({
 	type: "analytic-analytic-widget",
 	component: AnalyticAnalyticWidget,
 	label: "Этикетки за последние 7 дней",
@@ -96,7 +55,7 @@ FactoryWidget.register({
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
+			type: "date:range",
 		},
 	],
 });

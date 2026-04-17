@@ -1,32 +1,25 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetAnalyticPie } from "./pie";
+import { WidgetAnalyticIncident } from "./incident";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
 FactoryWidget.register({
-	type: "analytic-pie",
-	component: WidgetAnalyticPie,
-	label: "Соотношение за",
-	description: "Соотношение за (Description)",
+	type: "analytics-incident",
+	component: WidgetAnalyticIncident,
+	label: "Инциденты за",
+	description: "Инциденты за (Description)",
 	params: [
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Шаг",
-			field: "step",
-			type: "select",
-			data: es.dataSelect,
+			type: "date:range",
+			required: true,
 		},
 	],
 });
 
 export * from "./analytic-analytic-widget";
-export * from "./analytic-event-widget";
 export * from "./analytic-incident-widget";
-export * from "./analytic-type-widget";
-export * from "./pie";
+export * from "./incident";

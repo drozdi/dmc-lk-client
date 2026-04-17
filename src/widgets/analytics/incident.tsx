@@ -14,18 +14,21 @@ import { randomColorLabel } from "@/entites/labels";
 import { useQueryLoading } from "@/shared/hooks";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
+import { TbReload } from "react-icons/tb";
 import { Filterdate } from "./components/filterdate";
 
 interface AnalyticIncidentWidgetProps
 	extends WidgetProps, Partial<IRequestAnalyticsIncident> {}
 
-export const AnalyticIncidentWidget = ({
+export interface WidgetAnalyticIncidentProps extends WidgetProps {}
+
+export const WidgetAnalyticIncident = ({
 	filterdate,
 	...props
 }: AnalyticIncidentWidgetProps) => {
-	return "";
 	const storeIncident = useStoreIncident();
 	const { production_id } = useStoreUserProfile();
+	const currProduction = Number(production_id || 0);
 	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
 		filterdate: filterdate || [null, null],
 		data: [],
@@ -35,6 +38,9 @@ export const AnalyticIncidentWidget = ({
 
 	const isLoading = useQueryLoading(storeIncident);
 
+	const isProduction = query.fields_name.includes("production_id");
+	const isPlace = query.fields_name.includes("place_id");
+
 	useEffect(() => {
 		setQuery((v) => ({ ...v, filterdate }));
 	}, [filterdate]);
@@ -43,14 +49,42 @@ export const AnalyticIncidentWidget = ({
 		storeIncident
 			.send(query)
 			.then(({ data }: IResponseAnalyticsIncident) =>
-				setData(data as IAnalyticsIncidentItem[]),
+				setData(
+					data.filter(
+						(item) =>
+							currProduction === 0 || currProduction === item.production_id,
+					) as IAnalyticsIncidentItem[],
+				),
 			);
 	}, [query]);
+
+	const handleClick = (...args) => {
+		const { activeIndex } = args[0];
+
+		if (isProduction && isPlace) {
+		} else if (isProduction) {
+			setQuery((v) => ({
+				...v,
+				fields_name: [
+					"production_id",
+					"place_id",
+					"address_production",
+					"device_name",
+				],
+			}));
+		} else {
+			setQuery((v) => ({
+				...v,
+				fields_name: ["production_id", "address_production"],
+			}));
+		}
+	};
 
 	const isEmpty = !data.length;
 
 	return (
 		<Widget
+			loading={isLoading}
 			{...props}
 			title={
 				<>
@@ -67,7 +101,19 @@ export const AnalyticIncidentWidget = ({
 					/>
 				</>
 			}
-			loading={isLoading}
+			menu={[
+				{
+					children: "Обновить",
+					onClick: () => {
+						setQuery({
+							filterdate,
+							data: [],
+							fields_name: [],
+						});
+					},
+					leftSection: <TbReload />,
+				},
+			]}
 		>
 			<Stack h="100%">
 				<AspectRatio ratio={16 / 9}>
@@ -77,8 +123,13 @@ export const AnalyticIncidentWidget = ({
 						</Center>
 					) : (
 						<ResponsiveContainer>
-							<PieChart>
-								<Tooltip />
+							<PieChart onClick={handleClick}>
+								<Tooltip content={(arg) => {
+									console.log (arg)
+									const {activeIndex} = arg
+									const item = data[activeIndex]
+									console.log(item)
+								}} />
 								<Pie
 									data={data}
 									cx="50%"

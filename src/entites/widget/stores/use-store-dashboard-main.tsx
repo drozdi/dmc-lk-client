@@ -6,11 +6,18 @@ const nDate = dayjs();
 export const useStoreDashboardMain = factoryDashboardStore({
 	storageKey: "main",
 	key: "i",
-	availableWidgets: ["main-itog-set", "main-type", "main-itog-analytics"],
+	availableWidgets: [
+		"main-labels",
+		"main-itog-set",
+		"main-itog-analytics",
+		"labels-type",
+		"labels-pie",
+		"labels-count",
+	],
 	varibles: {
 		$filterdate: {
-			label: "Диапозон времени",
-			type: "range:date",
+			label: "Время на главной странице",
+			type: "date:range",
 			default: [nDate.day(-7).format("YYYY-MM-DD"), nDate.format("YYYY-MM-DD")],
 			required: false,
 		},

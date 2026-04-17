@@ -108,23 +108,12 @@ export const MainPage = () => {
 						/>
 					</div>
 					<div
-						key="itog.count"
-						data-grid={{
-							x: 0,
-							y: Infinity,
-							w: 12,
-							h: 10,
-						}}
-					>
-						<DashBoardWidget widget="main-count" filterdate="$filterdate" />
-					</div>
-					<div
 						key="itog.analytics"
 						data-grid={{
 							x: 0,
-							y: Infinity,
-							w: 10,
-							h: 10,
+							y: 2,
+							w: 6,
+							h: 6,
 						}}
 					>
 						<DashBoardWidget
@@ -133,17 +122,28 @@ export const MainPage = () => {
 						/>
 					</div>
 					<div
-						key="type"
+						key="type.stack"
+						data-grid={{
+							x: 6,
+							y: 2,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget widget="main-labels" filterdate="$filterdate" />
+					</div>
+					<div
+						key="itog.table"
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 10,
-							h: 10,
+							w: 12,
+							h: 9,
 						}}
 					>
 						<DashBoardWidget
-							widget="main-type"
-							type="stack"
+							widget="main-labels"
+							type="table"
 							filterdate="$filterdate"
 						/>
 					</div>

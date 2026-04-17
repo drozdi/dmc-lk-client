@@ -1,23 +1,23 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetMainCount } from "./count";
 import { WidgetMainItogAnalytics } from "./itog-analytics";
 import { WidgetMainItogSet } from "./itog-set";
-import { WidgetMainType } from "./type";
+import { WidgetMainLabels } from "./labels";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
 FactoryWidget.register({
-	type: "main-type",
-	component: WidgetMainType,
-	label: "Информация, печати",
-	description: "Информация, печати (Description)",
+	type: "main-labels",
+	component: WidgetMainLabels,
+	label: "Информация о этикетках",
+	description: "Информация о этикетках (Description)",
 	params: [
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
+			type: "date:range",
+			required: true,
 		},
 		{
 			label: "Шаг (разрез)",
@@ -27,7 +27,14 @@ FactoryWidget.register({
 			data: es.dataSelect,
 		},
 		{
-			label: "Тип",
+			label: "Событие",
+			field: "event",
+			type: "select",
+			default: "p",
+			data: ee.dataSelect,
+		},
+		{
+			label: "Отображение",
 			field: "type",
 			type: "select",
 			default: "default",
@@ -38,6 +45,10 @@ FactoryWidget.register({
 				},
 				{
 					label: "Объединять",
+					value: "stack",
+				},
+				{
+					label: "Таблица",
 					value: "stack",
 				},
 			],
@@ -53,7 +64,8 @@ FactoryWidget.register({
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
+			type: "date:range",
+			required: true,
 		},
 		{
 			label: "Событие",
@@ -97,7 +109,8 @@ FactoryWidget.register({
 		{
 			label: "Промежуток",
 			field: "filterdate",
-			type: "range:date",
+			type: "date:range",
+			required: true,
 		},
 		{
 			label: "Событие",
@@ -115,28 +128,7 @@ FactoryWidget.register({
 		},
 	],
 });
-FactoryWidget.register({
-	type: "main-count",
-	component: WidgetMainCount,
-	label: "Статистика, таблица",
-	description: "Статистика, таблица (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "range:date",
-		},
-		{
-			label: "Событие",
-			field: "event",
-			type: "select",
-			default: "p",
-			data: ee.dataSelect,
-		},
-	],
-});
 
-export * from "./count";
 export * from "./itog-analytics";
 export * from "./itog-set";
-export * from "./type";
+export * from "./labels";

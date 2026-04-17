@@ -10,13 +10,14 @@ import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { DualCalendarRange } from "@/shared/ui";
+import { WidgetAnalyticIncident } from "@/widgets/analytics/incident";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 export const DashboardPage = () => {
-	const storeDashboardMain = useStoreDashboardSecond();
+	const storeDashboard = useStoreDashboardSecond();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = $setting.useState<
@@ -30,8 +31,8 @@ export const DashboardPage = () => {
 		],
 	});
 	useEffect(() => {
-		storeDashboardMain.id && open();
-	}, [storeDashboardMain.id]);
+		storeDashboard.id && open();
+	}, [storeDashboard.id]);
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -44,7 +45,7 @@ export const DashboardPage = () => {
 								...v,
 								filterdate,
 							}));
-							storeDashboardMain.setValue("filterdate", filterdate);
+							storeDashboard.setValue("filterdate", filterdate);
 						}
 					}}
 				/>
@@ -70,7 +71,7 @@ export const DashboardPage = () => {
 					>
 						<DashBoardWidget widget="labels-count" />
 					</div>
-					<div
+					{/* <div
 						key="pie"
 						data-grid={{
 							x: 6,
@@ -80,7 +81,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="analytic-pie"
+							widget="labels-pie"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -95,11 +96,11 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="AnalyticTypeWidget"
+							widget="labels-type"
 							filterdate="$filterdate"
 							step="mon"
 						/>
-					</div>
+					</div> */}
 					<div
 						key="analytic"
 						data-grid={{
@@ -122,7 +123,7 @@ export const DashboardPage = () => {
 					>
 						<DashBoardWidget widget="CountWidget" filterdate="$filterdate" />
 					</div>
-					<div
+					{/* <div
 						key="labels-count"
 						data-grid={{
 							x: 6,
@@ -131,12 +132,8 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget
-							widget="AnalyticEventWidget"
-							filterdate="$filterdate"
-							step="mon"
-						/>
-					</div>
+						<DashBoardWidget widget="labels-event" filterdate="$filterdate" />
+					</div> */}
 					<div
 						key="incident"
 						data-grid={{
@@ -146,10 +143,13 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget
+						<WidgetAnalyticIncident
+							filterdate={storeDashboard.getValue("$filterdate")}
+						/>
+						{/* <DashBoardWidget
 							widget="AnalyticIncidentWidget"
 							filterdate="$filterdate"
-						/>
+						/> */}
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>
@@ -158,16 +158,16 @@ export const DashboardPage = () => {
 				opened={opened}
 				keepMounted={false}
 				onClose={() => {
-					storeDashboardMain.clear();
+					storeDashboard.clear();
 					close();
 				}}
 			>
 				{opened && (
 					<WidgetForm
-						id={storeDashboardMain.id}
+						id={storeDashboard.id}
 						store={useStoreDashboardSecond}
 						onSave={() => {
-							storeDashboardMain.clear();
+							storeDashboard.clear();
 							close();
 						}}
 						layout={layout}
