@@ -1,7 +1,7 @@
 import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
 import { LabelFormat } from "@/shared/ui";
-import { AspectRatio } from "@mantine/core";
+import { AspectRatio, Box } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import {
@@ -130,12 +130,10 @@ export const LabelsBar = memo(
 							}: TooltipContentProps) => {
 								if (active && payload && payload.length) {
 									return (
-										<div
-											style={{
-												backgroundColor: "white",
-												border: "1px solid #ccc",
-												padding: "0.5em 1em",
-											}}
+										<Box
+											bg="var(--mantine-color-body)"
+											bd="1px solid var(--mantine-color-default-border)"
+											p="xs"
 										>
 											<p>{dayjs(label).format($setting.get("formatDate"))}</p>
 											<p>
@@ -153,7 +151,7 @@ export const LabelsBar = memo(
 													{name} {separator} {value}
 												</p>
 											))}
-										</div>
+										</Box>
 									);
 								}
 								return null;

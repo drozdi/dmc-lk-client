@@ -1,23 +1,15 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetLabelsCount } from "./count";
 import { WidgetLabelsEvent } from "./event";
-import { WidgetAnalyticPie } from "./pie";
+import { WidgetLabelsPie } from "./pie";
 import { WidgetLabelsType } from "./type";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
 FactoryWidget.register({
-	type: "labels-count",
-	component: WidgetLabelsCount,
-	label: "Сводная история",
-	description: "Сводная история (Description)",
-	params: [],
-});
-FactoryWidget.register({
 	type: "labels-pie",
-	component: WidgetAnalyticPie,
+	component: WidgetLabelsPie,
 	label: "Соотношение за",
 	description: "Соотношение за (Description)",
 	params: [
@@ -84,10 +76,30 @@ FactoryWidget.register({
 			default: ["p"],
 			data: ee.dataSelect,
 		},
+		{
+			label: "Отображение",
+			field: "type",
+			type: "select",
+			default: "bar",
+			data: [
+				{
+					label: "Линиями",
+					value: "line",
+				},
+				{
+					label: "Столбцами",
+					value: "bar",
+				},
+				{
+					label: "Таблицей",
+					value: "table",
+				},
+			],
+		},
 	],
 });
 
-export * from "./count";
+export * from "../analytics/count";
 export * from "./event";
 export * from "./pie";
 export * from "./type";

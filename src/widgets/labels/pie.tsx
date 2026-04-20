@@ -1,7 +1,7 @@
 import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { AspectRatio, Center, NumberFormatter } from "@mantine/core";
+import { AspectRatio, Box, Center, NumberFormatter } from "@mantine/core";
 import { memo, useEffect, useMemo, useState } from "react";
 import {
 	Legend,
@@ -11,15 +11,16 @@ import {
 	Tooltip,
 	type TooltipContentProps,
 } from "recharts";
-import { Filterdate } from "./components/filterdate";
+import { Filterdate } from "./ui/filterdate";
 
 const ee = useEnumsEvents();
 
-interface ChartAnalyticProps extends Omit<IRequestAnalytics, "event"> {}
-interface WidgetAnalyticPieProps extends WidgetProps, ChartAnalyticProps {}
+export interface WidgetLabelsPieProps extends WidgetProps {
+	filterdate: IRequestAnalytics["filterdate"];
+}
 
-export const WidgetAnalyticPie = memo(
-	({ filterdate, step, ...props }: WidgetAnalyticPieProps) => {
+export const WidgetLabelsPie = memo(
+	({ filterdate, ...props }: WidgetLabelsPieProps) => {
 		const { production_id } = useStoreUserProfile();
 		const { isLoading, fetch, error } = useQueryAnalytics();
 
@@ -30,9 +31,9 @@ export const WidgetAnalyticPie = memo(
 			p?: IResponseAnalytics;
 		}>({});
 
-		const [query, setQuery] = useState<Partial<ChartAnalyticProps>>({
+		const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 			filterdate,
-			step,
+			step: "mon",
 		});
 
 		async function sendRequest(event: AnalyticEvent) {
@@ -98,8 +99,8 @@ export const WidgetAnalyticPie = memo(
 		}, [query]);
 
 		useEffect(() => {
-			setQuery({ filterdate, step });
-		}, [filterdate, step]);
+			setQuery((v) => ({ ...v, filterdate }));
+		}, [filterdate]);
 
 		return (
 			<Widget
@@ -138,12 +139,10 @@ export const WidgetAnalyticPie = memo(
 											return null;
 										}
 										return (
-											<p
-												style={{
-													backgroundColor: "white",
-													border: "1px solid #ccc",
-													padding: "0.5em 1em",
-												}}
+											<Box
+												bg="var(--mantine-color-body)"
+												bd="1px solid var(--mantine-color-default-border)"
+												p="xs"
 											>
 												<span style={{ color: entity.fill }}>
 													{entity.name}
@@ -153,7 +152,7 @@ export const WidgetAnalyticPie = memo(
 													value={entity.value}
 													thousandSeparator=" "
 												/>
-											</p>
+											</Box>
 										);
 									}}
 								/>

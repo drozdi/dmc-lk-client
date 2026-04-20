@@ -1,13 +1,14 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetAnalyticIncident } from "./incident";
+import { WidgetAnalyticsCount } from "./count";
+import { WidgetAnalyticsIncident } from "./incident";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
 FactoryWidget.register({
 	type: "analytics-incident",
-	component: WidgetAnalyticIncident,
+	component: WidgetAnalyticsIncident,
 	label: "Инциденты за",
 	description: "Инциденты за (Description)",
 	params: [
@@ -20,6 +21,13 @@ FactoryWidget.register({
 	],
 });
 
-export * from "./analytic-analytic-widget";
-export * from "./analytic-incident-widget";
+FactoryWidget.register({
+	type: "analytics-count",
+	component: WidgetAnalyticsCount,
+	label: "Сводная история",
+	description: "Сводная история (Description)",
+	params: [],
+});
+
+export * from "./count";
 export * from "./incident";

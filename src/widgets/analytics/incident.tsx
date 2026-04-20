@@ -12,20 +12,19 @@ import { useStoreIncident } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { useQueryLoading } from "@/shared/hooks";
-import { Widget, type WidgetProps } from "@/shared/ui";
+import { Text, Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { TbReload } from "react-icons/tb";
-import { Filterdate } from "./components/filterdate";
+import { Filterdate } from "./ui/filterdate";
 
-interface AnalyticIncidentWidgetProps
-	extends WidgetProps, Partial<IRequestAnalyticsIncident> {}
+export interface WidgetAnalyticsIncidentProps extends WidgetProps {
+	filterdate: IRequestAnalyticsIncident["filterdate"];
+}
 
-export interface WidgetAnalyticIncidentProps extends WidgetProps {}
-
-export const WidgetAnalyticIncident = ({
+export const WidgetAnalyticsIncident = ({
 	filterdate,
 	...props
-}: AnalyticIncidentWidgetProps) => {
+}: WidgetAnalyticsIncidentProps) => {
 	const storeIncident = useStoreIncident();
 	const { production_id } = useStoreUserProfile();
 	const currProduction = Number(production_id || 0);
@@ -124,16 +123,45 @@ export const WidgetAnalyticIncident = ({
 					) : (
 						<ResponsiveContainer>
 							<PieChart onClick={handleClick}>
-								<Tooltip content={(arg) => {
-									console.log (arg)
-									const {activeIndex} = arg
-									const item = data[activeIndex]
-									console.log(item)
-								}} />
+								<Tooltip
+									content={(arg) => {
+										const { activeIndex } = arg;
+										const item = data[activeIndex];
+										return (
+											<Text
+												maw={200}
+												bg="var(--mantine-color-body)"
+												bd="1px solid var(--mantine-color-default-border)"
+												p="xs"
+											>
+												{item?.data} - {item?.total_counter}
+											</Text>
+										);
+									}}
+								/>
+								{/* <Legend
+									verticalAlign="bottom"
+									content={(arg) => {
+										console.log(arg);
+										const { payload } = arg;
+										return (
+											<Box>
+												{payload?.map((item, index) => (
+													<Text
+														key={item.value}
+														style={{
+															color: item.color,
+														}}
+													>
+														{item.value} - {item.payload.total_counter}
+													</Text>
+												))}
+											</Box>
+										);
+									}}
+								/> */}
 								<Pie
 									data={data}
-									cx="50%"
-									cy="50%"
 									fill="#8884d8"
 									shape={(props: PieSectorShapeProps) => {
 										return (

@@ -3,7 +3,13 @@ import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { AspectRatio, Center, NumberFormatter, Stack } from "@mantine/core";
+import {
+	AspectRatio,
+	Box,
+	Center,
+	NumberFormatter,
+	Stack,
+} from "@mantine/core";
 import type { DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { memo, useEffect, useMemo, useState } from "react";
@@ -182,17 +188,18 @@ export const WidgetMainItogAnalytics = memo(
 									/>
 									<YAxis />
 									<Tooltip
-										content={(props: TooltipContentProps) => {
-											//console.log(props);
-											const { label, active, payload, separator } = props;
+										content={({
+											label,
+											active,
+											payload,
+											separator,
+										}: TooltipContentProps) => {
 											if (active && payload && payload.length) {
 												return (
-													<div
-														style={{
-															backgroundColor: "white",
-															border: "1px solid #ccc",
-															padding: "0.5em 1em",
-														}}
+													<Box
+														bg="var(--mantine-color-body)"
+														bd="1px solid var(--mantine-color-default-border)"
+														p="xs"
 													>
 														<p>
 															{query.step === "d"
@@ -218,7 +225,7 @@ export const WidgetMainItogAnalytics = memo(
 																/>
 															</p>
 														))}
-													</div>
+													</Box>
 												);
 											}
 											return null;

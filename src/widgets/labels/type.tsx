@@ -5,8 +5,8 @@ import { Widget, type WidgetProps } from "@/shared/ui";
 import { labelName } from "@/shared/utils";
 import { AspectRatio, Center, Checkbox, Group, Stack } from "@mantine/core";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { Filterdate } from "./components/filterdate";
-import { TypeBar } from "./components/type-bar";
+import { Filterdate } from "./ui/filterdate";
+import { TypeBar } from "./ui/type-bar";
 
 export interface WidgetLabelsTypeProps extends WidgetProps {
 	filterdate: IRequestAnalytics["filterdate"];

@@ -10,3 +10,10 @@ interface IProduction {
 	production_name?: string;
 	name_production?: string;
 }
+
+interface IPlace {
+	place_type: string;
+	place_name: string;
+	place_id: number;
+	production_id: IProduction["production_id"];
+}

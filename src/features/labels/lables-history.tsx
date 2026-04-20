@@ -40,9 +40,7 @@ export const LabelsHistory = () => {
 					production_name: qp.findNameById(his.production_id),
 					items: storeCountLabel
 						.selectHistory(his.production_id)
-						.sort((a, b) =>
-							a.date_applic < b.date_applic ? 1 : -1,
-						),
+						.sort((a, b) => (a.date_applic < b.date_applic ? 1 : -1)),
 				};
 			}
 		}
@@ -62,38 +60,21 @@ export const LabelsHistory = () => {
 							key={item.production_id}
 							value={"tab-" + String(item.production_id)}
 						>
-							<Accordion.Control>
-								{item.production_name}
-							</Accordion.Control>
+							<Accordion.Control>{item.production_name}</Accordion.Control>
 							<Accordion.Panel>
 								<List dense separator>
 									{item.items.map((item) => (
 										<Item key={item.id}>
 											<ItemSection left>
-												<ItemLabel>
-													{item.place_name}
-												</ItemLabel>
+												<ItemLabel>{item.place_name}</ItemLabel>
 												<ItemLabel caption>
-													{dayjs(
-														item.date_applic,
-													).format(
-														"HH:mm DD-MM-YYYY",
-													)}{" "}
-													-{" "}
-													<LabelFormat>
-														{item.format_template}
-													</LabelFormat>
+													{dayjs(item.date_applic).format("HH:mm DD-MM-YYYY")} -{" "}
+													<LabelFormat>{item.format_template}</LabelFormat>
 												</ItemLabel>
 											</ItemSection>
 
 											<ItemSection side>
-												{item.consumption_m !== 0 ? (
-													<>
-														-{item.consumption_m} м.
-													</>
-												) : (
-													"-"
-												)}
+												{item.consumption_m || "-"} м.
 											</ItemSection>
 
 											<ItemSection side className="!w-20">

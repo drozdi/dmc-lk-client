@@ -6,8 +6,8 @@ import { labelName } from "@/shared/utils";
 import { Center, Checkbox, Group, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { LabelsBar } from "./components/labels-bar";
-import { LabelsTable } from "./components/labels-table";
+import { LabelsBar } from "./ui/labels-bar";
+import { LabelsTable } from "./ui/labels-table";
 
 const stepLabel = {
 	s: "секундам",

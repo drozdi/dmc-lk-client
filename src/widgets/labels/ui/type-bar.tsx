@@ -1,4 +1,4 @@
-import { NumberFormatter } from "@mantine/core";
+import { Box, NumberFormatter } from "@mantine/core";
 import { memo } from "react";
 import {
 	Bar,
@@ -26,21 +26,26 @@ export const TypeBar = memo(({ data, bars }: TypeBarProps) => {
 		<ResponsiveContainer>
 			<BarChart data={data}>
 				<Tooltip
-					content={({ label, separator, payload }: TooltipContentProps) => (
-						<p
-							style={{
-								backgroundColor: "white",
-								border: "1px solid #ccc",
-								padding: "0.5em 1em",
-							}}
-						>
-							{label} {separator}{" "}
-							<NumberFormatter
-								value={payload[0]?.value as number}
-								thousandSeparator=" "
-							/>
-						</p>
-					)}
+					content={(arg: TooltipContentProps) => {
+						console.log(arg);
+						const { label, separator, payload } = arg;
+						return (
+							<Box
+								bg="var(--mantine-color-body)"
+								bd="1px solid var(--mantine-color-default-border)"
+								p="xs"
+							>
+								<span style={{ color: payload[0]?.payload?.color }}>
+									{label}
+								</span>
+								{separator}
+								<NumberFormatter
+									value={payload[0]?.value as number}
+									thousandSeparator=" "
+								/>
+							</Box>
+						);
+					}}
 				/>
 				<CartesianGrid strokeDasharray="3 3" />
 				<XAxis dataKey="name" />

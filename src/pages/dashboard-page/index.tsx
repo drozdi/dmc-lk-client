@@ -10,7 +10,6 @@ import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { DualCalendarRange } from "@/shared/ui";
-import { WidgetAnalyticIncident } from "@/widgets/analytics/incident";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -61,7 +60,7 @@ export const DashboardPage = () => {
 					}}
 				>
 					<div
-						key="event"
+						key="labels-event-table"
 						data-grid={{
 							x: 0,
 							y: 0,
@@ -69,13 +68,43 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="labels-count" />
+						<DashBoardWidget
+							widget="labels-event"
+							type="table"
+							filterdate="$filterdate"
+						/>
 					</div>
-					{/* <div
-						key="pie"
+					<div
+						key="labels-event-bar"
 						data-grid={{
 							x: 6,
 							y: 0,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="labels-event"
+							type="bar"
+							filterdate="$filterdate"
+						/>
+					</div>
+					<div
+						key="labels-event"
+						data-grid={{
+							x: 0,
+							y: 6,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget widget="labels-event" filterdate="$filterdate" />
+					</div>
+					<div
+						key="labels-pie"
+						data-grid={{
+							x: 6,
+							y: 6,
 							w: 6,
 							h: 6,
 						}}
@@ -87,10 +116,10 @@ export const DashboardPage = () => {
 						/>
 					</div>
 					<div
-						key="type"
+						key="labels-type"
 						data-grid={{
 							x: 0,
-							y: 6,
+							y: 12,
 							w: 6,
 							h: 6,
 						}}
@@ -100,56 +129,46 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 							step="mon"
 						/>
-					</div> */}
+					</div>
 					<div
-						key="analytic"
+						key="analytics-incident"
 						data-grid={{
 							x: 6,
-							y: 6,
+							y: 12,
 							w: 6,
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="AnalyticAnalyticWidget" />
+						<DashBoardWidget
+							widget="analytics-incident"
+							filterdate="$filterdate"
+						/>
+					</div>
+
+					<div
+						key="analytics-count"
+						data-grid={{
+							x: 0,
+							y: 18,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytics-count"
+							filterdate="$filterdate"
+						/>
 					</div>
 					<div
 						key="count"
 						data-grid={{
-							x: 0,
-							y: 12,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget widget="CountWidget" filterdate="$filterdate" />
-					</div>
-					{/* <div
-						key="labels-count"
-						data-grid={{
 							x: 6,
-							y: 12,
+							y: 18,
 							w: 6,
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="labels-event" filterdate="$filterdate" />
-					</div> */}
-					<div
-						key="incident"
-						data-grid={{
-							x: 12,
-							y: 12,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<WidgetAnalyticIncident
-							filterdate={storeDashboard.getValue("$filterdate")}
-						/>
-						{/* <DashBoardWidget
-							widget="AnalyticIncidentWidget"
-							filterdate="$filterdate"
-						/> */}
+						<DashBoardWidget widget="count" filterdate="$filterdate" />
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>

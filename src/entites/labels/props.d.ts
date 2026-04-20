@@ -9,6 +9,7 @@ interface ILabel {
 	print?: ILabel["statistics_print_format"];
 	consumption_m?: ICountLabelHistoryItem["consumption_m"];
 }
+
 interface IStoreLabels extends IStore {
 	prints: Record<ILabel["production_id"], ILabel["statistics_print_format"][]>;
 	loadPrints(reloading?: boolean): Promise<void>;
@@ -42,6 +43,7 @@ interface IStoreLabels extends IStore {
 	): Promise<ILabel | undefined>;
 	deleteFormatPrint(data: Partial<ILabel>): Promise<boolean>;
 }
+
 interface ICountLabelHistoryItem {
 	format_template: ILabel["statistics_print_format"];
 	date_applic: string;
@@ -81,10 +83,13 @@ interface ICountLabelItem {
 	add_label_format: ILabel["add_label_format"];
 	production_id: ILabel["production_id"];
 	sum: number;
+	sum_consumption: number;
 }
 
 interface IRequestCountLabelHistory extends IRequestList {
 	filterdate?: string | string[];
+	production_id?: ILabel["production_id"] | ILabel["production_id"][];
+	format_template?: ILabel["add_label_format"] | ILabel["add_label_format"][];
 }
 
 type IRequestCountLabelReset = number;
@@ -106,8 +111,8 @@ interface IICount {
 }
 
 interface ILabelItem extends IICount {
-	id: ILabel["statistics_print_format"],
-	_id?: ILabel['id'],
+	id: ILabel["statistics_print_format"];
+	_id?: ILabel["id"];
 	production_id: IProduction["production_id"];
 	format?: ILabel["add_label_format"] | ".default";
 	print: ILabel["statistics_print_format"];
@@ -121,5 +126,5 @@ interface ILabelFormat extends IICount {
 
 interface ILabelProduction extends IICount {
 	production_id: IProduction["production_id"];
-	labels: Record<ILabelFormat['label'], ILabelFormat>;
+	labels: Record<ILabelFormat["label"], ILabelFormat>;
 }

@@ -13,8 +13,7 @@ import { useEffect, useMemo } from "react";
 
 export interface WidgetLabelsCountProps extends WidgetProps {}
 
-export const WidgetLabelsCount = (props: WidgetLabelsCountProps) => {
-	return "";
+export const WidgetAnalyticsCount = (props: WidgetLabelsCountProps) => {
 	const qp = useQueryProductions();
 	const storeLabels = useStoreLabels();
 	const storeCountLabel = useStoreCountLabel();

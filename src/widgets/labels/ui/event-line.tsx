@@ -1,6 +1,6 @@
 import { useEnumsEvents } from "@/entites/analytics";
 import { $setting } from "@/shared";
-import { NumberFormatter } from "@mantine/core";
+import { Box, NumberFormatter, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import {
 	CartesianGrid,
@@ -11,6 +11,7 @@ import {
 	Tooltip,
 	XAxis,
 	YAxis,
+	type TooltipContentProps,
 } from "recharts";
 
 const ee = useEnumsEvents();
@@ -35,9 +36,23 @@ export const EventLine = ({ data = [], lines = ["p"] }: EventLineProops) => {
 				/>
 				<YAxis />
 				<Tooltip
-					formatter={(value) => (
-						<NumberFormatter value={value} thousandSeparator=" " />
-					)}
+					content={({ label, payload, separator }: TooltipContentProps) => {
+						return (
+							<Box
+								bg="var(--mantine-color-body)"
+								bd="1px solid var(--mantine-color-default-border)"
+								p="xs"
+							>
+								<Text>{dayjs(label).format($setting.get("formatDate"))}</Text>
+								{payload.map((item) => (
+									<Text c={item.color}>
+										{item.name} {separator}{" "}
+										<NumberFormatter value={item.value} thousandSeparator=" " />
+									</Text>
+								))}
+							</Box>
+						);
+					}}
 				/>
 				<Legend />
 				{lines.map((line) => (

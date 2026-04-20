@@ -1,11 +1,17 @@
-import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
+import {
+	useEnumsEvents,
+	useEnumsStep,
+	useQueryAnalytics,
+} from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
-import { EventLine } from "./components/event-line";
-import { Filterdate } from "./components/filterdate";
+import { EventBar } from "./ui/event-bar";
+import { EventLine } from "./ui/event-line";
+import { EventTable } from "./ui/event-table";
+import { Filterdate } from "./ui/filterdate";
 
 type Element = Record<AnalyticEvent, number>;
 
@@ -13,9 +19,11 @@ export interface WidgetLabelsEventProps extends WidgetProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	step?: IRequestAnalytics["step"];
 	lines?: AnalyticEvent[];
+	type?: "line" | "bar" | "table";
 }
 
 const ee = useEnumsEvents();
+const es = useEnumsStep();
 
 const ititValue = Object.fromEntries(
 	Object.keys(ee.data).map((item) => [item, 0]),
@@ -24,7 +32,8 @@ const ititValue = Object.fromEntries(
 export const WidgetLabelsEvent = ({
 	filterdate,
 	step = "d",
-	lines = ["v", "i", "d"],
+	lines = ["v", "i", "d", "p"],
+	type = "line",
 	...props
 }: WidgetLabelsEventProps) => {
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
@@ -118,6 +127,10 @@ export const WidgetLabelsEvent = ({
 						<Center w="100%" h="100%" fz="h1" c="dimmed">
 							Данные ненашлись!
 						</Center>
+					) : type === "table" ? (
+						<EventTable data={ddata} lines={lines} />
+					) : type === "bar" ? (
+						<EventBar data={ddata} lines={lines} />
 					) : (
 						<EventLine data={ddata} lines={lines} />
 					)}

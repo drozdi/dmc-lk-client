@@ -49,7 +49,7 @@ FactoryWidget.register({
 				},
 				{
 					label: "Таблица",
-					value: "stack",
+					value: "table",
 				},
 			],
 		},
