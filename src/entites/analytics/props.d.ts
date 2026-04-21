@@ -1,4 +1,4 @@
-type SliceStep = "s" | "m" | "h" | "d" | "mon" | "y";
+type SliceStep = "s" | "m" | "h" | "d" | "mon" | "y" | "w";
 type SingleActionList = "and" | "or" | "not";
 type AnalyticEvent = "v" | "i" | "d" | "p";
 

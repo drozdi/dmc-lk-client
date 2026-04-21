@@ -22,6 +22,10 @@ export const MainPage = () => {
 		storeDashboardMain.id && open();
 	}, [storeDashboardMain.id]);
 
+	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>(
+		storeDashboardMain.getValue("$filterdate"),
+	);
+
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -33,6 +37,7 @@ export const MainPage = () => {
 					onChange={(filterdate) => {
 						if (filterdate[0] && filterdate[1]) {
 							storeDashboardMain.setValue("filterdate", filterdate);
+							setFilterdate(filterdate);
 						}
 					}}
 				/>
@@ -50,60 +55,60 @@ export const MainPage = () => {
 					<div
 						key="itog.sum"
 						data-grid={{
-							x: 0,
+							x: 10,
 							y: 0,
-							w: 3,
+							w: 2,
 							h: 2,
 						}}
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate="$filterdate"
+							filterdate={filterdate}
 							type="sum"
 						/>
 					</div>
 					<div
 						key="itog.avg"
 						data-grid={{
-							x: 3,
-							y: 0,
-							w: 3,
+							x: 10,
+							y: 2,
+							w: 2,
 							h: 2,
 						}}
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate="$filterdate"
+							filterdate={filterdate}
 							type="avg"
 						/>
 					</div>
 					<div
 						key="itog.min"
 						data-grid={{
-							x: 6,
-							y: 0,
-							w: 3,
+							x: 10,
+							y: 4,
+							w: 2,
 							h: 2,
 						}}
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate="$filterdate"
+							filterdate={filterdate}
 							type="min"
 						/>
 					</div>
 					<div
 						key="itog.max"
 						data-grid={{
-							x: 9,
-							y: 0,
-							w: 3,
+							x: 10,
+							y: 6,
+							w: 2,
 							h: 2,
 						}}
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate="$filterdate"
+							filterdate={filterdate}
 							type="max"
 						/>
 					</div>
@@ -111,41 +116,38 @@ export const MainPage = () => {
 						key="itog.analytics"
 						data-grid={{
 							x: 0,
-							y: 2,
-							w: 6,
-							h: 6,
+							y: Infinity,
+							w: 10,
+							h: 10,
 						}}
 					>
 						<DashBoardWidget
 							widget="main-itog-analytics"
-							filterdate="$filterdate"
+							filterdate={filterdate}
+							onChange={(query: IRequestAnalytics) => {
+								setFilterdate(query.filterdate);
+							}}
 						/>
+						{/* <DashBoardWidget
+							widget="main-labels"
+							type="table"
+							filterdate={filterdate}
+						/> */}
 					</div>
 					<div
-						key="type.stack"
-						data-grid={{
-							x: 6,
-							y: 2,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget widget="main-labels" filterdate="$filterdate" />
-					</div>
-					<div
-						key="itog.table"
+						key="labels.stack"
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 12,
-							h: 9,
+							w: 10,
+							h: 10,
 						}}
 					>
-						<DashBoardWidget
+						{/* <DashBoardWidget
 							widget="main-labels"
-							type="table"
-							filterdate="$filterdate"
-						/>
+							type="stack"
+							filterdate={filterdate}
+						/> */}
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>

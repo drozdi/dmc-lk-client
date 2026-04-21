@@ -198,7 +198,7 @@ export const WidgetMainItogAnalytics = memo(
 				title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
 				menu={[
 					{
-						children: "Обновить",
+						children: "Сбросить",
 						onClick: () => {
 							reset();
 						},
