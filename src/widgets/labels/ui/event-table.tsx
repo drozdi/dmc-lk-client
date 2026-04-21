@@ -31,7 +31,7 @@ export const EventTable = ({ data = [], lines = ["p"] }: EventTableProps) => {
 						</Table.Td>
 						{lines.map((line) => (
 							<Table.Td key={line}>
-								<NumberFormatter value={tr[line]} thousandSeparator=" " />
+								<NumberFormatter value={tr[line]} />
 							</Table.Td>
 						))}
 					</Table.Tr>

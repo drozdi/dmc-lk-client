@@ -47,7 +47,7 @@ export const EventLine = ({ data = [], lines = ["p"] }: EventLineProops) => {
 								{payload.map((item) => (
 									<Text c={item.color}>
 										{item.name} {separator}{" "}
-										<NumberFormatter value={item.value} thousandSeparator=" " />
+										<NumberFormatter value={item.value} />
 									</Text>
 								))}
 							</Box>

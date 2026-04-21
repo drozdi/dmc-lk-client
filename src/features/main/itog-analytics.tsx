@@ -1,7 +1,6 @@
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
-import { Widget, type WidgetProps } from "@/shared/ui";
 import {
 	AspectRatio,
 	Box,
@@ -12,11 +11,9 @@ import {
 import type { DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { memo, useEffect, useMemo } from "react";
-import { TbReload } from "react-icons/tb";
 import {
 	Bar,
 	BarChart,
-	Brush,
 	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
@@ -27,32 +24,22 @@ import {
 } from "recharts";
 import { useAnalytics } from "./hooks/use-analytics";
 
-const stepLabel = {
-	s: "секундам",
-	m: "минутам",
-	h: "часам",
-	d: "дням",
-	w: "неделям",
-	mon: "месяцам",
-	y: "годам",
-};
-
-export interface WidgetMainItogAnalyticsProps
-	extends Omit<WidgetProps, "children">, Partial<IRequestAnalytics> {
+export interface MainItogAnalyticsProps extends Partial<IRequestAnalytics> {
 	filterdate: IRequestAnalytics["filterdate"];
 	onChange?: (filterdate: IRequestAnalytics) => void;
+	stop?: SliceStep;
 }
 
-export const WidgetMainItogAnalytics = memo(
+export const MainItogAnalytics = memo(
 	({
 		filterdate,
 		event = "p",
+		stop = "m",
 		onChange,
-		...props
-	}: WidgetMainItogAnalyticsProps) => {
+	}: MainItogAnalyticsProps) => {
 		const { production_id } = useStoreUserProfile();
 
-		const { isLoading, fetch, data, error, query, reset } = useAnalytics(
+		const { fetch, data, query } = useAnalytics(
 			{
 				filterdate,
 				event,
@@ -134,7 +121,7 @@ export const WidgetMainItogAnalytics = memo(
 
 		const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
 			const target = e.target as HTMLElement;
-			if (query.step === "s" || target?.closest(".recharts-brush")) {
+			if (query.step === stop || target?.closest(".recharts-brush")) {
 				return;
 			}
 			const step =
@@ -191,111 +178,88 @@ export const WidgetMainItogAnalytics = memo(
 		};
 
 		return (
-			<Widget
-				error={error}
-				loading={isLoading}
-				{...props}
-				title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
-				menu={[
-					{
-						children: "Сбросить",
-						onClick: () => {
-							reset();
-						},
-						leftSection: <TbReload />,
-					},
-				]}
-			>
-				<Stack h="100%">
-					<AspectRatio ratio={16 / 9}>
-						{isEmpty ? (
-							<Center w="100%" h="100%" fz="h1" c="dimmed">
-								Данные ненашлись!
-							</Center>
-						) : (
-							<ResponsiveContainer>
-								<BarChart responsive data={ddata} onClick={handleClick}>
-									<XAxis
-										dataKey="date"
-										// tickFormatter={(date) =>
-										// 	query.step === "d"
-										// 		? dayjs(date).format($setting.get("formatDate"))
-										// 		: date
-										// }
-									/>
-									<YAxis />
-									<Tooltip
-										content={({
-											label,
-											active,
-											payload,
-											separator,
-										}: TooltipContentProps) => {
-											if (active && payload && payload.length) {
-												return (
-													<Box
-														bg="var(--mantine-color-body)"
-														bd="1px solid var(--mantine-color-default-border)"
-														p="xs"
-													>
-														<p>
-															{query.step === "d"
-																? dayjs(label).format(
-																		$setting.get("formatDate"),
-																	)
-																: label}
+			<Stack h="100%">
+				<AspectRatio ratio={16 / 9}>
+					{isEmpty ? (
+						<Center w="100%" h="100%" fz="h1" c="dimmed">
+							Данные ненашлись!
+						</Center>
+					) : (
+						<ResponsiveContainer>
+							<BarChart responsive data={ddata} onClick={handleClick}>
+								<XAxis
+									dataKey="date"
+									tickFormatter={(date) => {
+										if (
+											query.step === "s" ||
+											query.step === "m" ||
+											query.step === "h"
+										) {
+											return date;
+										}
+										return dayjs(date).format($setting.get("formatDate"));
+									}}
+								/>
+								<YAxis />
+								<Tooltip
+									content={({
+										label,
+										active,
+										payload,
+										separator,
+									}: TooltipContentProps) => {
+										if (active && payload && payload.length) {
+											return (
+												<Box
+													bg="var(--mantine-color-body)"
+													bd="1px solid var(--mantine-color-default-border)"
+													p="xs"
+												>
+													<p>
+														{query.step === "d"
+															? dayjs(label).format($setting.get("formatDate"))
+															: label}
+													</p>
+													{payload.map(({ color, name, value, hide }) => (
+														<p
+															key={name}
+															style={{
+																color,
+																textDecoration: hide
+																	? "line-through"
+																	: undefined,
+															}}
+														>
+															{name} {separator}{" "}
+															<NumberFormatter value={value as number} />
 														</p>
-														{payload.map(({ color, name, value, hide }) => (
-															<p
-																key={name}
-																style={{
-																	color,
-																	textDecoration: hide
-																		? "line-through"
-																		: undefined,
-																}}
-															>
-																{name} {separator}{" "}
-																<NumberFormatter
-																	value={value as number}
-																	thousandSeparator=" "
-																/>
-															</p>
-														))}
-													</Box>
-												);
-											}
-											return null;
-										}}
-									/>
+													))}
+												</Box>
+											);
+										}
+										return null;
+									}}
+								/>
 
-									{middle > 0 && (
-										<ReferenceLine
-											y={middle}
-											stroke="red"
-											strokeDasharray="3 3"
-										/>
-									)}
-
-									<Brush
-										dataKey="date"
-										height={20}
-										startIndex={0}
-										endIndex={labels.length - 1}
+								{middle > 0 && (
+									<ReferenceLine
+										y={middle}
+										stroke="red"
+										strokeDasharray="3 3"
 									/>
+								)}
 
-									<Bar
-										dataKey="data"
-										name="Напечатано"
-										fill={randomColorLabel("def")}
-										background
-									/>
-								</BarChart>
-							</ResponsiveContainer>
-						)}
-					</AspectRatio>
-				</Stack>
-			</Widget>
+								<Bar
+									dataKey="data"
+									name="Напечатано"
+									fill={randomColorLabel("def")}
+									background
+								/>
+							</BarChart>
+						</ResponsiveContainer>
+					)}
+				</AspectRatio>
+			</Stack>
 		);
 	},
 );

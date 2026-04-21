@@ -4,15 +4,29 @@ import {
 	useStoreDashboardMain,
 	WidgetsProvider,
 } from "@/entites/widget";
+import { useAnalytics } from "@/features/main";
 import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
-import { DualCalendarRange } from "@/shared/ui";
+import { $setting } from "@/shared";
+import { DualCalendarRange, Widget } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { TbReload } from "react-icons/tb";
+
+const stepLabel = {
+	s: "секундам",
+	m: "минутам",
+	h: "часам",
+	d: "дням",
+	w: "неделям",
+	mon: "месяцам",
+	y: "годам",
+};
 
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
@@ -25,6 +39,14 @@ export const MainPage = () => {
 	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>(
 		storeDashboardMain.getValue("$filterdate"),
 	);
+
+	const { query, fetch, reset } = useAnalytics({
+		filterdate,
+		event: "p",
+	});
+	useEffect(() => {
+		fetch({ filterdate, event: "p" });
+	}, [filterdate]);
 
 	return (
 		<Paper>
@@ -121,18 +143,46 @@ export const MainPage = () => {
 							h: 10,
 						}}
 					>
+						<Widget
+							title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
+							menu={[
+								{
+									children: "Сбросить",
+									onClick: () => {
+										setFilterdate(storeDashboardMain.getValue("$filterdate"));
+									},
+									leftSection: <TbReload />,
+								},
+							]}
+						>
+							<DashBoardWidget
+								widget="main-itog-analytics"
+								filterdate={filterdate}
+								onChange={(query: IRequestAnalytics) => {
+									setFilterdate(query.filterdate);
+								}}
+							/>
+							<DashBoardWidget
+								widget="main-labels"
+								type="table"
+								filterdate={filterdate}
+							/>
+						</Widget>
+					</div>
+					<div
+						key="labels.bar"
+						data-grid={{
+							x: 0,
+							y: Infinity,
+							w: 10,
+							h: 10,
+						}}
+					>
 						<DashBoardWidget
-							widget="main-itog-analytics"
-							filterdate={filterdate}
-							onChange={(query: IRequestAnalytics) => {
-								setFilterdate(query.filterdate);
-							}}
-						/>
-						{/* <DashBoardWidget
 							widget="main-labels"
-							type="table"
+							type="default"
 							filterdate={filterdate}
-						/> */}
+						/>
 					</div>
 					<div
 						key="labels.stack"
@@ -143,11 +193,11 @@ export const MainPage = () => {
 							h: 10,
 						}}
 					>
-						{/* <DashBoardWidget
+						<DashBoardWidget
 							widget="main-labels"
 							type="stack"
 							filterdate={filterdate}
-						/> */}
+						/>
 					</div>
 				</UiDashBoard>
 			</WidgetsProvider>

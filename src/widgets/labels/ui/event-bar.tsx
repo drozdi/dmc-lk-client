@@ -47,7 +47,7 @@ export const EventBar = ({ data = [], lines = ["p"] }: EventLineProops) => {
 								{payload.map((item) => (
 									<Text c={item.color}>
 										{item.name} {separator}{" "}
-										<NumberFormatter value={item.value} thousandSeparator=" " />
+										<NumberFormatter value={item.value} />
 									</Text>
 								))}
 							</Box>
@@ -59,9 +59,9 @@ export const EventBar = ({ data = [], lines = ["p"] }: EventLineProops) => {
 					<Bar
 						key={line}
 						dataKey={line}
+						stackId={line === "p" ? line : "a"}
 						name={ee.findLabelByCode(line)}
 						fill={ee.findColorByCode(line)}
-						type="monotone"
 						stroke={ee.findColorByCode(line)}
 						label={ee.findLabelByCode(line) as any}
 					/>

@@ -126,6 +126,13 @@ FactoryWidget.register({
 			default: "d",
 			data: es.dataSelect,
 		},
+		{
+			label: "Увеличивать до",
+			field: "stop",
+			type: "select",
+			default: "m",
+			data: ee.dataSelect,
+		},
 	],
 });
 

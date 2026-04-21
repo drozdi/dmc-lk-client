@@ -147,11 +147,7 @@ export const WidgetLabelsPie = memo(
 												<span style={{ color: entity.fill }}>
 													{entity.name}
 												</span>{" "}
-												{separator}{" "}
-												<NumberFormatter
-													value={entity.value}
-													thousandSeparator=" "
-												/>
+												{separator} <NumberFormatter value={entity.value} />
 											</Box>
 										);
 									}}

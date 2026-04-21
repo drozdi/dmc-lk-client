@@ -1,6 +1,4 @@
-import { $setting } from "@/shared";
 import { NumberFormatter, Table, TableTr } from "@mantine/core";
-import dayjs from "dayjs";
 
 export interface LabelsTableProps {
 	data: Array<{
@@ -13,7 +11,7 @@ export interface LabelsTableProps {
 
 export const LabelsTable = ({ data = [], headers = [] }: LabelsTableProps) => {
 	return (
-		<Table>
+		<Table mb="md">
 			<Table.Thead>
 				<TableTr>
 					<Table.Th>Дата</Table.Th>
@@ -26,16 +24,14 @@ export const LabelsTable = ({ data = [], headers = [] }: LabelsTableProps) => {
 			<Table.Tbody>
 				{data.map((tr) => (
 					<Table.Tr key={tr.date}>
-						<Table.Td>
-							{dayjs(tr.date).format($setting.get("formatDate"))}
-						</Table.Td>
+						<Table.Td>{tr.date}</Table.Td>
 						{headers.map((label) => (
 							<Table.Td key={label}>
-								<NumberFormatter value={tr[label]} thousandSeparator=" " />
+								<NumberFormatter value={tr[label]} />
 							</Table.Td>
 						))}
 						<Table.Td>
-							<NumberFormatter value={tr.total} thousandSeparator=" " />
+							<NumberFormatter value={tr.total} />
 						</Table.Td>
 					</Table.Tr>
 				))}

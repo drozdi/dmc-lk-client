@@ -1,23 +1,16 @@
 import { randomColorLabel } from "@/entites/labels";
-import { $setting } from "@/shared";
-import { LabelFormat } from "@/shared/ui";
-import { AspectRatio, Box } from "@mantine/core";
-import dayjs from "dayjs";
-import { memo, useEffect, useRef, useState } from "react";
+import { AspectRatio, Box, NumberFormatter } from "@mantine/core";
+import { memo, useState } from "react";
 import {
 	Bar,
 	BarChart,
-	Brush,
 	Legend,
-	ReferenceArea,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
 	type LegendPayload,
-	type MouseHandlerDataParam,
 	type TooltipContentProps,
-	type TooltipIndex,
 } from "recharts";
 
 export interface LabelsBarProps {
@@ -41,84 +34,10 @@ export const LabelsBar = memo(
 			setHide((v) => (inactive ? v.filter((i) => i !== value) : [...v, value]));
 		};
 
-		const refActive = useRef(false);
-		const [{ startIndex, endIndex }, setIndex] = useState<{
-			startIndex?: number | TooltipIndex;
-			endIndex?: number | TooltipIndex;
-		}>({
-			startIndex: 0,
-			endIndex: labels.length - 1,
-		});
-		const [rect, setRect] = useState<{
-			left?: number | TooltipIndex;
-			right?: number | TooltipIndex;
-			show?: boolean;
-		}>({
-			left: 0,
-			right: 0,
-			show: false,
-		});
-
-		const handleMouseDown = ({ activeIndex }: MouseHandlerDataParam) => {
-			setRect({
-				left: activeIndex,
-				show: true,
-			});
-			refActive.current = true;
-		};
-		const handleMouseMove = ({ activeIndex }: MouseHandlerDataParam) => {
-			if (!refActive.current) {
-				return;
-			}
-			setRect((v) => ({
-				...v,
-				right: activeIndex,
-			}));
-		};
-		const handleMouseUp = ({ activeIndex }: MouseHandlerDataParam) => {
-			if (!refActive.current) {
-				return;
-			}
-			setRect((v) => ({
-				...v,
-				right: activeIndex,
-				show: false,
-			}));
-			refActive.current = false;
-		};
-
-		useEffect(() => {
-			if (!rect.show) {
-				setIndex({
-					startIndex: Math.min(
-						(rect.left as number) || 0,
-						(rect.right as number) || (rect.left as number) || 0,
-					),
-					endIndex: Math.max(
-						(rect.left as number) || 0,
-						(rect.right as number) || (rect.left as number) || 0,
-					),
-				});
-			}
-		}, [rect.show]);
-
-		useEffect(() => {
-			setIndex({
-				startIndex: 0,
-				endIndex: labels.length - 1,
-			});
-		}, [labels]);
-
 		return (
 			<AspectRatio ratio={16 / 9}>
 				<ResponsiveContainer>
-					<BarChart
-						responsive
-						data={data}
-						onMouseDown={handleMouseDown}
-						onMouseMove={handleMouseMove}
-						onMouseUp={handleMouseUp}
-					>
+					<BarChart responsive data={data}>
 						<XAxis dataKey="date" />
 						<YAxis />
 						<Tooltip
@@ -135,10 +54,15 @@ export const LabelsBar = memo(
 											bd="1px solid var(--mantine-color-default-border)"
 											p="xs"
 										>
-											<p>{dayjs(label).format($setting.get("formatDate"))}</p>
+											<p>{label}</p>
 											<p>
 												Всего{separator}{" "}
-												{payload.reduce((acc, { value }) => acc + value, 0)}
+												<NumberFormatter
+													value={payload.reduce(
+														(acc, { value }) => acc + value,
+														0,
+													)}
+												/>
 											</p>
 											{payload.map(({ color, name, value, hide }) => (
 												<p
@@ -148,7 +72,7 @@ export const LabelsBar = memo(
 														textDecoration: hide ? "line-through" : undefined,
 													}}
 												>
-													{name} {separator} {value}
+													{name} {separator} <NumberFormatter value={value} />
 												</p>
 											))}
 										</Box>
@@ -167,33 +91,13 @@ export const LabelsBar = memo(
 											textDecoration: "line-through",
 										}}
 									>
-										<LabelFormat>{value}</LabelFormat>
+										{value}
 									</span>
 								) : (
-									<span>
-										<LabelFormat>{value}</LabelFormat>
-									</span>
+									<span>{value}</span>
 								)
 							}
 							onClick={onLegendClick}
-						/>
-
-						{rect.show ? (
-							<ReferenceArea
-								x1={
-									labels[Math.min(rect.left || 0, rect.right || rect.left || 0)]
-								}
-								x2={
-									labels[Math.max(rect.left || 0, rect.right || rect.left || 0)]
-								}
-								strokeOpacity={0.3}
-							/>
-						) : null}
-						<Brush
-							dataKey="date"
-							height={20}
-							startIndex={startIndex}
-							endIndex={endIndex}
 						/>
 
 						{bars.map((bar, index) => (

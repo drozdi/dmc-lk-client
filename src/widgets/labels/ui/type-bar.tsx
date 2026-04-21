@@ -39,10 +39,7 @@ export const TypeBar = memo(({ data, bars }: TypeBarProps) => {
 									{label}
 								</span>
 								{separator}
-								<NumberFormatter
-									value={payload[0]?.value as number}
-									thousandSeparator=" "
-								/>
+								<NumberFormatter value={payload[0]?.value as number} />
 							</Box>
 						);
 					}}

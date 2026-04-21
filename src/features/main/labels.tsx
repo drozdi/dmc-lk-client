@@ -1,50 +1,34 @@
-import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
-import { Widget, type WidgetProps } from "@/shared/ui";
 import { labelName } from "@/shared/utils";
 import { Center, Checkbox, Group, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useAnalytics } from "./hooks";
 import { LabelsBar } from "./ui/labels-bar";
 import { LabelsTable } from "./ui/labels-table";
 
-const stepLabel = {
-	s: "секундам",
-	m: "минутам",
-	h: "часам",
-	d: "дням",
-	mon: "месяцам",
-	y: "годам",
-};
-
-export interface WidgetMainTypeProps extends Omit<
-	WidgetProps,
-	"children" | "title"
-> {
-	title?: WidgetProps["title"];
+export interface MainLabelsProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	event?: IRequestAnalytics["event"];
 	step?: IRequestAnalytics["step"];
 	type: "stack" | "default" | "table";
 }
 
-export const WidgetMainLabels = memo(
+export const MainLabels = memo(
 	({
-		title,
 		filterdate,
 		step = "d",
 		event = "p",
 		type = "default",
-		...props
-	}: WidgetMainTypeProps) => {
+	}: MainLabelsProps) => {
 		const { production_id } = useStoreUserProfile();
-		const [query, setQuery] = useState<IRequestAnalytics>({
+
+		const { fetch, data, query } = useAnalytics({
 			filterdate,
 			step,
 			event,
 		});
-		const { isLoading, fetch, data, error } = useQueryAnalytics(query);
 
 		const [filterGap, setFilterGap] = useState<boolean>(true);
 
@@ -58,14 +42,24 @@ export const WidgetMainLabels = memo(
 
 		// Извлекаем список дат
 		const labels = useMemo<string[]>(() => {
-			const cnt = dayjs(filterdate[1]).diff(filterdate[0], "d");
+			const step = query.step === "mon" ? "M" : query.step;
+			const s = dayjs(query.filterdate[0]).startOf(step);
+			const e = dayjs(query.filterdate[1]).startOf(step);
+			const cnt = dayjs(e).diff(s, step);
 			const labels: string[] = [];
-			const d = dayjs(filterdate[0]);
 			for (let i = 0; i <= cnt; i++) {
-				labels.push(d.add(i, "d").format("YYYY-MM-DD"));
+				if (step === "h") {
+					labels.push(s.add(i, "h").format("HH"));
+				} else if (step === "m") {
+					labels.push(s.add(i, "m").format("mm"));
+				} else if (step === "s") {
+					labels.push(s.add(i, "s").format("ss"));
+				} else {
+					labels.push(s.add(i, step).format("YYYY-MM-DD"));
+				}
 			}
 			return labels;
-		}, [filterdate]);
+		}, [query.filterdate, query.step]);
 
 		// Извлекаем, групируем данные
 		const ddata = useMemo<
@@ -87,10 +81,21 @@ export const WidgetMainLabels = memo(
 						continue;
 					}
 					for (const item of prod.data) {
-						if (item.data.length > 12) {
+						if (item.data.length > 15) {
 							continue;
 						}
-						const date = dayjs(item.timestamp).format("YYYY-MM-DD");
+						let date = dayjs(item.timestamp).format("YYYY-MM-DD");
+						if (query.step === "h") {
+							date = dayjs(item.timestamp).format("HH");
+						} else if (query.step === "m") {
+							date = dayjs(item.timestamp).format("mm");
+						} else if (query.step === "s") {
+							date = dayjs(item.timestamp).format("ss");
+						}
+						if (!labels.includes(date)) {
+							continue;
+						}
+
 						const label = formatName(item.data);
 						ddata[date] = ddata[date] || {
 							total: 0,
@@ -118,59 +123,44 @@ export const WidgetMainLabels = memo(
 
 		const isEmpty = useMemo(() => !ddata.length, [bars]);
 
+		const formatData = useMemo(() => {
+			return ddata
+				.filter((v) => v.total > 0)
+				.map((item) => {
+					const date = ["s", "m", "h"].includes(query.step)
+						? item.date
+						: dayjs(item.date).format($setting.get("formatDate"));
+					return {
+						...item,
+						date,
+					};
+				});
+		}, [ddata, query.step]);
+
 		useEffect(() => {
-			setQuery((v) => ({
-				...v,
+			fetch({
 				filterdate,
 				step,
-			}));
+			});
 		}, [filterdate, step]);
 
-		useEffect(() => {
-			fetch();
-		}, [query]);
-
-		const computedTitle = useMemo(() => {
-			if (title) {
-				return title;
-			}
-			if (event === "d") {
-				return "Дефект";
-			} else if (event === "i") {
-				return "Инциденты";
-			} else if (event === "v") {
-				return "Проверенно";
-			}
-			return "Напечатано";
-		}, [title, event]);
-
-		return (
-			<Widget
-				error={error}
-				loading={isLoading}
-				{...props}
-				title={computedTitle}
-				subTitle={`${dayjs(query.filterdate[0]).format($setting.get("formatDate"))} - ${dayjs(query.filterdate[1]).format($setting.get("formatDate"))}`}
-			>
-				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
-					</Center>
-				) : type === "table" ? (
-					<LabelsTable data={ddata} headers={bars} />
-				) : (
-					<Stack h="100%">
-						<Group gap="0" justify="flex-end">
-							<Checkbox
-								onChange={(e) => setFilterGap(e.target.checked)}
-								checked={filterGap}
-								label="Группировать по G"
-							/>
-						</Group>
-						<LabelsBar type={type} data={ddata} bars={bars} labels={labels} />
-					</Stack>
-				)}
-			</Widget>
+		return isEmpty ? (
+			<Center w="100%" h="100%" fz="h1" c="dimmed">
+				Данные ненашлись!
+			</Center>
+		) : type === "table" ? (
+			<LabelsTable data={formatData} headers={bars} />
+		) : (
+			<Stack h="100%">
+				<Group gap="0" justify="flex-end">
+					<Checkbox
+						onChange={(e) => setFilterGap(e.target.checked)}
+						checked={filterGap}
+						label="Группировать по G"
+					/>
+				</Group>
+				<LabelsBar type={type} data={formatData} bars={bars} labels={labels} />
+			</Stack>
 		);
 	},
 );

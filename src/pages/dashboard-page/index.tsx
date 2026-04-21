@@ -86,6 +86,7 @@ export const DashboardPage = () => {
 						<DashBoardWidget
 							widget="labels-event"
 							type="bar"
+							lines={["v", "d", "p"]}
 							filterdate="$filterdate"
 						/>
 					</div>
