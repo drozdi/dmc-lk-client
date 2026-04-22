@@ -1,3 +1,8 @@
+import {
+	useEnumsEvents,
+	useEnumsStep,
+	useQueryAnalytics,
+} from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
@@ -10,7 +15,7 @@ import {
 } from "@mantine/core";
 import type { DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import {
 	Bar,
 	BarChart,
@@ -19,88 +24,173 @@ import {
 	Tooltip,
 	XAxis,
 	YAxis,
+	type BarShapeProps,
 	type MouseHandlerDataParam,
 	type TooltipContentProps,
 } from "recharts";
-import { useAnalytics } from "./hooks/use-analytics";
+import { useLabels } from "./hooks";
+import { corectQuery } from "./utils";
+
+type Element = Record<AnalyticEvent, number>;
 
 export interface MainItogAnalyticsProps extends Partial<IRequestAnalytics> {
 	filterdate: IRequestAnalytics["filterdate"];
-	onChange?: (filterdate: IRequestAnalytics) => void;
+	onChange?: (query: IRequestAnalytics) => void;
+	lines?: AnalyticEvent[];
 	stop?: SliceStep;
 }
+
+const ee = useEnumsEvents();
+const es = useEnumsStep();
+
+const ititValue = Object.fromEntries(
+	Object.keys(ee.data).map((item) => [item, 0]),
+);
+
+const CustomNestedBar = (props: BarShapeProps) => {
+	const { x, y, width, height, payload, fill } = props;
+	const { total, v } = payload;
+	const totalHeight = (height / v) * total;
+	const gap = Math.min(16, width * 0.25);
+
+	return (
+		<g>
+			<rect
+				x={x}
+				y={y - (totalHeight - height)}
+				width={width}
+				height={totalHeight}
+				fill={randomColorLabel("def")}
+			/>
+			<rect
+				x={x + gap}
+				y={y}
+				width={width - 2 * gap}
+				height={height}
+				fill={fill}
+			/>
+		</g>
+	);
+};
+
+const CustomNestedBar1 = (props: BarShapeProps) => {
+	const { x, y, width, height, fill } = props;
+	const gap = Math.min(16, width * 0.25);
+
+	return (
+		<g>
+			<rect
+				x={x + gap}
+				y={y}
+				width={width - 2 * gap}
+				height={height}
+				fill={fill}
+			/>
+		</g>
+	);
+};
 
 export const MainItogAnalytics = memo(
 	({
 		filterdate,
-		event = "p",
 		stop = "m",
+		lines = ["d", "v"],
 		onChange,
 	}: MainItogAnalyticsProps) => {
 		const { production_id } = useStoreUserProfile();
-
-		const { fetch, data, query } = useAnalytics(
-			{
-				filterdate,
-				event,
-			},
-			onChange,
+		const [query, setQuery] = useState<IRequestAnalytics>(
+			corectQuery({ filterdate } as IRequestAnalytics),
 		);
+		const { isLoading, fetch } = useQueryAnalytics(query);
 
-		// Извлекаем список дат
-		const labels = useMemo<string[]>(() => {
-			const step = query.step === "mon" ? "M" : query.step;
-			const s = dayjs(query.filterdate[0]).startOf(step);
-			const e = dayjs(query.filterdate[1]).startOf(step);
-			const cnt = dayjs(e).diff(s, step);
-			const labels: string[] = [];
-			for (let i = 0; i <= cnt; i++) {
-				if (step === "h") {
-					labels.push(s.add(i, "h").format("HH"));
-				} else if (step === "m") {
-					labels.push(s.add(i, "m").format("mm"));
-				} else {
-					labels.push(s.add(i, step).format("YYYY-MM-DD"));
-				}
-			}
-			return labels;
-		}, [query.filterdate, query.step]);
+		const [data, setData] =
+			useState<Record<AnalyticEvent, IResponseAnalytics>>();
+
+		useEffect(() => {
+			(async function () {
+				setData({
+					v: (await fetch(
+						corectQuery({ ...query, event: "v" }),
+					)) as IResponseAnalytics,
+					d: (await fetch(
+						corectQuery({ ...query, event: "d" }),
+					)) as IResponseAnalytics,
+					p: (await fetch(
+						corectQuery({ ...query, event: "p" }),
+					)) as IResponseAnalytics,
+					i: (await fetch(
+						corectQuery({ ...query, event: "i" }),
+					)) as IResponseAnalytics,
+				});
+			})();
+			onChange?.(query);
+		}, [query, onChange]);
+
+		useEffect(() => {
+			setQuery((prev) => corectQuery({ ...prev, filterdate }));
+		}, [filterdate]);
+
+		const labels = useLabels(query);
 
 		// Извлекаем, групируем данные
 		const ddata = useMemo(() => {
+			if (!data) {
+				return [];
+			}
 			const step = query.step === "mon" ? "M" : query.step;
-			let ddata = [];
+			const currProduction = Number(production_id || 0);
+			const ddata: Record<string, Element> = {};
+
 			for (const date of labels) {
-				const el: {
-					date: string;
-					data: number;
-				} = {
-					date,
-					data: 0,
-				};
-				for (const prod of data.production) {
-					for (const item of prod.data) {
-						if (step === "m") {
-							if (dayjs(item.timestamp).format("mm") === date) {
-								el.data += item.count;
-							}
-						} else if (step === "h") {
-							if (dayjs(item.timestamp).format("HH") === date) {
-								el.data += item.count;
-							}
-						} else {
-							if (dayjs(item.timestamp).format("YYYY-MM-DD") === date) {
-								el.data += item.count;
+				ddata[date] = ddata[date] || ({ ...ititValue } as Element);
+
+				for (const event in data) {
+					for (const production of data[event as AnalyticEvent]?.production ||
+						[]) {
+						if (
+							currProduction > 0 &&
+							production.production_id !== currProduction
+						) {
+							continue;
+						}
+
+						for (const item of production.data) {
+							if (step === "s") {
+								if (dayjs(item.timestamp).format("ss") === date) {
+									ddata[date][event as AnalyticEvent] += item.count;
+								}
+							} else if (step === "m") {
+								if (dayjs(item.timestamp).format("mm") === date) {
+									ddata[date][event as AnalyticEvent] += item.count;
+								}
+							} else if (step === "h") {
+								if (dayjs(item.timestamp).format("HH") === date) {
+									ddata[date][event as AnalyticEvent] += item.count;
+								}
+							} else {
+								if (dayjs(item.timestamp).format("YYYY-MM-DD") === date) {
+									ddata[date][event as AnalyticEvent] += item.count;
+								}
 							}
 						}
 					}
 				}
-				ddata.push(el);
 			}
-			return ddata;
+			return Object.entries(ddata)
+				.map(([date, data]) => ({
+					...data,
+					date,
+				}))
+				.map((item) => ({
+					...item,
+					total: lines.reduce((acc, key) => acc + item[key] || 0, 0),
+				}));
 		}, [data, labels, query.step]);
 
-		const middle = useMemo(() => Math.round(data.average_company) || 0, [data]);
+		const middle = useMemo(
+			() => Math.round(data?.v?.average_company || 0),
+			[data],
+		);
 
 		const bars = useMemo(() => {
 			const bars = [];
@@ -112,16 +202,8 @@ export const MainItogAnalytics = memo(
 
 		const isEmpty = useMemo(() => !ddata.length, [bars]);
 
-		useEffect(() => {
-			fetch({
-				filterdate,
-				event,
-			});
-		}, [filterdate, event]);
-
 		const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
-			const target = e.target as HTMLElement;
-			if (query.step === stop || target?.closest(".recharts-brush")) {
+			if (query.step === stop) {
 				return;
 			}
 			const step =
@@ -170,11 +252,7 @@ export const MainItogAnalytics = memo(
 					.format("YYYY-MM-DD");
 				filterdate[1] = dayjs(arg.activeLabel).endOf("y").format("YYYY-MM-DD");
 			}
-
-			fetch({
-				filterdate,
-				step,
-			});
+			setQuery(corectQuery({ ...query, filterdate, step }));
 		};
 
 		return (
@@ -186,7 +264,12 @@ export const MainItogAnalytics = memo(
 						</Center>
 					) : (
 						<ResponsiveContainer>
-							<BarChart responsive data={ddata} onClick={handleClick}>
+							<BarChart
+								responsive
+								stackOffset="positive"
+								data={ddata}
+								onClick={handleClick}
+							>
 								<XAxis
 									dataKey="date"
 									tickFormatter={(date) => {
@@ -202,12 +285,9 @@ export const MainItogAnalytics = memo(
 								/>
 								<YAxis />
 								<Tooltip
-									content={({
-										label,
-										active,
-										payload,
-										separator,
-									}: TooltipContentProps) => {
+									content={(arg: TooltipContentProps) => {
+										const { label, active, payload, separator, activeIndex } =
+											arg;
 										if (active && payload && payload.length) {
 											return (
 												<Box
@@ -216,22 +296,27 @@ export const MainItogAnalytics = memo(
 													p="xs"
 												>
 													<p>
-														{query.step === "d"
-															? dayjs(label).format($setting.get("formatDate"))
-															: label}
+														{["s", "m", "h"].includes(query.step)
+															? label
+															: dayjs(label).format($setting.get("formatDate"))}
 													</p>
-													{payload.map(({ color, name, value, hide }) => (
+													<p>
+														Всего {separator}{" "}
+														<NumberFormatter
+															value={ddata[activeIndex].total as number}
+														/>
+													</p>
+													{lines.map((name) => (
 														<p
 															key={name}
 															style={{
-																color,
-																textDecoration: hide
-																	? "line-through"
-																	: undefined,
+																color: ee.findColorByCode(name),
 															}}
 														>
-															{name} {separator}{" "}
-															<NumberFormatter value={value as number} />
+															{ee.findLabelByCode(name)} {separator}{" "}
+															<NumberFormatter
+																value={ddata[activeIndex][name] as number}
+															/>
 														</p>
 													))}
 												</Box>
@@ -248,12 +333,20 @@ export const MainItogAnalytics = memo(
 										strokeDasharray="3 3"
 									/>
 								)}
-
 								<Bar
-									dataKey="data"
-									name="Напечатано"
-									fill={randomColorLabel("def")}
+									dataKey="v"
+									stackId="a"
+									name={ee.findLabelByCode("v")}
+									fill={ee.findColorByCode("v")}
 									background
+									shape={CustomNestedBar}
+								/>
+								<Bar
+									dataKey="d"
+									stackId="a"
+									name={ee.findLabelByCode("d")}
+									fill={ee.findColorByCode("d")}
+									shape={CustomNestedBar1}
 								/>
 							</BarChart>
 						</ResponsiveContainer>

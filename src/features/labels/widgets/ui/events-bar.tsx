@@ -16,14 +16,20 @@ import {
 
 const ee = useEnumsEvents();
 
-export interface EventLineProops {
+export interface EventsBarProps {
+	query: IRequestAnalytics;
 	data: (Record<AnalyticEvent, number> & {
 		date: string;
+		total: number;
 	})[];
-	lines?: AnalyticEvent[];
+	events?: AnalyticEvent[];
 }
 
-export const EventBar = ({ data = [], lines = ["p"] }: EventLineProops) => {
+export const EventsBar = ({
+	query,
+	data = [],
+	events = [],
+}: EventsBarProps) => {
 	return (
 		<ResponsiveContainer>
 			<BarChart data={data}>
@@ -55,11 +61,10 @@ export const EventBar = ({ data = [], lines = ["p"] }: EventLineProops) => {
 					}}
 				/>
 				<Legend />
-				{lines.map((line) => (
+				{events.map((line) => (
 					<Bar
 						key={line}
 						dataKey={line}
-						stackId={line === "p" ? line : "a"}
 						name={ee.findLabelByCode(line)}
 						fill={ee.findColorByCode(line)}
 						stroke={ee.findColorByCode(line)}

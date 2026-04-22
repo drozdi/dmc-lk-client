@@ -1,7 +1,7 @@
 import { MainItogSet, type MainItogSetProps } from "@/features/main/itog-set";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { memo, useEffect, useMemo } from "react";
-import { useAnalytics } from "./hooks/use-analytics";
+import { useAnalytics } from "../../entites/analytics/hooks/use-analytics";
 
 export interface WidgetMainItogSetProps
 	extends Omit<WidgetProps, "title" | "children">, MainItogSetProps {
@@ -10,16 +10,15 @@ export interface WidgetMainItogSetProps
 
 export const WidgetMainItogSet = memo(
 	({
-		title,
-		type = "sum",
-		event = "p",
 		filterdate,
+		event = "p",
+		type = "sum",
+		title,
 		...props
 	}: WidgetMainItogSetProps) => {
-		const { isLoading, error, fetch } = useAnalytics({
+		const { isLoading, error, fetch, query } = useAnalytics({
 			filterdate,
 			event,
-			step: "d",
 		});
 
 		const computedTitle = useMemo(() => {
@@ -60,7 +59,7 @@ export const WidgetMainItogSet = memo(
 								: "Максимальное значение"
 				}
 			>
-				<MainItogSet filterdate={filterdate} type={type} event={event} />
+				<MainItogSet {...query} type={type} />
 			</Widget>
 		);
 	},

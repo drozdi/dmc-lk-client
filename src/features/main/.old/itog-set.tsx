@@ -1,4 +1,3 @@
-import { useEnumsEvents } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { LabelFormat, Text } from "@/shared/ui";
@@ -11,21 +10,15 @@ export interface MainItogSetProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	event?: IRequestAnalytics["event"];
 	type?: "avg" | "min" | "max" | "sum";
-	onChange?: (query: IRequestAnalytics) => void;
 }
 
-const ee = useEnumsEvents();
-
 export const MainItogSet = memo(
-	({ type = "sum", event = "p", filterdate, onChange }: MainItogSetProps) => {
+	({ type = "sum", event = "p", filterdate }: MainItogSetProps) => {
 		const { production_id } = useStoreUserProfile();
-		const { data, fetch, query } = useAnalytics(
-			{
-				filterdate,
-				event,
-			},
-			onChange,
-		);
+		const { data, fetch } = useAnalytics({
+			filterdate,
+			event,
+		});
 
 		let value = useMemo(() => {
 			if (!data) {
@@ -73,7 +66,7 @@ export const MainItogSet = memo(
 			(data?.production || []).forEach((production) => {
 				production.data.forEach((item) => {
 					if (item.count === value) {
-						if (["p"].includes(query.event) && item.data.length > 15) {
+						if (item.data.length > 15) {
 							return;
 						}
 						info.push({
@@ -85,7 +78,7 @@ export const MainItogSet = memo(
 				});
 			});
 			return info;
-		}, [value, data, query.event, type, production_id]);
+		}, [value, data, type, production_id]);
 
 		const groupInfo = useMemo<
 			{
@@ -115,19 +108,10 @@ export const MainItogSet = memo(
 			});
 		}, [filterdate, event]);
 
-		if (query.event === "d") {
-			console.log(value, info);
-		}
 		return (
 			<HoverCard disabled={info.length === 0} width={300}>
 				<HoverCard.Target>
-					<Text
-						fz="3rem"
-						ta="right"
-						c={
-							["d"].includes(query.event) ? ee.findColorByCode(query.event) : ""
-						}
-					>
+					<Text fz="3rem" ta="right">
 						<NumberFormatter value={value} />
 					</Text>
 				</HoverCard.Target>

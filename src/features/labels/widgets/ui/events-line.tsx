@@ -17,13 +17,18 @@ import {
 const ee = useEnumsEvents();
 
 export interface EventLineProops {
+	query: IRequestAnalytics;
 	data: (Record<AnalyticEvent, number> & {
 		date: string;
 	})[];
-	lines?: AnalyticEvent[];
+	events?: AnalyticEvent[];
 }
 
-export const EventLine = ({ data = [], lines = ["p"] }: EventLineProops) => {
+export const EventsLine = ({
+	query,
+	data = [],
+	events = [],
+}: EventLineProops) => {
 	return (
 		<ResponsiveContainer>
 			<LineChart data={data}>
@@ -55,14 +60,14 @@ export const EventLine = ({ data = [], lines = ["p"] }: EventLineProops) => {
 					}}
 				/>
 				<Legend />
-				{lines.map((line) => (
+				{events.map((event) => (
 					<Line
-						key={line}
-						dataKey={line}
-						name={ee.findLabelByCode(line)}
+						key={event}
+						dataKey={event}
+						name={ee.findLabelByCode(event)}
 						type="monotone"
-						stroke={ee.findColorByCode(line)}
-						label={ee.findLabelByCode(line) as any}
+						stroke={ee.findColorByCode(event)}
+						label={ee.findLabelByCode(event) as any}
 					/>
 				))}
 			</LineChart>

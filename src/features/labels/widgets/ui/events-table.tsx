@@ -6,34 +6,47 @@ import dayjs from "dayjs";
 const ee = useEnumsEvents();
 
 export interface EventTableProps {
+	query: IRequestAnalytics;
 	data: (Record<AnalyticEvent, number> & {
 		date: string;
+		total: number;
 	})[];
-	lines?: AnalyticEvent[];
+	events?: AnalyticEvent[];
 }
 
-export const EventTable = ({ data = [], lines = ["p"] }: EventTableProps) => {
+export const EventsTable = ({
+	query,
+	data = [],
+	events = ["p"],
+}: EventTableProps) => {
+	console.log(query);
 	return (
 		<Table>
 			<Table.Thead>
 				<Table.Tr>
 					<Table.Th>Дата</Table.Th>
-					{lines.map((line) => (
-						<Table.Th key={line}>{ee.findLabelByCode(line)}</Table.Th>
+					{events.map((event) => (
+						<Table.Th key={event}>{ee.findLabelByCode(event)}</Table.Th>
 					))}
+					<Table.Th>Всего</Table.Th>
 				</Table.Tr>
 			</Table.Thead>
 			<Table.Tbody>
 				{data.map((tr) => (
 					<Table.Tr key={tr.date}>
 						<Table.Td>
-							{dayjs(tr.date).format($setting.get("formatDate"))}
+							{["s", "m", "h"].includes(query.step)
+								? tr.date
+								: dayjs(tr.date).format($setting.get("formatDate"))}
 						</Table.Td>
-						{lines.map((line) => (
-							<Table.Td key={line}>
-								<NumberFormatter value={tr[line]} />
+						{events.map((event) => (
+							<Table.Td key={event}>
+								<NumberFormatter value={tr[event]} />
 							</Table.Td>
 						))}
+						<Table.Td>
+							<NumberFormatter value={tr.total} />
+						</Table.Td>
 					</Table.Tr>
 				))}
 			</Table.Tbody>

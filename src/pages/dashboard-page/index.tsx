@@ -60,7 +60,7 @@ export const DashboardPage = () => {
 					}}
 				>
 					<div
-						key="labels-event-table"
+						key="labels-events-table"
 						data-grid={{
 							x: 0,
 							y: 0,
@@ -69,13 +69,13 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-event"
+							widget="labels-events"
 							type="table"
 							filterdate="$filterdate"
 						/>
 					</div>
 					<div
-						key="labels-event-bar"
+						key="labels-events-bar"
 						data-grid={{
 							x: 6,
 							y: 0,
@@ -84,14 +84,14 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-event"
+							widget="labels-events"
 							type="bar"
-							lines={["v", "d", "p"]}
+							events={["v", "d", "p"]}
 							filterdate="$filterdate"
 						/>
 					</div>
 					<div
-						key="labels-event"
+						key="labels-events"
 						data-grid={{
 							x: 0,
 							y: 6,
@@ -99,7 +99,7 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="labels-event" filterdate="$filterdate" />
+						<DashBoardWidget widget="labels-events" filterdate="$filterdate" />
 					</div>
 					<div
 						key="labels-pie"

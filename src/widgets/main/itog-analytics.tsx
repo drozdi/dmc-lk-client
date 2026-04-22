@@ -7,7 +7,7 @@ import { Widget, type WidgetProps } from "@/shared/ui";
 import dayjs from "dayjs";
 import { memo, useEffect } from "react";
 import { TbReload } from "react-icons/tb";
-import { useAnalytics } from "./hooks/use-analytics";
+import { useAnalytics } from "../../entites/analytics/hooks/use-analytics";
 
 const stepLabel = {
 	s: "секундам",

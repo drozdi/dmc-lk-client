@@ -85,7 +85,7 @@ export const MainPage = () => {
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
 							type="sum"
 						/>
 					</div>
@@ -100,7 +100,7 @@ export const MainPage = () => {
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
 							type="avg"
 						/>
 					</div>
@@ -115,7 +115,7 @@ export const MainPage = () => {
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
 							type="min"
 						/>
 					</div>
@@ -130,7 +130,23 @@ export const MainPage = () => {
 					>
 						<DashBoardWidget
 							widget="main-itog-set"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
+							type="max"
+						/>
+					</div>
+					<div
+						key="itog.d.max"
+						data-grid={{
+							x: 10,
+							y: 6,
+							w: 2,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget
+							widget="main-itog-set"
+							filterdate={query.filterdate}
+							event="d"
 							type="max"
 						/>
 					</div>
@@ -156,17 +172,30 @@ export const MainPage = () => {
 							]}
 						>
 							<DashBoardWidget
+								widget="labels-events"
+								type="analytic"
+								events={["v", "d"]}
+								filterdate={query.filterdate}
+								step={query.step}
+							/>
+							<DashBoardWidget
 								widget="main-itog-analytics"
-								filterdate={filterdate}
+								filterdate={query.filterdate}
 								onChange={(query: IRequestAnalytics) => {
 									setFilterdate(query.filterdate);
 								}}
 							/>
 							<DashBoardWidget
+								widget="labels-events"
+								type="table"
+								events={["v", "d"]}
+								{...query}
+							/>
+							{/* <DashBoardWidget
 								widget="main-labels"
 								type="table"
 								filterdate={filterdate}
-							/>
+							/> */}
 						</Widget>
 					</div>
 					<div
@@ -181,7 +210,7 @@ export const MainPage = () => {
 						<DashBoardWidget
 							widget="main-labels"
 							type="default"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
 						/>
 					</div>
 					<div
@@ -196,7 +225,7 @@ export const MainPage = () => {
 						<DashBoardWidget
 							widget="main-labels"
 							type="stack"
-							filterdate={filterdate}
+							filterdate={query.filterdate}
 						/>
 					</div>
 				</UiDashBoard>

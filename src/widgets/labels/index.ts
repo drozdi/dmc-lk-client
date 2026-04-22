@@ -1,6 +1,6 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetLabelsEvent } from "./event";
+import { WidgetLabelsEvents } from "./events";
 import { WidgetLabelsPie } from "./pie";
 import { WidgetLabelsType } from "./type";
 
@@ -50,8 +50,8 @@ FactoryWidget.register({
 	],
 });
 FactoryWidget.register({
-	type: "labels-event",
-	component: WidgetLabelsEvent,
+	type: "labels-events",
+	component: WidgetLabelsEvents,
 	label: "График за",
 	description: "График за (Description)",
 	params: [
@@ -70,7 +70,7 @@ FactoryWidget.register({
 		},
 		{
 			label: "События",
-			field: "event",
+			field: "events",
 			type: "select:array",
 			required: true,
 			default: ["p"],
@@ -100,6 +100,6 @@ FactoryWidget.register({
 });
 
 export * from "../analytics/count";
-export * from "./event";
+export * from "./events";
 export * from "./pie";
 export * from "./type";

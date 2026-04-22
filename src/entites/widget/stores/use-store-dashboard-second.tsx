@@ -15,7 +15,7 @@ export const useStoreDashboardSecond = factoryDashboardStore({
 		"labels-type",
 		"labels-pie",
 		"labels-count",
-		"labels-event",
+		"labels-events",
 	],
 	varibles: {
 		$filterdate: {
