@@ -60,7 +60,7 @@ export const DashboardPage = () => {
 					}}
 				>
 					<div
-						key="labels-events-table"
+						key="analytic-events-table"
 						data-grid={{
 							x: 0,
 							y: 0,
@@ -69,13 +69,13 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-events"
+							widget="analytic-events"
 							type="table"
 							filterdate="$filterdate"
 						/>
 					</div>
 					<div
-						key="labels-events-bar"
+						key="analytic-events-bar"
 						data-grid={{
 							x: 6,
 							y: 0,
@@ -84,14 +84,14 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-events"
+							widget="analytic-events"
 							type="bar"
 							events={["v", "d", "p"]}
 							filterdate="$filterdate"
 						/>
 					</div>
 					<div
-						key="labels-events"
+						key="analytic-events"
 						data-grid={{
 							x: 0,
 							y: 6,
@@ -99,10 +99,14 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="labels-events" filterdate="$filterdate" />
+						<DashBoardWidget
+							widget="analytic-events"
+							filterdate="$filterdate"
+						/>
 					</div>
+
 					<div
-						key="labels-pie"
+						key="analytic-events-analitic"
 						data-grid={{
 							x: 6,
 							y: 6,
@@ -111,13 +115,14 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-pie"
+							widget="analytic-events"
+							type="analytic"
+							events={["v", "d", "i"]}
 							filterdate="$filterdate"
-							step="mon"
 						/>
 					</div>
 					<div
-						key="labels-type"
+						key="analytic-pie"
 						data-grid={{
 							x: 0,
 							y: 12,
@@ -126,7 +131,23 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="labels-type"
+							widget="analytic-pie"
+							events={["v", "d", "p"]}
+							filterdate="$filterdate"
+							step="mon"
+						/>
+					</div>
+					<div
+						key="analytic-type"
+						data-grid={{
+							x: 6,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-type"
 							filterdate="$filterdate"
 							step="mon"
 						/>
@@ -134,8 +155,8 @@ export const DashboardPage = () => {
 					<div
 						key="analytics-incident"
 						data-grid={{
-							x: 6,
-							y: 12,
+							x: 0,
+							y: 18,
 							w: 6,
 							h: 6,
 						}}
@@ -145,11 +166,10 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
-
 					<div
 						key="analytics-count"
 						data-grid={{
-							x: 0,
+							x: 6,
 							y: 18,
 							w: 6,
 							h: 6,
@@ -163,8 +183,8 @@ export const DashboardPage = () => {
 					<div
 						key="count"
 						data-grid={{
-							x: 6,
-							y: 18,
+							x: 0,
+							y: 24,
 							w: 6,
 							h: 6,
 						}}

@@ -3,35 +3,31 @@ import { $setting } from "@/shared";
 import { Box, NumberFormatter, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import {
+	Bar,
+	BarChart,
 	CartesianGrid,
 	Legend,
-	Line,
-	LineChart,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
 	type TooltipContentProps,
 } from "recharts";
+import type { EventsProps } from "./type";
+
+export interface EventsBarProps extends EventsProps {}
 
 const ee = useEnumsEvents();
 
-export interface EventLineProops {
-	query: IRequestAnalytics;
-	data: (Record<AnalyticEvent, number> & {
-		date: string;
-	})[];
-	events?: AnalyticEvent[];
-}
-
-export const EventsLine = ({
+export const EventsBar = ({
 	query,
 	data = [],
 	events = [],
-}: EventLineProops) => {
+	...props
+}: EventsBarProps) => {
 	return (
 		<ResponsiveContainer>
-			<LineChart data={data}>
+			<BarChart data={data} {...props}>
 				<CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
 				<XAxis
 					dataKey="date"
@@ -60,17 +56,17 @@ export const EventsLine = ({
 					}}
 				/>
 				<Legend />
-				{events.map((event) => (
-					<Line
-						key={event}
-						dataKey={event}
-						name={ee.findLabelByCode(event)}
-						type="monotone"
-						stroke={ee.findColorByCode(event)}
-						label={ee.findLabelByCode(event) as any}
+				{events.map((line) => (
+					<Bar
+						key={line}
+						dataKey={line}
+						name={ee.findLabelByCode(line)}
+						fill={ee.findColorByCode(line)}
+						stroke={ee.findColorByCode(line)}
+						label={ee.findLabelByCode(line) as any}
 					/>
 				))}
-			</LineChart>
+			</BarChart>
 		</ResponsiveContainer>
 	);
 };

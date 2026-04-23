@@ -14,15 +14,9 @@ import {
 	type BarShapeProps,
 	type TooltipContentProps,
 } from "recharts";
+import type { EventsProps } from "./type";
 
-export interface EventsAnalyticProps {
-	query: IRequestAnalytics;
-	data: (Record<AnalyticEvent, number> & {
-		date: string;
-		total: number;
-	})[];
-	events?: AnalyticEvent[];
-}
+export interface EventsAnalyticProps extends EventsProps {}
 
 const ee = useEnumsEvents();
 const es = useEnumsStep();
@@ -30,8 +24,12 @@ const es = useEnumsStep();
 const CustomNestedBar = (props: BarShapeProps) => {
 	const { x, y, width, height, payload, fill } = props;
 	const { total, v } = payload;
-	const totalHeight = (height / v) * total;
+	let totalHeight = (height / v) * total;
 	const gap = Math.min(16, width * 0.25);
+
+	if (Number.isNaN(totalHeight)) {
+		totalHeight = height;
+	}
 
 	return (
 		<g>
@@ -71,10 +69,10 @@ const CustomNestedBar1 = (props: BarShapeProps) => {
 };
 
 export const EventsAnalytic = memo(
-	({ query, data, events = [] }: EventsAnalyticProps) => {
+	({ query, data, events = [], ...props }: EventsAnalyticProps) => {
 		return (
 			<ResponsiveContainer>
-				<BarChart responsive stackOffset="positive" data={data}>
+				<BarChart responsive stackOffset="positive" data={data} {...props}>
 					<XAxis
 						dataKey="date"
 						tickFormatter={(date) => {

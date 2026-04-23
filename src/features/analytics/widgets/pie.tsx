@@ -1,7 +1,11 @@
-import { useEnumsEvents, useQueryAnalytics } from "@/entites/analytics";
+import {
+	corectQuery,
+	useEnumsEvents,
+	useQueryAnalytics,
+} from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { AspectRatio, Box, Center, NumberFormatter } from "@mantine/core";
-import { memo, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	Legend,
 	Pie,
@@ -13,11 +17,15 @@ import {
 
 const ee = useEnumsEvents();
 
-export interface LabelsPieProps {
+export interface AnalyticPieProps {
 	filterdate: IRequestAnalytics["filterdate"];
+	events?: AnalyticEvent[];
 }
 
-export const LabelsPie = memo(({ filterdate }: LabelsPieProps) => {
+export const AnalyticPie = ({
+	filterdate,
+	events = ["v", "d", "i"],
+}: AnalyticPieProps) => {
 	const { production_id } = useStoreUserProfile();
 	const { fetch } = useQueryAnalytics();
 
@@ -28,28 +36,30 @@ export const LabelsPie = memo(({ filterdate }: LabelsPieProps) => {
 		p?: IResponseAnalytics;
 	}>({});
 
-	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
-		filterdate,
-		step: "mon",
-	});
-
-	async function sendRequest(event: AnalyticEvent) {
-		return await fetch({ ...query, event });
-	}
+	const [query, setQuery] = useState<IRequestAnalytics>(
+		corectQuery({
+			filterdate,
+		} as IRequestAnalytics),
+	);
 
 	// Извлекаем, групируем данные
 	const ddata = useMemo<
 		Array<{
+			event: AnalyticEvent;
 			name: string;
 			value: number;
 			fill: string;
 		}>
 	>(() => {
-		const res = {
-			v: { value: 0, color: ee.findColorByCode("v") },
-			d: { value: 0, color: ee.findColorByCode("d") },
-			i: { value: 0, color: ee.findColorByCode("i") },
-		} as Record<
+		const res = Object.fromEntries(
+			events.map((event) => [
+				event,
+				{
+					value: 0,
+					color: ee.findColorByCode(event),
+				},
+			]),
+		) as Record<
 			AnalyticEvent,
 			{
 				value: number;
@@ -68,11 +78,12 @@ export const LabelsPie = memo(({ filterdate }: LabelsPieProps) => {
 		}
 
 		return Object.entries(res).map(([name, { value, color }]) => ({
+			event: name as AnalyticEvent,
 			name: ee.findLabelByCode(name as AnalyticEvent),
 			value,
 			fill: color,
 		}));
-	}, [data, production_id]);
+	}, [data, events, production_id]);
 
 	const isEmpty = useMemo(
 		() => !ddata.reduce((acc, { value }) => acc && value > 0, true),
@@ -84,10 +95,10 @@ export const LabelsPie = memo(({ filterdate }: LabelsPieProps) => {
 	useEffect(() => {
 		(async function () {
 			setData({
-				v: await sendRequest("v"),
-				i: await sendRequest("i"),
-				d: await sendRequest("d"),
-				p: await sendRequest("p"),
+				v: await fetch({ ...query, event: "v" }),
+				i: await fetch({ ...query, event: "i" }),
+				d: await fetch({ ...query, event: "d" }),
+				p: await fetch({ ...query, event: "p" }),
 			});
 		})();
 	}, [query]);
@@ -140,4 +151,4 @@ export const LabelsPie = memo(({ filterdate }: LabelsPieProps) => {
 			)}
 		</AspectRatio>
 	);
-});
+};

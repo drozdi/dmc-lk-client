@@ -8,18 +8,20 @@ import { useStoreUserProfile } from "@/entites/auth";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
+import { type MouseHandlerDataParam } from "recharts";
 import { EventsAnalytic } from "./ui/events-analytic";
 import { EventsBar } from "./ui/events-bar";
 import { EventsLine } from "./ui/events-line";
 import { EventsTable } from "./ui/events-table";
-
 type Element = Record<AnalyticEvent, number>;
 
-export interface LabelsEventsProps {
+export interface AnalyticEventsProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	step?: IRequestAnalytics["step"];
 	events?: AnalyticEvent[];
 	type?: "line" | "bar" | "table" | "analytic";
+	stop?: SliceStep;
+	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
 }
 
 const ee = useEnumsEvents();
@@ -29,22 +31,24 @@ const ititValue = Object.fromEntries(
 	Object.keys(ee.data).map((item) => [item, 0]),
 );
 
-export const LabelsEvents = ({
+export const AnalyticEvents = ({
 	filterdate,
 	step = "d",
 	events = ["v", "i", "d", "p"],
 	type = "line",
-}: LabelsEventsProps) => {
-	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
+	stop = "m",
+	onClick,
+}: AnalyticEventsProps) => {
+	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
-	});
+	} as IRequestAnalytics);
 
 	const { fetch } = useQueryAnalytics(query);
 	const { production_id } = useStoreUserProfile();
 	const [data, setData] = useState<Record<AnalyticEvent, IResponseAnalytics>>();
 
-	const labels = useFilterdateStep(query as IRequestAnalytics);
+	const labels = useFilterdateStep(query);
 
 	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
@@ -115,8 +119,15 @@ export const LabelsEvents = ({
 	}, [query]);
 
 	useEffect(() => {
-		setQuery({ filterdate, step });
+		setQuery({ filterdate, step } as IRequestAnalytics);
 	}, [filterdate, step]);
+
+	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
+		if (query.step === stop) {
+			return;
+		}
+		onClick?.(arg, e);
+	};
 
 	return (
 		<Stack h="100%">
@@ -132,13 +143,29 @@ export const LabelsEvents = ({
 							.filter((item) => item.total > 0)
 							.sort((a, b) => a.date.localeCompare(b.date))}
 						events={events}
+						onClick={handleClick}
 					/>
 				) : type === "bar" ? (
-					<EventsBar query={query} data={ddata} events={events} />
+					<EventsBar
+						query={query as IRequestAnalytics}
+						data={ddata}
+						events={events}
+						onClick={handleClick}
+					/>
 				) : type === "analytic" ? (
-					<EventsAnalytic query={query} data={ddata} events={events} />
+					<EventsAnalytic
+						query={query as IRequestAnalytics}
+						data={ddata}
+						events={events}
+						onClick={handleClick}
+					/>
 				) : (
-					<EventsLine query={query} data={ddata} events={events} />
+					<EventsLine
+						query={query as IRequestAnalytics}
+						data={ddata}
+						events={events}
+						onClick={handleClick}
+					/>
 				)}
 			</AspectRatio>
 		</Stack>

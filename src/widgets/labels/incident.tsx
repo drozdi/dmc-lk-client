@@ -15,7 +15,7 @@ import { useQueryLoading } from "@/shared/hooks";
 import { Text, Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { TbReload } from "react-icons/tb";
-import { Filterdate } from "./ui/filterdate";
+import { Filterdate } from "../analytics/ui/filterdate";
 
 export interface WidgetAnalyticsIncidentProps extends WidgetProps {
 	filterdate: IRequestAnalyticsIncident["filterdate"];

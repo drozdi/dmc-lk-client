@@ -27,7 +27,6 @@ export const TypeBar = memo(({ data, bars }: TypeBarProps) => {
 			<BarChart data={data}>
 				<Tooltip
 					content={(arg: TooltipContentProps) => {
-						console.log(arg);
 						const { label, separator, payload } = arg;
 						return (
 							<Box

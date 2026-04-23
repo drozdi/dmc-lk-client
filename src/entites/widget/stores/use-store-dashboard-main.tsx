@@ -7,12 +7,13 @@ export const useStoreDashboardMain = factoryDashboardStore({
 	storageKey: "main",
 	key: "i",
 	availableWidgets: [
-		"main-labels",
-		"main-itog-set",
-		"main-itog-analytics",
-		"labels-type",
-		"labels-pie",
+		"analytic-events",
+		"analytic-type",
+		"analytic-pie",
+		"analytic-itog-set",
+
 		"labels-count",
+		"main-labels",
 	],
 	varibles: {
 		$filterdate: {

@@ -10,9 +10,7 @@ export function ProviderQueryClient({
 	return (
 		<BaseQueryClientProvider client={queryClient}>
 			{children}
-			{import.meta.env.DEV && (
-				<ReactQueryDevtools initialIsOpen={false} />
-			)}
+			{import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
 		</BaseQueryClientProvider>
 	);
 }

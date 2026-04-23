@@ -1,105 +1,34 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
-import { WidgetLabelsEvents } from "./events";
-import { WidgetLabelsPie } from "./pie";
-import { WidgetLabelsType } from "./type";
+
+import { WidgetAnalyticsCount } from "./count";
+import { WidgetAnalyticsIncident } from "./incident";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
 
 FactoryWidget.register({
-	type: "labels-pie",
-	component: WidgetLabelsPie,
-	label: "Соотношение за",
-	description: "Соотношение за (Description)",
+	type: "analytics-incident",
+	component: WidgetAnalyticsIncident,
+	label: "Инциденты за",
+	description: "Инциденты за (Description)",
 	params: [
 		{
 			label: "Промежуток",
 			field: "filterdate",
 			type: "date:range",
 			required: true,
-		},
-	],
-});
-FactoryWidget.register({
-	type: "labels-type",
-	component: WidgetLabelsType,
-	label: "Этикетки за",
-	description: "Этикетки за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "date:range",
-			required: true,
-		},
-		{
-			label: "Шаг (разрез)",
-			field: "step",
-			type: "select",
-			default: "d",
-			data: es.dataSelect,
-		},
-		{
-			label: "Событие",
-			field: "event",
-			type: "select",
-			default: "p",
-			data: ee.dataSelect,
-		},
-	],
-});
-FactoryWidget.register({
-	type: "labels-events",
-	component: WidgetLabelsEvents,
-	label: "График за",
-	description: "График за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "date:range",
-			required: true,
-		},
-		{
-			label: "Шаг (разрез)",
-			field: "step",
-			type: "select",
-			default: "d",
-			data: es.dataSelect,
-		},
-		{
-			label: "События",
-			field: "events",
-			type: "select:array",
-			required: true,
-			default: ["p"],
-			data: ee.dataSelect,
-		},
-		{
-			label: "Отображение",
-			field: "type",
-			type: "select",
-			default: "bar",
-			data: [
-				{
-					label: "Линиями",
-					value: "line",
-				},
-				{
-					label: "Столбцами",
-					value: "bar",
-				},
-				{
-					label: "Таблицей",
-					value: "table",
-				},
-			],
 		},
 	],
 });
 
-export * from "../analytics/count";
-export * from "./events";
-export * from "./pie";
-export * from "./type";
+FactoryWidget.register({
+	type: "analytics-count",
+	component: WidgetAnalyticsCount,
+	label: "Сводная история",
+	description: "Сводная история (Description)",
+	params: [],
+});
+
+export * from "./count";
+export * from "./incident";

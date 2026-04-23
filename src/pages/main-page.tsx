@@ -1,10 +1,10 @@
+import { corectQuery } from "@/entites/analytics";
 import {
 	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
 	WidgetsProvider,
 } from "@/entites/widget";
-import { useAnalytics } from "@/features/main";
 import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
@@ -17,6 +17,7 @@ import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { TbReload } from "react-icons/tb";
+import { type MouseHandlerDataParam } from "recharts";
 
 const stepLabel = {
 	s: "секундам",
@@ -40,13 +41,59 @@ export const MainPage = () => {
 		storeDashboardMain.getValue("$filterdate"),
 	);
 
-	const { query, fetch, reset } = useAnalytics({
-		filterdate,
-		event: "p",
-	});
+	const [query, setQuery] = useState<IRequestAnalytics>(
+		corectQuery({
+			filterdate,
+		} as IRequestAnalytics),
+	);
 	useEffect(() => {
-		fetch({ filterdate, event: "p" });
+		setQuery(corectQuery({ filterdate } as IRequestAnalytics));
 	}, [filterdate]);
+
+	const handleClick = (arg: MouseHandlerDataParam) => {
+		const step =
+			query.step === "y"
+				? "mon"
+				: query.step === "mon"
+					? "w"
+					: query.step === "w"
+						? "d"
+						: query.step === "d"
+							? "h"
+							: query.step === "h"
+								? "m"
+								: "s";
+		const { activeLabel } = arg;
+
+		const filterdate: [DateValue, DateValue] = ["", ""];
+
+		if (step === "s") {
+			const d = dayjs(query.filterdate[0]).minute(Number(activeLabel));
+			filterdate[0] = d.startOf("s").format("YYYY-MM-DD HH:mm:00");
+			filterdate[1] = d.endOf("s").format("YYYY-MM-DD HH:mm:59");
+		} else if (step === "m") {
+			const d = dayjs(query.filterdate[0]).hour(Number(activeLabel));
+			filterdate[0] = d.startOf("h").format("YYYY-MM-DD HH:mm:ss");
+			filterdate[1] = d.endOf("h").format("YYYY-MM-DD HH:mm:ss");
+		} else if (step === "h") {
+			filterdate[0] = dayjs(activeLabel)
+				.startOf("d")
+				.format("YYYY-MM-DD HH:mm:ss");
+			filterdate[1] = dayjs(activeLabel)
+				.endOf("d")
+				.format("YYYY-MM-DD HH:mm:ss");
+		} else if (step === "d") {
+			filterdate[0] = dayjs(activeLabel).startOf("w").format("YYYY-MM-DD");
+			filterdate[1] = dayjs(activeLabel).endOf("w").format("YYYY-MM-DD");
+		} else if (step === "w") {
+			filterdate[0] = dayjs(activeLabel).startOf("M").format("YYYY-MM-DD");
+			filterdate[1] = dayjs(activeLabel).endOf("M").format("YYYY-MM-DD");
+		} else if (step === "mon") {
+			filterdate[0] = dayjs(activeLabel).startOf("y").format("YYYY-MM-DD");
+			filterdate[1] = dayjs(activeLabel).endOf("y").format("YYYY-MM-DD");
+		}
+		setQuery(corectQuery({ ...query, filterdate, step }));
+	};
 
 	return (
 		<Paper>
@@ -84,7 +131,7 @@ export const MainPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="main-itog-set"
+							widget="analytic-itog-set"
 							filterdate={query.filterdate}
 							type="sum"
 						/>
@@ -99,7 +146,7 @@ export const MainPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="main-itog-set"
+							widget="analytic-itog-set"
 							filterdate={query.filterdate}
 							type="avg"
 						/>
@@ -114,7 +161,7 @@ export const MainPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="main-itog-set"
+							widget="analytic-itog-set"
 							filterdate={query.filterdate}
 							type="min"
 						/>
@@ -129,7 +176,7 @@ export const MainPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="main-itog-set"
+							widget="analytic-itog-set"
 							filterdate={query.filterdate}
 							type="max"
 						/>
@@ -144,7 +191,7 @@ export const MainPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="main-itog-set"
+							widget="analytic-itog-set"
 							filterdate={query.filterdate}
 							event="d"
 							type="max"
@@ -172,24 +219,21 @@ export const MainPage = () => {
 							]}
 						>
 							<DashBoardWidget
-								widget="labels-events"
+								widget="analytic-events"
 								type="analytic"
 								events={["v", "d"]}
 								filterdate={query.filterdate}
 								step={query.step}
+								stop="m"
+								onClick={handleClick}
 							/>
+
 							<DashBoardWidget
-								widget="main-itog-analytics"
-								filterdate={query.filterdate}
-								onChange={(query: IRequestAnalytics) => {
-									setFilterdate(query.filterdate);
-								}}
-							/>
-							<DashBoardWidget
-								widget="labels-events"
+								widget="analytic-events"
 								type="table"
 								events={["v", "d"]}
 								{...query}
+								onClick={handleClick}
 							/>
 							{/* <DashBoardWidget
 								widget="main-labels"

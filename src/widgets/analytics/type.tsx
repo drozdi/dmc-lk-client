@@ -1,18 +1,22 @@
 import { useQueryAnalytics } from "@/entites/analytics";
-import { LabelsType, type LabelsTypeProps } from "@/features/labels/widgets";
+import {
+	AnalyticType,
+	type AnalyticTypeProps,
+} from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { memo, useEffect, useState } from "react";
-import { Filterdate } from "./ui/filterdate";
+import { Filterdate } from "../labels/ui/filterdate";
 
-export interface WidgetLabelsTypeProps extends WidgetProps, LabelsTypeProps {}
+export interface WidgetAnalyticTypeProps
+	extends WidgetProps, AnalyticTypeProps {}
 
-export const WidgetLabelsType = memo(
+export const WidgetAnalyticType = memo(
 	({
 		filterdate,
 		step = "d",
 		event = "p",
 		...props
-	}: WidgetLabelsTypeProps) => {
+	}: WidgetAnalyticTypeProps) => {
 		const [query, setQuery] = useState<IRequestAnalytics>({
 			filterdate,
 			step,
@@ -44,7 +48,7 @@ export const WidgetLabelsType = memo(
 					</>
 				}
 			>
-				<LabelsType {...query} />
+				<AnalyticType {...query} />
 			</Widget>
 		);
 	},

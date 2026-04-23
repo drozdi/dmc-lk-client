@@ -110,28 +110,7 @@ const routes = () => [
 					},
 				],
 			},
-
-			// {
-			// 	path: "/users",
-			// 	element: <Outlet />,
-			// 	children: [
-			// 		{
-			// 			path: "",
-			// 			element: <UsersPage />,
-			// 		},
-			// 		{
-			// 			path: ":userId",
-			// 			element: <UserPage />,
-			// 		},
-			// 	],
-			// },
 		],
-		// children: [
-		//
-		// 	analyticsRouers(),
-		// 	shopRouers(),
-		// 	labelsRouers(),
-		// ],
 	},
 ];
 

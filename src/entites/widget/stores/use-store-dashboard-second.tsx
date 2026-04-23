@@ -12,10 +12,10 @@ export const useStoreDashboardSecond = factoryDashboardStore({
 		"analytic-incident-widget",
 		"count-widget",
 
-		"labels-type",
-		"labels-pie",
+		"analytic-type",
+		"analytic-pie",
 		"labels-count",
-		"labels-events",
+		"analytic-events",
 	],
 	varibles: {
 		$filterdate: {

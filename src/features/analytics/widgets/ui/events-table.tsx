@@ -2,24 +2,18 @@ import { useEnumsEvents } from "@/entites/analytics";
 import { $setting } from "@/shared";
 import { NumberFormatter, Table } from "@mantine/core";
 import dayjs from "dayjs";
+import type { EventsProps } from "./type";
+
+export interface EventTableProps extends EventsProps {}
 
 const ee = useEnumsEvents();
-
-export interface EventTableProps {
-	query: IRequestAnalytics;
-	data: (Record<AnalyticEvent, number> & {
-		date: string;
-		total: number;
-	})[];
-	events?: AnalyticEvent[];
-}
 
 export const EventsTable = ({
 	query,
 	data = [],
 	events = ["p"],
+	onClick,
 }: EventTableProps) => {
-	console.log(query);
 	return (
 		<Table>
 			<Table.Thead>
@@ -34,7 +28,11 @@ export const EventsTable = ({
 			<Table.Tbody>
 				{data.map((tr) => (
 					<Table.Tr key={tr.date}>
-						<Table.Td>
+						<Table.Td
+							onClick={() => {
+								onClick?.({ activeLabel: tr.date });
+							}}
+						>
 							{["s", "m", "h"].includes(query.step)
 								? tr.date
 								: dayjs(tr.date).format($setting.get("formatDate"))}

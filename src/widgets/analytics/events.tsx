@@ -1,22 +1,24 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import {
-	LabelsEvents,
-	type LabelsEventsProps,
-} from "@/features/labels/widgets";
+	AnalyticEvents,
+	type AnalyticEventsProps,
+} from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { useEffect, useState } from "react";
-import { Filterdate } from "./ui/filterdate";
+import { Filterdate } from "../labels/ui/filterdate";
 
-export interface WidgetLabelsEventsProps
-	extends WidgetProps, LabelsEventsProps {}
+export interface WidgetAnalyticEventsProps
+	extends WidgetProps, AnalyticEventsProps {}
 
-export const WidgetLabelsEvents = ({
+export const WidgetAnalyticEvents = ({
 	filterdate,
 	step = "d",
 	events = ["v", "i", "d", "p"],
 	type = "line",
+	stop = "m",
+	onClick,
 	...props
-}: WidgetLabelsEventsProps) => {
+}: WidgetAnalyticEventsProps) => {
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate,
 		step,
@@ -45,7 +47,13 @@ export const WidgetLabelsEvents = ({
 				/>
 			}
 		>
-			<LabelsEvents {...query} events={events} type={type} />
+			<AnalyticEvents
+				{...query}
+				events={events}
+				type={type}
+				stop={stop}
+				onClick={onClick}
+			/>
 		</Widget>
 	);
 };
