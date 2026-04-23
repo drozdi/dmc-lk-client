@@ -6,8 +6,8 @@ export interface WidgetContext {
 
 const Context = createContext<WidgetContext | undefined>(undefined);
 
-export function useWidget() {
-	return useContext(Context);
+export function useWidget(): WidgetContext | undefined {
+	return useContext(Context) || undefined;
 }
 
 export function ProviderWidget({

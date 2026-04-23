@@ -2,6 +2,7 @@ import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
 import { WidgetAnalyticEvents } from "./events";
 import { WidgetAnalyticItogSet } from "./itog-set";
+import { WidgetAnalyticLabels } from "./labels";
 import { WidgetAnalyticPie } from "./pie";
 import { WidgetAnalyticType } from "./type";
 
@@ -147,7 +148,6 @@ FactoryWidget.register({
 		},
 	],
 });
-
 FactoryWidget.register({
 	type: "analytic-itog-set",
 	component: WidgetAnalyticItogSet,
@@ -193,8 +193,57 @@ FactoryWidget.register({
 		},
 	],
 });
+FactoryWidget.register({
+	type: "analytic-labels",
+	component: WidgetAnalyticLabels,
+	label: "Информация о этикетках",
+	description: "Информация о этикетках (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "date:range",
+			required: true,
+		},
+		{
+			label: "Шаг (разрез)",
+			field: "step",
+			type: "select",
+			default: "d",
+			data: es.dataSelect,
+		},
+		{
+			label: "Событие",
+			field: "event",
+			type: "select",
+			default: "p",
+			data: ee.dataSelect,
+		},
+		{
+			label: "Отображение",
+			field: "type",
+			type: "select",
+			default: "default",
+			data: [
+				{
+					label: "Разбивать",
+					value: "default",
+				},
+				{
+					label: "Объединять",
+					value: "stack",
+				},
+				{
+					label: "Таблица",
+					value: "table",
+				},
+			],
+		},
+	],
+});
 
 export * from "./events";
 export * from "./itog-set";
+export * from "./labels";
 export * from "./pie";
 export * from "./type";

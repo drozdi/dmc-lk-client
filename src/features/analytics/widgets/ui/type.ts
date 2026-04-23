@@ -1,4 +1,4 @@
-import { MouseHandlerDataParam } from "recharts";
+import { type MouseHandlerDataParam } from "recharts";
 
 export interface EventsProps {
 	query: IRequestAnalytics;
@@ -8,4 +8,16 @@ export interface EventsProps {
 	})[];
 	events?: AnalyticEvent[];
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
+}
+
+export interface LabelsProps {
+	query: IRequestAnalytics;
+	type?: "stack" | "default" | "table";
+	data: Array<{
+		date: string;
+		total: number;
+		[key: string]: string | number;
+	}>;
+	labels?: string[];
+	bars: string[];
 }

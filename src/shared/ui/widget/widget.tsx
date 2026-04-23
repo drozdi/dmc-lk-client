@@ -33,6 +33,7 @@ export interface WidgetProps extends CardProps {
 	expanded?: boolean;
 	menu?: WidgetMenuItem[];
 	error?: React.ReactNode | IError;
+	wraped?: boolean;
 }
 
 function WidgetMenu({ options = [] }: WidgetMenuProps) {
@@ -66,11 +67,12 @@ export function Widget({
 	expanded = true,
 	error,
 	menu = [],
+	wraped = true,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
 	const ctx = useWidget();
-	return ctx ? (
+	return ctx || !wraped ? (
 		children
 	) : (
 		<ProviderWidget isExpanded={isExpanded}>

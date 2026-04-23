@@ -1,11 +1,10 @@
-import { useQueryAnalytics } from "@/entites/analytics";
+import { Filterdate, useQueryAnalytics } from "@/entites/analytics";
 import {
 	AnalyticEvents,
 	type AnalyticEventsProps,
 } from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import { useEffect, useState } from "react";
-import { Filterdate } from "../labels/ui/filterdate";
 
 export interface WidgetAnalyticEventsProps
 	extends WidgetProps, AnalyticEventsProps {}
@@ -36,7 +35,7 @@ export const WidgetAnalyticEvents = ({
 			{...props}
 			title={
 				<Filterdate
-					filterdate={query.filterdate}
+					value={query.filterdate}
 					editable={!filterdate?.[0]}
 					onChange={(filterdate) => {
 						setQuery({

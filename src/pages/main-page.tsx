@@ -1,4 +1,4 @@
-import { corectQuery } from "@/entites/analytics";
+import { corectQuery, Filterdate } from "@/entites/analytics";
 import {
 	DashBoardWidget,
 	UiDashBoard,
@@ -10,7 +10,7 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { DualCalendarRange, Widget } from "@/shared/ui";
+import { Widget } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
@@ -99,15 +99,14 @@ export const MainPage = () => {
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
 			<Group justify="flex-end">
-				<DualCalendarRange
+				<Filterdate
+					editable
 					value={
 						storeDashboardMain.getValue("$filterdate") as [DateValue, DateValue]
 					}
 					onChange={(filterdate) => {
-						if (filterdate[0] && filterdate[1]) {
-							storeDashboardMain.setValue("filterdate", filterdate);
-							setFilterdate(filterdate);
-						}
+						storeDashboardMain.setValue("filterdate", filterdate);
+						setFilterdate(filterdate);
 					}}
 				/>
 			</Group>
@@ -236,38 +235,38 @@ export const MainPage = () => {
 								onClick={handleClick}
 							/>
 							{/* <DashBoardWidget
-								widget="main-labels"
+								widget="analytic-labels"
 								type="table"
 								filterdate={filterdate}
 							/> */}
 						</Widget>
 					</div>
 					<div
-						key="labels.bar"
+						key="analytic.labels"
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 10,
-							h: 10,
+							w: 12,
+							h: 12,
 						}}
 					>
 						<DashBoardWidget
-							widget="main-labels"
+							widget="analytic-labels"
 							type="default"
 							filterdate={query.filterdate}
 						/>
 					</div>
 					<div
-						key="labels.stack"
+						key="analytic.labels.stack"
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 10,
-							h: 10,
+							w: 12,
+							h: 12,
 						}}
 					>
 						<DashBoardWidget
-							widget="main-labels"
+							widget="analytic-labels"
 							type="stack"
 							filterdate={query.filterdate}
 						/>

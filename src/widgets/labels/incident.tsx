@@ -8,14 +8,13 @@ import {
 	type PieSectorShapeProps,
 } from "recharts";
 
-import { useStoreIncident } from "@/entites/analytics";
+import { Filterdate, useStoreIncident } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { useQueryLoading } from "@/shared/hooks";
 import { Text, Widget, type WidgetProps } from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { TbReload } from "react-icons/tb";
-import { Filterdate } from "../analytics/ui/filterdate";
 
 export interface WidgetAnalyticsIncidentProps extends WidgetProps {
 	filterdate: IRequestAnalyticsIncident["filterdate"];
@@ -89,7 +88,7 @@ export const WidgetAnalyticsIncident = ({
 				<>
 					Инциденты за{" "}
 					<Filterdate
-						filterdate={query.filterdate}
+						value={query.filterdate}
 						editable={!filterdate?.[0]}
 						onChange={(filterdate) => {
 							setQuery({

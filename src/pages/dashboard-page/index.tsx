@@ -1,3 +1,4 @@
+import { Filterdate } from "@/entites/analytics";
 import {
 	DashBoardWidget,
 	UiDashBoard,
@@ -9,7 +10,6 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { DualCalendarRange } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -36,16 +36,15 @@ export const DashboardPage = () => {
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
 			<Group justify="flex-end">
-				<DualCalendarRange
+				<Filterdate
+					editable
 					value={query.filterdate}
 					onChange={(filterdate) => {
-						if (filterdate[0] && filterdate[1]) {
-							setQuery((v) => ({
-								...v,
-								filterdate,
-							}));
-							storeDashboard.setValue("filterdate", filterdate);
-						}
+						setQuery((v) => ({
+							...v,
+							filterdate,
+						}));
+						storeDashboard.setValue("filterdate", filterdate);
 					}}
 				/>
 			</Group>

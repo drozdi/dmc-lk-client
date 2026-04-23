@@ -3,7 +3,6 @@ import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
 import "@/widgets/analytics";
 import { WidgetCount } from "@/widgets/count-widget";
 import "@/widgets/labels";
-import "@/widgets/main";
 import { TesstWidget } from "@/widgets/test";
 
 const es = useEnumsStep();

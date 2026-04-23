@@ -12,17 +12,9 @@ import {
 	type LegendPayload,
 	type TooltipContentProps,
 } from "recharts";
+import { type LabelsProps } from "./type";
 
-export interface LabelsBarProps {
-	type?: "stack" | "default";
-	data: Array<{
-		date: string;
-		total: number;
-		[key: string]: string | number;
-	}>;
-	labels: string[];
-	bars: string[];
-}
+export interface LabelsBarProps extends LabelsProps {}
 
 export const LabelsBar = memo(
 	({ data, labels, bars, type = "default" }: LabelsBarProps) => {

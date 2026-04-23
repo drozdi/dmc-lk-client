@@ -1,23 +1,20 @@
 import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { MainLabels } from "@/features/main";
+import {
+	AnalyticLabels,
+	type AnalyticLabelsProps,
+} from "@/features/analytics/widgets";
 import { $setting } from "@/shared";
 import { Widget, type WidgetProps } from "@/shared/ui";
 import dayjs from "dayjs";
 import { memo, useEffect, useMemo, useState } from "react";
 
-export interface WidgetMainTypeProps extends Omit<
-	WidgetProps,
-	"children" | "title"
-> {
+export interface WidgetAnalyticLabelsProps
+	extends Omit<WidgetProps, "children" | "title">, AnalyticLabelsProps {
 	title?: WidgetProps["title"];
-	filterdate: IRequestAnalytics["filterdate"];
-	event?: IRequestAnalytics["event"];
-	step?: IRequestAnalytics["step"];
-	type: "stack" | "default" | "table";
 }
 
-export const WidgetMainLabels = memo(
+export const WidgetAnalyticLabels = memo(
 	({
 		title,
 		filterdate,
@@ -25,7 +22,7 @@ export const WidgetMainLabels = memo(
 		event = "p",
 		type = "default",
 		...props
-	}: WidgetMainTypeProps) => {
+	}: WidgetAnalyticLabelsProps) => {
 		const { production_id } = useStoreUserProfile();
 		const [query, setQuery] = useState<IRequestAnalytics>({
 			filterdate,
@@ -68,7 +65,7 @@ export const WidgetMainLabels = memo(
 				title={computedTitle}
 				subTitle={`${dayjs(query.filterdate[0]).format($setting.get("formatDate"))} - ${dayjs(query.filterdate[1]).format($setting.get("formatDate"))}`}
 			>
-				<MainLabels
+				<AnalyticLabels
 					filterdate={filterdate}
 					step={step}
 					event={event}

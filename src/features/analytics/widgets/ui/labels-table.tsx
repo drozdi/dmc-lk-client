@@ -1,21 +1,15 @@
 import { NumberFormatter, Table, TableTr } from "@mantine/core";
+import { type LabelsProps } from "./type";
 
-export interface LabelsTableProps {
-	data: Array<{
-		date: string;
-		total: number;
-		[key: string]: string | number;
-	}>;
-	headers: string[];
-}
+export interface LabelsTableProps extends LabelsProps {}
 
-export const LabelsTable = ({ data = [], headers = [] }: LabelsTableProps) => {
+export const LabelsTable = ({ data = [], bars = [] }: LabelsTableProps) => {
 	return (
 		<Table mb="md">
 			<Table.Thead>
 				<TableTr>
 					<Table.Th>Дата</Table.Th>
-					{headers.map((label) => (
+					{bars.map((label) => (
 						<Table.Th key={label}>{label}</Table.Th>
 					))}
 					<Table.Th>Количество</Table.Th>
@@ -25,7 +19,7 @@ export const LabelsTable = ({ data = [], headers = [] }: LabelsTableProps) => {
 				{data.map((tr) => (
 					<Table.Tr key={tr.date}>
 						<Table.Td>{tr.date}</Table.Td>
-						{headers.map((label) => (
+						{bars.map((label) => (
 							<Table.Td key={label}>
 								<NumberFormatter value={tr[label]} />
 							</Table.Td>

@@ -11,9 +11,8 @@ export const useStoreDashboardMain = factoryDashboardStore({
 		"analytic-type",
 		"analytic-pie",
 		"analytic-itog-set",
-
+		"analytic-labels",
 		"labels-count",
-		"main-labels",
 	],
 	varibles: {
 		$filterdate: {

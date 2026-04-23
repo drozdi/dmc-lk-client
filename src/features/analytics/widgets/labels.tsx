@@ -1,27 +1,27 @@
+import { useAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
 import { Center, Checkbox, Group, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useAnalytics } from "./hooks";
 import { LabelsBar } from "./ui/labels-bar";
 import { LabelsTable } from "./ui/labels-table";
 
-export interface MainLabelsProps {
+export interface AnalyticLabelsProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	event?: IRequestAnalytics["event"];
 	step?: IRequestAnalytics["step"];
 	type: "stack" | "default" | "table";
 }
 
-export const MainLabels = memo(
+export const AnalyticLabels = memo(
 	({
 		filterdate,
 		step = "d",
 		event = "p",
 		type = "default",
-	}: MainLabelsProps) => {
+	}: AnalyticLabelsProps) => {
 		const { production_id } = useStoreUserProfile();
 
 		const { fetch, data, query } = useAnalytics({
@@ -144,13 +144,7 @@ export const MainLabels = memo(
 			});
 		}, [filterdate, step]);
 
-		return isEmpty ? (
-			<Center w="100%" h="100%" fz="h1" c="dimmed">
-				Данные ненашлись!
-			</Center>
-		) : type === "table" ? (
-			<LabelsTable data={formatData} headers={bars} />
-		) : (
+		return (
 			<Stack h="100%">
 				<Group gap="0" justify="flex-end">
 					<Checkbox
@@ -159,7 +153,21 @@ export const MainLabels = memo(
 						label="Группировать по G"
 					/>
 				</Group>
-				<LabelsBar type={type} data={formatData} bars={bars} labels={labels} />
+				{isEmpty ? (
+					<Center w="100%" h="100%" fz="h1" c="dimmed">
+						Данные ненашлись!
+					</Center>
+				) : type === "table" ? (
+					<LabelsTable query={query} data={formatData} bars={bars} />
+				) : (
+					<LabelsBar
+						query={query}
+						type={type}
+						data={formatData}
+						bars={bars}
+						labels={labels}
+					/>
+				)}
 			</Stack>
 		);
 	},
