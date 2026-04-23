@@ -131,43 +131,47 @@ export const AnalyticEvents = ({
 
 	return (
 		<Stack h="100%">
-			<AspectRatio ratio={16 / 9}>
-				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
-					</Center>
-				) : type === "table" ? (
-					<EventsTable
-						query={query as IRequestAnalytics}
-						data={ddata
-							.filter((item) => item.total > 0)
-							.sort((a, b) => a.date.localeCompare(b.date))}
-						events={events}
-						onClick={handleClick}
-					/>
-				) : type === "bar" ? (
+			{isEmpty ? (
+				<Center w="100%" h="100%" fz="h1" c="dimmed">
+					Данные ненашлись!
+				</Center>
+			) : type === "table" ? (
+				<EventsTable
+					query={query as IRequestAnalytics}
+					data={ddata
+						.filter((item) => item.total > 0)
+						.sort((a, b) => a.date.localeCompare(b.date))}
+					events={events}
+					onClick={handleClick}
+				/>
+			) : type === "bar" ? (
+				<AspectRatio ratio={16 / 9}>
 					<EventsBar
 						query={query as IRequestAnalytics}
 						data={ddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				) : type === "analytic" ? (
+				</AspectRatio>
+			) : type === "analytic" ? (
+				<AspectRatio ratio={16 / 9}>
 					<EventsAnalytic
 						query={query as IRequestAnalytics}
 						data={ddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				) : (
+				</AspectRatio>
+			) : (
+				<AspectRatio ratio={16 / 9}>
 					<EventsLine
 						query={query as IRequestAnalytics}
 						data={ddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				)}
-			</AspectRatio>
+				</AspectRatio>
+			)}
 		</Stack>
 	);
 };
