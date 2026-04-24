@@ -1,6 +1,6 @@
 import { useEnumsEvents } from "@/entites/analytics";
 import { $setting } from "@/shared";
-import { Box, NumberFormatter, Text } from "@mantine/core";
+import { TooltipContentBar } from "@/shared/ui";
 import dayjs from "dayjs";
 import {
 	Bar,
@@ -11,7 +11,6 @@ import {
 	Tooltip,
 	XAxis,
 	YAxis,
-	type TooltipContentProps,
 } from "recharts";
 import type { EventsProps } from "./type";
 
@@ -37,23 +36,10 @@ export const EventsBar = ({
 				/>
 				<YAxis />
 				<Tooltip
-					content={({ label, payload, separator }: TooltipContentProps) => {
-						return (
-							<Box
-								bg="var(--mantine-color-body)"
-								bd="1px solid var(--mantine-color-default-border)"
-								p="xs"
-							>
-								<Text>{dayjs(label).format($setting.get("formatDate"))}</Text>
-								{payload.map((item) => (
-									<Text c={item.color}>
-										{item.name} {separator}{" "}
-										<NumberFormatter value={item.value} />
-									</Text>
-								))}
-							</Box>
-						);
-					}}
+					content={TooltipContentBar}
+					labelFormatter={(label) =>
+						dayjs(label).format($setting.get("formatDate"))
+					}
 				/>
 				<Legend />
 				{events.map((line) => (

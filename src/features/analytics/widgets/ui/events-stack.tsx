@@ -3,10 +3,10 @@ import { $setting } from "@/shared";
 import { TooltipContentBar } from "@/shared/ui";
 import dayjs from "dayjs";
 import {
+	Bar,
+	BarChart,
 	CartesianGrid,
 	Legend,
-	Line,
-	LineChart,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -14,45 +14,50 @@ import {
 } from "recharts";
 import type { EventsProps } from "./type";
 
-export interface EventLineProops extends EventsProps {}
+export interface EventsStackProps extends EventsProps {}
 
 const ee = useEnumsEvents();
 
-export const EventsLine = ({
+export const EventsStack = ({
 	query,
 	data = [],
 	events = [],
 	...props
-}: EventLineProops) => {
+}: EventsStackProps) => {
 	return (
 		<ResponsiveContainer>
-			<LineChart data={data} {...props}>
+			<BarChart data={data} {...props}>
 				<CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
 				<XAxis
 					dataKey="date"
 					tickFormatter={(date) =>
-						dayjs(date).format($setting.get("formatDate"))
+						["s", "m", "h"].includes(query.step)
+							? date
+							: dayjs(date).format($setting.get("formatDate"))
 					}
 				/>
 				<YAxis />
 				<Tooltip
 					content={TooltipContentBar}
 					labelFormatter={(label) =>
-						dayjs(label).format($setting.get("formatDate"))
+						["s", "m", "h"].includes(query.step)
+							? label
+							: dayjs(label).format($setting.get("formatDate"))
 					}
 				/>
 				<Legend />
-				{events.map((event) => (
-					<Line
-						key={event}
-						dataKey={event}
-						name={ee.findLabelByCode(event)}
-						type="monotone"
-						stroke={ee.findColorByCode(event)}
-						label={ee.findLabelByCode(event) as any}
+				{events.map((line) => (
+					<Bar
+						key={line}
+						dataKey={line}
+						stackId={line === "p" ? "a" : "b"}
+						name={ee.findLabelByCode(line)}
+						fill={ee.findColorByCode(line)}
+						stroke={ee.findColorByCode(line)}
+						label={ee.findLabelByCode(line) as any}
 					/>
 				))}
-			</LineChart>
+			</BarChart>
 		</ResponsiveContainer>
 	);
 };

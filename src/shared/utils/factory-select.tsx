@@ -47,11 +47,13 @@ export function factorySelect(
 					label,
 				};
 			});
+
 			if (includes?.length) {
 				dataSelect = dataSelect.filter((item: ComboboxItem | string) =>
-					includes.includes(item.value || item),
+					includes.includes(item?.value || item),
 				);
 			}
+
 			if (excludeds?.length) {
 				dataSelect = dataSelect.filter(
 					(item: ComboboxItem | string) =>

@@ -258,6 +258,7 @@ export const themeMantine = createTheme({
 		NumberFormatter: NumberFormatter.extend({
 			defaultProps: {
 				thousandSeparator: " ",
+				decimalScale: 2,
 			},
 		}),
 	},

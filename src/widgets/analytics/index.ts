@@ -1,6 +1,7 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
 import { WidgetAnalyticEvents } from "./events";
+import { WidgetAnalyticEventsDefect } from "./events-defect";
 import { WidgetAnalyticItogSet } from "./itog-set";
 import { WidgetAnalyticLabels } from "./labels";
 import { WidgetAnalyticPie } from "./pie";
@@ -242,7 +243,37 @@ FactoryWidget.register({
 	],
 });
 
+FactoryWidget.register({
+	type: "analytic-event-defect",
+	component: WidgetAnalyticEventsDefect,
+	label: "Информация о этикетках",
+	description: "Информация о этикетках (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "date:range",
+			required: true,
+		},
+		{
+			label: "Шаг (разрез)",
+			field: "step",
+			type: "select",
+			default: "d",
+			data: es.dataSelect,
+		},
+		{
+			label: "Событие",
+			field: "event",
+			type: "select",
+			default: "p",
+			data: ee.dataSelect,
+		},
+	],
+});
+
 export * from "./events";
+export * from "./events-defect";
 export * from "./itog-set";
 export * from "./labels";
 export * from "./pie";

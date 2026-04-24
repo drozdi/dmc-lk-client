@@ -34,9 +34,11 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 			setIsLoading(true);
 			try {
 				const res = await queryClient.fetchQuery({
-					queryKey: ["analytics", JSON.stringify(_query)],
+					queryKey: ["analytics", _query],
 					queryFn: async (): Promise<IResponseAnalytics> =>
 						(await requestAnalytics(_query)).data,
+					gcTime: 0,
+					staleTime: 0,
 				});
 				setData(res);
 				setIsLoading(false);

@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
-import {
-	Pie,
-	PieChart,
-	ResponsiveContainer,
-	Sector,
-	Tooltip,
-	type PieSectorShapeProps,
-} from "recharts";
+import { useEffect, useMemo, useState } from "react";
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { Filterdate, useStoreIncident } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { useQueryLoading } from "@/shared/hooks";
-import { Text, Widget, type WidgetProps } from "@/shared/ui";
+import {
+	LegendContentPie,
+	TooltipContentPie,
+	Widget,
+	type WidgetProps,
+} from "@/shared/ui";
 import { AspectRatio, Center, Stack } from "@mantine/core";
 import { TbReload } from "react-icons/tb";
 
@@ -56,27 +54,13 @@ export const WidgetAnalyticsIncident = ({
 			);
 	}, [query]);
 
-	const handleClick = (...args) => {
-		const { activeIndex } = args[0];
-
-		if (isProduction && isPlace) {
-		} else if (isProduction) {
-			setQuery((v) => ({
-				...v,
-				fields_name: [
-					"production_id",
-					"place_id",
-					"address_production",
-					"device_name",
-				],
-			}));
-		} else {
-			setQuery((v) => ({
-				...v,
-				fields_name: ["production_id", "address_production"],
-			}));
-		}
-	};
+	const ddata = useMemo(() => {
+		return (data || {}).map((item) => ({
+			name: item.data,
+			value: item.total_counter,
+			fill: randomColorLabel(item.data),
+		}));
+	}, [data]);
 
 	const isEmpty = !data.length;
 
@@ -121,57 +105,20 @@ export const WidgetAnalyticsIncident = ({
 						</Center>
 					) : (
 						<ResponsiveContainer>
-							<PieChart onClick={handleClick}>
-								<Tooltip
-									content={(arg) => {
-										const { activeIndex } = arg;
-										const item = data[activeIndex];
-										return (
-											<Text
-												maw={200}
-												bg="var(--mantine-color-body)"
-												bd="1px solid var(--mantine-color-default-border)"
-												p="xs"
-											>
-												{item?.data} - {item?.total_counter}
-											</Text>
-										);
-									}}
+							<PieChart>
+								<Tooltip content={TooltipContentPie} />
+								<Legend
+									layout="vertical"
+									verticalAlign="middle"
+									align="left"
+									content={LegendContentPie}
 								/>
-								{/* <Legend
-									verticalAlign="bottom"
-									content={(arg) => {
-										console.log(arg);
-										const { payload } = arg;
-										return (
-											<Box>
-												{payload?.map((item, index) => (
-													<Text
-														key={item.value}
-														style={{
-															color: item.color,
-														}}
-													>
-														{item.value} - {item.payload.total_counter}
-													</Text>
-												))}
-											</Box>
-										);
-									}}
-								/> */}
 								<Pie
-									data={data}
-									fill="#8884d8"
-									shape={(props: PieSectorShapeProps) => {
-										return (
-											<Sector
-												{...props}
-												fill={randomColorLabel(props.payload.data)}
-											/>
-										);
-									}}
-									nameKey="data"
-									dataKey="total_counter"
+									data={ddata}
+									dataKey="value"
+									nameKey="name"
+									cx="50%"
+									cy="50%"
 								/>
 							</PieChart>
 						</ResponsiveContainer>

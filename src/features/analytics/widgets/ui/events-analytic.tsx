@@ -1,7 +1,7 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
-import { Box, NumberFormatter } from "@mantine/core";
+import { TooltipContentBar } from "@/shared/ui";
 import dayjs from "dayjs";
 import { memo } from "react";
 import {
@@ -12,7 +12,6 @@ import {
 	XAxis,
 	YAxis,
 	type BarShapeProps,
-	type TooltipContentProps,
 } from "recharts";
 import type { EventsProps } from "./type";
 
@@ -88,44 +87,10 @@ export const EventsAnalytic = memo(
 					/>
 					<YAxis />
 					<Tooltip
-						content={(arg: TooltipContentProps) => {
-							const { label, active, payload, separator, activeIndex } = arg;
-							if (active && payload && payload.length) {
-								return (
-									<Box
-										bg="var(--mantine-color-body)"
-										bd="1px solid var(--mantine-color-default-border)"
-										p="xs"
-									>
-										<p>
-											{["s", "m", "h"].includes(query.step)
-												? label
-												: dayjs(label).format($setting.get("formatDate"))}
-										</p>
-										<p>
-											Всего {separator}{" "}
-											<NumberFormatter
-												value={data[activeIndex].total as number}
-											/>
-										</p>
-										{events.map((event) => (
-											<p
-												key={event}
-												style={{
-													color: ee.findColorByCode(event),
-												}}
-											>
-												{ee.findLabelByCode(event)} {separator}{" "}
-												<NumberFormatter
-													value={data[activeIndex][event] as number}
-												/>
-											</p>
-										))}
-									</Box>
-								);
-							}
-							return null;
-						}}
+						content={TooltipContentBar}
+						labelFormatter={(label) =>
+							dayjs(label).format($setting.get("formatDate"))
+						}
 					/>
 					{events.map((event, index) => (
 						<Bar

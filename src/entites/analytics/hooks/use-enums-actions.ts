@@ -8,7 +8,6 @@ const data: Record<PermittedActions, string> = {
 	in: "Принадлежит",
 	not_in: "Не принадлежит",
 	like: "Похоже",
-	or: "or",
 };
 
 const dataSelect: ComboboxItem[] = Object.entries(data).map(

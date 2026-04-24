@@ -2,15 +2,7 @@ type SliceStep = "s" | "m" | "h" | "d" | "mon" | "y" | "w";
 type SingleActionList = "and" | "or" | "not";
 type AnalyticEvent = "v" | "i" | "d" | "p";
 
-type PermittedActions =
-	| "="
-	| ">="
-	| "<="
-	| "!="
-	| "in"
-	| "not_in"
-	| "like"
-	| "or";
+type PermittedActions = "=" | ">=" | "<=" | "!=" | "in" | "not_in" | "like";
 
 interface IAnalyticsIncidentItem {
 	total_counter: integer;
@@ -42,11 +34,11 @@ type IResponseAnalyticsFields = Record<string, IAnalyticsField>;
 interface IAnalyticsElasticQuery {
 	company: {
 		select_field: string[];
-		list_where?: {
-			name_field_table?: string;
+		list_where: {
+			name_field_table: string;
 			search_value?: string | string[];
-			sing_action?: PermittedActions;
-			single_action_list?: SingleActionList;
+			sing_action: PermittedActions;
+			single_action_list: SingleActionList;
 		}[];
 		date_limit: {
 			date_from: string;

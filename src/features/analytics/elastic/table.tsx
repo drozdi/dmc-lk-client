@@ -1,26 +1,24 @@
 import {
-	SelectActions,
-	SelectAnalyticsFields,
-	SelectSingleAction,
 	useQueryAnalyticsFields,
 	useQueryQueryCreate,
 	useQueryQueryUpdate,
 } from "@/entites/analytics";
-import { useStoreElastic } from "@/entites/analytics/stores/use-store-elastic";
+import {
+	selectIsNext,
+	selectIsPrev,
+	useStoreElastic,
+} from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
 import { ButtonRemove, Loading } from "@/shared/ui";
 import {
 	Button,
+	Divider,
 	Group,
 	Select,
-	Stack,
 	Table,
-	TagsInput,
 	Text,
-	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -29,38 +27,42 @@ import {
 import { useMemo } from "react";
 import { TbColumnRemove } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
+import { ElasticField } from "./components/field";
+import { ElasticFilter } from "./components/fliter";
 
 interface AnalyticsElasticTableProps {
 	className?: string;
 }
 
-type TypeField = "field" | "main";
-
 export const AnalyticsElasticTable = ({
 	className,
 }: AnalyticsElasticTableProps) => {
 	const navigate = useNavigate();
-	const qaf = useQueryAnalyticsFields();
+
+	const { findLabelByCode } = useQueryAnalyticsFields();
+
 	const newQuery = useQueryQueryCreate();
 	const updateQuery = useQueryQueryUpdate();
 	const storeElastic = useStoreElastic();
 
-	const { template, data, isNext, isPrev, limit, date, isLoading } =
-		storeElastic;
+	const { template, data, isLoading } = storeElastic;
+
+	const isNext = selectIsNext(storeElastic);
+	const isPrev = selectIsPrev(storeElastic);
+	const date = storeElastic.getDate();
+	const limit = storeElastic.getLimit();
+
+	const update = () => storeElastic.save({ ...template });
 
 	const columns = useMemo(
 		() => [
 			...(template.company?.select_field || []).map((item) => ({
 				accessorKey: item,
-				header: qaf.findLabelByCode(item),
+				header: findLabelByCode(item),
 			})),
 		],
-		[template, qaf.findLabelByCode],
+		[template, findLabelByCode],
 	);
-
-	const canEdit = (column: { accessorKey: string; type: TypeField }) => {
-		return column.type !== "main";
-	};
 
 	const table = useReactTable({
 		columns,
@@ -68,78 +70,18 @@ export const AnalyticsElasticTable = ({
 		getCoreRowModel: getCoreRowModel(),
 	});
 
-	const whereItem = (select: string) =>
-		template.company.list_where?.find(
-			(item) => item.name_field_table === select,
-		);
-
-	const whereItemAppend = (
-		select: string,
-		sign: PermittedActions,
-		value: string | string[] = "",
-		action: SingleActionList = "and",
-	) => {
-		const index = template.company.list_where?.findIndex(
-			(item) => item.name_field_table === select,
-		) as number;
-		let where = {
-			name_field_table: select,
-			sing_action: sign,
-			search_value: value,
-			single_action_list: action,
-		};
-		if (index === -1) {
-			template.company.list_where?.push(where);
-		} else {
-			where = template.company.list_where?.[index] as any;
-		}
-		return where;
-	};
-
-	const handleAddField = (select: string) => {
+	const handleAddSelect = (select: string) => {
 		if (!select) {
 			return;
 		}
 		template.company.select_field.push(select);
-		storeElastic.save({ ...template });
+		update();
 	};
-	const handleRemoveField = (select: string) => {
+	const handleDelSelect = (select: string) => {
 		template.company.select_field = template.company.select_field.filter(
 			(item) => item !== select,
 		);
-		template.company.list_where = template.company.list_where?.filter(
-			(item) => item.name_field_table !== select,
-		);
-		storeElastic.save({ ...template });
-	};
-	const handleChangeActionField = (
-		select: string,
-		action: SingleActionList,
-	) => {
-		const where = whereItemAppend(select, "=", "", action);
-		where.single_action_list = action;
-		storeElastic.save({ ...template });
-	};
-	const handleChangeSignField = (select: string, sign: PermittedActions) => {
-		const where = whereItemAppend(select, sign);
-		where.sing_action = sign;
-		where.search_value = "";
-		storeElastic.save({ ...template });
-	};
-	const handleChangeInField = (select: string, value: string[]) => {
-		const where = whereItemAppend(select, "=", value);
-		where.search_value = value;
-		storeElastic.save({ ...template });
-	};
-	const handleChangeValueField = (select: string, value: string) => {
-		const where = whereItemAppend(select, "=", value);
-		where.search_value = value;
-		storeElastic.save({ ...template });
-	};
-	const handleDateChange = (name: string, value: any) => {
-		storeElastic.setDate({
-			[name]: value,
-		});
+		update();
 	};
 
 	const handleSave = async () => {
@@ -195,81 +137,10 @@ export const AnalyticsElasticTable = ({
 
 	return (
 		<>
-			<Group className={className} justify="space-between">
-				<Stack>
-					<Group>
-						<Text>С</Text>
-						<DatePickerInput
-							name="date_from"
-							value={date?.date_from}
-							onChange={(value) => handleDateChange("date_from", value)}
-						/>
-						<Text>по</Text>
-						<DatePickerInput
-							name="date_to"
-							value={date?.date_to}
-							onChange={(value) => handleDateChange("date_to", value)}
-						/>
-					</Group>
-					<SelectAnalyticsFields
-						flex="1"
-						value={""}
-						excludeds={columns.map((item) => item.accessorKey)}
-						onChange={(value) => handleAddField(value as string)}
-						placeholder="Добавить поле"
-					/>
-				</Stack>
-				<Stack mt="xs" flex="1">
-					{(template.company.list_where || []).map((item, index) => (
-						<Group key={index}>
-							<Text>{qaf.findLabelByCode(item.name_field_table)}</Text>
-							<SelectActions
-								flex="1"
-								value={item.sing_action || "="}
-								includes={qaf.findActionByCode(item.name_field_table)}
-								onChange={(sing_action) =>
-									handleChangeSignField(
-										item.name_field_table,
-										sing_action as PermittedActions,
-									)
-								}
-							/>
-							{item.sing_action === "in" || item.sing_action === "not_in" ? (
-								<TagsInput
-									value={item.search_value as string[]}
-									onChange={(value) =>
-										handleChangeInField(item.name_field_table, value)
-									}
-									placeholder="Enter поиск"
-								/>
-							) : (
-								<TextInput
-									value={item.search_value as string[]}
-									onChange={({ target }) =>
-										handleChangeValueField(item.name_field_table, target.value)
-									} ///
-								/>
-							)}
-							<SelectSingleAction
-								flex="0"
-								value={item.single_action_list || "and"}
-								onChange={(single_action_list) =>
-									handleChangeActionField(
-										item.name_field_table,
-										single_action_list as SingleActionList,
-									)
-								}
-							/>
-							<ButtonRemove />
-						</Group>
-					))}
-					<SelectAnalyticsFields
-						flex="1"
-						value={""}
-						onChange={(value) => handleAddField(value as string)}
-						placeholder="Добавить поле"
-					/>
-				</Stack>
+			<Group className={className} justify="space-between" align="self-start">
+				<ElasticField />
+				<Divider orientation="vertical" mx="lg" />
+				<ElasticFilter flex="1" />
 			</Group>
 
 			<Loading active={isLoading} keepMounted>
@@ -293,7 +164,7 @@ export const AnalyticsElasticTable = ({
 													flex="0"
 													tooltip="Удалить поле"
 													size="xs"
-													onClick={() => handleRemoveField(header.id)}
+													onClick={() => handleDelSelect(header.id)}
 												>
 													<TbColumnRemove />
 												</ButtonRemove>
@@ -305,7 +176,7 @@ export const AnalyticsElasticTable = ({
 						) : (
 							<Table.Tr>
 								<Table.Th ta="center" fz="h2" c="dimmed">
-									Выберите столбцы
+									Выберите что паказавать
 								</Table.Th>
 							</Table.Tr>
 						)}
@@ -344,14 +215,14 @@ export const AnalyticsElasticTable = ({
 				<Group>
 					<Button
 						loading={isLoading}
-						disabled={!storeElastic.isPrev}
+						disabled={!isPrev}
 						onClick={() => storeElastic.prev()}
 					>
 						Предыдущая
 					</Button>
 					<Button
 						loading={isLoading}
-						disabled={!storeElastic.isNext}
+						disabled={!isNext}
 						onClick={() => storeElastic.next()}
 					>
 						Следующая

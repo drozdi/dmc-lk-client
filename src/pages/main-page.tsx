@@ -121,10 +121,32 @@ export const MainPage = () => {
 					}}
 				>
 					<div
-						key="itog.sum"
+						key="labels.current.balance"
 						data-grid={{
 							x: 10,
 							y: 0,
+							w: 2,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget widget="labels-current-balance" />
+					</div>
+					<div
+						key="labels.current.balance.reb"
+						data-grid={{
+							x: 10,
+							y: 2,
+							w: 2,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget widget="labels-current-balance" type="reb" />
+					</div>
+					<div
+						key="itog.sum"
+						data-grid={{
+							x: 10,
+							y: 4,
 							w: 2,
 							h: 2,
 						}}
@@ -139,7 +161,7 @@ export const MainPage = () => {
 						key="itog.avg"
 						data-grid={{
 							x: 10,
-							y: 2,
+							y: 6,
 							w: 2,
 							h: 2,
 						}}
@@ -154,7 +176,7 @@ export const MainPage = () => {
 						key="itog.min"
 						data-grid={{
 							x: 10,
-							y: 4,
+							y: 8,
 							w: 2,
 							h: 2,
 						}}
@@ -169,7 +191,7 @@ export const MainPage = () => {
 						key="itog.max"
 						data-grid={{
 							x: 10,
-							y: 6,
+							y: 10,
 							w: 2,
 							h: 2,
 						}}
@@ -184,7 +206,7 @@ export const MainPage = () => {
 						key="itog.d.max"
 						data-grid={{
 							x: 10,
-							y: 6,
+							y: 12,
 							w: 2,
 							h: 2,
 						}}
@@ -219,7 +241,7 @@ export const MainPage = () => {
 						>
 							<DashBoardWidget
 								widget="analytic-events"
-								type="analytic"
+								type="stack"
 								events={["v", "d"]}
 								filterdate={query.filterdate}
 								step={query.step}

@@ -103,12 +103,27 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
-
 					<div
-						key="analytic-events-analitic"
+						key="analytic-events-stack"
 						data-grid={{
 							x: 6,
 							y: 6,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-events"
+							type="stack"
+							events={["v", "d", "i"]}
+							filterdate="$filterdate"
+						/>
+					</div>
+					<div
+						key="analytic-events-analitic"
+						data-grid={{
+							x: 0,
+							y: 12,
 							w: 6,
 							h: 6,
 						}}
@@ -120,11 +135,28 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
+
+					<div
+						key="analytic-event-defect"
+						data-grid={{
+							x: 6,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-event-defect"
+							type="analytic"
+							filterdate="$filterdate"
+						/>
+					</div>
+
 					<div
 						key="analytic-pie"
 						data-grid={{
 							x: 0,
-							y: 12,
+							y: 18,
 							w: 6,
 							h: 6,
 						}}
@@ -140,7 +172,7 @@ export const DashboardPage = () => {
 						key="analytic-type"
 						data-grid={{
 							x: 6,
-							y: 12,
+							y: 18,
 							w: 6,
 							h: 6,
 						}}
@@ -155,7 +187,7 @@ export const DashboardPage = () => {
 						key="analytics-incident"
 						data-grid={{
 							x: 0,
-							y: 18,
+							y: 24,
 							w: 6,
 							h: 6,
 						}}
@@ -169,7 +201,7 @@ export const DashboardPage = () => {
 						key="analytics-count"
 						data-grid={{
 							x: 6,
-							y: 18,
+							y: 24,
 							w: 6,
 							h: 6,
 						}}
@@ -183,7 +215,7 @@ export const DashboardPage = () => {
 						key="count"
 						data-grid={{
 							x: 0,
-							y: 24,
+							y: 30,
 							w: 6,
 							h: 6,
 						}}

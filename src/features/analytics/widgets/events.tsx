@@ -12,6 +12,7 @@ import { type MouseHandlerDataParam } from "recharts";
 import { EventsAnalytic } from "./ui/events-analytic";
 import { EventsBar } from "./ui/events-bar";
 import { EventsLine } from "./ui/events-line";
+import { EventsStack } from "./ui/events-stack";
 import { EventsTable } from "./ui/events-table";
 type Element = Record<AnalyticEvent, number>;
 
@@ -19,7 +20,7 @@ export interface AnalyticEventsProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	step?: IRequestAnalytics["step"];
 	events?: AnalyticEvent[];
-	type?: "line" | "bar" | "table" | "analytic";
+	type?: "line" | "bar" | "table" | "analytic" | "stack";
 	stop?: SliceStep;
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
 }
@@ -156,6 +157,15 @@ export const AnalyticEvents = ({
 			) : type === "analytic" ? (
 				<AspectRatio ratio={16 / 9}>
 					<EventsAnalytic
+						query={query as IRequestAnalytics}
+						data={ddata}
+						events={events}
+						onClick={handleClick}
+					/>
+				</AspectRatio>
+			) : type === "stack" ? (
+				<AspectRatio ratio={16 / 9}>
+					<EventsStack
 						query={query as IRequestAnalytics}
 						data={ddata}
 						events={events}

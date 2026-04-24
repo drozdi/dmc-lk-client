@@ -9,6 +9,7 @@ export * from "./label-format";
 export * from "./list";
 export * from "./loading";
 export * from "./progress";
+export * from "./recharts";
 export * from "./spinner";
 export * from "./table";
 export * from "./text";

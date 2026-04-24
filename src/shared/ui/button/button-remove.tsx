@@ -1,8 +1,9 @@
 import { ActionIcon, Tooltip, type ActionIconProps } from "@mantine/core";
 import { TbCircleX } from "react-icons/tb";
 
-interface ButtonRemoveProps extends ActionIconProps {
+export interface ButtonRemoveProps extends ActionIconProps {
 	tooltip?: string;
+	onClick?: () => void;
 }
 
 export function ButtonRemove({

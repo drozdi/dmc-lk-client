@@ -4,16 +4,10 @@ import {
 	useQueryAnalytics,
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { AspectRatio, Box, Center, NumberFormatter } from "@mantine/core";
+import { LegendContentPie, TooltipContentPie } from "@/shared/ui";
+import { AspectRatio, Center } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
-import {
-	Legend,
-	Pie,
-	PieChart,
-	ResponsiveContainer,
-	Tooltip,
-	type TooltipContentProps,
-} from "recharts";
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const ee = useEnumsEvents();
 
@@ -116,33 +110,12 @@ export const AnalyticPie = ({
 			) : (
 				<ResponsiveContainer>
 					<PieChart>
-						<Tooltip
-							content={(arg: TooltipContentProps) => {
-								const { separator, payload } = arg;
-								const entity = payload[0]?.payload;
-								if (!entity) {
-									return null;
-								}
-								return (
-									<Box
-										bg="var(--mantine-color-body)"
-										bd="1px solid var(--mantine-color-default-border)"
-										p="xs"
-									>
-										<span style={{ color: entity.fill }}>{entity.name}</span>{" "}
-										{separator} <NumberFormatter value={entity.value} />
-									</Box>
-								);
-							}}
-						/>
+						<Tooltip content={TooltipContentPie} />
 						<Legend
-							formatter={(_: string, entry: any) => {
-								const { color, name, value } = entry.payload;
-								return <span style={{ color }}>{name}</span>;
-							}}
 							layout="vertical"
 							verticalAlign="middle"
 							align="left"
+							content={LegendContentPie}
 						/>
 
 						<Pie data={ddata} dataKey="value" cx="50%" cy="50%" />

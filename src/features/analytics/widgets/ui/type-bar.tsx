@@ -26,8 +26,7 @@ export const TypeBar = memo(({ data, bars }: TypeBarProps) => {
 		<ResponsiveContainer>
 			<BarChart data={data}>
 				<Tooltip
-					content={(arg: TooltipContentProps) => {
-						const { label, separator, payload } = arg;
+					content={({ label, separator, payload }: TooltipContentProps) => {
 						return (
 							<Box
 								bg="var(--mantine-color-body)"
