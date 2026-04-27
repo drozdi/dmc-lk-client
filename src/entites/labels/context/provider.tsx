@@ -14,8 +14,7 @@ export function GroupedProvider({
 	const containers = useGrouped(production_id);
 
 	const findIndex = (item, id) =>
-		item === id ||
-		(typeof item === "object" && "id" in item && item.id === id);
+		item === id || (typeof item === "object" && "id" in item && item.id === id);
 
 	const handleDragEnd = async (event) => {
 		const { source, target } = event.operation;
@@ -27,17 +26,13 @@ export function GroupedProvider({
 
 		for (const [id, children] of Object.entries(containers)) {
 			if (sourceIndex === -1) {
-				sourceIndex = children.findIndex((item) =>
-					findIndex(item, source.id),
-				);
+				sourceIndex = children.findIndex((item) => findIndex(item, source.id));
 				if (sourceIndex !== -1) {
 					sourceParent = id;
 				}
 			}
 			if (targetIndex === -1) {
-				targetIndex = children.findIndex((item) =>
-					findIndex(item, target.id),
-				);
+				targetIndex = children.findIndex((item) => findIndex(item, target.id));
 				if (targetIndex !== -1) {
 					targetParent = id;
 				}
@@ -62,15 +57,11 @@ export function GroupedProvider({
 			sourceParent !== target.id &&
 			containers[sourceParent][sourceIndex]._id
 		) {
-			storeLabels.updateFormatPrint(
-				containers[sourceParent][sourceIndex]._id,
-				{
-					production_id,
-					add_label_format: target.id,
-					statistics_print_format:
-						containers[sourceParent][sourceIndex].print,
-				},
-			);
+			storeLabels.updateFormatPrint(containers[sourceParent][sourceIndex]._id, {
+				production_id,
+				add_label_format: target.id,
+				statistics_print_format: containers[sourceParent][sourceIndex].print,
+			});
 		} else if (
 			target.id !== ".default" &&
 			!containers[sourceParent][sourceIndex]._id
@@ -78,15 +69,12 @@ export function GroupedProvider({
 			storeLabels.addFormatPrint({
 				production_id,
 				add_label_format: target.id,
-				statistics_print_format:
-					containers[sourceParent][sourceIndex].print,
+				statistics_print_format: containers[sourceParent][sourceIndex].print,
 			});
 		}
 	};
 
 	return (
-		<DragDropProvider onDragEnd={handleDragEnd}>
-			{children}
-		</DragDropProvider>
+		<DragDropProvider onDragEnd={handleDragEnd}>{children}</DragDropProvider>
 	);
 }

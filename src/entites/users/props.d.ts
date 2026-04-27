@@ -1,4 +1,4 @@
-interface IUsersUser extends IUser {
+interface IUsersUser extends IUserInfo {
 	is_superuser: boolean;
 	id_production: (number | string)[];
 	is_active: boolean;

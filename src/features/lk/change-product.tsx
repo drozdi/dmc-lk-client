@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 export const ChangeProduct = () => {
 	const storeUserProfile = useStoreUserProfile();
-	const userData = storeUserProfile.userData;
+	const userInfo = storeUserProfile.userInfo;
 	const qpl = useQueryProductions();
 	const [change, setChange] = useState<boolean>(false);
 
@@ -37,7 +37,7 @@ export const ChangeProduct = () => {
 			{change ? (
 				<SelectProductions
 					allowDeselect={false}
-					excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
+					excludeds={storeUserProfile.userInfo?.is_superuser ? [] : ["0"]}
 					variant="underline"
 					value={String(storeUserProfile.production_id)}
 					onChange={(value) => handleChange(value as string)}

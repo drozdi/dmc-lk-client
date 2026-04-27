@@ -1,4 +1,4 @@
-interface IUser {
+interface IUserInfo {
 	first_name: string;
 	last_name: string;
 	father_name: string;
@@ -9,8 +9,15 @@ interface IUser {
 	id_production: IProduction["production_id"][];
 }
 
-interface IUserPassword extends IUser {
-	re_password: IUser["password"];
+interface IUserPassword extends IUserInfo {
+	re_password: IUserInfo["password"];
+}
+
+interface ISetting {
+	id: integer;
+	user_id: IUserInfo["id"];
+	setting_name: string;
+	meaning: Record<string, any>;
 }
 
 interface IStoreAuth extends IStore {
@@ -21,18 +28,34 @@ interface IStoreAuth extends IStore {
 	refreshAuth(): Promise<{ accessToken: string; refreshToken: string }>;
 	verification(link: string): Promise<any>;
 	login(email: string, password: string): Promise<boolean>;
-	register(userData: Partial<IUser>): Promise<any>;
+	register(userData: Partial<IUserInfo>): Promise<any>;
 	logout(): Promise<void>;
 }
 
 interface IStoreUserProfile extends IStore {
-	userData?: IUser;
+	userInfo?: IUserInfo;
+	settings: ISetting[];
 	production_id: IProduction["production_id"];
+
 	setProductionId(id: IProduction["production_id"]): void;
-	setUserData(data: Partial<IUser>): void;
-	load(reloading?: boolean): Promise<IUser | undefined>;
-	update(userData: IUser | Partial<IUser>): Promise<IUser | undefined>;
-	updatePassword(oldPassword: string, newPassword: string): Promise<boolean>;
-	delete(): Promise<any>;
+
+	setUserInfo(data: Partial<IUserInfo>): void;
+	updateUserInfo(iserInfo: Partial<IUserInfo>): Promise<boolean>;
+	updateUserPassword(
+		oldPasswoed: IUserInfo["password"],
+		newPassword: IUserInfo["password"],
+	): Promise<boolean>;
+
+	setSetting(
+		name: ISetting["setting_name"],
+		value?: ISetting["meaning"],
+	): Promise<void>;
+	getSetting(name: ISetting["setting_name"]): ISetting["meaning"] | undefined;
+
+	updateSettings(): Promise<void>;
+
+	loadUserInfo(reloading?: boolean): Promise<IUserInfo | undefined>;
+	loadSettings(reloading?: boolean): Promise<boolean>;
+
 	reset(): void;
 }

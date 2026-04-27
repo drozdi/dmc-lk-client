@@ -24,7 +24,7 @@ function getProductions(
 }
 
 export function Productions({ data, onChange }: ProductionsProps) {
-	const { production_id: storeProductionId } = useStoreUserProfile();
+	const storeProductionId = useStoreUserProfile((state) => state.production_id);
 	const [production_id, setProductionId] = useState<number>(
 		Number(storeProductionId),
 	);

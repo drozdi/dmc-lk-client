@@ -55,7 +55,7 @@ export const SignUpForm = (props: SignUpFormProps) => {
 
 	async function sendFormData(formData: Partial<IUserPassword>) {
 		const res = await storeAuth.register(formData);
-		storeUserProfile.setUserData(res.user);
+		storeUserProfile.setUserInfo(res.user);
 		if (res) {
 			navigate("/", { replace: true });
 		}

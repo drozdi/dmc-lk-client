@@ -23,7 +23,7 @@ export const WidgetAnalyticsIncident = ({
 	...props
 }: WidgetAnalyticsIncidentProps) => {
 	const storeIncident = useStoreIncident();
-	const { production_id } = useStoreUserProfile();
+	const production_id = useStoreUserProfile((state) => state.production_id);
 	const currProduction = Number(production_id || 0);
 	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
 		filterdate: filterdate || [null, null],

@@ -49,7 +49,7 @@ export const LabelsGroup = () => {
 							Нужно выбрать площадку
 						</Text>
 						<SelectProductions
-							excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
+							excludeds={storeUserProfile.userInfo?.is_superuser ? [] : ["0"]}
 							variant="underline"
 							value={String(storeUserProfile.production_id)}
 							onChange={(value) =>

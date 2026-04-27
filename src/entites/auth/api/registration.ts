@@ -20,7 +20,7 @@ export async function requestRegistrationVerification(link: string) {
 	});
 	return res.data;
 }
-export async function requestRegistrationRegister(userData: IUser) {
+export async function requestRegistrationRegister(userData: IUserInfo) {
 	const res = await api.post("/registration/save_data", userData);
 	return res.data;
 }

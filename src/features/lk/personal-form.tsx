@@ -15,17 +15,17 @@ import { useNavigate } from "react-router-dom";
 
 export const PersonalForm = () => {
 	const storeUserProfile = useStoreUserProfile();
-	const { isLoading, userData } = storeUserProfile;
+	const { isLoading, userInfo } = storeUserProfile;
 	const navigate = useNavigate();
-	const form = useForm<Partial<IUser>>({
+	const form = useForm<Partial<IUserInfo>>({
 		mode: "uncontrolled",
 		name: "personalForm",
 		initialValues: {
-			first_name: userData?.first_name || "",
-			last_name: userData?.last_name || "",
-			father_name: userData?.father_name || "",
-			email: userData?.email || "",
-			phone: userData?.phone || "",
+			first_name: userInfo?.first_name || "",
+			last_name: userInfo?.last_name || "",
+			father_name: userInfo?.father_name || "",
+			email: userInfo?.email || "",
+			phone: userInfo?.phone || "",
 		},
 
 		validate: {
@@ -42,7 +42,7 @@ export const PersonalForm = () => {
 		},
 
 		onValuesChange: (values) => {
-			storeUserProfile.setUserData(values);
+			storeUserProfile.setUserInfo(values);
 		},
 	});
 	const formPassword = useForm<{
@@ -68,11 +68,11 @@ export const PersonalForm = () => {
 		},
 	});
 
-	async function handleSave(formData: Partial<IUser>) {
-		await storeUserProfile.update(formData);
+	async function handleSave(formData: Partial<IUserInfo>) {
+		await storeUserProfile.updateUserInfo(formData);
 	}
-	async function handleSaveNavigate(formData: Partial<IUser>) {
-		await storeUserProfile.update(formData);
+	async function handleSaveNavigate(formData: Partial<IUserInfo>) {
+		await storeUserProfile.updateUserInfo(formData);
 		navigate("/");
 	}
 	async function handleChangePassword({
@@ -82,7 +82,10 @@ export const PersonalForm = () => {
 		oldPassword: string;
 		newPassword: string;
 	}) {
-		const res = await storeUserProfile.updatePassword(oldPassword, newPassword);
+		const res = await storeUserProfile.updateUserPassword(
+			oldPassword,
+			newPassword,
+		);
 		if (res) {
 			formPassword.setValues({
 				oldPassword: "",
@@ -95,13 +98,12 @@ export const PersonalForm = () => {
 	const isValid = true;
 
 	useEffect(() => {
-		if (userData?.email) {
-			form.initialize(userData);
-		}
-	}, [userData]);
-
-	useEffect(() => {
-		storeUserProfile.load();
+		(async function () {
+			const userInfo = await storeUserProfile.loadUserInfo();
+			if (userInfo) {
+				form.initialize(userInfo);
+			}
+		})();
 	}, []);
 
 	return (

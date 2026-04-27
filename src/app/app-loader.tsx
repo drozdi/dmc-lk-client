@@ -20,7 +20,6 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		storeUserProfile.load();
 		if (storeAuth.isAuthenticated) {
-			// storeUserProfile.load(true);
 			storeLabels.load();
 			storeCountLabel.load();
 		} else {
@@ -29,7 +28,7 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
-		const userData = storeUserProfile.userData;
+		const userData = storeUserProfile.userInfo;
 		if (userData) {
 			if (
 				!userData.is_superuser &&
@@ -38,9 +37,7 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 				)
 			) {
 				userData.id_production?.length &&
-					storeUserProfile.setProductionId(
-						Number(userData.id_production[0]),
-					);
+					storeUserProfile.setProductionId(Number(userData.id_production[0]));
 			}
 		}
 	}, [storeUserProfile]);

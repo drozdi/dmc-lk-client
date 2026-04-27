@@ -68,7 +68,7 @@ export function WidgetForm({
 
 	function handleAdd(widget: Partial<IWidgetItem>) {
 		if (id) {
-			store.updateWidget(widget as IWidgetItem);
+			storeWidget(widget as IWidgetItem);
 		} else {
 			store.addWidget(widget as IWidgetItem, layout);
 		}

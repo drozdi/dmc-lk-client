@@ -22,7 +22,7 @@ export const AnalyticLabels = memo(
 		event = "p",
 		type = "default",
 	}: AnalyticLabelsProps) => {
-		const { production_id } = useStoreUserProfile();
+		const production_id = useStoreUserProfile((state) => state.production_id);
 
 		const { fetch, data, query } = useAnalytics({
 			filterdate,

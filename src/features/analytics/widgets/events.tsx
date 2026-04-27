@@ -46,7 +46,7 @@ export const AnalyticEvents = ({
 	} as IRequestAnalytics);
 
 	const { fetch } = useQueryAnalytics(query);
-	const { production_id } = useStoreUserProfile();
+	const production_id = useStoreUserProfile((state) => state.production_id);
 	const [data, setData] = useState<Record<AnalyticEvent, IResponseAnalytics>>();
 
 	const labels = useFilterdateStep(query);

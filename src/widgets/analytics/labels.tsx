@@ -23,7 +23,7 @@ export const WidgetAnalyticLabels = memo(
 		type = "default",
 		...props
 	}: WidgetAnalyticLabelsProps) => {
-		const { production_id } = useStoreUserProfile();
+		const production_id = useStoreUserProfile((state) => state.production_id);
 		const [query, setQuery] = useState<IRequestAnalytics>({
 			filterdate,
 			step,

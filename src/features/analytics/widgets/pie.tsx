@@ -20,7 +20,7 @@ export const AnalyticPie = ({
 	filterdate,
 	events = ["v", "d", "i"],
 }: AnalyticPieProps) => {
-	const { production_id } = useStoreUserProfile();
+	const production_id = useStoreUserProfile((state) => state.production_id);
 	const { fetch } = useQueryAnalytics();
 
 	const [data, setData] = useState<{
