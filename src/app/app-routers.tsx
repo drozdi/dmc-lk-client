@@ -1,6 +1,6 @@
 import { ProtectedRoute } from "@/features/auth/protected-route";
 import { AuthLayout, MainLayout } from "@/layout";
-import { Navigate, Outlet, useRoutes } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useRoutes } from "react-router-dom";
 
 import { AnalyticsElasticFormPage } from "@/pages/analytics/elastic/form-page";
 import { AnalyticsIncidentPage } from "@/pages/analytics/incident";
@@ -114,7 +114,21 @@ const routes = () => [
 	},
 ];
 
+function RequireTrailingSlash({ children }: { children: JSX.Element }) {
+	const location = useLocation();
+	const pathname = location.pathname;
+
+	// Если путь не является корневым '/' и не заканчивается на '/'
+	if (pathname !== "/" && !pathname.endsWith("/")) {
+		// Формируем новый путь: старый путь + '/', остальное (search, hash) не меняем
+		const newPathname = `${pathname}/`;
+		return <Navigate to={{ ...location, pathname: newPathname }} replace />;
+	}
+
+	return children;
+}
+
 export function AppRouters() {
 	const routesElement = useRoutes(routes());
-	return routesElement;
+	return <RequireTrailingSlash>{routesElement}</RequireTrailingSlash>;
 }

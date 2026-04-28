@@ -123,6 +123,7 @@ export function Widget({
 					miw={loading ? "100%" : undefined}
 					h="100%"
 					pos="relative"
+					pb="md"
 				>
 					<Text c="red">{error?.message || error}</Text>
 					{keepMounted || isExpanded ? preview : null}

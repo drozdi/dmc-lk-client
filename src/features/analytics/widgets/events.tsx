@@ -119,6 +119,10 @@ export const AnalyticEvents = ({
 		})();
 	}, [query]);
 
+	const dddata = useMemo(() => {
+		return ddata.sort((a, b) => a.date.localeCompare(b.date));
+	}, [ddata]);
+
 	useEffect(() => {
 		setQuery({ filterdate, step } as IRequestAnalytics);
 	}, [filterdate, step]);
@@ -139,9 +143,7 @@ export const AnalyticEvents = ({
 			) : type === "table" ? (
 				<EventsTable
 					query={query as IRequestAnalytics}
-					data={ddata
-						.filter((item) => item.total > 0)
-						.sort((a, b) => a.date.localeCompare(b.date))}
+					data={dddata.filter((item) => item.total > 0)}
 					events={events}
 					onClick={handleClick}
 				/>
@@ -149,7 +151,7 @@ export const AnalyticEvents = ({
 				<AspectRatio ratio={16 / 9}>
 					<EventsBar
 						query={query as IRequestAnalytics}
-						data={ddata}
+						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
@@ -158,7 +160,7 @@ export const AnalyticEvents = ({
 				<AspectRatio ratio={16 / 9}>
 					<EventsAnalytic
 						query={query as IRequestAnalytics}
-						data={ddata}
+						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
@@ -167,7 +169,7 @@ export const AnalyticEvents = ({
 				<AspectRatio ratio={16 / 9}>
 					<EventsStack
 						query={query as IRequestAnalytics}
-						data={ddata}
+						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
@@ -176,7 +178,7 @@ export const AnalyticEvents = ({
 				<AspectRatio ratio={16 / 9}>
 					<EventsLine
 						query={query as IRequestAnalytics}
-						data={ddata}
+						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>

@@ -51,6 +51,11 @@ export const MainPage = () => {
 	}, [filterdate]);
 
 	const handleClick = (arg: MouseHandlerDataParam) => {
+		const { activeLabel } = arg;
+		if (!activeLabel) {
+			return;
+		}
+
 		const step =
 			query.step === "y"
 				? "mon"
@@ -63,7 +68,6 @@ export const MainPage = () => {
 							: query.step === "h"
 								? "m"
 								: "s";
-		const { activeLabel } = arg;
 
 		const filterdate: [DateValue, DateValue] = ["", ""];
 
@@ -233,7 +237,9 @@ export const MainPage = () => {
 								{
 									children: "Сбросить",
 									onClick: () => {
-										setFilterdate(storeDashboardMain.getValue("$filterdate"));
+										setFilterdate([
+											...storeDashboardMain.getValue("$filterdate"),
+										]);
 									},
 									leftSection: <TbReload />,
 								},
@@ -266,10 +272,10 @@ export const MainPage = () => {
 					<div
 						key="analytic.labels"
 						data-grid={{
-							x: 0,
+							x: 6,
 							y: Infinity,
-							w: 12,
-							h: 12,
+							w: 6,
+							h: 6,
 						}}
 					>
 						<DashBoardWidget
@@ -283,8 +289,8 @@ export const MainPage = () => {
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 12,
-							h: 12,
+							w: 6,
+							h: 6,
 						}}
 					>
 						<DashBoardWidget

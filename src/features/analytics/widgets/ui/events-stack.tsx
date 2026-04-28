@@ -1,4 +1,5 @@
 import { useEnumsEvents } from "@/entites/analytics";
+import { randomColorLabel } from "@/entites/labels";
 import { $setting } from "@/shared";
 import { TooltipContentBar } from "@/shared/ui";
 import dayjs from "dayjs";
@@ -6,17 +7,65 @@ import {
 	Bar,
 	BarChart,
 	CartesianGrid,
+	Cell,
 	Legend,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
+	type BarShapeProps,
 } from "recharts";
 import type { EventsProps } from "./type";
 
 export interface EventsStackProps extends EventsProps {}
 
 const ee = useEnumsEvents();
+
+const CustomNestedBar = (props: BarShapeProps) => {
+	const { x, y, width, height, payload, fill } = props;
+	console.log(props);
+	const { total, v } = payload;
+	let totalHeight = (height / v) * total;
+
+	if (Number.isNaN(totalHeight)) {
+		totalHeight = height;
+	}
+
+	return (
+		<g>
+			<rect
+				x={x}
+				y={0}
+				width={width}
+				height={totalHeight}
+				fill={randomColorLabel("def")}
+			/>
+			<rect x={x} y={y} width={width} height={height} fill={fill} />
+		</g>
+	);
+};
+
+const CustomBarWithEmptyZone = (props) => {
+	const { x, y, width, fill, value, payload, allData } = props;
+	const isEmpty = value === null || value === undefined;
+
+	// Опционально: получаем максимальное значение для всего графика
+	// Для этого нужно передать maxAmount через контекст или просто вычислить заранее
+	// Допустим, мы знаем, что максимальная сумма = 10000, а высота графика = 250px
+	const fullHeight = 250; // осторожно: в реальном проекте нужно пересчитать пропорции
+	const barY = y + (isEmpty ? props.height : 0); // для пустого рисуем от текущей Y вверх
+
+	return (
+		<rect
+			x={x}
+			y={isEmpty ? y : y} // если хотите пустой от основания, а не сверху
+			width={width}
+			height={isEmpty ? fullHeight : props.height}
+			fill={isEmpty ? "#ffcccc" : fill}
+			rx={4}
+		/>
+	);
+};
 
 export const EventsStack = ({
 	query,
@@ -55,7 +104,9 @@ export const EventsStack = ({
 						fill={ee.findColorByCode(line)}
 						stroke={ee.findColorByCode(line)}
 						label={ee.findLabelByCode(line) as any}
-					/>
+					>
+						<Cell></Cell>
+					</Bar>
 				))}
 			</BarChart>
 		</ResponsiveContainer>

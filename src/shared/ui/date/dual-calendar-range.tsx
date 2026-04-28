@@ -67,9 +67,7 @@ export function DualCalendarRange({
 
 	const handleLeftCalendarClick = (date: DateValue) => {
 		setStartDate(date);
-		if (endDate && date > endDate) {
-			setEndDate(null);
-		}
+		setEndDate(dayjs(date).add(1, "day").format("YYYY-MM-DD"));
 	};
 
 	const handleRightCalendarClick = (date: DateValue) => {
@@ -150,6 +148,7 @@ export function DualCalendarRange({
 					/>
 					<Divider orientation="vertical" mx="xs" />
 					<Calendar
+						minDate={dayjs(startDate).toDate()}
 						defaultDate={dayjs(endDate).toDate()}
 						getDayProps={(date) => ({
 							onClick: () => handleRightCalendarClick(date),
