@@ -213,7 +213,8 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 					})
 				).data.response;
 				settings = settings.concat(res);
-			} while (res.length);
+				number++;
+			} while (res?.length);
 			set({
 				isLoading: false,
 				settings,
