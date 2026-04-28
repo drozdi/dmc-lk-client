@@ -3,6 +3,7 @@ import { api } from "@/shared/api";
 export async function requestAnalytics(
 	params: IRequestAnalytics,
 ): Promise<IResponse<IResponseAnalytics>> {
+	console.log(params);
 	const arr = [];
 	for (const key in params) {
 		if (Array.isArray(params[key as keyof IRequestAnalytics])) {

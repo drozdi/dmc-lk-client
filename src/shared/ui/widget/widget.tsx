@@ -49,7 +49,7 @@ function WidgetMenu({ options = [] }: WidgetMenuProps) {
 			</Menu.Target>
 			<Menu.Dropdown>
 				{options.map((item) => (
-					<Menu.Item leftSection={<></>} {...item} />
+					<Menu.Item {...item} />
 				))}
 			</Menu.Dropdown>
 		</Menu>

@@ -40,13 +40,18 @@ export const AnalyticEvents = ({
 	stop = "m",
 	onClick,
 }: AnalyticEventsProps) => {
+	const production_id = useStoreUserProfile((state) => state.production_id);
+	const currProduction = Number(production_id || 0);
+
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
+		production_id: currProduction,
 	} as IRequestAnalytics);
+	console.log(currProduction, query);
 
 	const { fetch } = useQueryAnalytics(query);
-	const production_id = useStoreUserProfile((state) => state.production_id);
+
 	const [data, setData] = useState<Record<AnalyticEvent, IResponseAnalytics>>();
 
 	const labels = useFilterdateStep(query);
@@ -56,7 +61,7 @@ export const AnalyticEvents = ({
 		if (!data) {
 			return [];
 		}
-		const currProduction = Number(production_id || 0);
+
 		const ddata: Record<string, Element> = {};
 
 		for (const date of labels) {
@@ -129,6 +134,14 @@ export const AnalyticEvents = ({
 
 	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
 		if (query.step === stop) {
+			return;
+		}
+		const { activeLabel } = arg;
+		if (!activeLabel) {
+			return;
+		}
+		const total = ddata.find((item) => item.date === activeLabel)?.total || 0;
+		if (total === 0) {
 			return;
 		}
 		onClick?.(arg, e);

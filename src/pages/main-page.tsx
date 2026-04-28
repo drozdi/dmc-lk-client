@@ -16,7 +16,7 @@ import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { TbReload } from "react-icons/tb";
+import { TbArrowBackUp, TbReload } from "react-icons/tb";
 import { type MouseHandlerDataParam } from "recharts";
 
 const stepLabel = {
@@ -33,6 +33,8 @@ export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem> | undefined>({});
+	const [history, setHistory] = useState([]);
+
 	useEffect(() => {
 		storeDashboardMain.id && open();
 	}, [storeDashboardMain.id]);
@@ -96,7 +98,17 @@ export const MainPage = () => {
 			filterdate[0] = dayjs(activeLabel).startOf("y").format("YYYY-MM-DD");
 			filterdate[1] = dayjs(activeLabel).endOf("y").format("YYYY-MM-DD");
 		}
-		setQuery(corectQuery({ ...query, filterdate, step }));
+		const newQuery = corectQuery({ ...query, filterdate, step });
+		setHistory((v) => [...v, query]);
+		setQuery(newQuery);
+	};
+	const back = () => {
+		if (!history?.length) {
+			return;
+		}
+		const newQuery = history.pop();
+		setHistory([...history]);
+		setQuery(newQuery);
 	};
 
 	return (
@@ -111,6 +123,7 @@ export const MainPage = () => {
 					onChange={(filterdate) => {
 						storeDashboardMain.setValue("filterdate", filterdate);
 						setFilterdate(filterdate);
+						setHistory([]);
 					}}
 				/>
 			</Group>
@@ -240,8 +253,15 @@ export const MainPage = () => {
 										setFilterdate([
 											...storeDashboardMain.getValue("$filterdate"),
 										]);
+										setHistory([]);
 									},
 									leftSection: <TbReload />,
+								},
+								{
+									children: "Назад",
+									onClick: back,
+									disabled: !history?.length,
+									leftSection: <TbArrowBackUp />,
 								},
 							]}
 						>

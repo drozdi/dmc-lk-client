@@ -7,7 +7,6 @@ import {
 	Bar,
 	BarChart,
 	CartesianGrid,
-	Cell,
 	Legend,
 	ResponsiveContainer,
 	Tooltip,
@@ -20,6 +19,50 @@ import type { EventsProps } from "./type";
 export interface EventsStackProps extends EventsProps {}
 
 const ee = useEnumsEvents();
+
+const CustomBar = (props) => {
+	const {
+		x,
+		y,
+		width,
+		height, // стандартные размеры
+		fill,
+		value,
+		index,
+		payload,
+	} = props;
+
+	const isEmpty = value === null || value === undefined;
+
+	// Вычисляем настоящую высоту столбца
+	// Если данные есть — используем высоту от Recharts (уже пропорциональна значению)
+	// Если данных нет — рисуем столбец от оси X (y + height) до верхней границы (y)
+	// Примечание: при нулевом значении height=0, y указывает на верхнюю границу столбца.
+	// Ось X находится на уровне y + height (для положительных значений).
+	const effectiveHeight = isEmpty
+		? props.yAxisHeight || 0 // нужна высота всей оси Y
+		: Math.max(0, height);
+
+	// Координата Y: для пустого столбца - от оси (y+height) вверх на effectiveHeight
+	const effectiveY = isEmpty
+		? y + height // точка на оси X
+		: y;
+
+	// Цвет: для пустых зададим, например, светло-серый с прозрачностью
+	const barColor = isEmpty ? "#dddddd" : fill;
+
+	return (
+		<rect
+			x={x}
+			y={effectiveY}
+			width={width}
+			height={isEmpty ? effectiveHeight : height}
+			fill={barColor}
+			stroke="none"
+			rx={4}
+		/>
+	);
+};
 
 const CustomNestedBar = (props: BarShapeProps) => {
 	const { x, y, width, height, payload, fill } = props;
@@ -104,9 +147,8 @@ export const EventsStack = ({
 						fill={ee.findColorByCode(line)}
 						stroke={ee.findColorByCode(line)}
 						label={ee.findLabelByCode(line) as any}
-					>
-						<Cell></Cell>
-					</Bar>
+						background
+					/>
 				))}
 			</BarChart>
 		</ResponsiveContainer>
