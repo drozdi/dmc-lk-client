@@ -48,7 +48,6 @@ export const AnalyticEvents = ({
 		step,
 		production_id: currProduction,
 	} as IRequestAnalytics);
-	console.log(currProduction, query);
 
 	const { fetch } = useQueryAnalytics(query);
 
@@ -111,7 +110,14 @@ export const AnalyticEvents = ({
 			}));
 	}, [data, labels, production_id]);
 
-	const isEmpty = useMemo(() => !ddata.length, [ddata]);
+	const dddata = useMemo(() => {
+		return ddata.sort((a, b) => a.date.localeCompare(b.date));
+	}, [ddata]);
+
+	const isEmpty = useMemo(
+		() => dddata.every((item) => item.total < 1),
+		[dddata],
+	);
 
 	useEffect(() => {
 		(async function () {
@@ -124,13 +130,13 @@ export const AnalyticEvents = ({
 		})();
 	}, [query]);
 
-	const dddata = useMemo(() => {
-		return ddata.sort((a, b) => a.date.localeCompare(b.date));
-	}, [ddata]);
-
 	useEffect(() => {
-		setQuery({ filterdate, step } as IRequestAnalytics);
-	}, [filterdate, step]);
+		setQuery({
+			filterdate,
+			step,
+			production_id: currProduction,
+		} as IRequestAnalytics);
+	}, [filterdate, step, currProduction]);
 
 	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
 		if (query.step === stop) {

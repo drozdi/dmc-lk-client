@@ -1,9 +1,67 @@
 import { Divider, Group, Popover, TextInput } from "@mantine/core";
 import { Calendar, type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-interface DualCalendarRangeProps {
+const formatDate = (date: DateValue): string => {
+	return date ? dayjs(date).format("LL") : "";
+};
+
+const getDayStyle = (
+	date: DateValue,
+	startDate: DateValue,
+	endDate: DateValue,
+) => {
+	if (!startDate) return {};
+	const isStart = dayjs(date).isSame(startDate, "day");
+	const isEnd = endDate ? dayjs(date).isSame(endDate, "day") : false;
+	const inRange =
+		startDate &&
+		endDate &&
+		dayjs(date).isAfter(startDate, "day") &&
+		dayjs(date).isBefore(endDate, "day");
+
+	if (isStart || isEnd) {
+		return {
+			backgroundColor: "var(--mantine-primary-color-filled-hover)",
+			color: "white",
+			borderRadius: "50%",
+		};
+	}
+	if (inRange) {
+		return {
+			backgroundColor: "var(--mantine-primary-color-light)",
+		};
+	}
+	return {};
+};
+
+const isSameDay = (a: DateValue, b: DateValue): boolean => {
+	if (!a || !b) {
+		return false;
+	}
+	return (
+		a.getFullYear() === b.getFullYear() &&
+		a.getMonth() === b.getMonth() &&
+		a.getDate() === b.getDate()
+	);
+};
+
+const isAfterDay = (a: DateValue, b: DateValue): boolean => {
+	if (!a || !b) {
+		return false;
+	}
+	return a > b && !isSameDay(a, b);
+};
+
+const isBeforeDay = (a: DateValue, b: DateValue): boolean => {
+	if (!a || !b) {
+		return false;
+	}
+	return a < b && !isSameDay(a, b);
+};
+
+export interface DualCalendarRangeProps {
 	defaultValue?: [DateValue, DateValue];
 	value?: [DateValue, DateValue];
 	onChange?: (value: [DateValue, DateValue]) => void;
@@ -16,103 +74,66 @@ export function DualCalendarRange({
 	onChange,
 	...props
 }: DualCalendarRangeProps) {
-	const [startDate, setStartDate] = useState<DateValue>(
-		value?.[0] || defaultValue?.[0] || null,
-	);
-	const [endDate, setEndDate] = useState<DateValue>(
-		value?.[1] || defaultValue?.[1] || null,
-	);
+	const isControlled = value !== undefined;
 
+	const [internalStart, setInternalStart] = useState(defaultValue[0]);
+	const [internalEnd, setInternalEnd] = useState(defaultValue[1]);
+
+	// Синхронизация внешнего value
 	useEffect(() => {
-		value?.[0] && setStartDate(value[0]);
-		value?.[1] && setEndDate(value[1]);
-	}, [value]);
+		if (isControlled) {
+			setInternalStart(value[0] ?? null);
+			setInternalEnd(value[1] ?? null);
+		}
+	}, [value, isControlled]);
 
-	useEffect(() => {
-		onChange?.([startDate, endDate]);
-	}, [startDate, endDate]);
+	const startDate = isControlled ? value[0] : internalStart;
+	const endDate = isControlled ? value[1] : internalEnd;
 
-	const handleDateClick = (date: DateValue) => {
-		if (!startDate) {
-			if (!endDate) {
-				setStartDate(date);
-			} else if (date < endDate) {
-				setStartDate(date);
-			} else if (date > endDate) {
-				setStartDate(endDate);
-				setEndDate(date);
+	const updateRange = useCallback(
+		(newStart: DateValue, newEnd: DateValue) => {
+			if (!isControlled) {
+				setInternalStart(newStart);
+				setInternalEnd(newEnd);
 			}
-		} else {
-			if (date < startDate) {
-				setStartDate(date);
-				setEndDate(startDate);
-			} else if (date > startDate) {
-				setEndDate(date);
+			onChange?.([newStart, newEnd]);
+		},
+		[isControlled, onChange],
+	);
+
+	const handleLeftCalendarClick = useCallback(
+		(date: DateValue) => {
+			if (!date) {
+				return;
 			}
-		}
-		// if (!startDate || (startDate && endDate)) {
-		// 	// Ничего не выбрано или диапазон уже заполнен – начинаем новый диапазон
-		// 	setStartDate(date);
-		// 	setEndDate(null);
-		// } else if (startDate && !endDate) {
-		// 	// Выбрано начало, выбираем конец
-		// 	if (date < startDate) {
-		// 		// Если кликнули дату раньше начала, делаем её новым началом
-		// 		setStartDate(date);
-		// 	} else {
-		// 		setEndDate(date);
-		// 	}
-		// }
-	};
+			if (date === startDate || date === endDate) {
+				return;
+			}
+			if (endDate && date > endDate) {
+				updateRange(endDate, date);
+			} else {
+				updateRange(date, endDate);
+			}
+		},
+		[startDate, endDate, updateRange],
+	);
 
-	const handleLeftCalendarClick = (date: DateValue) => {
-		setStartDate(date);
-		setEndDate(dayjs(date).add(1, "day").format("YYYY-MM-DD"));
-	};
-
-	const handleRightCalendarClick = (date: DateValue) => {
-		// Клик по правому календарю – устанавливаем конец
-		if (!startDate) {
-			setStartDate(date);
-		} else if (date < startDate) {
-			setStartDate(date);
-			setEndDate(null);
-		} else {
-			setEndDate(date);
-		}
-	};
-
-	// Подсветка для любого календаря
-	const getDayStyle = (date: DateValue) => {
-		if (!startDate) return {};
-
-		const isStart = dayjs(date).isSame(startDate, "day");
-		const isEnd = endDate ? dayjs(date).isSame(endDate, "day") : false;
-		const inRange =
-			startDate &&
-			endDate &&
-			dayjs(date).isAfter(startDate, "day") &&
-			dayjs(date).isBefore(endDate, "day");
-
-		if (isStart || isEnd) {
-			return {
-				backgroundColor: "var(--mantine-color-blue-6)",
-				color: "white",
-				borderRadius: "50%",
-			};
-		}
-		if (inRange) {
-			return {
-				backgroundColor: "var(--mantine-color-blue-2)",
-				borderRadius: 0,
-			};
-		}
-		return {};
-	};
-
-	const formatDate = (date: DateValue): string => {
-		return date ? dayjs(date).format("LL") : "";
-	};
+	const handleRightCalendarClick = useCallback(
+		(date: DateValue) => {
+			if (!date) {
+				return;
+			}
+			if (date === startDate || date === endDate) {
+				return;
+			}
+			if (startDate && date < startDate) {
+				updateRange(date, startDate);
+			} else {
+				updateRange(startDate, date);
+			}
+		},
+		[startDate, endDate, updateRange],
+	);
 
 	return (
 		<Popover>
@@ -123,36 +144,30 @@ export function DualCalendarRange({
 						value={formatDate(startDate)}
 						variant="сontained"
 						readOnly
-						style={{}}
 					/>
 					<TextInput
 						label="До"
 						value={formatDate(endDate)}
 						variant="сontained"
 						readOnly
-						style={{
-							borderLeft: "0 none",
-							marginLeft: -1,
-						}}
 					/>
 				</Group>
 			</Popover.Target>
 			<Popover.Dropdown>
 				<Group>
 					<Calendar
-						defaultDate={dayjs(startDate).toDate()}
+						defaultDate={startDate || undefined}
 						getDayProps={(date) => ({
 							onClick: () => handleLeftCalendarClick(date),
-							style: getDayStyle(date),
+							style: getDayStyle(date, startDate, endDate),
 						})}
 					/>
 					<Divider orientation="vertical" mx="xs" />
 					<Calendar
-						minDate={dayjs(startDate).toDate()}
-						defaultDate={dayjs(endDate).toDate()}
+						defaultDate={endDate || undefined}
 						getDayProps={(date) => ({
 							onClick: () => handleRightCalendarClick(date),
-							style: getDayStyle(date),
+							style: getDayStyle(date, startDate, endDate),
 						})}
 					/>
 				</Group>

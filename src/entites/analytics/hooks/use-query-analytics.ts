@@ -30,7 +30,6 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 				],
 				...query,
 			} as IRequestAnalytics;
-
 			setIsLoading(true);
 			try {
 				const res = await queryClient.fetchQuery({

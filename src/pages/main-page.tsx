@@ -15,7 +15,7 @@ import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TbArrowBackUp, TbReload } from "react-icons/tb";
 import { type MouseHandlerDataParam } from "recharts";
 
@@ -111,6 +111,12 @@ export const MainPage = () => {
 		setQuery(newQuery);
 	};
 
+	const handleFilterdate = useCallback((filterdate: [DateValue, DateValue]) => {
+		storeDashboardMain.setValue("filterdate", filterdate);
+		setFilterdate(filterdate);
+		setHistory([]);
+	}, []);
+
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -120,11 +126,7 @@ export const MainPage = () => {
 					value={
 						storeDashboardMain.getValue("$filterdate") as [DateValue, DateValue]
 					}
-					onChange={(filterdate) => {
-						storeDashboardMain.setValue("filterdate", filterdate);
-						setFilterdate(filterdate);
-						setHistory([]);
-					}}
+					onChange={handleFilterdate}
 				/>
 			</Group>
 			<WidgetsProvider store={useStoreDashboardMain}>
