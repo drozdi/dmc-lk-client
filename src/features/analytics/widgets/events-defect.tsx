@@ -92,19 +92,21 @@ export const AnalyticEventsDefect = ({
 	step = "d",
 	event = "d",
 }: AnalyticEventsDefectProps) => {
-	const { data } = useAnalytics({ filterdate, step, event });
-	const production_id = useStoreUserProfile((state) => state.production_id);
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
+	const { data } = useAnalytics({ filterdate, step, event, production_id });
 
 	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
 		if (!data) {
 			return [];
 		}
-		const currProduction = Number(production_id || 0);
+
 		const ddata: Record<string, number> = {};
 
 		for (const production of data.production || []) {
-			if (currProduction > 0 && currProduction !== production.production_id) {
+			if (production_id > 0 && production_id !== production.production_id) {
 				continue;
 			}
 

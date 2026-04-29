@@ -59,7 +59,7 @@ interface WidgetContextType {
 			required: IWidgetParam["required"];
 		}
 	>;
-	getValue: (val: unknown) => unknown;
+	getValue: (val: unknown) => any;
 	setValue: (key: string, val: unknown) => void;
 	toggleEdit: () => void;
 	updateLayout: (newLayout: ILayoutItem[]) => void;

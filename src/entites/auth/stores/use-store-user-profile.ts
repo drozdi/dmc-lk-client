@@ -206,15 +206,16 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 			let size = 10;
 			let number = 0;
 			do {
-				res = (
-					await requestPageSettingList({
-						size,
-						number,
-					})
-				).data.response;
+				res =
+					(
+						await requestPageSettingList({
+							size,
+							number,
+						})
+					).data.response || [];
 				settings = settings.concat(res);
 				number++;
-			} while (res?.length);
+			} while (res.length >= size);
 			set({
 				isLoading: false,
 				settings,

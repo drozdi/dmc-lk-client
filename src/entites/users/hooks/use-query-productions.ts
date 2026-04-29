@@ -22,7 +22,9 @@ export function useQueryProductions() {
 			}));
 		},
 	});
-	const dataSelect = useMemo<ComboboxItem[]>(() => {
+	const dataSelect = useMemo<
+		ComboboxItem<IProduction["production_id"]>[]
+	>(() => {
 		return [
 			{
 				value: "0",

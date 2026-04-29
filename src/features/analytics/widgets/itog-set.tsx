@@ -4,7 +4,7 @@ import { $setting } from "@/shared";
 import { LabelFormat, Text } from "@/shared/ui";
 import { Group, HoverCard, NumberFormatter } from "@mantine/core";
 import dayjs from "dayjs";
-import { Fragment, useEffect, useMemo } from "react";
+import { Fragment, useMemo } from "react";
 
 export interface AnalyticItogSetProps {
 	filterdate: IRequestAnalytics["filterdate"];
@@ -21,11 +21,15 @@ export const AnalyticItogSet = ({
 	filterdate,
 	onChange,
 }: AnalyticItogSetProps) => {
-	const production_id = useStoreUserProfile((state) => state.production_id);
-	const { data, fetch, query } = useAnalytics(
+	const ss = useStoreUserProfile();
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
+	const { data, query } = useAnalytics(
 		{
 			filterdate,
 			event,
+			production_id,
 		},
 		onChange,
 	);
@@ -110,13 +114,6 @@ export const AnalyticItogSet = ({
 			list,
 		}));
 	}, [info]);
-
-	useEffect(() => {
-		fetch({
-			filterdate,
-			event,
-		});
-	}, [filterdate, event]);
 
 	return (
 		<HoverCard disabled={info.length === 0} width={300}>

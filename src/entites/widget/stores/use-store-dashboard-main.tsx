@@ -1,7 +1,4 @@
-import dayjs from "dayjs";
 import { factoryDashboardStore } from "../utils";
-
-const nDate = dayjs();
 
 export const useStoreDashboardMain = factoryDashboardStore({
 	storageKey: "main",
@@ -18,7 +15,7 @@ export const useStoreDashboardMain = factoryDashboardStore({
 		$filterdate: {
 			label: "Время на главной странице",
 			type: "date:range",
-			default: [nDate.day(-7).format("YYYY-MM-DD"), nDate.format("YYYY-MM-DD")],
+			default: [null, null],
 			required: false,
 		},
 	},

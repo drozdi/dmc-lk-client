@@ -144,11 +144,13 @@ export function DualCalendarRange({
 						value={formatDate(startDate)}
 						variant="сontained"
 						readOnly
+						radius="0"
 					/>
 					<TextInput
 						label="До"
 						value={formatDate(endDate)}
 						variant="сontained"
+						radius="0"
 						readOnly
 					/>
 				</Group>

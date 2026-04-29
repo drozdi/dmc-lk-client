@@ -117,6 +117,13 @@ export const MainPage = () => {
 		setHistory([]);
 	}, []);
 
+	useEffect(
+		() => {
+			setFilterdate(storeDashboardMain.getValue("$filterdate"));
+		},
+		storeDashboardMain.getValue("$filterdate") || [],
+	);
+
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -247,7 +254,7 @@ export const MainPage = () => {
 						}}
 					>
 						<Widget
-							title={`Работа за ${dayjs(query.filterdate[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
+							title={`Работа за ${dayjs(query.filterdate?.[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate?.[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
 							menu={[
 								{
 									children: "Сбросить",

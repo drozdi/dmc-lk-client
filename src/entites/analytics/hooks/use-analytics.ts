@@ -35,6 +35,10 @@ export function useAnalytics(
 		}
 	}, [query]);
 
+	useEffect(() => {
+		setQuery((v) => corectQuery({ ...v, ...initialState }));
+	}, Object.values(initialState));
+
 	return {
 		...res,
 		query,

@@ -1,4 +1,4 @@
-import { useAnalytics } from "@/entites/analytics";
+import { useAnalytics, useFilterdateStep } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
@@ -41,25 +41,7 @@ export const AnalyticLabels = memo(
 		);
 
 		// Извлекаем список дат
-		const labels = useMemo<string[]>(() => {
-			const step = query.step === "mon" ? "M" : query.step;
-			const s = dayjs(query.filterdate[0]).startOf(step);
-			const e = dayjs(query.filterdate[1]).startOf(step);
-			const cnt = dayjs(e).diff(s, step);
-			const labels: string[] = [];
-			for (let i = 0; i <= cnt; i++) {
-				if (step === "h") {
-					labels.push(s.add(i, "h").format("HH"));
-				} else if (step === "m") {
-					labels.push(s.add(i, "m").format("mm"));
-				} else if (step === "s") {
-					labels.push(s.add(i, "s").format("ss"));
-				} else {
-					labels.push(s.add(i, step).format("YYYY-MM-DD"));
-				}
-			}
-			return labels;
-		}, [query.filterdate, query.step]);
+		const labels = useFilterdateStep(query);
 
 		// Извлекаем, групируем данные
 		const ddata = useMemo<

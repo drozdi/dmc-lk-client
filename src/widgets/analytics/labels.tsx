@@ -63,7 +63,7 @@ export const WidgetAnalyticLabels = memo(
 				loading={isLoading}
 				{...props}
 				title={computedTitle}
-				subTitle={`${dayjs(query.filterdate[0]).format($setting.get("formatDate"))} - ${dayjs(query.filterdate[1]).format($setting.get("formatDate"))}`}
+				subTitle={`${dayjs(query.filterdate?.[0]).format($setting.get("formatDate"))} - ${dayjs(query.filterdate?.[1]).format($setting.get("formatDate"))}`}
 			>
 				<AnalyticLabels
 					filterdate={filterdate}

@@ -1,9 +1,5 @@
 import { useStoreAuth, useStoreUserProfile } from "@/entites/auth/stores";
 import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
-import {
-	useStoreDashboardMain,
-	useStoreDashboardSecond,
-} from "@/entites/widget";
 import { useQueryLoading } from "@/shared/hooks";
 import { Loading } from "@/shared/ui";
 import { useEffect } from "react";
@@ -43,8 +39,6 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 				userData.id_production?.length &&
 					storeUserProfile.setProductionId(Number(userData.id_production[0]));
 			}
-			useStoreDashboardMain.getState()?.$reload?.();
-			useStoreDashboardSecond.getState()?.$reload?.();
 		}
 	}, [storeUserProfile]);
 

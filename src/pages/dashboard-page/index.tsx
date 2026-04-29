@@ -13,7 +13,7 @@ import { $setting } from "@/shared";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const DashboardPage = () => {
 	const storeDashboard = useStoreDashboardSecond();
@@ -39,13 +39,13 @@ export const DashboardPage = () => {
 				<Filterdate
 					editable
 					value={query.filterdate}
-					onChange={(filterdate) => {
+					onChange={useCallback((filterdate) => {
 						setQuery((v) => ({
 							...v,
 							filterdate,
 						}));
 						storeDashboard.setValue("filterdate", filterdate);
-					}}
+					}, [])}
 				/>
 			</Group>
 			<WidgetsProvider store={useStoreDashboardSecond}>
@@ -197,7 +197,7 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
-					<div
+					{/* <div
 						key="analytics-count"
 						data-grid={{
 							x: 6,
@@ -221,7 +221,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget widget="count" filterdate="$filterdate" />
-					</div>
+					</div> */}
 				</UiDashBoard>
 			</WidgetsProvider>
 			<Modal

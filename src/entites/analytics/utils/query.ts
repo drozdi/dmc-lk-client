@@ -2,6 +2,9 @@ import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 
 function getStep(filterdate: [DateValue, DateValue]): SliceStep {
+	if (!filterdate?.[0]) {
+		return "d";
+	}
 	const d = dayjs(filterdate[1]).diff(dayjs(filterdate[0]), "d");
 	if (d > 30) {
 		return "mon";

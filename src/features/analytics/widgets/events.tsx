@@ -21,6 +21,7 @@ export interface AnalyticEventsProps {
 	step?: IRequestAnalytics["step"];
 	events?: AnalyticEvent[];
 	type?: "line" | "bar" | "table" | "analytic" | "stack";
+	percent?: AnalyticEvent[]
 	stop?: SliceStep;
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
 }
@@ -38,15 +39,17 @@ export const AnalyticEvents = ({
 	events = ["v", "i", "d", "p"],
 	type = "line",
 	stop = "m",
+	percent = ["d"],
 	onClick,
 }: AnalyticEventsProps) => {
-	const production_id = useStoreUserProfile((state) => state.production_id);
-	const currProduction = Number(production_id || 0);
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
 
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
-		production_id: currProduction,
+		production_id,
 	} as IRequestAnalytics);
 
 	const { fetch } = useQueryAnalytics(query);
@@ -69,10 +72,7 @@ export const AnalyticEvents = ({
 			for (const event in data) {
 				for (const production of data[event as AnalyticEvent]?.production ||
 					[]) {
-					if (
-						currProduction > 0 &&
-						production.production_id !== currProduction
-					) {
+					if (production_id > 0 && production.production_id !== production_id) {
 						continue;
 					}
 
@@ -134,9 +134,9 @@ export const AnalyticEvents = ({
 		setQuery({
 			filterdate,
 			step,
-			production_id: currProduction,
+			production_id,
 		} as IRequestAnalytics);
-	}, [filterdate, step, currProduction]);
+	}, [filterdate, step, production_id]);
 
 	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
 		if (query.step === stop) {
@@ -164,6 +164,7 @@ export const AnalyticEvents = ({
 					query={query as IRequestAnalytics}
 					data={dddata.filter((item) => item.total > 0)}
 					events={events}
+					percent={percent}
 					onClick={handleClick}
 				/>
 			) : type === "bar" ? (
