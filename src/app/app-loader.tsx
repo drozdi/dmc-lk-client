@@ -1,5 +1,9 @@
 import { useStoreAuth, useStoreUserProfile } from "@/entites/auth/stores";
 import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
+import {
+	useStoreDashboardMain,
+	useStoreDashboardSecond,
+} from "@/entites/widget";
 import { useQueryLoading } from "@/shared/hooks";
 import { Loading } from "@/shared/ui";
 import { useEffect } from "react";
@@ -18,7 +22,13 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	);
 
 	useEffect(() => {
-		storeUserProfile.load();
+		storeUserProfile.load().then((res) => {
+			if (!res) {
+				return;
+			}
+			useStoreDashboardMain.resetFromDB();
+			useStoreDashboardSecond.resetFromDB();
+		});
 		if (storeAuth.isAuthenticated) {
 			storeLabels.load();
 			storeCountLabel.load();

@@ -56,6 +56,7 @@ interface IStoreUserProfile extends IStore {
 
 	loadUserInfo(reloading?: boolean): Promise<IUserInfo | undefined>;
 	loadSettings(reloading?: boolean): Promise<boolean>;
+	load(reloading?: boolean): Promise<boolean>;
 
 	reset(): void;
 }

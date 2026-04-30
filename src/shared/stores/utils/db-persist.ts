@@ -127,7 +127,6 @@ export const dbMiddleware = <T>(
 					);
 				} finally {
 					isHydrating = false;
-					await extendedApi.saveNow();
 				}
 			})();
 		}

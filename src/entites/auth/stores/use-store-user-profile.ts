@@ -234,8 +234,10 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 		return false;
 	},
 	async load(reloading = false) {
-		get().loadUserInfo(reloading);
-		get().loadSettings(reloading);
+		return (
+			(await get().loadUserInfo(reloading)) &&
+			(await get().loadSettings(reloading))
+		);
 	},
 
 	reset() {

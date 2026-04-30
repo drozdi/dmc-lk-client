@@ -161,9 +161,6 @@ export const factoryDashboardStore = ({
 						};
 					} catch (e) {}
 					return {
-						widgets: [],
-						layouts: [],
-						values: {},
 						...res,
 					};
 				},
@@ -187,7 +184,7 @@ export const factoryDashboardStore = ({
 						});
 					}
 				},
-				delay: 5000,
+				delay: 2000,
 				loadOnInit: true,
 			},
 		),
