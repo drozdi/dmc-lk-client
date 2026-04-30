@@ -1,4 +1,5 @@
 import { useAnalytics } from "@/entites/analytics";
+import { useStoreUserProfile } from "@/entites/auth";
 import {
 	AnalyticItogSet,
 	type AnalyticItogSetProps,
@@ -19,9 +20,13 @@ export const WidgetAnalyticItogSet = memo(
 		title,
 		...props
 	}: WidgetAnalyticItogSetProps) => {
+		const production_id = Number(
+			useStoreUserProfile((state) => state.production_id) || 0,
+		);
 		const { isLoading, error, fetch, query } = useAnalytics({
 			filterdate,
 			event,
+			production_id,
 		});
 
 		const computedTitle = useMemo(() => {

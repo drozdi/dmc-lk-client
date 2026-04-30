@@ -1,4 +1,5 @@
 import { Filterdate, useAnalytics } from "@/entites/analytics";
+import { useStoreUserProfile } from "@/entites/auth";
 import {
 	AnalyticEventsDefect,
 	type AnalyticEventsDefectProps,
@@ -15,10 +16,14 @@ export const WidgetAnalyticEventsDefect = ({
 	event = "d",
 	...props
 }: WidgetAnalyticEventsDefectProps) => {
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 		filterdate,
 		step,
 		event,
+		production_id,
 	});
 
 	const { isLoading, error, fetch } = useAnalytics(query);
@@ -28,8 +33,8 @@ export const WidgetAnalyticEventsDefect = ({
 	}, [query]);
 
 	useEffect(() => {
-		setQuery({ filterdate, step, event });
-	}, [filterdate, step, event]);
+		setQuery({ filterdate, step, event, production_id });
+	}, [filterdate, step, event, production_id]);
 
 	return (
 		<Widget

@@ -37,8 +37,8 @@ export function useQueryAnalytics(params: Partial<IRequestAnalytics> = {}) {
 					queryKey: ["analytics", _query],
 					queryFn: async (): Promise<IResponseAnalytics> =>
 						(await requestAnalytics(_query)).data,
-					gcTime: 0,
-					staleTime: 0,
+					// gcTime: 100,
+					// staleTime: 100,
 				});
 				setData(res);
 				setIsLoading(false);

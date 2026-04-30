@@ -22,6 +22,7 @@ export const WidgetAnalyticsIncident = ({
 	filterdate,
 	...props
 }: WidgetAnalyticsIncidentProps) => {
+	return "";
 	const storeIncident = useStoreIncident();
 	const production_id = useStoreUserProfile((state) => state.production_id);
 	const currProduction = Number(production_id || 0);

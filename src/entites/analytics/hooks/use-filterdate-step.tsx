@@ -5,7 +5,7 @@ export function useFilterdateStep(query: IRequestAnalytics) {
 	return useMemo<string[]>(() => {
 		const step = query.step === "mon" ? "M" : query.step;
 		const s = dayjs(query.filterdate?.[0]).startOf(step);
-		const e = dayjs(query.filterdate?.[1]).startOf(step);
+		const e = dayjs(query.filterdate?.[1]).endOf(step);
 		const cnt = dayjs(e).diff(s, step);
 		const labels: string[] = [];
 		for (let i = 0; i <= cnt; i++) {

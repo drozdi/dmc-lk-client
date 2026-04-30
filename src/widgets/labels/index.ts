@@ -34,6 +34,7 @@ FactoryWidget.register({
 	],
 });
 
+///////////
 FactoryWidget.register({
 	type: "analytics-incident",
 	component: WidgetAnalyticsIncident,

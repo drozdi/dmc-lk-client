@@ -17,11 +17,14 @@ export const AnalyticType = ({
 	step = "d",
 	event = "p",
 }: AnalyticTypeProps) => {
-	const production_id = useStoreUserProfile((state) => state.production_id);
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
 		event,
+		production_id,
 	});
 	const { fetch, data } = useQueryAnalytics(query);
 
@@ -66,7 +69,6 @@ export const AnalyticType = ({
 				color: string;
 			}
 		> = {};
-		const currProduction = Number(production_id || 0);
 		for (const label of labels) {
 			ddata[label] = {
 				name: label,
@@ -75,7 +77,7 @@ export const AnalyticType = ({
 			};
 		}
 		for (const production of data.production) {
-			if (currProduction > 0 && currProduction !== production.production_id) {
+			if (production_id > 0 && production_id !== production.production_id) {
 				continue;
 			}
 			for (const item of production.data) {

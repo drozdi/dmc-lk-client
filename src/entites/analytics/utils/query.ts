@@ -25,9 +25,22 @@ function getStep(filterdate: [DateValue, DateValue]): SliceStep {
 	return "s";
 }
 
+// export function corectQuery(state: IRequestAnalytics): IRequestAnalytics {
+// 	return {
+// 		...state,
+// 		step: getStep(state.filterdate) === '',
+// 	};
+// }
+
 export function corectQuery(state: IRequestAnalytics): IRequestAnalytics {
+	const step =
+		getStep(state.filterdate) === "mon" ? "M" : getStep(state.filterdate);
+	const filterdate = state.filterdate;
+	filterdate[0] = dayjs(filterdate[0]).startOf(step).format("YYYY-MM-DD");
+	filterdate[1] = dayjs(filterdate[1]).endOf(step).format("YYYY-MM-DD");
 	return {
 		...state,
-		step: getStep(state.filterdate),
+		step: step === "M" ? "mon" : step,
+		filterdate,
 	};
 }

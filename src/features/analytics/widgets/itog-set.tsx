@@ -21,7 +21,6 @@ export const AnalyticItogSet = ({
 	filterdate,
 	onChange,
 }: AnalyticItogSetProps) => {
-	const ss = useStoreUserProfile();
 	const production_id = Number(
 		useStoreUserProfile((state) => state.production_id) || 0,
 	);

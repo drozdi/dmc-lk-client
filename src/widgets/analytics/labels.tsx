@@ -23,11 +23,14 @@ export const WidgetAnalyticLabels = memo(
 		type = "default",
 		...props
 	}: WidgetAnalyticLabelsProps) => {
-		const production_id = useStoreUserProfile((state) => state.production_id);
+		const production_id = Number(
+			useStoreUserProfile((state) => state.production_id) || 0,
+		);
 		const [query, setQuery] = useState<IRequestAnalytics>({
 			filterdate,
 			step,
 			event,
+			production_id,
 		});
 		const { isLoading, fetch, error } = useQueryAnalytics(query);
 
@@ -36,8 +39,9 @@ export const WidgetAnalyticLabels = memo(
 				...v,
 				filterdate,
 				step,
+				production_id,
 			}));
-		}, [filterdate, step]);
+		}, [filterdate, step, production_id]);
 
 		useEffect(() => {
 			fetch();

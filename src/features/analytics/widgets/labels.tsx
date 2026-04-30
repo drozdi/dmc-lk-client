@@ -22,12 +22,15 @@ export const AnalyticLabels = memo(
 		event = "p",
 		type = "default",
 	}: AnalyticLabelsProps) => {
-		const production_id = useStoreUserProfile((state) => state.production_id);
+		const production_id = Number(
+			useStoreUserProfile((state) => state.production_id) || 0,
+		);
 
 		const { fetch, data, query } = useAnalytics({
 			filterdate,
 			step,
 			event,
+			production_id,
 		});
 
 		const [filterGap, setFilterGap] = useState<boolean>(true);
@@ -52,14 +55,12 @@ export const AnalyticLabels = memo(
 			}>
 		>(() => {
 			const ddata: Record<string, Record<string, number>> = {};
-			const currProduction = Number(production_id || 0);
-
 			for (const date of labels) {
 				ddata[date] = ddata[date] || {
 					total: 0,
 				};
 				for (const prod of data.production) {
-					if (currProduction > 0 && currProduction !== prod.production_id) {
+					if (production_id > 0 && production_id !== prod.production_id) {
 						continue;
 					}
 					for (const item of prod.data) {

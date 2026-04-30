@@ -21,6 +21,7 @@ export const WidgetCount = ({
 	event = "p",
 	...props
 }: CountWidgetProps) => {
+	return "";
 	const storeCountLabel = useStoreCountLabel();
 	const storeLabels = useStoreLabels();
 	const qa = useQueryAnalytics({

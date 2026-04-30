@@ -20,8 +20,17 @@ export const AnalyticPie = ({
 	filterdate,
 	events = ["v", "d", "i"],
 }: AnalyticPieProps) => {
-	const production_id = useStoreUserProfile((state) => state.production_id);
-	const { fetch } = useQueryAnalytics();
+	const production_id = Number(
+		useStoreUserProfile((state) => state.production_id) || 0,
+	);
+	const [query, setQuery] = useState<IRequestAnalytics>(
+		corectQuery({
+			filterdate,
+			production_id,
+		} as IRequestAnalytics),
+	);
+
+	const { fetch } = useQueryAnalytics(query);
 
 	const [data, setData] = useState<{
 		v?: IResponseAnalytics;
@@ -29,12 +38,6 @@ export const AnalyticPie = ({
 		d?: IResponseAnalytics;
 		p?: IResponseAnalytics;
 	}>({});
-
-	const [query, setQuery] = useState<IRequestAnalytics>(
-		corectQuery({
-			filterdate,
-		} as IRequestAnalytics),
-	);
 
 	// Извлекаем, групируем данные
 	const ddata = useMemo<
@@ -60,13 +63,10 @@ export const AnalyticPie = ({
 				color: string;
 			}
 		>;
-
-		const currProduction = Number(production_id || 0);
-
 		if (data) {
 			for (const event in res) {
 				res[event as AnalyticEvent].value = Number(
-					data[event as AnalyticEvent]?.sum_company,
+					data[event as AnalyticEvent]?.sum_company || 0,
 				);
 			}
 		}
@@ -83,8 +83,6 @@ export const AnalyticPie = ({
 		() => !ddata.reduce((acc, { value }) => acc && value > 0, true),
 		[ddata],
 	);
-
-	const total = useMemo(() => ddata.reduce((a, b) => a + b.value, 0), [ddata]);
 
 	useEffect(() => {
 		(async function () {

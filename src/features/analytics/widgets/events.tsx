@@ -21,7 +21,7 @@ export interface AnalyticEventsProps {
 	step?: IRequestAnalytics["step"];
 	events?: AnalyticEvent[];
 	type?: "line" | "bar" | "table" | "analytic" | "stack";
-	percent?: AnalyticEvent[]
+	percent?: AnalyticEvent[];
 	stop?: SliceStep;
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
 }

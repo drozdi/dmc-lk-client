@@ -250,7 +250,6 @@ FactoryWidget.register({
 		},
 	],
 });
-
 FactoryWidget.register({
 	type: "analytic-event-defect",
 	component: WidgetAnalyticEventsDefect,
@@ -286,4 +285,3 @@ export * from "./itog-set";
 export * from "./labels";
 export * from "./pie";
 export * from "./type";
-
