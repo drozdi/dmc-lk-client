@@ -94,6 +94,7 @@ export const dbPersist = <T>(
 
 interface DbMiddlewareOptions<T> {
 	key: string;
+	default: Partial<T>;
 	// Функция сохранения (state -> Promise или void)
 	save: (key: string, state: T) => Promise<void> | void;
 	// Функция загрузки (возвращает загруженное состояние или его часть)
@@ -115,6 +116,7 @@ export const dbMiddleware = <T>(
 		key,
 		save,
 		load,
+		default: def = {},
 		delay = 500,
 		onError = console.error,
 		loadOnInit = true,
@@ -178,7 +180,7 @@ export const dbMiddleware = <T>(
 			try {
 				isHydrating = true;
 				const loadedState = await load(key);
-				set(loadedState); // полная замена состояния
+				set(loadedState);
 				loaded = true;
 			} catch (err) {
 				onError(
@@ -203,9 +205,10 @@ export const dbMiddleware = <T>(
 				try {
 					isHydrating = true;
 					const loadedState = await load(key);
-					set(loadedState, false);
+					set(loadedState || def);
 					loaded = true;
 				} catch (err) {
+					set(def);
 					onError(
 						`[dbMiddleware] Load error (${key}):`,
 						err instanceof Error ? err : new Error(String(err)),

@@ -16,6 +16,7 @@ export const WidgetAnalyticEvents = ({
 	type = "line",
 	stop = "m",
 	onClick,
+	percent = ['d'],
 	...props
 }: WidgetAnalyticEventsProps) => {
 	const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
@@ -51,6 +52,7 @@ export const WidgetAnalyticEvents = ({
 				events={events}
 				type={type}
 				stop={stop}
+				percent={percent}
 				onClick={onClick}
 			/>
 		</Widget>

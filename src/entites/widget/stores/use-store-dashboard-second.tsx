@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { factoryDashboardStore } from "../utils";
 
-const nDate = dayjs();
+const nDay = dayjs();
 
 export const useStoreDashboardSecond = factoryDashboardStore({
 	storageKey: "second",
@@ -21,7 +21,10 @@ export const useStoreDashboardSecond = factoryDashboardStore({
 		$filterdate: {
 			label: "Диапозон времени",
 			type: "date:range",
-			default: [nDate.day(-7).format("YYYY-MM-DD"), nDate.format("YYYY-MM-DD")],
+			default: [
+				nDay.subtract(7, "d").format("YYYY-MM-DD"),
+				nDay.format("YYYY-MM-DD"),
+			],
 			required: false,
 		},
 	},

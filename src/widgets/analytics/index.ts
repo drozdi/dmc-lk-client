@@ -62,6 +62,14 @@ FactoryWidget.register({
 			],
 		},
 		{
+			label: "Проценты (для отображение таблицы)",
+			field: "events",
+			type: "select:array",
+			required: true,
+			default: ["d"],
+			data: ee.dataSelect,
+		},
+		{
 			label: "Разбивать до",
 			field: "stop",
 			type: "select",
@@ -278,3 +286,4 @@ export * from "./itog-set";
 export * from "./labels";
 export * from "./pie";
 export * from "./type";
+

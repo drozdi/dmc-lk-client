@@ -132,6 +132,7 @@ export const factoryDashboardStore = ({
 			}),
 			{
 				key: `widget.${storageKey}`,
+				default: {},
 				load: async (key): Promise<WidgetContextType> => {
 					let res = {};
 					try {

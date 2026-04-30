@@ -35,6 +35,8 @@ export const MainPage = () => {
 	const [layout, setLayout] = useState<Partial<ILayoutItem> | undefined>({});
 	const [history, setHistory] = useState([]);
 
+	console.log(storeDashboardMain);
+
 	useEffect(() => {
 		storeDashboardMain.id && open();
 	}, [storeDashboardMain.id]);

@@ -2,9 +2,12 @@ import { useEnumsEvents } from "@/entites/analytics";
 import { $setting } from "@/shared";
 import { NumberFormatter, Table } from "@mantine/core";
 import dayjs from "dayjs";
+import { Fragment } from 'react';
 import type { EventsProps } from "./type";
 
-export interface EventTableProps extends EventsProps {}
+export interface EventTableProps extends EventsProps {
+	percent?: AnalyticEvent[];
+}
 
 const ee = useEnumsEvents();
 
@@ -12,6 +15,7 @@ export const EventsTable = ({
 	query,
 	data = [],
 	events = ["p"],
+	percent = ["d"],
 	onClick,
 }: EventTableProps) => {
 	return (
@@ -20,7 +24,10 @@ export const EventsTable = ({
 				<Table.Tr>
 					<Table.Th>Дата</Table.Th>
 					{events.map((event) => (
-						<Table.Th key={event}>{ee.findLabelByCode(event)}</Table.Th>
+						<Fragment key={event} >
+							<Table.Th>{ee.findLabelByCode(event)}</Table.Th>
+							{percent.includes(event)? <Table.Th>{ee.findLabelByCode(event)} (%)</Table.Th>: null}	
+						</Fragment>
 					))}
 					<Table.Th>Всего</Table.Th>
 				</Table.Tr>
@@ -38,9 +45,12 @@ export const EventsTable = ({
 								: dayjs(tr.date).format($setting.get("formatDate"))}
 						</Table.Td>
 						{events.map((event) => (
-							<Table.Td key={event}>
-								<NumberFormatter value={tr[event]} />
-							</Table.Td>
+							<Fragment key={event} >
+								<Table.Td>
+									<NumberFormatter value={tr[event]} />
+								</Table.Td>
+								{percent.includes(event)? <Table.Td>{Math.round(tr[event] / (tr.total || 1)*100)} %</Table.Td>: null}	
+							</Fragment>
 						))}
 						<Table.Td>
 							<NumberFormatter value={tr.total} />

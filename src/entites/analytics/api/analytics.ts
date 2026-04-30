@@ -13,8 +13,8 @@ export async function requestAnalytics(
 	) {
 		return {
 			success: false,
-	message: '',
-	data:{
+			message: "",
+			data: {
 				id: 0,
 				all_records: 0,
 				sum_company: 0,
@@ -23,7 +23,7 @@ export async function requestAnalytics(
 				average_company: 0,
 				production: [],
 			},
-	response: {
+			response: {
 				id: 0,
 				all_records: 0,
 				sum_company: 0,
@@ -34,7 +34,6 @@ export async function requestAnalytics(
 			},
 		};
 	}
-	console.log(params);
 	for (const key in params) {
 		if (Array.isArray(params[key as keyof IRequestAnalytics])) {
 			(params[key as keyof IRequestAnalytics] as string[]).forEach(
