@@ -5,6 +5,8 @@ import axios, {
 	type AxiosResponse,
 } from "axios";
 
+import { } from 'react-router-dom';
+
 interface IAxiosInterceptorDefault {
 	message401?:
 		| string
@@ -60,7 +62,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 	public refreshSubscribers: ((accessToken: string) => void)[] = [];
 	public message401?:
 		| string
-		| ((error: AxiosError, axiosInstance: AxiosInstance) => Promise<boolean>);
+		| ((error: AxiosError<{ detail: string }>, axiosInstance: AxiosInstance) => Promise<boolean>);
 	public accessToken = "access";
 	public refreshToken = "refresh";
 	public accessTokenKey?: string;
@@ -120,7 +122,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 					}
 					return config;
 				},
-				(error: AxiosError) => Promise.reject(error),
+				(error: AxiosError<{ detail: string }>) => Promise.reject(error),
 			);
 		}
 
@@ -128,7 +130,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 			this.refreshTokenKey = refreshTokenKey;
 			this.axiosInstance.interceptors.response.use(
 				(response: AxiosResponse) => response,
-				async (error: AxiosError) => {
+				async (error: AxiosError<{ detail: string }>) => {
 					const originalRequest = error.config as AxiosRequestConfig & {
 						_retry?: boolean;
 					};
@@ -156,6 +158,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 								console.error(refreshError);
 								this.clearTokens();
 								this.refreshSubscribers = [];
+								window.location.href = '/'
 								return Promise.reject(refreshError);
 							} finally {
 								this.isRefreshing = false;
@@ -179,7 +182,7 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 		if (handleRequest) {
 			this.axiosInstance.interceptors.request.use(
 				handleRequest,
-				(error: AxiosError) => Promise.reject(error),
+				(error: AxiosError<{ detail: string }>) => Promise.reject(error),
 			);
 		}
 
@@ -191,14 +194,14 @@ export class AxiosInterceptor implements IAxiosInterceptor {
 		this.options = this.axiosInstance.options.bind(this.axiosInstance);
 		this.put = this.axiosInstance.put.bind(this.axiosInstance);
 	}
-	async _message401(error: AxiosError): Promise<boolean> {
+	async _message401(error: AxiosError<{ detail: string, message?: string }>): Promise<boolean> {
 		if (!this.message401) {
 			return true;
 		}
 		if (typeof this.message401 === "function") {
 			return await this.message401(error, this.axiosInstance);
 		}
-		return error.response.data.message === this.message401;
+		return error.response?.data?.message === this.message401;
 	}
 	setAccessToken(accessToken: string): void {
 		if (this.accessTokenKey) {

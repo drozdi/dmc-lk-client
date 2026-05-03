@@ -22,7 +22,6 @@ interface ISetting {
 
 interface IStoreAuth extends IStore {
 	isAuthenticated: boolean;
-	isAuth: boolean;
 	load(): Promise<void>;
 	clearAuth(): void;
 	refreshAuth(): Promise<{ accessToken: string; refreshToken: string }>;

@@ -16,7 +16,7 @@ import { useEffect, useMemo } from "react";
 export const LabelsHistory = () => {
 	const qp = useQueryProductions();
 	const storeCountLabel = useStoreCountLabel();
-
+	
 	const ddata = useMemo<
 		{
 			production_id: ICountLabelHistoryItem["production_id"];
@@ -49,7 +49,7 @@ export const LabelsHistory = () => {
 	}, [storeCountLabel.history]);
 
 	useEffect(() => {
-		storeCountLabel.loadCount();
+		storeCountLabel.loadHistory();
 	}, []);
 	return (
 		<>

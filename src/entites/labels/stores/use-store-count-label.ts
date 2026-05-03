@@ -126,12 +126,14 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 				);
 				if (item) {
 					item.sum += res.count_label;
+					item.sum_consumption += res.consumption_m;
 				}
 			}
-			set({
+			set(ztate => ({
 				isLoading: false,
-				count,
-			});
+				history: [...state.history, res],
+				count: {...count},
+			}));
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -164,3 +166,33 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		return get().history.filter((item) => item.production_id === production_id);
 	},
 }));
+
+			
+export const selectHistoryForProduction = (production_id: ICountLabelHistoryItem['production_id']): ((state: IStoreCountLabel) => ICountLabelHistoryItem[]) => {
+	return (state: IStoreCountLabel): ICountLabelHistoryItem[] => {
+		production_id = Number(production_id) || 0
+		if (!production_id) {
+			return state.history
+		}
+		return state.history.filter(item => item.production_id === production_id)
+	}
+}
+
+export const selectCountForProduction = (production_id: ICountLabelHistoryItem['production_id']): ((state: IStoreCountLabel) => {
+		distributed: ICountLabelItem[];
+		not_distributed: ICountLabelItem[];
+	}) => {
+	return (state: IStoreCountLabel): {
+		distributed: ICountLabelItem[];
+		not_distributed: ICountLabelItem[];
+	} => {
+		production_id = Number(production_id) || 0
+		if (!production_id) {
+			return state.count
+		}
+		return {
+			distributed: state.count.distributed.filter(item => item.production_id === production_id),
+			not_distributed: state.count.not_distributed.filter(item => item.production_id === production_id),
+		}
+	}
+}

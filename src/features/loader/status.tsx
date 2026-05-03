@@ -1,3 +1,6 @@
+import { useStoreUserProfile } from "@/entites/auth";
+import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
+import { useQueryLoading } from "@/shared/hooks";
 import {
 	Affix,
 	Card,
@@ -19,10 +22,22 @@ export function LoaderStatus({
 }: LoaderStatusProps) {
 	const isFetching = Boolean(useIsFetching());
 
+	const storeUserProfile = useStoreUserProfile();
+		const storeCountLabel = useStoreCountLabel();
+		const storeLabels = useStoreLabels();
+	
+		const isLoading = useQueryLoading(
+			storeUserProfile,
+			storeLabels,
+			storeCountLabel,
+		);
+
+		const isLL = isFetching || isLoading;
+
 	return (
 		<Affix position={position} zIndex={1100}>
 			<Transition
-				mounted={isFetching}
+				mounted={isLL}
 				transition="fade"
 				duration={300}
 				timingFunction="ease"

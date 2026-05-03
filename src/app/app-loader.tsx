@@ -1,40 +1,21 @@
-import { useStoreAuth, useStoreUserProfile } from "@/entites/auth/stores";
-import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
+import { useStoreAuth, useStoreUserProfile } from "@/entites/auth";
 import {
 	useStoreDashboardMain,
 	useStoreDashboardSecond,
 } from "@/entites/widget";
-import { useQueryLoading } from "@/shared/hooks";
-import { Loading } from "@/shared/ui";
 import { useEffect } from "react";
 
 export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
-	const storeCountLabel = useStoreCountLabel();
-	const storeLabels = useStoreLabels();
-
-	const isLoading = useQueryLoading(
-		storeAuth,
-		storeUserProfile,
-		storeLabels,
-		storeCountLabel,
-	);
 
 	useEffect(() => {
-		storeUserProfile.load().then((res) => {
-			if (!res) {
-				return;
-			}
-			useStoreDashboardMain.resetFromDB();
-			useStoreDashboardSecond.resetFromDB();
-		});
-		if (storeAuth.isAuthenticated) {
-			storeLabels.load();
-			storeCountLabel.load();
-		} else {
-			storeUserProfile.reset();
+		if (!storeAuth.isAuthenticated) {
+			return
 		}
+		useStoreDashboardMain.resetFromDB();
+		useStoreDashboardSecond.resetFromDB();
+		storeUserProfile.load();
 	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
@@ -50,11 +31,7 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 					storeUserProfile.setProductionId(Number(userData.id_production[0]));
 			}
 		}
-	}, [storeUserProfile]);
+	}, [storeUserProfile.userInfo]);
 
-	return (
-		<Loading keepMounted active={isLoading}>
-			{children}
-		</Loading>
-	);
+	return children;
 };

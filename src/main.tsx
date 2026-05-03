@@ -1,10 +1,6 @@
 import { createRoot } from "react-dom/client";
-import { AppLoader } from "./app/app-loader";
+import { App } from './app';
 import { AppProvider } from "./app/app-provider";
-import { AppRouters } from "./app/app-routers";
-import "./app/widgets";
-import { LoaderStatus } from "./features/loader/status";
-import "./shared/style/index.css";
 
 if (typeof TouchEvent === "undefined") {
 	window.TouchEvent = class TouchEvent extends Event {
@@ -18,10 +14,5 @@ if (typeof TouchEvent === "undefined") {
 }
 
 createRoot(document.querySelector("body")!).render(
-	<AppProvider>
-		<AppLoader>
-			<AppRouters />
-			<LoaderStatus position={{ top: 100, right: 20 }} size="xl" />
-		</AppLoader>
-	</AppProvider>,
+	<AppProvider><App /></AppProvider>,
 );

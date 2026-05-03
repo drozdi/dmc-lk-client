@@ -10,7 +10,7 @@ export const LabelsCurrentBalance = ({
 	type = "cnt",
 }: LabelsCurrentBalanceProps) => {
 	const count = useStoreCountLabel((state) => state.count);
-
+	
 	const value = useMemo(() => {
 		let value = 0;
 		const key = type === "cnt" ? "sum" : "sum_consumption";

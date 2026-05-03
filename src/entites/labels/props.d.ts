@@ -48,7 +48,7 @@ interface ICountLabelHistoryItem {
 	format_template: ILabel["statistics_print_format"];
 	date_applic: string;
 	count_label: number;
-	production_id: number;
+	production_id: ILabel["production_id"];
 	id_company: number;
 	place_id: number;
 	place_name: string;

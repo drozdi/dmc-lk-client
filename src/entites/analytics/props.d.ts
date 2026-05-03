@@ -72,6 +72,7 @@ interface IAnalyticsDataItem {
 	data: ILabel["statistics_print_format"];
 	timestamp: string;
 	count: number;
+	consumption_m: number;
 }
 interface IAnalyticsProduction extends IProduction {
 	name?: IProduction["name_production"];
@@ -83,6 +84,10 @@ interface IAnalyticsProductionData extends IAnalyticsProduction {
 	max_production: number;
 	average_production: number;
 	sum_production: number;
+  sum_consumption_m: number,
+  min_consumption_m: number,
+  max_consumption_m: number,
+  average_consumption_m: number,
 	data: IAnalyticsDataItem[];
 }
 
@@ -100,5 +105,9 @@ interface IResponseAnalytics {
 	min_company: number;
 	max_company: number;
 	average_company: number;
+	sum_consumption_m: number,
+  min_consumption_m: number,
+  max_consumption_m: number,
+  average_consumption_m: number,
 	production: IAnalyticsProductionData[];
 }

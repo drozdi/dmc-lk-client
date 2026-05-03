@@ -1,3 +1,4 @@
+import { useStoreAuth } from "@/entites/auth";
 import {
 	requestPageSettingAdd,
 	requestPageSettingGet,
@@ -152,6 +153,9 @@ export const factoryDashboardStore = ({
 				key: `widget.${storageKey}`,
 				default: {},
 				load: async (key): Promise<Partial<WidgetContextType>> => {
+					if (!key || !useStoreAuth.getState().isAuthenticated) {
+						return
+					}
 					let res = {};
 					try {
 						res = (await requestPageSettingGet(key)).data?.meaning || {
