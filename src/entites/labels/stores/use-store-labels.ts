@@ -376,3 +376,39 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		return false;
 	},
 }));
+
+export function selectFormatForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel["add_label_format"][]>)
+export function selectFormatForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel["add_label_format"][])
+export function selectFormatForProduction (production_id: ILabel["production_id"] = 0) {
+	production_id = Number(production_id);
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.formats[production_id]
+		}
+		return state.formats
+	}
+}
+
+export function selectPrintsForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel["statistics_print_format"][]>)
+export function selectPrintsForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel["statistics_print_format"][])
+export function selectPrintsForProduction (production_id: ILabel["production_id"] = 0) {
+	production_id = Number(production_id);
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.prints[production_id]
+		}
+		return state.prints
+	}
+}
+
+export function selectSelectFormatPrintsForProduction (production_id: ILabel["production_id"] = 0): ((state: IStoreLabels) => ILabel[]) {
+	production_id = Number(production_id);
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.formatPrints.filter(
+				(item) => item.production_id === production_id
+			)
+		}
+		return state.formatPrints
+	}
+}

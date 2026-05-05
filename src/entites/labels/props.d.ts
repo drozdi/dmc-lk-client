@@ -57,7 +57,7 @@ interface ICountLabelHistoryItem {
 	device_id: number;
 	device_name: string;
 	name_company: string;
-	consumption_m: number | null;
+	consumption_m: number;
 	id: number;
 	is_archive: boolean;
 }
@@ -74,9 +74,6 @@ interface IStoreCountLabel extends IStore {
 		param: IRequestCountLabelAdd,
 	): Promise<ICountLabelHistoryItem | undefined>;
 	reset(production_id: ILabel["production_id"]): Promise<void>;
-	selectHistory(
-		production_id: ILabel["production_id"],
-	): ICountLabelHistoryItem[];
 }
 
 interface ICountLabelItem {

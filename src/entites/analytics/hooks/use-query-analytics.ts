@@ -71,6 +71,7 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
           queryKey: ["analytics", mergedParams],
           queryFn: async () => await requestAnalytics(mergedParams).then((res) => res.data),
           staleTime: 0,
+					gcTime: 0,
         });
         return result;
       } catch (e) {

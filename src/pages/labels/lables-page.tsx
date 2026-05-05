@@ -1,5 +1,5 @@
 import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
-import { LabelsGroup } from "@/features/labels/lables-group";
+import { LabelsGroup } from "@/features/labels/lables-group-new";
 import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
 import { useEffect, useMemo } from "react";
@@ -87,7 +87,7 @@ export function LabelsPage() {
 	const storeCountLabel = useStoreCountLabel();
 	useEffect(() => {
 		storeLabels.load();
-		storeCountLabel.load();
+		// storeCountLabel.load();
 	}, []);
 
 	const rrr = useMemo<ILabelProduction[]>(() => {

@@ -1,4 +1,4 @@
-import { useStoreCountLabel } from "@/entites/labels";
+import { selectHistoryForProduction, useStoreCountLabel } from "@/entites/labels";
 import { useQueryProductions } from "@/entites/users";
 import {
 	Item,
@@ -38,9 +38,7 @@ export const LabelsHistory = () => {
 				res[his.production_id] = {
 					production_id: his.production_id,
 					production_name: qp.findNameById(his.production_id),
-					items: storeCountLabel
-						.selectHistory(his.production_id)
-						.sort((a, b) => (a.date_applic < b.date_applic ? 1 : -1)),
+					items: selectHistoryForProduction(his.production_id)(storeCountLabel)
 				};
 			}
 		}
@@ -49,7 +47,7 @@ export const LabelsHistory = () => {
 	}, [storeCountLabel.history]);
 
 	useEffect(() => {
-		storeCountLabel.loadHistory();
+		//storeCountLabel.loadHistory();
 	}, []);
 	return (
 		<>

@@ -15,6 +15,7 @@ export const queryClient = new QueryClient({
 			throwOnError: false,
 			retry: false,
 			gcTime: 1000 * 60 * 60 * 24,
+			staleTime: 1000 * 60 * 60 * 24,
 		},
 	},
 });

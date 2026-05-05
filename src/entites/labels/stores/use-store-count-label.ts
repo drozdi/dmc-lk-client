@@ -21,21 +21,18 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		await get().loadCount(reloading);
 	},
 	async loadHistory(reloading = false) {
+		let loaded = !!get().history.length
+		
 		if (reloading) {
-			queryClient.removeQueries({
-				queryKey: ["labels-history"],
-				exact: false,
-			});
+			loaded = false;
 		}
-		if (
-			queryClient.getQueryCache().findAll({ queryKey: ["labels-history"] })
-				.length
-		) {
+
+		if (loaded) {
 			return;
 		}
 
 		set({
-			isLoading: false,
+			isLoading: true,
 			error: "",
 		});
 
@@ -54,6 +51,8 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 					queryFn: async () => {
 						return await requestLabelsHistory(params);
 					},
+					staleTime: 0,
+					gcTime: 0,
 				});
 				history = [...history, ...res.data.response];
 				params.number++;
@@ -73,20 +72,21 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		}
 	},
 	async loadCount(reloading = false) {
+		let loaded = !!(get().count?.distributed?.length || get().count?.not_distributed?.length);
+		
 		if (reloading) {
-			queryClient.invalidateQueries({
-				queryKey: ["labels-count"],
-			});
+			loaded = false;
 		}
-		if (
-			queryClient.getQueryCache().findAll({ queryKey: ["labels-count"] }).length
-		) {
+		
+		if (loaded) {
 			return;
 		}
+
 		set({
-			isLoading: false,
+			isLoading: true,
 			error: "",
 		});
+
 		try {
 			const count = await queryClient.fetchQuery({
 				queryKey: ["labels-count"],
@@ -94,6 +94,8 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 					const response = await requestLabelsCount();
 					return response.data;
 				},
+				staleTime: 0,
+				gcTime: 0,
 			});
 
 			set({
@@ -126,10 +128,10 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 				);
 				if (item) {
 					item.sum += res.count_label;
-					item.sum_consumption += res.consumption_m;
+					item.sum_consumption += res.consumption_m || 0;
 				}
 			}
-			set(ztate => ({
+			set(state => ({
 				isLoading: false,
 				history: [...state.history, res],
 				count: {...count},
@@ -162,15 +164,12 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 			});
 		}
 	},
-	selectHistory(production_id) {
-		return get().history.filter((item) => item.production_id === production_id);
-	},
 }));
 
-			
-export const selectHistoryForProduction = (production_id: ICountLabelHistoryItem['production_id']): ((state: IStoreCountLabel) => ICountLabelHistoryItem[]) => {
+		
+export function selectHistoryForProduction (production_id: ICountLabelHistoryItem['production_id'] = 0) {
+	production_id = Number(production_id) || 0
 	return (state: IStoreCountLabel): ICountLabelHistoryItem[] => {
-		production_id = Number(production_id) || 0
 		if (!production_id) {
 			return state.history
 		}
@@ -182,11 +181,11 @@ export const selectCountForProduction = (production_id: ICountLabelHistoryItem['
 		distributed: ICountLabelItem[];
 		not_distributed: ICountLabelItem[];
 	}) => {
+	production_id = Number(production_id) || 0
 	return (state: IStoreCountLabel): {
 		distributed: ICountLabelItem[];
 		not_distributed: ICountLabelItem[];
 	} => {
-		production_id = Number(production_id) || 0
 		if (!production_id) {
 			return state.count
 		}
