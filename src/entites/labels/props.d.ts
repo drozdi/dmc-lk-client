@@ -13,7 +13,7 @@ interface ILabel {
 interface IStoreLabels extends IStore {
 	prints: Record<ILabel["production_id"], ILabel["statistics_print_format"][]>;
 	loadPrints(reloading?: boolean): Promise<void>;
-	formats: Record<ILabel["production_id"], ILabel["add_label_format"][]>;
+	formats: Record<ILabel["production_id"], ILabel[]>;
 	loadFormats(reloading?: boolean): Promise<void>;
 	formatPrints: ILabel[];
 	loadFormatPrints(reloading?: boolean): Promise<void>;
@@ -23,7 +23,7 @@ interface IStoreLabels extends IStore {
 	): ILabel["statistics_print_format"][];
 	selectFormats(
 		production_id: ILabel["production_id"],
-	): ILabel["add_label_format"][];
+	): ILabel[];
 	selectFormatPrints(production_id: ILabel["production_id"]): ILabel[];
 
 	addFormat(query: {

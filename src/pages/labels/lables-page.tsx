@@ -1,8 +1,7 @@
-import { useStoreCountLabel, useStoreLabels } from "@/entites/labels";
-import { LabelsGroup } from "@/features/labels/lables-group-new";
+import { useStoreLabels } from "@/entites/labels";
+import { LabelsGroup } from "@/features/labels/lables-group";
 import { Template } from "@/layout";
 import { Paper } from "@mantine/core";
-import { useEffect, useMemo } from "react";
 
 function grouped(
 	production_id: IProduction["production_id"],
@@ -82,33 +81,26 @@ function grouped(
 	};
 }
 
+// const rrr = useMemo<ILabelProduction[]>(() => {
+// 		let productions: ILabel["production_id"][] = [];
+// 		productions = productions.concat(Object.keys(storeLabels.formats));
+// 		productions = productions.concat(Object.keys(storeLabels.prints));
+// 		productions = [...new Set(productions)];
+
+// 		return productions.map((production_id) => {
+// 			const res = grouped(production_id);
+
+// 			storeCountLabel.history.forEach((history) => {
+// 				if (history.is_archive) {
+// 					return;
+// 				}
+// 			});
+
+// 			return res;
+// 		});
+// 	}, []);
+
 export function LabelsPage() {
-	const storeLabels = useStoreLabels();
-	const storeCountLabel = useStoreCountLabel();
-	useEffect(() => {
-		storeLabels.load();
-		// storeCountLabel.load();
-	}, []);
-
-	const rrr = useMemo<ILabelProduction[]>(() => {
-		let productions: ILabel["production_id"][] = [];
-		productions = productions.concat(Object.keys(storeLabels.formats));
-		productions = productions.concat(Object.keys(storeLabels.prints));
-		productions = [...new Set(productions)];
-
-		return productions.map((production_id) => {
-			const res = grouped(production_id);
-
-			storeCountLabel.history.forEach((history) => {
-				if (history.is_archive) {
-					return;
-				}
-			});
-
-			return res;
-		});
-	}, []);
-
 	return (
 		<Paper>
 			<Template.Title>Групировка этикеток</Template.Title>

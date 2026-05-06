@@ -59,7 +59,7 @@
 			"#/*": ["./*"]
 		}
 	},
-	"include": ["./src", "electron", "./vite.config.ts"],
+	"include": ["./src", "electron", "./vite.config.ts", "src/features/labels/.old/components", "src/features/labels/.old/lables-group.tsx", "src/features/labels/.old/lables-count.tsx"],
 	"exclude": [
 		"dev",
 		"test",

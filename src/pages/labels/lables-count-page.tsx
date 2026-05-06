@@ -1,5 +1,5 @@
-import { LablesConsumption } from "@/features/labels/lables-consumption";
-import { LabelsCount } from "@/features/labels/lables-count";
+import { LablesConsumption } from "@/features/labels/.old/components/lables-consumption";
+import { LabelsCount } from "@/features/labels/.old/lables-count";
 import { LabelsHistory } from "@/features/labels/lables-history";
 
 import { Template } from "@/layout";

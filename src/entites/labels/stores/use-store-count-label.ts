@@ -1,12 +1,12 @@
+import { queryClient } from "@/shared/api/query-client";
+import { notification } from "@/shared/notification";
+import { create } from "zustand";
 import {
 	requestLabelsCount,
 	requestLabelsCountAdd,
 	requestLabelsHistory,
 	requestLabelsReset,
 } from "../api";
-
-import { queryClient } from "@/shared/api/query-client";
-import { create } from "zustand";
 
 export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	isLoading: false,
@@ -136,6 +136,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 				history: [...state.history, res],
 				count: {...count},
 			}));
+			notification.success(`${res.format_template} успешно пополнено на ${res.count_label} шт.`)
 			return res;
 		} catch (e: IError) {
 			console.error(e);

@@ -10,7 +10,7 @@ export async function requestLabelsPrintList(): Promise<
 }
 
 export async function requestLabelsFormatList(): Promise<
-	IResponse<Record<ILabel["production_id"], ILabel["add_label_format"][]>>
+	IResponse<Record<ILabel["production_id"], ILabel[]>>
 > {
 	const res = await api.get("/label/format");
 	return res.data;

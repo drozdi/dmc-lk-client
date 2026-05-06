@@ -1,3 +1,6 @@
+import { queryClient } from "@/shared/api/query-client";
+import { notification } from "@/shared/notification";
+import { create } from "zustand";
 import {
 	requestLabelsFormatAdd,
 	requestLabelsFormatDelete,
@@ -8,9 +11,6 @@ import {
 	requestLabelsJoinedUpdate,
 	requestLabelsPrintList,
 } from "../api";
-
-import { queryClient } from "@/shared/api/query-client";
-import { create } from "zustand";
 
 export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	isLoading: false,
@@ -95,7 +95,6 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					return response.data;
 				},
 			});
-
 			set({
 				isLoading: false,
 				formats,
@@ -157,7 +156,6 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 				];
 				params.number = params.number + 1;
 			} while (res.success && res?.data?.response?.length >= params.size);
-
 			set({
 				isLoading: false,
 				formatPrints,
@@ -183,7 +181,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 	selectFormatPrints(production_id) {
 		return get().formatPrints.filter(
-			(item) => String(item.production_id) === String(production_id),
+			(item) => item.production_id === production_id,
 		);
 	},
 
@@ -294,6 +292,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					},
 				],
 			});
+			notification.success(`Этикетка "${res.statistics_print_format}" добавлена в группу "${res.add_label_format}"`)
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -324,12 +323,13 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					...data,
 				})
 			).data;
-			set({
+			set(state => ({
 				isLoading: false,
-				formatPrints: get().formatPrints.map((item) =>
-					String(item.id) === String(res.id) ? res : item,
+				formatPrints: state.formatPrints.map((item) =>
+					item.id === res.id ? {...res, format: res.add_label_format, print: res.statistics_print_format} : item,
 				),
-			});
+			}));
+			notification.success(`Этикетка "${res.statistics_print_format}" перемещена в группу "${res.add_label_format}"`)
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -353,13 +353,13 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 
 		try {
 			await requestLabelsJoinedDelete(data.id);
-			set({
+			set(state => ({
 				isLoading: false,
-				formatPrints: get().formatPrints.filter(
-					(item) => String(item.id) !== String(data.id),
+				formatPrints: state.formatPrints.filter(
+					(item) => item.id !== data.id,
 				),
-			});
-			await get().loadFormatPrints(true);
+			}));
+			notification.success(`Этикетка "${data.statistics_print_format}" убранна из групп"`)
 			return true;
 		} catch (e: IError) {
 			console.error(e);
@@ -377,32 +377,33 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 }));
 
-export function selectFormatForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel["add_label_format"][]>)
-export function selectFormatForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel["add_label_format"][])
-export function selectFormatForProduction (production_id: ILabel["production_id"] = 0) {
-	production_id = Number(production_id);
-	return (state: IStoreLabels) => {
-		if (production_id) {
-			return state.formats[production_id]
-		}
-		return state.formats
-	}
-}
 
 export function selectPrintsForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel["statistics_print_format"][]>)
 export function selectPrintsForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel["statistics_print_format"][])
 export function selectPrintsForProduction (production_id: ILabel["production_id"] = 0) {
-	production_id = Number(production_id);
+	production_id = Number(production_id) || 0;
 	return (state: IStoreLabels) => {
 		if (production_id) {
-			return state.prints[production_id]
+			return state.prints[production_id] || []
 		}
 		return state.prints
 	}
 }
 
+export function selectFormatForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel[]>)
+export function selectFormatForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel[])
+export function selectFormatForProduction (production_id: ILabel["production_id"] = 0) {
+	production_id = Number(production_id) || 0;
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.formats[production_id] || []
+		}
+		return state.formats
+	}
+}
+
 export function selectSelectFormatPrintsForProduction (production_id: ILabel["production_id"] = 0): ((state: IStoreLabels) => ILabel[]) {
-	production_id = Number(production_id);
+	production_id = Number(production_id) || 0;
 	return (state: IStoreLabels) => {
 		if (production_id) {
 			return state.formatPrints.filter(

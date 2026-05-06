@@ -3,7 +3,7 @@ import { AxiosInterceptor } from "../utils";
 
 export const api = new AxiosInterceptor({
 	baseURL: import.meta.env.DEV
-		? "http://10.76.10.145:5054/lk_api/v1/"
+		? "http://10.76.10.145:5059/lk_api/v1/"
 		: "https://dmc-mact.ru/lk_api/v1/",
 	// baseURL: "https://dmc-mact.ru/lk_api/v1/",
 	headers: {

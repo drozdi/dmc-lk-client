@@ -5,42 +5,36 @@ import {
 	GroupedProvider,
 	randomColorLabel,
 	useGrouped,
-	useStoreLabels,
+	useProductionCount,
+	useProductionFormatsLabel,
+	useStoreCountLabel,
+	useStoreLabels
 } from "@/entites/labels";
 import { SelectProductions } from "@/entites/users";
 import { notification } from "@/shared/notification";
-import { LabelFormat, Loading } from "@/shared/ui";
+import { Loading, Text } from "@/shared/ui";
+import { labelName } from '@/shared/utils';
 import {
-	ActionIcon,
 	Center,
-	Flex,
-	Stack,
-	Table,
-	Text,
-	TextInput,
-	Tooltip,
+	Group,
+	NumberFormatter,
+	NumberInput,
+	SimpleGrid,
+	Stack
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useEffect, useState } from "react";
-import { TbList, TbPlus, TbX } from "react-icons/tb";
+import { useEffect, useRef } from "react";
+import { TbPlus, TbX } from "react-icons/tb";
+import { LabelsGroupAdd } from "./lables-group-add";
+import { Container } from "./ui/container";
+import { Item } from "./ui/item";
 
 export const LabelsGroup = () => {
-	const storeLabels = useStoreLabels();
+	const inputRef = useRef<HTMLInputElement>(null);
+	const production_id = Number(useStoreUserProfile(state => state.production_id)) || 0;
 	const storeUserProfile = useStoreUserProfile();
-	const containers = useGrouped(storeUserProfile.production_id);
-	const [newFormat, setNewFormat] = useState<string>("");
-	const [error, setError] = useState<string>("");
-
-	const formats = Object.keys(containers).filter((item) => item !== ".default");
-
-	useEffect(() => {
-		storeLabels.load();
-	}, []);
-
-	if (
-		!storeUserProfile.production_id ||
-		storeUserProfile.production_id == "0"
-	) {
+	
+	if (!production_id) {
 		return (
 			<>
 				<Center mih="50vh">
@@ -51,7 +45,7 @@ export const LabelsGroup = () => {
 						<SelectProductions
 							excludeds={storeUserProfile.userInfo?.is_superuser ? [] : ["0"]}
 							variant="underline"
-							value={String(storeUserProfile.production_id)}
+							value={String(production_id)}
 							onChange={(value) =>
 								storeUserProfile.setProductionId(Number(value))
 							}
@@ -62,33 +56,13 @@ export const LabelsGroup = () => {
 		);
 	}
 
-	const handleChange = ({ target }: React.ChangeEvent) => {
-		setNewFormat(target.value);
-		setError("");
-	};
 
-	const handleKeyPress = async ({ key }: React.KeyboardEvent) => {
-		if (key === "Enter") {
-			await handleAddFormat();
-		}
-	};
+	const storeLabels = useStoreLabels();
+	const containers = useGrouped(production_id);
+	const labelFormat = useProductionFormatsLabel(production_id);
+	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
-	const handleAddFormat = async () => {
-		if (newFormat.trim()) {
-			const res = await storeLabels.addFormat({
-				format: newFormat.trim(),
-				production_id: storeUserProfile.production_id,
-			});
-			if (res) {
-				notification.success(
-					`Группа "${res.add_label_format}" успешно добавлена!`,
-				);
-			}
-			setNewFormat("");
-		} else {
-			setError("Введите название!");
-		}
-	};
+	//console.log(containers)
 
 	const handleDeleteFormat = (format: ILabel["add_label_format"]) => {
 		modals.openConfirmModal({
@@ -98,7 +72,7 @@ export const LabelsGroup = () => {
 				if (
 					await storeLabels.deleteFormat({
 						format,
-						production_id: storeUserProfile.production_id,
+						production_id: production_id,
 					})
 				) {
 					notification.success(`Группа "${format}" успешно удалена!`);
@@ -114,113 +88,106 @@ export const LabelsGroup = () => {
 		});
 	};
 
+	const handleAddCount = (label_format: ILabel['statistics_print_format']) => {
+		async function handleAdd() {
+			const count_label = Number(inputRef.current?.value) || 0
+			if (count_label > 0) {
+				const res = await useStoreCountLabel.getState().addCount({
+					place_name: "Пополнение этикеток",
+					count_label: count_label,
+					label_format,
+					production_id,
+				})
+			}
+			modals.closeAll();
+		}
+
+		const handleKeyPress = (e: any) => {
+			if (e.key === "Enter") {
+				handleAdd();
+			}
+		};
+
+		modals.open({
+			title: `Добавить этикеток "${labelName(label_format)}"`,
+			children: <NumberInput ref={inputRef} min={0} defaultValue={0} placeholder="Количество" onKeyPress={handleKeyPress} onBlur={handleAdd} />,
+			onEnterTransitionEnd: () => {
+				inputRef.current?.focus();
+			},
+		})
+		
+	}
+
+	useEffect(() => {
+		storeLabels.load();
+	}, []);
+
+	
+	const count = useProductionCount(production_id)
+	
+
 	return (
-		<Stack gap="xs">
-			<Loading active={storeLabels.isLoading} keepMounted>
-				<TextInput
-					w="100%"
-					placeholder="Добавить формат"
-					error={error}
-					disabled={storeLabels.isLoading}
-					value={newFormat}
-					onChange={handleChange}
-					onKeyDown={handleKeyPress}
-					rightSection={
-						<Tooltip
-							label={`Добавить группу! Можно нажать и на Enter после ввода!`}
-						>
-							<ActionIcon disabled={Boolean(error)} onClick={handleAddFormat}>
-								<TbPlus />
-							</ActionIcon>
-						</Tooltip>
-					}
-				/>
-				<GroupedProvider production_id={storeUserProfile.production_id}>
-					<Flex mt="xs">
-						<Stack
-							style={{
-								width: "50%",
-							}}
-						>
-							{formats.map((item) => (
-								<GroupedContainer
-									key={item}
-									column={item}
-									color={randomColorLabel(item)}
-								>
-									<Table striped={false}>
-										<Table.Thead>
-											<Table.Tr>
-												<Table.Td w="2rem"></Table.Td>
-												<Table.Td>
-													<LabelFormat>{item}</LabelFormat>
-												</Table.Td>
-												<Table.Td align="right">
-													<Tooltip label={`Удалить "${item}"`}>
-														<ActionIcon
-															disabled={storeLabels.isLoading}
-															color="red"
-															onClick={() => handleDeleteFormat(item)}
-														>
-															<TbX />
-														</ActionIcon>
-													</Tooltip>
-												</Table.Td>
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>
-											{(containers[item] || []).map((item) => (
-												<GroupedItem key={item.id} id={item.id} data={item}>
-													<Table.Tr>
-														<Table.Td ta="center">
-															<TbList />
-														</Table.Td>
-														<Table.Td colSpan={2}>
-															<LabelFormat>{item.id}</LabelFormat>
-														</Table.Td>
-													</Table.Tr>
-												</GroupedItem>
-											))}
-										</Table.Tbody>
-									</Table>
-								</GroupedContainer>
-							))}
-						</Stack>
+		<Loading active={storeLabels.isLoading} keepMounted>
+			<LabelsGroupAdd />
+			<br />
+			<GroupedProvider production_id={production_id}>
+				<SimpleGrid cols={4}>
+					{formats.map((item) => (
 						<GroupedContainer
-							column=".default"
-							color={randomColorLabel(".default")}
+							key={item}
+							id={item}
+							color={randomColorLabel(item)}
 						>
-							<Table
-								striped={false}
-								style={{
-									width: "50%",
-								}}
-							>
-								<Table.Thead>
-									<Table.Tr>
-										<Table.Td w="2rem"></Table.Td>
-										<Table.Td>Без группы</Table.Td>
-									</Table.Tr>
-								</Table.Thead>
-								<Table.Tbody>
-									{(containers[".default"] || []).map((item) => (
-										<GroupedItem key={item.id} id={item.id} data={item}>
-											<Table.Tr>
-												<Table.Td ta="center">
-													<TbList />
-												</Table.Td>
-												<Table.Td>
-													<LabelFormat>{item.id}</LabelFormat>
-												</Table.Td>
-											</Table.Tr>
-										</GroupedItem>
-									))}
-								</Table.Tbody>
-							</Table>
+							<Container label={labelFormat(item)} menu={[
+								{ 
+									children: 'Удалить', 
+									onClick: () => handleDeleteFormat(item),
+									rightSection: <TbX />,
+								},
+								{ 
+									children: 'Дабавить количество', 
+									onClick: () => handleAddCount(item),
+									rightSection: <TbPlus />,
+								},
+							]} title={<Group justify="space-between">
+								<div>
+									<Text>
+										Количество:
+									</Text>
+									<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum} />
+								</div>
+								<div>
+									<Text>
+										Метраж:
+									</Text>
+									<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum_consumption} />
+								</div>
+							</Group>}> 
+							
+								{(containers[item] || []).map((label) => (
+									<GroupedItem key={label.id} id={label.id}>
+										<Item>{label.id}</Item>
+									</GroupedItem>
+								))}
+							</Container>
 						</GroupedContainer>
-					</Flex>
-				</GroupedProvider>
-			</Loading>
-		</Stack>
+					))}
+					<GroupedContainer
+						id=".default"
+					>
+						<Container label={labelFormat('.default')}>
+							{(containers[".default"] || []).map((item) => (
+								<GroupedItem key={item.id} id={item.id}>
+									<Item 
+										cnt={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum || '-'} 
+										len={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum_consumption || '-'}
+									>{item.id}</Item>
+								</GroupedItem>
+							))}
+						</Container>
+					</GroupedContainer>
+				</SimpleGrid>
+			</GroupedProvider>
+		</Loading>
 	);
 };

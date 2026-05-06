@@ -1,4 +1,4 @@
-import { LabelFormat, Text } from "@/shared/ui";
+import { Text } from "@/shared/ui";
 import { ActionIcon, Card, Group, Menu, type MenuItemProps } from "@mantine/core";
 import { forwardRef } from 'react';
 import { TbDots } from "react-icons/tb";
@@ -31,7 +31,7 @@ export const Container = forwardRef(({ children, label, menu = [], title, ...pro
 		<Card.Section withBorder inheritPadding py="xs">
       <Group justify="space-between">
 				  <Text fw={500}>
-						<LabelFormat>{label}</LabelFormat>
+						{label}
 					</Text>
 					<ContainerMenu options={menu} />
 			</Group>

@@ -1,4 +1,4 @@
-import { useStoreLabels } from "../use-store-labels";
+import { selectFormatForProduction, selectPrintsForProduction, selectSelectFormatPrintsForProduction, useStoreLabels } from "../use-store-labels";
 
 type Grouped = Record<
 	ILabel["add_label_format"] | ".default",
@@ -11,14 +11,13 @@ type Grouped = Record<
 >;
 
 function grouped(production_id: ILabel["production_id"]): Grouped {
-	const prints = useStoreLabels.getState().selectPrints(production_id);
-	const formats = useStoreLabels.getState().selectFormats(production_id);
-	const formatPrints = useStoreLabels
-		.getState()
-		.selectFormatPrints(production_id);
+	production_id = Number(production_id) || 0;
+	const prints = selectPrintsForProduction(production_id)(useStoreLabels.getState());
+	const formats = selectFormatForProduction(production_id)(useStoreLabels.getState());
+	const formatPrints = selectSelectFormatPrintsForProduction(production_id)(useStoreLabels.getState())
 
 	const containers: Grouped =
-		Object.fromEntries((formats || []).map((item) => [item, []])) || {};
+		Object.fromEntries((formats || []).map((item) => [item.statistics_print_format, []])) || {};
 
 	containers[".default"] = (prints || []).map((item) => ({
 		id: item,
@@ -52,6 +51,7 @@ export function useGrouped(production_id: ILabel["production_id"]): Grouped;
 export function useGrouped(
 	production_id?: ILabel["production_id"],
 ): Record<ILabel["production_id"], Grouped> | Grouped {
+	production_id = Number(production_id) || 0;
 	const storeLabels = useStoreLabels();
 
 	let productions: ILabel["production_id"][] = [];
