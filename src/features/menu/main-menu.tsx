@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
 	{
 		label: "Склад этикеток",
 		icon: <TbLabel />,
-		path: "/labels/count",
+		path: "/labels/history",
 	},
 	{
 		label: "Пользователи",

@@ -12,7 +12,7 @@ import { SignInPage } from "@/pages/auth/sign-in-page";
 import { SignOutPage } from "@/pages/auth/sign-out-page";
 import { SignUpPage } from "@/pages/auth/sign-up-page";
 import { VerificationPage } from "@/pages/auth/verification-page";
-import { LabelsCountPage } from "@/pages/labels/lables-count-page";
+import { LabelsHistoryPage } from "@/pages/labels/lables-history-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
 import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
@@ -71,8 +71,8 @@ const routes = () => [
 				element: <LabelsPage />,
 			},
 			{
-				path: "labels/count",
-				element: <LabelsCountPage />,
+				path: "labels/history",
+				element: <LabelsHistoryPage />,
 			},
 			{
 				path: "analytics",

@@ -1,6 +1,6 @@
 import { Text } from "@/shared/ui";
 import { ActionIcon, Card, Group, Menu, type MenuItemProps } from "@mantine/core";
-import { forwardRef } from 'react';
+import { forwardRef, type Ref } from 'react';
 import { TbDots } from "react-icons/tb";
 
 export interface ContainerProps { children: React.ReactNode, title?: React.ReactNode, label: string, menu?: MenuItemProps[] }
@@ -26,14 +26,14 @@ function ContainerMenu({ options = [] }: {
 		</Menu>
 	);
 }
-export const Container = forwardRef(({ children, label, menu = [], title, ...props }: ContainerProps, ref) => {
+export const Container = forwardRef(({ children, label, menu = [], title, ...props }: ContainerProps, ref: Ref<HTMLDivElement>) => {
 	return <Card withBorder {...props } ref={ref}>
 		<Card.Section withBorder inheritPadding py="xs">
-      <Group justify="space-between">
-				  <Text fw={500}>
-						{label}
-					</Text>
-					<ContainerMenu options={menu} />
+      		<Group justify="space-between">
+				<Text fw={500}>
+					{label}
+				</Text>
+				<ContainerMenu options={menu} />
 			</Group>
 		</Card.Section>
 		{title && <Card.Section inheritPadding withBorder>

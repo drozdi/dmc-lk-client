@@ -1,20 +1,32 @@
 import { useStoreUserProfile } from "@/entites/auth";
 import { useStoreLabels } from "@/entites/labels";
-import { notification } from "@/shared/notification";
-import { ButtonIcon } from "@/shared/ui";
 import {
 	Button,
+	Group,
 	Modal,
 	Notification,
 	NumberInput,
-	TextInput
+	TextInput,
+	type ButtonProps
 } from "@mantine/core";
 import { isInRange, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { TbPlus } from "react-icons/tb";
 
-export const LabelsGroupAdd = () => {
+export interface LabelsGroupAddProps extends ButtonProps {
+
+}
+
+interface Values {
+	width: number,
+	height: number,
+	gap: number,
+	format: string
+	print: string
+}
+
+export const LabelsGroupAdd = (props: LabelsGroupAddProps) => {
 	const production_id = Number(useStoreUserProfile(state => state.production_id)) || 0
 	if (!production_id) {
 		return null
@@ -29,81 +41,82 @@ export const LabelsGroupAdd = () => {
 			width: 0,
 			height: 0,
 			gap: 0,
-			format: ''
+			format: 'W0H0G0',
+			print: 'W0H0G0',
 		},
-		validate: {
-			width: isInRange({ min: 1} , 'Введите значение больше 0'),
-			height: isInRange({ min: 1} , 'Введите значение больше 0'),
-			gap: isInRange({ min: 0} , 'Введите значение больше 0'),
-			format: (value) => {
-				storeLabels.formats.find((format) => {
-				})
+		validate: (values: Values) => {
+			let width = isInRange({ min: 0} , 'Введите значение больше 0')(values.width)
+			let height = isInRange({ min: 0} , 'Введите значение больше 0')(values.height)
+			let gap = isInRange({ min: 0} , 'Введите значение больше 0')(values.gap)
+			let format = values.format? (storeLabels.formats[production_id] || []).find((format) => format.add_label_format === values.format)? 'Группа уже существует': null: 'Название формата должно быть заполнено'
+			if (width || height || gap || format) {
+				return  {width, height, gap, format }
 			}
+			const print = !!(storeLabels.formats[production_id] || []).find((format) => format.statistics_print_format === values.print)
+			if (print) {
+				return {
+					width: 'Этикетка с такими значениями уже есть', 
+					height: 'Этикетка с такими значениями уже есть', 
+					gap: 'Этикетка с такими значениями уже есть', 
+				}	
+			}
+			return {}
 		},
-		transformValues: (values) => {
-			return {
-				...values,
-				print: `W${values.width}H${values.height}G${values.gap}`
-			}
-		}
 	})
-
+	function format (width = form.values.width, height = form.values.height, gap = form.values.gap) {
+		const format = form.values.format;
+		if (!format || /W[0-9]+(?:\.[0-9]*)?H[0-9]+(?:\.[0-9]*)?G[0-9]+(?:\.[0-9]*)?/i.test(format)) {
+			form.setFieldValue('format', `W${width}H${height}G${gap}`)
+		}
+		form.setFieldValue('print', `W${width}H${height}G${gap}`)
+	}
 	form.watch('width', ({value}) => {
-		form.setFieldValue('format', `W${value}H${form.values.height}G${form.values.gap}`)
+		format(value)
 	})
 	form.watch('height', ({value}) => {
-		form.setFieldValue('format', `W${form.values.width}H${value}G${form.values.gap}`)
+		format(undefined, value)
 	})
 	form.watch('gap', ({value}) => {
-		form.setFieldValue('format', `W${form.values.width}H${form.values.height}G${value}`)
+		format(undefined, undefined, value)
 	})
 
-
-
-
-
-
-	const handleAddFormat = async (fields) => {
-		console.log(fields)
-		return
-		if (newFormat.trim()) {
-			const res = await storeLabels.addFormat({
-				format: newFormat.trim(),
-				production_id,
-			});
-			if (res) {
-				notification.success(
-					`Группа "${res.add_label_format}" успешно добавлена!`,
-				);
-			}
-			setNewFormat("");
-		} else {
-			setError("Введите название!");
+	const handleAddFormat = async (fields: Values) => {
+		const res = await storeLabels.addFormat({
+			format: fields.format,
+			print: fields.print,
+			production_id,
+		});
+		if (res) {
+			form.setValues({
+				width: 0, height: 0, gap: 0,
+				format: 'W0H0G0', print: 'W0H0G0'
+			})
+			close()
 		}
 	};
 
 	return (
 		<>
-				<Button onClick={open} rightSection={<TbPlus />}>
+				<Button {...props} onClick={open} rightSection={<TbPlus />}>
 					Добавить группу
 				</Button>
 				<Modal opened={opened} onClose={close} title="Добавление группы">
 					{error && <Notification color="red" withCloseButton={false}>
 						{error}
 					</Notification>}
-					<NumberInput label='Ширина' placeholder='Ширина' {...form.getInputProps('width')} />
-					<NumberInput label='Длина' placeholder='Длина' {...form.getInputProps('height')} />
-					<NumberInput label='Зазор' placeholder='Зазор' {...form.getInputProps('gap')} />
+					<NumberInput label='Ширина' placeholder='Ширина' min={0} step={0.1} {...form.getInputProps('width')} />
+					<NumberInput label='Длина' placeholder='Длина' min={0} step={0.1} {...form.getInputProps('height')} />
+					<NumberInput label='Зазор' placeholder='Зазор' min={0} step={0.1} {...form.getInputProps('gap')} />
 					<TextInput
 						label='Формат'
 						placeholder="Формат"
 						{...form.getInputProps('format')}
-						rightSection={
-							<ButtonIcon loading={storeLabels.isLoading} tooltip={`Добавить группу! Можно нажать и на Enter после ввода!`}  onClick={form.onSubmit(handleAddFormat)}>
-								<TbPlus />
-							</ButtonIcon>
-						}
 					/>
+					<Group mt='xs' justify="flex-end">
+						<Button rightSection={<TbPlus />} loading={storeLabels.isLoading} onClick={() => form.onSubmit(handleAddFormat)()}>
+								Доьавить
+						</Button>
+					</Group>
 				</Modal>
 		</>
 	);

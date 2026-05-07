@@ -6,6 +6,7 @@ import {
 	randomColorLabel,
 	useGrouped,
 	useProductionCount,
+	useProductionFormatsCode,
 	useProductionFormatsLabel,
 	useStoreCountLabel,
 	useStoreLabels
@@ -16,6 +17,7 @@ import { Loading, Text } from "@/shared/ui";
 import { labelName } from '@/shared/utils';
 import {
 	Center,
+	Grid,
 	Group,
 	NumberFormatter,
 	NumberInput,
@@ -59,15 +61,16 @@ export const LabelsGroup = () => {
 
 	const storeLabels = useStoreLabels();
 	const containers = useGrouped(production_id);
-	const labelFormat = useProductionFormatsLabel(production_id);
 	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
-	//console.log(containers)
+	const codeFormat = useProductionFormatsCode(production_id);
+	const labelFormat = useProductionFormatsLabel(production_id);
+	
 
 	const handleDeleteFormat = (format: ILabel["add_label_format"]) => {
 		modals.openConfirmModal({
 			title: `Вы уверены? Что хотитее удалить "${format}"`,
-			labels: { confirm: "Удалить картинку", cancel: "Нет" },
+			labels: { confirm: "Удалить", cancel: "Нет" },
 			onConfirm: async () => {
 				if (
 					await storeLabels.deleteFormat({
@@ -87,6 +90,8 @@ export const LabelsGroup = () => {
 			},
 		});
 	};
+
+	const handleRenameFormat = (format, newFormat) => {}
 
 	const handleAddCount = (label_format: ILabel['statistics_print_format']) => {
 		async function handleAdd() {
@@ -128,65 +133,71 @@ export const LabelsGroup = () => {
 
 	return (
 		<Loading active={storeLabels.isLoading} keepMounted>
-			<LabelsGroupAdd />
-			<br />
+			<LabelsGroupAdd mb='xs' />
+						
 			<GroupedProvider production_id={production_id}>
-				<SimpleGrid cols={4}>
-					{formats.map((item) => (
-						<GroupedContainer
-							key={item}
-							id={item}
-							color={randomColorLabel(item)}
-						>
-							<Container label={labelFormat(item)} menu={[
-								{ 
-									children: 'Удалить', 
-									onClick: () => handleDeleteFormat(item),
-									rightSection: <TbX />,
-								},
-								{ 
-									children: 'Дабавить количество', 
-									onClick: () => handleAddCount(item),
-									rightSection: <TbPlus />,
-								},
-							]} title={<Group justify="space-between">
-								<div>
-									<Text>
-										Количество:
-									</Text>
-									<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum} />
-								</div>
-								<div>
-									<Text>
-										Метраж:
-									</Text>
-									<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum_consumption} />
-								</div>
-							</Group>}> 
-							
-								{(containers[item] || []).map((label) => (
-									<GroupedItem key={label.id} id={label.id}>
-										<Item>{label.id}</Item>
+				<Grid gap='0'>
+					<Grid.Col span={9} pr='xs' style={{
+						borderRight: '2px solid var(--mantine-color-default-border)'
+					}}>
+						<SimpleGrid cols={3}>
+						{formats.map((item) => (
+							<GroupedContainer
+								key={item}
+								id={item}
+								color={randomColorLabel(item)}
+							>
+								<Container label={`${item} (${codeFormat(item)})`} menu={[
+									{ 
+										children: 'Удалить', 
+										onClick: () => handleDeleteFormat(item),
+										rightSection: <TbX />,
+									},
+									{ 
+										children: 'Дабавить количество', 
+										onClick: () => handleAddCount(codeFormat(item)),
+										rightSection: <TbPlus />,
+									},
+								]} title={<Group justify="space-between">
+									<div>
+										<Text>
+											Количество:
+										</Text>
+										<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum} />
+									</div>
+									<div>
+										<Text>
+											Метраж:
+										</Text>
+										<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum_consumption} />
+									</div>
+								</Group>}> 
+									{(containers[item] || []).map((label) => (
+										<GroupedItem key={label.id} id={label.id}>
+											<Item>{label.id}</Item>
+										</GroupedItem>
+									))}
+								</Container>
+							</GroupedContainer>
+						))}
+						</SimpleGrid>
+					</Grid.Col>
+				
+					<Grid.Col span={3} pl='xs'>
+						<GroupedContainer id=".default">
+							<Container label={labelFormat('.default')}>
+								{(containers[".default"] || []).map((item) => (
+									<GroupedItem key={item.id} id={item.id}>
+										<Item 
+											cnt={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum || '-'} 
+											len={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum_consumption || '-'}
+										>{item.id}</Item>
 									</GroupedItem>
 								))}
 							</Container>
 						</GroupedContainer>
-					))}
-					<GroupedContainer
-						id=".default"
-					>
-						<Container label={labelFormat('.default')}>
-							{(containers[".default"] || []).map((item) => (
-								<GroupedItem key={item.id} id={item.id}>
-									<Item 
-										cnt={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum || '-'} 
-										len={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum_consumption || '-'}
-									>{item.id}</Item>
-								</GroupedItem>
-							))}
-						</Container>
-					</GroupedContainer>
-				</SimpleGrid>
+					</Grid.Col>
+				</Grid>
 			</GroupedProvider>
 		</Loading>
 	);

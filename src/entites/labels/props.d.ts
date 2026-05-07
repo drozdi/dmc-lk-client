@@ -2,6 +2,7 @@ interface ILabel {
 	add_label_format: string;
 	production_id: IProduction["production_id"];
 	statistics_print_format: string;
+	is_reference_template: boolean;
 	id_company: number;
 	id_user: number;
 	id: number | string;
@@ -28,8 +29,11 @@ interface IStoreLabels extends IStore {
 
 	addFormat(query: {
 		format: ILabel["add_label_format"];
+		print: ILabel["statistics_print_format"];
 		production_id: ILabel["production_id"];
 	}): Promise<ILabel | undefined>;
+
+	updateFormat(format: ILabel['add_label_format'], newFormat: Partial<ILabel>): Promise<ILabel | undefined>
 
 	deleteFormat(query: {
 		format: ILabel["add_label_format"];
