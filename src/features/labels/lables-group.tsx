@@ -14,7 +14,6 @@ import {
 import { SelectProductions } from "@/entites/users";
 import { notification } from "@/shared/notification";
 import { Loading, Text } from "@/shared/ui";
-import { labelName } from '@/shared/utils';
 import {
 	Center,
 	Grid,
@@ -114,7 +113,7 @@ export const LabelsGroup = () => {
 		};
 
 		modals.open({
-			title: `Добавить этикеток "${labelName(label_format)}"`,
+			title: `Добавить этикеток "${labelFormat(label_format)}"`,
 			children: <NumberInput ref={inputRef} min={0} defaultValue={0} placeholder="Количество" onKeyPress={handleKeyPress} onBlur={handleAdd} />,
 			onEnterTransitionEnd: () => {
 				inputRef.current?.focus();
