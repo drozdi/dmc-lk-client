@@ -1,8 +1,7 @@
 import {
 	useEnumsEvents,
-	useEnumsStep,
 	useFilterdateStep,
-	useQueryAnalytics,
+	useQueryAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { AspectRatio, Center, Stack } from "@mantine/core";
@@ -27,7 +26,6 @@ export interface AnalyticEventsProps {
 }
 
 const ee = useEnumsEvents();
-const es = useEnumsStep();
 
 const ititValue = Object.fromEntries(
 	Object.keys(ee.data).map((item) => [item, 0]),

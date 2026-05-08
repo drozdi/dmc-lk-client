@@ -1,12 +1,10 @@
-import { useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import {
 	AnalyticLabels,
 	type AnalyticLabelsProps,
 } from "@/features/analytics/widgets";
-import { $setting } from "@/shared";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import dayjs from "dayjs";
 import { memo, useEffect, useMemo, useState } from "react";
 
 export interface WidgetAnalyticLabelsProps
@@ -52,13 +50,13 @@ export const WidgetAnalyticLabels = memo(
 				return title;
 			}
 			if (event === "d") {
-				return "Дефект";
+				return "Дефекты при печати";
 			} else if (event === "i") {
-				return "Инциденты";
+				return "Инциденты при печати";
 			} else if (event === "v") {
-				return "Проверенно";
+				return "Проверенно этикеток";
 			}
-			return "Напечатано";
+			return "Напечатано этикеток";
 		}, [title, event]);
 
 		return (
@@ -67,7 +65,7 @@ export const WidgetAnalyticLabels = memo(
 				loading={isLoading}
 				{...props}
 				title={computedTitle}
-				subTitle={`${dayjs(query.filterdate?.[0]).format($setting.get("formatDate"))} - ${dayjs(query.filterdate?.[1]).format($setting.get("formatDate"))}`}
+				subTitle={<>За <QueryShow {...query} /></>}
 			>
 				<AnalyticLabels
 					filterdate={filterdate}

@@ -2,7 +2,7 @@ import { useAnalytics, useFilterdateStep } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
-import { Center, Checkbox, Group, Stack } from "@mantine/core";
+import { Center, Checkbox, Group, Tooltip as MantineTooltip, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { LabelsBar } from "./ui/labels-bar";
@@ -130,11 +130,13 @@ export const AnalyticLabels = memo(
 		return (
 			<Stack h="100%">
 				<Group gap="0" justify="flex-end">
-					<Checkbox
-						onChange={(e) => setFilterGap(e.target.checked)}
-						checked={filterGap}
-						label="Группировать по G"
-					/>
+					<MantineTooltip label='Учитывать зазор между этикетками'>
+						<Checkbox
+							onChange={(e) => setFilterGap(e.target.checked)}
+							checked={filterGap}
+							label="Группировать по Gap"
+						/>
+					</MantineTooltip>
 				</Group>
 				{isEmpty ? (
 					<Center w="100%" h="100%" fz="h1" c="dimmed">

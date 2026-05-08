@@ -1,7 +1,5 @@
 import {
-	useAnalytics,
-	useEnumsEvents,
-	useEnumsStep,
+	useAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
@@ -83,9 +81,6 @@ function calckDefect(code: string): string {
 
 	return "ERROR";
 }
-
-const ee = useEnumsEvents();
-const es = useEnumsStep();
 
 export const AnalyticEventsDefect = ({
 	filterdate,

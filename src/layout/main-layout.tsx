@@ -69,9 +69,9 @@ export function MainLayout() {
 							<Template.Slot name="title" />
 						</Title>
 					</Group>
-					<Template.Slot name="header" />
 					<Group>
 						<ChangeProduct />
+						<Template.Slot name="header" />
 						<PersonalLink />
 						<InOutLink />
 						<ThemeBtn />

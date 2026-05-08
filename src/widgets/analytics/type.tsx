@@ -1,4 +1,4 @@
-import { Filterdate, useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
 import {
 	AnalyticType,
 	type AnalyticTypeProps,
@@ -31,19 +31,10 @@ export const WidgetAnalyticType = memo(
 			<Widget
 				{...props}
 				loading={isLoading}
-				title={
+				title='Напечатано этикеток'
+				subTitle={
 					<>
-						Напечатано за{" "}
-						<Filterdate
-							value={query.filterdate}
-							editable={!filterdate?.[0]}
-							onChange={(filterdate) => {
-								setQuery({
-									...query,
-									filterdate,
-								});
-							}}
-						/>
+						За <QueryShow {...query }	/>
 					</>
 				}
 			>

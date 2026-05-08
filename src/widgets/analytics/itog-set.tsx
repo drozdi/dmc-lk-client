@@ -1,4 +1,4 @@
-import { useAnalytics } from "@/entites/analytics";
+import { QueryShow, useAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import {
 	AnalyticItogSet,
@@ -34,13 +34,13 @@ export const WidgetAnalyticItogSet = memo(
 				return title;
 			}
 			if (event === "d") {
-				return "Дефект";
+				return "Дефектов при печати";
 			} else if (event === "i") {
-				return "Инциденты";
+				return "Инциденты при печати";
 			} else if (event === "v") {
 				return "Проверенно";
 			}
-			return type === "sum" ? "Итого по сериям" : "Cумма всех серий";
+			return type === "sum" ? "Расход этикеток" : type === "min" ? "Минимальный расход этикеток" : type === "max" ? "Максимальный расход этикеток" : 'Средний расход этикеток';
 		}, [title, type, event]);
 
 		useEffect(() => {
@@ -57,15 +57,7 @@ export const WidgetAnalyticItogSet = memo(
 				{...props}
 				expanded={false}
 				title={computedTitle}
-				subTitle={
-					type === "sum"
-						? "Сумма за период"
-						: type === "avg"
-							? "Среднее значение"
-							: type === "min"
-								? "Минимальное значение"
-								: "Максимальное значение"
-				}
+				subTitle={<>За <QueryShow {...query} /></>}
 			>
 				<AnalyticItogSet {...query} type={type} />
 			</Widget>

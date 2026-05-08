@@ -1,4 +1,4 @@
-import { corectQuery, Filterdate } from "@/entites/analytics";
+import { corectQuery, Filterdate, QueryShow } from "@/entites/analytics";
 import {
 	DashBoardWidget,
 	UiDashBoard,
@@ -9,7 +9,6 @@ import { BtnClear } from "@/features/widget/btn-clear";
 import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
-import { $setting } from "@/shared";
 import { Widget } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
@@ -19,15 +18,6 @@ import { useCallback, useEffect, useState } from "react";
 import { TbArrowBackUp, TbReload } from "react-icons/tb";
 import { type MouseHandlerDataParam } from "recharts";
 
-const stepLabel = {
-	s: "секундам",
-	m: "минутам",
-	h: "часам",
-	d: "дням",
-	w: "неделям",
-	mon: "месяцам",
-	y: "годам",
-};
 
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
@@ -128,13 +118,15 @@ export const MainPage = () => {
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
 			<Group justify="flex-end">
-				<Filterdate
-					editable
-					value={
-						storeDashboardMain.getValue("$filterdate") as [DateValue, DateValue]
-					}
-					onChange={handleFilterdate}
-				/>
+				<Template.Header>
+					<Filterdate
+						editable
+						value={
+							storeDashboardMain.getValue("$filterdate") as [DateValue, DateValue]
+						}
+						onChange={handleFilterdate}
+					/>
+				</Template.Header>
 			</Group>
 			<WidgetsProvider store={useStoreDashboardMain}>
 				<UiDashBoard
@@ -254,7 +246,7 @@ export const MainPage = () => {
 						}}
 					>
 						<Widget
-							title={`Работа за ${dayjs(query.filterdate?.[0]).format($setting.get("formatDate"))}-${dayjs(query.filterdate?.[1]).format($setting.get("formatDate"))} по ${stepLabel[query.step]}`}
+							title={`Работа за ${QueryShow({...query, type: 'by'})}`}
 							menu={[
 								{
 									children: "Сбросить",
@@ -283,7 +275,6 @@ export const MainPage = () => {
 								stop="m"
 								onClick={handleClick}
 							/>
-
 							<DashBoardWidget
 								widget="analytic-events"
 								type="table"

@@ -36,8 +36,16 @@ export function corectQuery(state: IRequestAnalytics): IRequestAnalytics {
 	const step =
 		getStep(state.filterdate) === "mon" ? "M" : getStep(state.filterdate);
 	const filterdate = state.filterdate;
-	filterdate[0] = dayjs(filterdate[0]).startOf(step).format("YYYY-MM-DD");
-	filterdate[1] = dayjs(filterdate[1]).endOf(step).format("YYYY-MM-DD");
+	const format = "YYYY-MM-DD" + (
+		step === 'h'? 
+			' HH:00:00': 
+			step === 'm'? 
+				' HH:mm:00': 
+				step === 's'? 
+					' HH:mm:ss': 
+					'')
+	filterdate[0] = dayjs(filterdate[0]).startOf(step).format(format);
+	filterdate[1] = dayjs(filterdate[1]).endOf(step).format(format);
 	return {
 		...state,
 		step: step === "M" ? "mon" : step,

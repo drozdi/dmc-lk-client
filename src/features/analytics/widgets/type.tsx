@@ -2,7 +2,7 @@ import { useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { labelName } from "@/shared/utils";
-import { AspectRatio, Center, Checkbox, Group, Stack } from "@mantine/core";
+import { AspectRatio, Center, Checkbox, Group, Stack, Tooltip } from "@mantine/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TypeBar } from "./ui/type-bar";
 
@@ -109,11 +109,13 @@ export const AnalyticType = ({
 	return (
 		<Stack h="100%">
 			<Group gap="0" justify="flex-end">
-				<Checkbox
-					onChange={(e) => setFilterGap(e.target.checked)}
-					checked={filterGap}
-					label="Группировать по G"
-				/>
+				<Tooltip label='Учитывать зазор между этикетками'>
+					<Checkbox
+						onChange={(e) => setFilterGap(e.target.checked)}
+						checked={filterGap}
+						label="Группировать по Gap"
+					/>
+					</Tooltip>
 			</Group>
 			<AspectRatio ratio={16 / 9}>
 				{isEmpty ? (

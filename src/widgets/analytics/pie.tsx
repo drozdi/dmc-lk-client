@@ -1,4 +1,4 @@
-import { Filterdate, useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
 import {
 	AnalyticPie,
 	type AnalyticPieProps,
@@ -30,19 +30,10 @@ export const WidgetAnalyticPie = memo(
 				error={error}
 				loading={isLoading}
 				{...props}
-				title={
+				title='Сводная по событиям'
+				subTitle={
 					<>
-						Соотношение за{" "}
-						<Filterdate
-							value={query.filterdate}
-							editable={!filterdate?.[0]}
-							onChange={(filterdate) => {
-								setQuery({
-									...query,
-									filterdate,
-								});
-							}}
-						/>
+						За <QueryShow {...(query as IRequestAnalytics) } />
 					</>
 				}
 			>

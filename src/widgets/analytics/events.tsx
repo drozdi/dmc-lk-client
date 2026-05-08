@@ -1,4 +1,4 @@
-import { Filterdate, useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
 import {
 	AnalyticEvents,
 	type AnalyticEventsProps,
@@ -34,17 +34,8 @@ export const WidgetAnalyticEvents = ({
 			loading={isLoading}
 			error={error}
 			{...props}
-			title={
-				<Filterdate
-					value={query.filterdate}
-					editable={!filterdate?.[0]}
-					onChange={(filterdate) => {
-						setQuery({
-							...query,
-							filterdate,
-						});
-					}}
-				/>
+			title='Сводный расход по событиям'
+			subTitle={<>За <QueryShow {...query} /></>
 			}
 		>
 			<AnalyticEvents

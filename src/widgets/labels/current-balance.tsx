@@ -19,8 +19,8 @@ export const WidgetLabelsCurrentBalance = ({
 			{...props}
 			expanded={false}
 			loading={isLoading}
-			title="Текущий баланс"
-			subTitle={type === "cnt" ? "Количество этикеток" : "Метраж ленты"}
+			title="Текущий баланс этикеток"
+			subTitle={type === "cnt" ? "Количество этикеток (шт.)" : "Метраж ленты (м.)"}
 		>
 			<LabelsCurrentBalance type={type} />
 		</Widget>

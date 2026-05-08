@@ -36,17 +36,19 @@ export const DashboardPage = () => {
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
 			<Group justify="flex-end">
-				<Filterdate
-					editable
-					value={query.filterdate}
-					onChange={useCallback((filterdate) => {
-						setQuery((v) => ({
-							...v,
-							filterdate,
-						}));
-						storeDashboard.setValue("filterdate", filterdate);
-					}, [])}
-				/>
+				<Template.Header>
+					<Filterdate
+						editable
+						value={query.filterdate}
+						onChange={useCallback((filterdate) => {
+							setQuery((v) => ({
+								...v,
+								filterdate,
+							}));
+							storeDashboard.setValue("filterdate", filterdate);
+						}, [])}
+					/>
+				</Template.Header>
 			</Group>
 			<WidgetsProvider store={useStoreDashboardSecond}>
 				<UiDashBoard
