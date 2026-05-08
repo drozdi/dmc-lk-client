@@ -1,6 +1,5 @@
 import { api } from "@/shared/api";
 import { notification } from "@/shared/notification";
-import { getterZustandMiddleware } from "@/shared/stores";
 import { create } from "zustand";
 import {
 	requestRegistrationLogin,
@@ -8,28 +7,80 @@ import {
 	requestRegistrationRegister,
 	requestRegistrationVerification,
 } from "../api/registration";
+import { useStoreUserProfile } from "./use-store-user-profile";
 
-export const useStoreAuth = create<IStoreAuth>(
-	getterZustandMiddleware((set, get) => ({
+export const useStoreAuth = create<IStoreAuth>((set, get) => ({
 		error: "",
-		isLoading: false,
+		isLoading: true,
 		isAuthenticated: false,
-		get isAuth() {
-			return !!api.getRefreshToken() && !!api.getAccessToken();
-		},
 		clearAuth() {
 			set({
 				isAuthenticated: false,
+				isLoading: false,
 			});
 			api.clearTokens();
 		},
+		async logout() {
+			get().clearAuth();
+		},
 		async load() {
-			const isAuthenticated = !!api.getRefreshToken() && !!api.getAccessToken();
-			if (!isAuthenticated) {
+			const accessToken = api.getRefreshToken()
+			const refreshToken = api.getAccessToken();
+			if (!accessToken || !refreshToken) {
 				get().clearAuth();
+				return
+			}
+			set({
+				isLoading: true,
+			})
+			try {
+          const userInfo = await useStoreUserProfile.getState().loadUserInfo();
+					if (userInfo) {
+						set({ 
+							isAuthenticated: true,
+							isLoading: false 
+						});
+					} else {
+						await get().logout();
+					}
+			} catch (error) {
+				await get().logout();
+				set({ 
+							isAuthenticated: false,
+							isLoading: false 
+						});
 			}
 		},
-
+		async login(email, password) {
+			set({
+				isLoading: true,
+				error: "",
+			});
+			try {
+				const response = await requestRegistrationLogin({
+					email,
+					password,
+				});
+				const { token } = response.data;
+				api.setAccessToken(token.access);
+				api.setRefreshToken(token.refresh);
+				set({
+					isAuthenticated: true,
+					isLoading: false,
+				});
+				return true;
+			} catch (e: IError) {
+				console.error(e);
+				const error = e.response?.data?.detail || e?.message || "Ошибка входа";
+				notification.error(error);
+				set({
+					isAuthenticated: false,
+					isLoading: false,
+					error,
+				});
+			}
+			return false;
+		},
 		async refreshAuth() {
 			const refresh = api.getRefreshToken();
 
@@ -75,35 +126,7 @@ export const useStoreAuth = create<IStoreAuth>(
 			}
 			return null;
 		},
-		async login(email, password) {
-			set({
-				isLoading: true,
-				error: "",
-			});
-			try {
-				const response = await requestRegistrationLogin({
-					email,
-					password,
-				});
-				const { token } = response.data;
-				api.setAccessToken(token.access);
-				api.setRefreshToken(token.refresh);
-				set({
-					isAuthenticated: true,
-					isLoading: false,
-				});
-				return true;
-			} catch (e: IError) {
-				console.error(e);
-				const error = e.response?.data?.detail || e?.message || "Ошибка входа";
-				notification.error(error);
-				set({
-					isLoading: false,
-					error,
-				});
-			}
-			return false;
-		},
+		
 		async register(userData) {
 			set({
 				isLoading: true,
@@ -131,8 +154,5 @@ export const useStoreAuth = create<IStoreAuth>(
 			}
 			return null;
 		},
-		async logout() {
-			get().clearAuth();
-		},
-	})),
+	}),
 );

@@ -15,12 +15,13 @@ import { TbList } from "react-icons/tb";
 
 interface CountWidgetProps extends WidgetProps, Partial<IRequestAnalytics> {}
 
-export const CountWidget = ({
+export const WidgetCount = ({
 	filterdate,
 	step = "d",
 	event = "p",
 	...props
 }: CountWidgetProps) => {
+	return "";
 	const storeCountLabel = useStoreCountLabel();
 	const storeLabels = useStoreLabels();
 	const qa = useQueryAnalytics({

@@ -1,52 +1,23 @@
 import { useStoreUserProfile } from "@/entites/auth";
-import { SelectProductions, useQueryProductions } from "@/entites/users";
-import { useMemo, useState } from "react";
+import { SelectProductions } from "@/entites/users";
+import { useShallow } from "zustand/shallow";
 
 export const ChangeProduct = () => {
-	const storeUserProfile = useStoreUserProfile();
-	const userData = storeUserProfile.userData;
-	const qpl = useQueryProductions();
-	const [change, setChange] = useState<boolean>(false);
+	const { userInfo, production_id, setProductionId } = useStoreUserProfile(useShallow(state => ({
+		userInfo: state.userInfo,
+		production_id: state.production_id,
+		setProductionId: state.setProductionId,
+	})));
 
 	const handleChange = (value: string) => {
-		storeUserProfile.setProductionId(Number(value));
-		setChange(false);
+		setProductionId(Number(value));
 	};
 
-	// useEffect(() => {
-	// 	if (userData) {
-	// 		if (
-	// 			!userData.is_superuser &&
-	// 			!userData.id_production?.includes(
-	// 				Number(storeUserProfile.production_id),
-	// 			)
-	// 		) {
-	// 			userData.id_production?.length &&
-	// 				handleChange(String(userData.id_production?.[0]));
-	// 		}
-	// 	}
-	// }, [userData, handleChange]);
-
-	const name = useMemo(
-		() => qpl.findNameById(Number(storeUserProfile.production_id)),
-		[qpl.findNameById, storeUserProfile.production_id],
-	);
-
-	return (
-		<>
-			{change ? (
-				<SelectProductions
-					allowDeselect={false}
-					excludeds={storeUserProfile.userData?.is_superuser ? [] : ["0"]}
-					variant="underline"
-					value={String(storeUserProfile.production_id)}
-					onChange={(value) => handleChange(value as string)}
-				/>
-			) : (
-				<span className="cursor-pointer" onClick={() => setChange(true)}>
-					{name}
-				</span>
-			)}
-		</>
-	);
+	return <SelectProductions
+		allowDeselect={false}
+		excludeds={userInfo?.is_superuser ? [] : ["0"]}
+		variant="underline"
+		value={String(production_id)}
+		onChange={(value) => handleChange(value as string)}
+	/>
 };

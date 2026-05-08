@@ -10,20 +10,23 @@ export async function requestLabelsPrintList(): Promise<
 }
 
 export async function requestLabelsFormatList(): Promise<
-	IResponse<Record<ILabel["production_id"], ILabel["add_label_format"][]>>
+	IResponse<Record<ILabel["production_id"], ILabel[]>>
 > {
 	const res = await api.get("/label/format");
 	return res.data;
 }
 export async function requestLabelsFormatAdd({
-	format,
+	add_label_format,
+	statistics_print_format,
 	production_id,
 }: {
-	format: ILabel["add_label_format"];
+	add_label_format: ILabel["add_label_format"];
+	statistics_print_format: ILabel['statistics_print_format'];
 	production_id: ILabel["production_id"];
-}): Promise<IResponse<ILabel>> {
+}): Promise<IResponse<ILabel[]>> {
 	const res = await api.post("/label/format", {
-		add_label_format: format,
+		add_label_format,
+		statistics_print_format,
 		production_id,
 	});
 	return res.data;

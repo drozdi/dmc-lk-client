@@ -1,23 +1,30 @@
+import dayjs from "dayjs";
 import { factoryDashboardStore } from "../utils";
+
+const nDay = dayjs();
 
 export const useStoreDashboardSecond = factoryDashboardStore({
 	storageKey: "second",
 	key: "i",
 	availableWidgets: [
 		"test",
-		"analytic-event-widget",
-		"analytic-type-widget",
 		"analytic-analytic-widget",
-		"analytic-pie-widget",
 		"analytic-incident-widget",
-		"labels-count-widget",
 		"count-widget",
+
+		"analytic-type",
+		"analytic-pie",
+		"labels-count",
+		"analytic-events",
 	],
 	varibles: {
 		$filterdate: {
 			label: "Диапозон времени",
-			type: "range:date",
-			default: "",
+			type: "date:range",
+			default: [
+				nDay.subtract(7, "d").format("YYYY-MM-DD"),
+				nDay.format("YYYY-MM-DD"),
+			],
 			required: false,
 		},
 	},

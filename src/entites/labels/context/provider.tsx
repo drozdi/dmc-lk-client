@@ -1,92 +1,58 @@
-import { DragDropProvider } from "@dnd-kit/react";
+import {
+	closestCenter,
+	DndContext,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	type DragEndEvent
+} from '@dnd-kit/core';
 import { useStoreLabels } from "../stores";
-import { useGrouped } from "../stores/hooks";
+
+export interface GroupedProviderProps {
+	children: React.ReactNode;
+	production_id: ILabel["production_id"];
+}
 
 export function GroupedProvider({
 	children,
 	production_id,
-}: {
-	children: React.ReactNode;
-	production_id: ILabel["production_id"];
-}) {
+}: GroupedProviderProps) {
 	const storeLabels = useStoreLabels();
-
-	const containers = useGrouped(production_id);
-
-	const findIndex = (item, id) =>
-		item === id ||
-		(typeof item === "object" && "id" in item && item.id === id);
-
-	const handleDragEnd = async (event) => {
-		const { source, target } = event.operation;
-
-		let sourceIndex = -1;
-		let sourceParent: string;
-		let targetIndex = -1;
-		let targetParent: string;
-
-		for (const [id, children] of Object.entries(containers)) {
-			if (sourceIndex === -1) {
-				sourceIndex = children.findIndex((item) =>
-					findIndex(item, source.id),
-				);
-				if (sourceIndex !== -1) {
-					sourceParent = id;
-				}
-			}
-			if (targetIndex === -1) {
-				targetIndex = children.findIndex((item) =>
-					findIndex(item, target.id),
-				);
-				if (targetIndex !== -1) {
-					targetParent = id;
-				}
-			}
-			if (sourceIndex !== -1 && targetIndex !== -1) {
-				break;
-			}
-		}
-
-		if (sourceIndex === -1 && targetIndex === -1) {
-			return;
-		}
-
-		if (
-			containers[sourceParent][sourceIndex]?._id &&
-			target.id === ".default"
-		) {
-			await storeLabels.deleteFormatPrint({
-				id: containers[sourceParent][sourceIndex]?._id,
-			});
-		} else if (
-			sourceParent !== target.id &&
-			containers[sourceParent][sourceIndex]._id
-		) {
-			storeLabels.updateFormatPrint(
-				containers[sourceParent][sourceIndex]._id,
-				{
-					production_id,
-					add_label_format: target.id,
-					statistics_print_format:
-						containers[sourceParent][sourceIndex].print,
-				},
-			);
-		} else if (
-			target.id !== ".default" &&
-			!containers[sourceParent][sourceIndex]._id
-		) {
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: {
+				distance: 5, // Элемент начнет перетаскивание только после смещения на 5px
+			},
+		}),
+	);
+	function handleDragEnd (event: DragEndEvent) {
+		const print = event.active?.id;
+		const newFormat = event.over?.id;
+		const current = storeLabels.formatPrints.find((item) => 
+			item.print === print && item.production_id === production_id
+		)
+		const oldFormat = current?.format || '.default';
+		if (oldFormat === '.default' && newFormat !== '.default') {
 			storeLabels.addFormatPrint({
 				production_id,
-				add_label_format: target.id,
-				statistics_print_format:
-					containers[sourceParent][sourceIndex].print,
-			});
+				add_label_format: newFormat,
+				statistics_print_format: print,
+			})
+		} else if (oldFormat !== newFormat && newFormat === '.default') {
+			current && storeLabels.deleteFormatPrint(current)
+		} else if (oldFormat !== newFormat) {
+			storeLabels.updateFormatPrint(current?.id, {
+				production_id,
+				add_label_format: newFormat,
+				statistics_print_format: print,
+			})
 		}
-	};
-
-	return (
-		<DragDropProvider onDragEnd={handleDragEnd}>
-			{children}
-		</DragDropProvider>
-	);
+	}
+	return <DndContext
+		sensors={sensors}
+		collisionDetection={closestCenter}
+		onDragEnd={handleDragEnd}
+	>
+		{children}
+	</DndContext>
 }

@@ -1,27 +1,32 @@
-import { useDraggable } from "@dnd-kit/react";
+import {
+	useDraggable
+} from '@dnd-kit/core';
 import { Children, cloneElement } from "react";
 
-interface ItemProps {
-	id: ILabel["statistics_print_format"];
-	data: Record<string, any>;
+export interface GroupedItemProps {
+	id: string;
 	children: React.ReactNode;
-	[key: string]: any;
 }
 
-export function GroupedItem({ children, id, data, ...props }: ItemProps) {
-	const { ref, isDragging } = useDraggable({
-		id,
-		type: "item",
-		data,
+export function GroupedItem({ children, id, ...data }: GroupedItemProps) {
+	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+		id, data
 	});
+	const style = transform
+		? {
+				transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+				opacity: isDragging ? 0.8 : 1,
+				[`--cursor`]: isDragging ? 'grabbing' : 'grab',
+			}
+		: {
+				opacity: isDragging ? 0.8 : 1,
+				[`--cursor`]: isDragging ? 'grabbing' : 'grab',
+			};
+		
 	return cloneElement(Children.only(children), {
-		...props,
-		groupable: true,
-		ref,
-		"data-dragging": isDragging,
-		style: {
-			...(props.style || {}),
-			cursor: "move",
-		},
+		ref: setNodeRef,
+		style: style,
+		...listeners,
+		...attributes,
 	});
 }

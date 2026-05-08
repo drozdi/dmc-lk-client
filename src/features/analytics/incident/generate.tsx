@@ -85,18 +85,15 @@ export const IncidentGenerate = ({
 						<Group justify="space-between" grow>
 							<HoverCard disabled={!canRemove(field)} position="top">
 								<HoverCard.Target>
-									<Text flex="1">{ef.findLabelByCode(field)}</Text>
+									<Text>{ef.findLabelByCode(field)}</Text>
 								</HoverCard.Target>
 								<HoverCard.Dropdown>
-									<Tooltip label="Удалить">
-										<ActionIcon
-											flex="0"
-											color="red"
-											onClick={() => handleRemove(field)}
-										>
-											<TbColumnRemove />
-										</ActionIcon>
-									</Tooltip>
+									<ButtonRemove
+										label="Удалить"
+										onClick={() => handleRemove(field)}
+									>
+										<TbColumnRemove />
+									</ButtonRemove>
 								</HoverCard.Dropdown>
 							</HoverCard>
 						</Group>

@@ -17,7 +17,8 @@ export function useQueryAnalyticsFields() {
 		[findByCode],
 	);
 	const findActionByCode = useCallback(
-		(code: string): string[] => findByCode(code)?.permitted_actions || [],
+		(code: string): PermittedActions[] =>
+			findByCode(code)?.permitted_actions || [],
 		[findByCode],
 	);
 	const dataSelect = useMemo<ComboboxItem[]>(

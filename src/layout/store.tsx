@@ -92,6 +92,10 @@ Template.Title = ({
 	return <Template slot="title">{children}</Template>;
 };
 
+Template.Header = ({ children }: { children: React.ReactNode }) => (
+	<Template slot="header">{children}</Template>
+);
+
 Template.Footer = ({ children }: { children: React.ReactNode }) => (
 	<Template slot="footer">{children}</Template>
 );

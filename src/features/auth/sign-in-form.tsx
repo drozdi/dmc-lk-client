@@ -15,7 +15,7 @@ interface SignInFormProps extends BoxProps {}
 
 export const SignInForm = (props: SignInFormProps) => {
 	const storeAuth = useStoreAuth();
-	const form = useForm<Partial<IUser>>({
+	const form = useForm<Partial<IUserInfo>>({
 		mode: "uncontrolled",
 		name: "signUp",
 		initialValues: {
@@ -25,7 +25,7 @@ export const SignInForm = (props: SignInFormProps) => {
 	});
 	const { isLoading } = storeAuth;
 	const navigate = useNavigate();
-	const handleSubmit = async ({ email, password }: Partial<IUser>) => {
+	const handleSubmit = async ({ email, password }: Partial<IUserInfo>) => {
 		const res = await storeAuth.login(email as string, password as string);
 		if (true === res) {
 			navigate("/", { replace: true });

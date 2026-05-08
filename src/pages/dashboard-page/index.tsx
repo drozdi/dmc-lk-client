@@ -1,3 +1,4 @@
+import { Filterdate } from "@/entites/analytics";
 import {
 	DashBoardWidget,
 	UiDashBoard,
@@ -9,14 +10,13 @@ import { BtnEditMode } from "@/features/widget/btn-edit-mod";
 import { WidgetForm } from "@/features/widget/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { DualCalendarRange } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const DashboardPage = () => {
-	const storeDashboardMain = useStoreDashboardSecond();
+	const storeDashboard = useStoreDashboardSecond();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = $setting.useState<
@@ -30,24 +30,25 @@ export const DashboardPage = () => {
 		],
 	});
 	useEffect(() => {
-		storeDashboardMain.id && open();
-	}, [storeDashboardMain.id]);
+		storeDashboard.id && open();
+	}, [storeDashboard.id]);
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
 			<Group justify="flex-end">
-				<DualCalendarRange
-					value={query.filterdate}
-					onChange={(filterdate) => {
-						if (filterdate[0] && filterdate[1]) {
+				<Template.Header>
+					<Filterdate
+						editable
+						value={query.filterdate}
+						onChange={useCallback((filterdate) => {
 							setQuery((v) => ({
 								...v,
 								filterdate,
 							}));
-							storeDashboardMain.setValue("filterdate", filterdate);
-						}
-					}}
-				/>
+							storeDashboard.setValue("filterdate", filterdate);
+						}, [])}
+					/>
+				</Template.Header>
 			</Group>
 			<WidgetsProvider store={useStoreDashboardSecond}>
 				<UiDashBoard
@@ -59,17 +60,8 @@ export const DashboardPage = () => {
 						open();
 					}}
 				>
-					{/* <DashBoardItem
-						id="w-1"
-						widget="test"
-						params={{
-							timeout: 10,
-							title: "Title",
-							description: "Описание виджета",
-						}}
-					/> */}
 					<div
-						key="event"
+						key="analytic-events-table"
 						data-grid={{
 							x: 0,
 							y: 0,
@@ -78,13 +70,13 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="AnalyticEventWidget"
+							widget="analytic-events"
+							type="table"
 							filterdate="$filterdate"
-							step="mon"
 						/>
 					</div>
 					<div
-						key="pie"
+						key="analytic-events-bar"
 						data-grid={{
 							x: 6,
 							y: 0,
@@ -93,13 +85,14 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="AnalyticPieWidget"
+							widget="analytic-events"
+							type="bar"
+							events={["v", "d", "p"]}
 							filterdate="$filterdate"
-							step="mon"
 						/>
 					</div>
 					<div
-						key="type"
+						key="analytic-events"
 						data-grid={{
 							x: 0,
 							y: 6,
@@ -108,13 +101,12 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="AnalyticTypeWidget"
+							widget="analytic-events"
 							filterdate="$filterdate"
-							step="mon"
 						/>
 					</div>
 					<div
-						key="analytic"
+						key="analytic-events-stack"
 						data-grid={{
 							x: 6,
 							y: 6,
@@ -122,44 +114,116 @@ export const DashboardPage = () => {
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="AnalyticAnalyticWidget" />
+						<DashBoardWidget
+							widget="analytic-events"
+							type="stack"
+							events={["v", "d", "i"]}
+							filterdate="$filterdate"
+						/>
+					</div>
+					<div
+						key="analytic-events-analitic"
+						data-grid={{
+							x: 0,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-events"
+							type="analytic"
+							events={["v", "d", "i"]}
+							filterdate="$filterdate"
+						/>
+					</div>
+
+					<div
+						key="analytic-event-defect"
+						data-grid={{
+							x: 6,
+							y: 12,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-event-defect"
+							type="analytic"
+							filterdate="$filterdate"
+						/>
+					</div>
+
+					<div
+						key="analytic-pie"
+						data-grid={{
+							x: 0,
+							y: 18,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-pie"
+							events={["v", "d", "p"]}
+							filterdate="$filterdate"
+							step="mon"
+						/>
+					</div>
+					<div
+						key="analytic-type"
+						data-grid={{
+							x: 6,
+							y: 18,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-type"
+							filterdate="$filterdate"
+							step="mon"
+						/>
+					</div>
+					<div
+						key="analytics-incident"
+						data-grid={{
+							x: 0,
+							y: 24,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytics-incident"
+							filterdate="$filterdate"
+						/>
+					</div>
+					{/* <div
+						key="analytics-count"
+						data-grid={{
+							x: 6,
+							y: 24,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytics-count"
+							filterdate="$filterdate"
+						/>
 					</div>
 					<div
 						key="count"
 						data-grid={{
 							x: 0,
-							y: 12,
+							y: 30,
 							w: 6,
 							h: 6,
 						}}
 					>
-						<DashBoardWidget widget="CountWidget" filterdate="$filterdate" />
-					</div>
-					<div
-						key="labels-count"
-						data-grid={{
-							x: 6,
-							y: 12,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget widget="LabelsCountWidget" />
-					</div>
-					<div
-						key="incident"
-						data-grid={{
-							x: 12,
-							y: 12,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="AnalyticIncidentWidget"
-							filterdate="$filterdate"
-						/>
-					</div>
+						<DashBoardWidget widget="count" filterdate="$filterdate" />
+					</div> */}
 				</UiDashBoard>
 			</WidgetsProvider>
 			<Modal
@@ -167,16 +231,16 @@ export const DashboardPage = () => {
 				opened={opened}
 				keepMounted={false}
 				onClose={() => {
-					storeDashboardMain.clear();
+					storeDashboard.clear();
 					close();
 				}}
 			>
 				{opened && (
 					<WidgetForm
-						id={storeDashboardMain.id}
+						id={storeDashboard.id}
 						store={useStoreDashboardSecond}
 						onSave={() => {
-							storeDashboardMain.clear();
+							storeDashboard.clear();
 							close();
 						}}
 						layout={layout}

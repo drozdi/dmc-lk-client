@@ -1,16 +1,8 @@
-type SliceStep = "s" | "m" | "h" | "d" | "mon" | "y";
+type SliceStep = "s" | "m" | "h" | "d" | "mon" | "y" | "w";
 type SingleActionList = "and" | "or" | "not";
 type AnalyticEvent = "v" | "i" | "d" | "p";
 
-type PermittedActions =
-	| "="
-	| ">="
-	| "<="
-	| "!="
-	| "in"
-	| "not_in"
-	| "like"
-	| "or";
+type PermittedActions = "=" | ">=" | "<=" | "!=" | "in" | "not_in" | "like";
 
 interface IAnalyticsIncidentItem {
 	total_counter: integer;
@@ -42,11 +34,11 @@ type IResponseAnalyticsFields = Record<string, IAnalyticsField>;
 interface IAnalyticsElasticQuery {
 	company: {
 		select_field: string[];
-		list_where?: {
-			name_field_table?: string;
+		list_where: {
+			name_field_table: string;
 			search_value?: string | string[];
-			sing_action?: PermittedActions;
-			single_action_list?: SingleActionList;
+			sing_action: PermittedActions;
+			single_action_list: SingleActionList;
 		}[];
 		date_limit: {
 			date_from: string;
@@ -80,6 +72,7 @@ interface IAnalyticsDataItem {
 	data: ILabel["statistics_print_format"];
 	timestamp: string;
 	count: number;
+	consumption_m: number;
 }
 interface IAnalyticsProduction extends IProduction {
 	name?: IProduction["name_production"];
@@ -91,6 +84,10 @@ interface IAnalyticsProductionData extends IAnalyticsProduction {
 	max_production: number;
 	average_production: number;
 	sum_production: number;
+  sum_consumption_m: number,
+  min_consumption_m: number,
+  max_consumption_m: number,
+  average_consumption_m: number,
 	data: IAnalyticsDataItem[];
 }
 
@@ -108,5 +105,9 @@ interface IResponseAnalytics {
 	min_company: number;
 	max_company: number;
 	average_company: number;
+	sum_consumption_m: number,
+  min_consumption_m: number,
+  max_consumption_m: number,
+  average_consumption_m: number,
 	production: IAnalyticsProductionData[];
 }

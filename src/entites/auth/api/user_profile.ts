@@ -2,7 +2,7 @@ import { api } from "@/shared/api";
 
 export async function requestUserProfileGet(): Promise<
 	IResponse<{
-		user: IUser;
+		user: IUserInfo;
 	}>
 > {
 	const res = await api.get("/user_profile/");
@@ -14,7 +14,7 @@ export async function requestUserProfileDelete() {
 	return res.data;
 }
 
-export async function requestUserProfileUpdate(userData: IUser) {
+export async function requestUserProfileUpdate(userData: IUserInfo) {
 	const res = await api.patch("/user_profile/", userData);
 	return res.data;
 }

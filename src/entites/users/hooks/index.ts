@@ -32,6 +32,7 @@ export const [
 	requestUsersDelete,
 );
 
+export * from "./use-query-place";
 export * from "./use-query-productions";
 
 // export * from "./use-query-users-delete";

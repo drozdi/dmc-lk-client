@@ -1,6 +1,6 @@
 import { ProtectedRoute } from "@/features/auth/protected-route";
 import { AuthLayout, MainLayout } from "@/layout";
-import { Navigate, Outlet, useRoutes } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useRoutes } from "react-router-dom";
 
 import { AnalyticsElasticFormPage } from "@/pages/analytics/elastic/form-page";
 import { AnalyticsIncidentPage } from "@/pages/analytics/incident";
@@ -12,7 +12,7 @@ import { SignInPage } from "@/pages/auth/sign-in-page";
 import { SignOutPage } from "@/pages/auth/sign-out-page";
 import { SignUpPage } from "@/pages/auth/sign-up-page";
 import { VerificationPage } from "@/pages/auth/verification-page";
-import { LabelsCountPage } from "@/pages/labels/lables-count-page";
+import { LabelsHistoryPage } from "@/pages/labels/lables-history-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
 import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
@@ -71,8 +71,8 @@ const routes = () => [
 				element: <LabelsPage />,
 			},
 			{
-				path: "labels/count",
-				element: <LabelsCountPage />,
+				path: "labels/history",
+				element: <LabelsHistoryPage />,
 			},
 			{
 				path: "analytics",
@@ -110,32 +110,25 @@ const routes = () => [
 					},
 				],
 			},
-
-			// {
-			// 	path: "/users",
-			// 	element: <Outlet />,
-			// 	children: [
-			// 		{
-			// 			path: "",
-			// 			element: <UsersPage />,
-			// 		},
-			// 		{
-			// 			path: ":userId",
-			// 			element: <UserPage />,
-			// 		},
-			// 	],
-			// },
 		],
-		// children: [
-		//
-		// 	analyticsRouers(),
-		// 	shopRouers(),
-		// 	labelsRouers(),
-		// ],
 	},
 ];
 
+function RequireTrailingSlash({ children }: { children: JSX.Element }) {
+	const location = useLocation();
+	const pathname = location.pathname;
+
+	// Если путь не является корневым '/' и не заканчивается на '/'
+	if (pathname !== "/" && !pathname.endsWith("/")) {
+		// Формируем новый путь: старый путь + '/', остальное (search, hash) не меняем
+		const newPathname = `${pathname}/`;
+		return <Navigate to={{ ...location, pathname: newPathname }} replace />;
+	}
+
+	return children;
+}
+
 export function AppRouters() {
 	const routesElement = useRoutes(routes());
-	return routesElement;
+	return <RequireTrailingSlash>{routesElement}</RequireTrailingSlash>;
 }

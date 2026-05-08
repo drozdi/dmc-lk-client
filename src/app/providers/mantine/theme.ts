@@ -9,6 +9,7 @@ import {
 	Flex,
 	Group,
 	Input,
+	NumberFormatter,
 	SimpleGrid,
 	Stack,
 	Switch,
@@ -252,6 +253,12 @@ export const themeMantine = createTheme({
 			classNames: switchClasses,
 			defaultProps: {
 				labelPosition: "left",
+			},
+		}),
+		NumberFormatter: NumberFormatter.extend({
+			defaultProps: {
+				thousandSeparator: " ",
+				decimalScale: 2,
 			},
 		}),
 	},

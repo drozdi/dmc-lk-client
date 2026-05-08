@@ -1,15 +1,15 @@
 import { ActionIcon, type ActionIconProps, Tooltip } from "@mantine/core";
-import { Icon } from "../icon/icon";
 
-interface ButtonIconProps extends ActionIconProps {
+export interface ButtonIconProps extends ActionIconProps {
 	tooltip?: string;
+	onClick?: () => void;
 }
 
 export function ButtonIcon({ children, tooltip, ...props }: ButtonIconProps) {
 	return (
 		<Tooltip disabled={!tooltip} label={tooltip}>
 			<ActionIcon {...props}>
-				<Icon>{children}</Icon>
+				{children}
 			</ActionIcon>
 		</Tooltip>
 	);

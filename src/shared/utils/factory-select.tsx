@@ -6,7 +6,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 
-interface Props {
+export interface factorySelectProps {
 	isLoading: boolean;
 	dataSelect: ComboboxItem[];
 	load?: (...args: unknown[]) => Promise<void>;
@@ -17,8 +17,13 @@ export interface SelectCustomProps extends SelectProps {
 	includes?: string[];
 }
 
+/**
+ * TODO:
+ * - проверить dataSelect, обрезаятся повторные значения для ComboboxItem надо глянуть для string
+ */
+
 export function factorySelect(
-	props: Props | ((...args: unknown[]) => Props),
+	props: factorySelectProps | ((...args: unknown[]) => factorySelectProps),
 	...params: unknown[]
 ): (props: SelectCustomProps) => React.ReactNode {
 	return ({
@@ -42,11 +47,13 @@ export function factorySelect(
 					label,
 				};
 			});
+
 			if (includes?.length) {
 				dataSelect = dataSelect.filter((item: ComboboxItem | string) =>
-					includes.includes(item.value || item),
+					includes.includes(item?.value || item),
 				);
 			}
+
 			if (excludeds?.length) {
 				dataSelect = dataSelect.filter(
 					(item: ComboboxItem | string) =>
@@ -62,6 +69,7 @@ export function factorySelect(
 
 		return (
 			<Select
+				allowDeselect={false}
 				disabled={store.isLoading || disabled}
 				leftSection={store.isLoading ? <Loader size="xs" /> : leftSection}
 				data={dataSelect}

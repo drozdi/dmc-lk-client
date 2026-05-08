@@ -6,15 +6,22 @@ import {
 import { AnalyticsElasticTable } from "@/features/analytics/elastic/table";
 import { Template } from "@/layout";
 import { Loading } from "@/shared/ui";
-import { Paper, Select } from "@mantine/core";
+import { Paper } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useShallow } from "zustand/shallow";
 
 export const AnalyticsQueryItemPage = () => {
 	const qql = useQueryQueryList({
-		size: 1000,
+		size: 15,
 	});
-	const storeElastic = useStoreElastic();
+	const storeElastic = useStoreElastic(
+		useShallow((state) => ({
+			save: state.save,
+			setNameQuery: state.setNameQuery,
+			setId: state.setId,
+		})),
+	);
 	const [name, setName] = useState("");
 	const navigate = useNavigate();
 
@@ -28,7 +35,7 @@ export const AnalyticsQueryItemPage = () => {
 		}
 		const { id, name_query, ...template } = qqr.data;
 		setName(name_query);
-		storeElastic.save(template);
+		storeElastic.save(template as IAnalyticsElasticQuery);
 		storeElastic.setNameQuery(name_query);
 		storeElastic.setId(id);
 	}, [qqr.data]);
@@ -39,7 +46,7 @@ export const AnalyticsQueryItemPage = () => {
 
 	return (
 		<Paper>
-			<Select
+			{/* <Select
 				value={String(id_query)}
 				onChange={(value) => goTo(value as string)}
 				data={(qql.data || []).map(
@@ -54,7 +61,7 @@ export const AnalyticsQueryItemPage = () => {
 						label: name_query,
 					}),
 				)}
-			/>
+			/> */}
 			<Template.Title>Запрос "{name}"</Template.Title>
 			<Loading active={qqr.isLoading} keepMounted mt="xs">
 				<AnalyticsElasticTable />

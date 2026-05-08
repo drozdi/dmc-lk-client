@@ -24,11 +24,11 @@ export const mapEvents: Record<
 	},
 	d: {
 		label: "дефект",
-		color: "#35a2eb",
+		color: "#ff1f4f",
 	},
 	p: {
 		label: "печать",
-		color: "#006384",
+		color: "#35a2eb",
 	},
 };
 

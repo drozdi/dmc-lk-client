@@ -4,6 +4,36 @@ export async function requestAnalytics(
 	params: IRequestAnalytics,
 ): Promise<IResponse<IResponseAnalytics>> {
 	const arr = [];
+	if (
+		!params.filterdate ||
+		!params.filterdate?.[0] ||
+		!params.filterdate?.[1] ||
+		!params.event ||
+		!params.step
+	) {
+		return {
+			success: false,
+			message: "",
+			data: {
+				id: 0,
+				all_records: 0,
+				sum_company: 0,
+				min_company: 0,
+				max_company: 0,
+				average_company: 0,
+				production: [],
+			},
+			response: {
+				id: 0,
+				all_records: 0,
+				sum_company: 0,
+				min_company: 0,
+				max_company: 0,
+				average_company: 0,
+				production: [],
+			},
+		};
+	}
 	for (const key in params) {
 		if (Array.isArray(params[key as keyof IRequestAnalytics])) {
 			(params[key as keyof IRequestAnalytics] as string[]).forEach(

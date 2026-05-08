@@ -1,3 +1,6 @@
+import { queryClient } from "@/shared/api/query-client";
+import { notification } from "@/shared/notification";
+import { create } from "zustand";
 import {
 	requestLabelsFormatAdd,
 	requestLabelsFormatDelete,
@@ -8,9 +11,6 @@ import {
 	requestLabelsJoinedUpdate,
 	requestLabelsPrintList,
 } from "../api";
-
-import { queryClient } from "@/shared/api/query-client";
-import { create } from "zustand";
 
 export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	isLoading: false,
@@ -26,16 +26,11 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 
 	async loadPrints(reloading = false) {
+		let loaded = !!Object.keys(get().prints).length
 		if (reloading) {
-			queryClient.removeQueries({
-				queryKey: ["labels-prints"],
-				exact: false,
-			});
+			loaded = false
 		}
-		if (
-			queryClient.getQueryCache().findAll({ queryKey: ["labels-prints"] })
-				.length
-		) {
+		if (loaded) {
 			return;
 		}
 
@@ -51,6 +46,8 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					const response = await requestLabelsPrintList();
 					return response.data;
 				},
+				staleTime: 0,
+				gcTime: 0,
 			});
 			set({
 				isLoading: false,
@@ -69,18 +66,12 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 			});
 		}
 	},
-	async loadFormats(reloading: boolean = false) {
+	async loadFormats(reloading = false) {
+		let loaded = !!Object.keys(get().formats).length
 		if (reloading) {
-			queryClient.removeQueries({
-				queryKey: ["labels-formats"],
-				exact: false,
-			});
+			loaded = false
 		}
-		if (
-			queryClient
-				.getQueryCache()
-				.findAll({ queryKey: ["labels-formats"] }).length
-		) {
+		if (loaded) {
 			return;
 		}
 		set({
@@ -94,8 +85,9 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					const response = await requestLabelsFormatList();
 					return response.data;
 				},
+				staleTime: 0,
+				gcTime: 0,
 			});
-
 			set({
 				isLoading: false,
 				formats,
@@ -130,37 +122,47 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		set({
 			isLoading: true,
 			error: "",
+			
 		});
 
-		const params = {
-			size: 100,
-			number: 0,
-		};
+
 		try {
-			let formatPrints: ILabel[] = [];
-			let res;
-			do {
-				res = await requestLabelsJoinedList(params);
-				formatPrints = [
-					...formatPrints,
-					...(res?.data?.response || [])
-						.filter(
-							(item) =>
-								item.add_label_format !==
-								item.statistics_print_format,
-						)
-						.map((item) => ({
-							...item,
-							format: item.add_label_format,
-							print: item.statistics_print_format,
-						})),
-				];
-				params.number = params.number + 1;
-			} while (res.success && res?.data?.response?.length >= params.size);
+			const formatPrints = await queryClient.fetchQuery({
+				queryKey: ["labels-formats"],
+				queryFn: async () => {
+					let formatPrints: ILabel[] = []
+					let response = {}
+					const params = {
+						size: 100,
+						number: 0,
+					};
+					do {
+						response = await requestLabelsJoinedList(params);
+						formatPrints = [
+							...formatPrints,
+							...(response?.data?.response || [])
+								.filter(
+									(item) =>
+										!item.is_reference_template,
+								)
+								.map((item) => ({
+									...item,
+									format: item.add_label_format,
+									print: item.statistics_print_format,
+								}))
+						]
+						params.number++
+					} while (response.success && response?.data?.response?.length >= params.size);
+
+					return formatPrints;
+				},
+				staleTime: 0,
+				gcTime: 0,
+			});
 
 			set({
 				isLoading: false,
-				formatPrints,
+				formatPrints: formatPrints.filter(item => !item.is_reference_template),
 			});
 		} catch (e: IError) {
 			console.error(e);
@@ -183,11 +185,11 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 	},
 	selectFormatPrints(production_id) {
 		return get().formatPrints.filter(
-			(item) => String(item.production_id) === String(production_id),
+			(item) => item.production_id === production_id,
 		);
 	},
 
-	async addFormat({ format, production_id }) {
+	async addFormat({ format, print, production_id }) {
 		if (!format.trim()) {
 			set({
 				error: "Название не может быть пустым",
@@ -202,24 +204,29 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		try {
 			const res = (
 				await requestLabelsFormatAdd({
-					format: (format as string).trim(),
+					add_label_format: format,
+					statistics_print_format: print,
 					production_id,
 				})
 			).data;
-			const formats = get().formats;
-			set({
+			
+			set(state => ({
 				isLoading: false,
 				formats: {
-					...formats,
-					[String(res.production_id)]: [
-						...(formats[String(res.production_id)] || []),
-						res.add_label_format,
+					...state.formats,
+					[res[0].production_id]: [
+						...(state.formats[res[0].production_id] || []),
+						...res.filter(item => item.is_reference_template),
 					],
 				},
-			});
+				formatPrints: [...state.formatPrints, ...res.filter(item => !item.is_reference_template)]
+			}));
+			
+			notification.success(
+				`Группа этикеток "${res[0].add_label_format} (${res[0].statistics_print_format})" успешно добавлена!`,
+			);
 			return res;
 		} catch (e: IError) {
-			console.error(e);
 			const error =
 				e?.response?.data?.detail ||
 				e?.message ||
@@ -244,21 +251,21 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 				format,
 				production_id,
 			});
-			const { formats, formatPrints } = get();
-			set({
+
+			set(state => ({
 				isLoading: false,
 				formats: {
-					...formats,
-					[production_id]: (formats[production_id] || []).filter(
-						(item) => item !== format,
+					...state.formats,
+					[production_id]: (state.formats[production_id] || []).filter(
+						(item) => item.add_label_format !== format,
 					),
 				},
-				formatPrints: formatPrints.filter(
+				formatPrints: state.formatPrints.filter(
 					(item) =>
 						item.production_id === production_id &&
 						item.add_label_format !== format,
 				),
-			});
+			}));
 			return true;
 		} catch (e: IError) {
 			console.error(e);
@@ -273,6 +280,10 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 			});
 		}
 		return false;
+	},
+
+	async updateFormat () {
+
 	},
 
 	async addFormatPrint(data) {
@@ -294,6 +305,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					},
 				],
 			});
+			notification.success(`Этикетка "${res.statistics_print_format}" добавлена в группу "${res.add_label_format}"`)
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -324,12 +336,13 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 					...data,
 				})
 			).data;
-			set({
+			set(state => ({
 				isLoading: false,
-				formatPrints: get().formatPrints.map((item) =>
-					String(item.id) === String(res.id) ? res : item,
+				formatPrints: state.formatPrints.map((item) =>
+					item.id === res.id ? {...res, format: res.add_label_format, print: res.statistics_print_format} : item,
 				),
-			});
+			}));
+			notification.success(`Этикетка "${res.statistics_print_format}" перемещена в группу "${res.add_label_format}"`)
 			return res;
 		} catch (e: IError) {
 			console.error(e);
@@ -353,13 +366,13 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 
 		try {
 			await requestLabelsJoinedDelete(data.id);
-			set({
+			set(state => ({
 				isLoading: false,
-				formatPrints: get().formatPrints.filter(
-					(item) => String(item.id) !== String(data.id),
+				formatPrints: state.formatPrints.filter(
+					(item) => item.id !== data.id,
 				),
-			});
-			await get().loadFormatPrints(true);
+			}));
+			notification.success(`Этикетка "${data.statistics_print_format}" убранна из групп"`)
 			return true;
 		} catch (e: IError) {
 			console.error(e);
@@ -376,3 +389,40 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		return false;
 	},
 }));
+
+
+export function selectPrintsForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel["statistics_print_format"][]>)
+export function selectPrintsForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel["statistics_print_format"][])
+export function selectPrintsForProduction (production_id: ILabel["production_id"] = 0) {
+	production_id = Number(production_id) || 0;
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.prints[production_id] || []
+		}
+		return state.prints
+	}
+}
+
+export function selectFormatForProduction(): ((state: IStoreLabels) =>  Record<ILabel["production_id"], ILabel[]>)
+export function selectFormatForProduction(production_id: ILabel["production_id"]): ((state: IStoreLabels) => ILabel[])
+export function selectFormatForProduction (production_id: ILabel["production_id"] = 0) {
+	production_id = Number(production_id) || 0;
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.formats[production_id] || []
+		}
+		return state.formats
+	}
+}
+
+export function selectSelectFormatPrintsForProduction (production_id: ILabel["production_id"] = 0): ((state: IStoreLabels) => ILabel[]) {
+	production_id = Number(production_id) || 0;
+	return (state: IStoreLabels) => {
+		if (production_id) {
+			return state.formatPrints.filter(
+				(item) => item.production_id === production_id
+			)
+		}
+		return state.formatPrints
+	}
+}

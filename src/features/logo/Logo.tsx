@@ -1,4 +1,3 @@
-import { $setting } from "@/shared";
 import { Box, Image } from "@mantine/core";
 import { useResizeObserver } from "@mantine/hooks";
 import { Link } from "react-router-dom";
@@ -18,10 +17,7 @@ export function Logo({ className }: { className?: string }) {
 		>
 			<Image
 				w="100%"
-				src={
-					($setting.get("base.url") === "/" ? "" : $setting.get("base.url")) +
-					"/assets/Logo_DMC_512.png"
-				}
+				src={(import.meta.env.DEV ? "" : "/lk") + "/assets/Logo_DMC_512.png"}
 			/>
 			<div
 				style={{

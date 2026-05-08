@@ -1,20 +1,13 @@
-import { ActionIcon, Tooltip, type ActionIconProps } from "@mantine/core";
 import { TbCircleX } from "react-icons/tb";
+import { ButtonIcon, type ButtonIconProps } from "./button-icon";
 
-interface ButtonRemoveProps extends ActionIconProps {
-	tooltip?: string;
-}
+export interface ButtonRemoveProps extends ButtonIconProps {}
 
 export function ButtonRemove({
 	children = <TbCircleX />,
-	tooltip = "Удалить",
 	...props
 }: ButtonRemoveProps) {
-	return (
-		<Tooltip disabled={!tooltip} label={tooltip}>
-			<ActionIcon color="red" {...props}>
-				{children}
-			</ActionIcon>
-		</Tooltip>
-	);
+	return <ButtonIcon {...props}>
+		{children}
+	</ButtonIcon>;
 }

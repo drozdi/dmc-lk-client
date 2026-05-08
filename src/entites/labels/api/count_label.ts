@@ -9,20 +9,24 @@ export async function requestLabelsReset(
 	return res.data;
 }
 
-export async function requestLabelsHistory({
-	size = 100,
-	number = 0,
-	filterdate = [],
-}: IRequestCountLabelHistory = {}): Promise<
-	IResponseList<ICountLabelHistoryItem>
-> {
-	const arr = ["size=" + size, "number=" + number];
-	if (Array.isArray(filterdate)) {
-		filterdate.forEach((item) => {
-			item && arr.push("filterdate=" + item);
-		});
-	} else if (filterdate) {
-		arr.push(`filterdate=${filterdate}`);
+export async function requestLabelsHistory(
+	params: Partial<IRequestCountLabelHistory> = {},
+): Promise<IResponseList<ICountLabelHistoryItem>> {
+	params.size = params.size || 100;
+	params.number = params.number || 0;
+	const arr = [];
+	for (const key in params) {
+		if (Array.isArray(params[key as keyof IRequestCountLabelHistory])) {
+			(params[key as keyof IRequestCountLabelHistory] as string[]).forEach(
+				function (item) {
+					if (item) {
+						arr.push(key + "=" + item);
+					}
+				},
+			);
+		} else if (params[key as keyof IRequestCountLabelHistory]) {
+			arr.push(key + "=" + params[key as keyof IRequestCountLabelHistory]);
+		}
 	}
 	const res = await api.get(`/count_label/history?${arr.join("&")}`);
 	return res.data;
