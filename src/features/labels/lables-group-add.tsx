@@ -1,4 +1,3 @@
-import { useStoreUserProfile } from "@/entites/auth";
 import { useStoreLabels } from "@/entites/labels";
 import {
 	Button,
@@ -15,7 +14,7 @@ import { useState } from "react";
 import { TbPlus } from "react-icons/tb";
 
 export interface LabelsGroupAddProps extends ButtonProps {
-
+	production_id?: ILabel["production_id"]
 }
 
 interface Values {
@@ -26,11 +25,11 @@ interface Values {
 	print: string
 }
 
-export const LabelsGroupAdd = (props: LabelsGroupAddProps) => {
-	const production_id = Number(useStoreUserProfile(state => state.production_id)) || 0
+export const LabelsGroupAdd = ({production_id, ...props}: LabelsGroupAddProps) => {
 	if (!production_id) {
 		return null
 	}
+
 	const storeLabels = useStoreLabels();
 	const [error, setError] = useState<string>("");
 	const [opened, { open, close }] = useDisclosure(false)
@@ -45,8 +44,9 @@ export const LabelsGroupAdd = (props: LabelsGroupAddProps) => {
 			print: 'W0H0G0',
 		},
 		validate: (values: Values) => {
-			let width = isInRange({ min: 0} , 'Введите значение больше 0')(values.width)
-			let height = isInRange({ min: 0} , 'Введите значение больше 0')(values.height)
+			console.log(production_id)
+			let width = isInRange({ min: 1} , 'Введите значение больше 0')(values.width)
+			let height = isInRange({ min: 1} , 'Введите значение больше 0')(values.height)
 			let gap = isInRange({ min: 0} , 'Введите значение больше 0')(values.gap)
 			let format = values.format? (storeLabels.formats[production_id] || []).find((format) => format.add_label_format === values.format)? 'Группа уже существует': null: 'Название формата должно быть заполнено'
 			if (width || height || gap || format) {

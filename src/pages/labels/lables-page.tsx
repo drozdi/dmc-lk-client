@@ -1,7 +1,11 @@
 import { useStoreLabels } from "@/entites/labels";
+import { SelectProductions } from "@/entites/users";
 import { LabelsGroup } from "@/features/labels/lables-group";
+import { LabelsGroupAdd } from "@/features/labels/lables-group-add";
 import { Template } from "@/layout";
-import { Paper } from "@mantine/core";
+import { $setting } from "@/shared";
+import { Text } from "@/shared/ui";
+import { Group, Paper } from "@mantine/core";
 
 function grouped(
 	production_id: IProduction["production_id"],
@@ -101,10 +105,27 @@ function grouped(
 // 	}, []);
 
 export function LabelsPage() {
+	const [production_id, setProduction_id] = $setting.useState('labels.group.production_id', 0)
 	return (
 		<Paper>
 			<Template.Title>Групировка этикеток</Template.Title>
-			<LabelsGroup />
+			<Group justify="space-between">
+				<Group>
+					<Text>
+						Производство:
+					</Text>
+					<SelectProductions
+						excludeds={["0"]}
+						variant="underline"
+						value={String(production_id)}
+						onChange={(value) => 
+							setProduction_id(Number(value))
+						}
+					/>
+				</Group>
+				<LabelsGroupAdd production_id={production_id} />
+			</Group>
+			<LabelsGroup mt='xs' production_id={production_id} />
 		</Paper>
 	);
 }

@@ -1,4 +1,3 @@
-import { useStoreUserProfile } from "@/entites/auth";
 import {
 	GroupedContainer,
 	GroupedItem,
@@ -11,9 +10,8 @@ import {
 	useStoreCountLabel,
 	useStoreLabels
 } from "@/entites/labels";
-import { SelectProductions } from "@/entites/users";
 import { notification } from "@/shared/notification";
-import { Loading, Text } from "@/shared/ui";
+import { Loading, Text, type LoadingProps } from "@/shared/ui";
 import {
 	Center,
 	Grid,
@@ -26,46 +24,34 @@ import {
 import { modals } from "@mantine/modals";
 import { useEffect, useRef } from "react";
 import { TbPlus, TbX } from "react-icons/tb";
-import { LabelsGroupAdd } from "./lables-group-add";
 import { Container } from "./ui/container";
 import { Item } from "./ui/item";
 
-export const LabelsGroup = () => {
+export interface LabelsGroupProps extends Omit<LoadingProps, 'children'> {
+	production_id?: ILabel["production_id"];
+}
+
+function Message({ children, mih = '50vh' }: { children: React.ReactNode, mih: string | number }) {
+	return <Center mih={mih}>
+		<Stack>
+			<Text fz="h1" c="dimmed">
+				{children}
+			</Text>
+		</Stack>
+	</Center>
+}
+
+export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const production_id = Number(useStoreUserProfile(state => state.production_id)) || 0;
-	const storeUserProfile = useStoreUserProfile();
-	
-	if (!production_id) {
-		return (
-			<>
-				<Center mih="50vh">
-					<Stack>
-						<Text fz="h1" c="dimmed">
-							Нужно выбрать площадку
-						</Text>
-						<SelectProductions
-							excludeds={storeUserProfile.userInfo?.is_superuser ? [] : ["0"]}
-							variant="underline"
-							value={String(production_id)}
-							onChange={(value) =>
-								storeUserProfile.setProductionId(Number(value))
-							}
-						/>
-					</Stack>
-				</Center>
-			</>
-		);
-	}
-
-
 	const storeLabels = useStoreLabels();
+	const count = useProductionCount(production_id);
+
 	const containers = useGrouped(production_id);
 	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
 	const codeFormat = useProductionFormatsCode(production_id);
 	const labelFormat = useProductionFormatsLabel(production_id);
 	
-
 	const handleDeleteFormat = (format: ILabel["add_label_format"]) => {
 		modals.openConfirmModal({
 			title: `Вы уверены? Что хотитее удалить "${format}"`,
@@ -121,65 +107,65 @@ export const LabelsGroup = () => {
 		})
 		
 	}
-
+	
 	useEffect(() => {
 		storeLabels.load();
 	}, []);
 
-	
-	const count = useProductionCount(production_id)
-	
-
+	if (!production_id) {
+		return <Message mih="50vh">Нужно выбрать площадку</Message>
+	}
 	return (
-		<Loading active={storeLabels.isLoading} keepMounted>
-			<LabelsGroupAdd mb='xs' />
-						
+		<Loading {...props} active={storeLabels.isLoading} keepMounted>
 			<GroupedProvider production_id={production_id}>
 				<Grid gap='0'>
 					<Grid.Col span={9} pr='xs' style={{
 						borderRight: '2px solid var(--mantine-color-default-border)'
 					}}>
-						<SimpleGrid cols={3}>
-						{formats.map((item) => (
-							<GroupedContainer
-								key={item}
-								id={item}
-								color={randomColorLabel(item)}
-							>
-								<Container label={`${item} (${codeFormat(item)})`} menu={[
-									{ 
-										children: 'Удалить', 
-										onClick: () => handleDeleteFormat(item),
-										rightSection: <TbX />,
-									},
-									{ 
-										children: 'Дабавить количество', 
-										onClick: () => handleAddCount(codeFormat(item)),
-										rightSection: <TbPlus />,
-									},
-								]} title={<Group justify="space-between">
-									<div>
-										<Text>
-											Количество:
-										</Text>
-										<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum} />
-									</div>
-									<div>
-										<Text>
-											Метраж:
-										</Text>
-										<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum_consumption} />
-									</div>
-								</Group>}> 
-									{(containers[item] || []).map((label) => (
-										<GroupedItem key={label.id} id={label.id}>
-											<Item>{label.id}</Item>
-										</GroupedItem>
-									))}
-								</Container>
-							</GroupedContainer>
-						))}
-						</SimpleGrid>
+						{formats?.length? 
+							<SimpleGrid cols={3}>
+							{formats.map((item) => (
+								<GroupedContainer
+									key={item}
+									id={item}
+									color={randomColorLabel(item)}
+								>
+									<Container label={`${item} (${codeFormat(item)})`} menu={[
+										{ 
+											children: 'Удалить', 
+											onClick: () => handleDeleteFormat(item),
+											rightSection: <TbX />,
+										},
+										{ 
+											children: 'Дабавить количество', 
+											onClick: () => handleAddCount(codeFormat(item)),
+											rightSection: <TbPlus />,
+										},
+									]} title={<Group justify="space-between">
+										<div>
+											<Text>
+												Количество:
+											</Text>
+											<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum} />
+										</div>
+										<div>
+											<Text>
+												Метраж:
+											</Text>
+											<NumberFormatter value={count.distributed.find((count) => count.add_label_format === item)?.sum_consumption} />
+										</div>
+									</Group>}> 
+										{(containers[item] || []).map((label) => (
+											<GroupedItem key={label.id} id={label.id}>
+												<Item>{label.id}</Item>
+											</GroupedItem>
+										))}
+									</Container>
+								</GroupedContainer>
+							))}
+							</SimpleGrid>: 
+							<Message mih="50vh">Нет групп</Message>
+						}
 					</Grid.Col>
 				
 					<Grid.Col span={3} pl='xs'>

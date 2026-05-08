@@ -1,6 +1,6 @@
 import { Box, LoadingOverlay, type BoxProps } from "@mantine/core";
 
-interface LoadingProps extends BoxProps {
+export interface LoadingProps extends BoxProps {
 	children: React.ReactNode;
 	active?: boolean;
 	keepMounted?: boolean;
