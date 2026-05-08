@@ -1,11 +1,11 @@
 import {
 	SelectAnalyticsIncidentFields,
 	useEnumsFields,
-	useQueryIncident
+	useStoreIncident,
 } from "@/entites/analytics";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
-import { ButtonIcon, ButtonRemove, DataTable, Loading } from "@/shared/ui";
+import { ButtonRemove, DataTable, Loading } from "@/shared/ui";
 import {
 	ActionIcon,
 	Center,
@@ -13,14 +13,13 @@ import {
 	HoverCard,
 	Stack,
 	Text,
-	TextInput
+	TextInput,
+	Tooltip,
 } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { TbColumnRemove, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
-
-import { DataTable as MantineDataTable, type DataTableColumn } from "mantine-datatable";
 
 interface IncidentGenerateProps {
 	filterdate: [DateValue, DateValue];
@@ -40,6 +39,10 @@ export const IncidentGenerate = ({
 		"node_name",
 	],
 }: IncidentGenerateProps) => {
+	const storeIncident = useStoreIncident();
+	const ef = useEnumsFields();
+	const isLoading = useQueryLoading(storeIncident, ef);
+
 	const [template, updateTemplate] = $setting.useSetState<
 		Required<IRequestAnalyticsIncident>
 	>("incident.table", {
@@ -48,11 +51,11 @@ export const IncidentGenerate = ({
 		fields_name: fields,
 	});
 
-	const ef = useEnumsFields();
-	const qi = useQueryIncident(template)
-	const isLoading = useQueryLoading(qi, ef);
-	const { data, fetch } = qi;
+	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
 
+	const canRemove = (field: string) => {
+		return true;
+	};
 	const handleRemove = (field: string) => {
 		template.fields_name = template.fields_name.filter(
 			(item) => item !== field,
@@ -79,40 +82,45 @@ export const IncidentGenerate = ({
 				...(template.fields_name || []).map((field) => ({
 					accessor: field,
 					title: (
-						<HoverCard position="top-end">
-							<HoverCard.Target>
-								<Text>{ef.findLabelByCode(field)}</Text>
-							</HoverCard.Target>
-							<HoverCard.Dropdown>
-								<ButtonRemove
-									tooltip="Удалить"
-									onClick={() => handleRemove(field)}
-								>
-									<TbColumnRemove />
-								</ButtonRemove>
+						<Group justify="space-between" grow>
+							<HoverCard disabled={!canRemove(field)} position="top">
+								<HoverCard.Target>
+									<Text>{ef.findLabelByCode(field)}</Text>
+								</HoverCard.Target>
+								<HoverCard.Dropdown>
+									<ButtonRemove
+										label="Удалить"
+										onClick={() => handleRemove(field)}
+									>
+										<TbColumnRemove />
+									</ButtonRemove>
 								</HoverCard.Dropdown>
 							</HoverCard>
+						</Group>
 					),
 					sortKey: field,
 					sortable: true,
-					ellipsis: false,
-					noWrap: false,
-				})) as DataTableColumn<IAnalyticsIncidentItem>,
+					ellipsis: true,
+					noWrap: true,
+				})),
 				{
 					accessor: "actions",
 					title: (
 						<HoverCard>
 							<HoverCard.Target>
-								<ButtonIcon
-									tooltip="Сбросить"
-									onClick={() =>
-										updateTemplate({
-											fields_name: fields,
-										})
-									}
-								>
-									<TbReload />
-								</ButtonIcon>
+								<Group grow justify="flex-end">
+									<Tooltip label="Сбросить">
+										<ActionIcon
+											onClick={() =>
+												updateTemplate({
+													fields_name: fields,
+												})
+											}
+										>
+											<TbReload />
+										</ActionIcon>
+									</Tooltip>
+								</Group>
 							</HoverCard.Target>
 							<HoverCard.Dropdown>
 								<SelectAnalyticsIncidentFields
@@ -141,7 +149,6 @@ export const IncidentGenerate = ({
 	};
 
 	const [value, setValue] = useState("");
-	
 	const handleKeyPress = ({ key }: React.KeyboardEvent) => {
 		if (key === "Enter" && value) {
 			template.data.push(value);
@@ -168,50 +175,13 @@ export const IncidentGenerate = ({
 	}, [filterdate]);
 
 	useEffect(() => {
-		fetch(template)
-	}, [template])
+		storeIncident.send(template).then(({ data }) => {
+			setData(data);
+		});
+	}, [computedColumns]);
 
 	return (
 		<Stack gap="xs">
-			<MantineDataTable striped columns={
-				['name', 'missionStatement', 'streetAddress', 'city', 'state', 'state1', 'state2', 'state3'].map((field) => ({
-					accessor: field,
-					sortKey: field,
-					sortable: true,
-					ellipsis: false,
-					noWrap: false,
-				}))
-			}
-			records={[
-				{
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}, {
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}, {
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}
-			]} />
 			{filter && (
 				<Group gap="xs" justify="space-between">
 					<ul className="list-none flex-1">
@@ -245,8 +215,6 @@ export const IncidentGenerate = ({
 			<Loading active={isLoading} keepMounted>
 				{data?.length ? (
 					<DataTable<IAnalyticsIncidentItem>
-						withRowBorders={false}
-						striped
 						miw={640}
 						pinLastColumn
 						columns={computedColumns}

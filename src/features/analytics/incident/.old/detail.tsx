@@ -1,11 +1,11 @@
-import { useQueryIncident } from "@/entites/analytics";
+import { useStoreIncident } from "@/entites/analytics/stores/use-store-incident";
 import { $setting } from "@/shared";
 import { Loading } from "@/shared/ui";
 import { Accordion, Center } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { IncidentDetailItem } from "./detail-item";
+import { IncidentDetail as SubIncidentDetail } from "./components/incident-detail";
 
 let i = 0;
 
@@ -16,25 +16,33 @@ export const IncidentDetail = ({
 	filterdate: [DateValue, DateValue];
 	[key: string]: any;
 }) => {
+	const storeIncident = useStoreIncident();
+	const [openend, setOpenend] = useState<string[]>([]);
+
 	const [query, setQuery] = useState({
 		filterdate,
 		data: [],
 		fields_name: [],
 	});
-	const { isLoading, data, fetch } = useQueryIncident(query)
-	const [openend, setOpenend] = useState<string[]>([]);
+
+	const [data, setData] = useState<IAnalyticsIncidentItem[]>([]);
 
 	useEffect(() => {
-		setQuery((v) => ({...v, filterdate}));
-	}, [filterdate])
+		setQuery((v) => ({
+			...v,
+			filterdate,
+		}));
+	}, [filterdate]);
 
 	useEffect(() => {
-		fetch(query)
-	}, [query])
+		storeIncident.send(query).then(({ data }) => {
+			setData(data || []);
+		});
+	}, [query]);
 
 	return (
 		<>
-			<Loading {...props} active={isLoading} keepMounted>
+			<Loading {...props} active={storeIncident.isLoading} keepMounted>
 				{data?.length ? (
 					<Accordion multiple chevronPosition="left" onChange={setOpenend}>
 						{data.map((item: IAnalyticsIncidentItem) => (
@@ -48,7 +56,7 @@ export const IncidentDetail = ({
 								<Accordion.Panel>
 									<div style={{ minHeight: 100 }}>
 										{openend.includes(item.data) && (
-											<IncidentDetailItem {...query} data={item.data} />
+											<SubIncidentDetail {...query} />
 										)}
 									</div>
 								</Accordion.Panel>

@@ -9,3 +9,5 @@ export * from "./use-enums-step";
 export * from "./use-filterdate-step";
 export * from "./use-query-analytics";
 export * from "./use-query-analytics-fields";
+export * from "./use-query-Incident";
+

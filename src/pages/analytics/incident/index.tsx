@@ -1,11 +1,10 @@
 import {
 	useEnumsDetails,
 	useEnumsFields,
-	useStoreIncident,
+	useQueryIncident
 } from "@/entites/analytics";
 import { IncidentDetail } from "@/features/analytics/incident/detail";
 import { IncidentGenerate } from "@/features/analytics/incident/generate";
-import { IncidentShort } from "@/features/analytics/incident/short";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
@@ -19,9 +18,7 @@ import { useSearchParams } from "react-router-dom";
 export function AnalyticsIncidentPage() {
 	const [searchParams] = useSearchParams();
 
-	const fromDay = dayjs(
-		searchParams.get("from") || dayjs().day(dayjs().day() - 7),
-	);
+	const fromDay = dayjs(searchParams.get("from") || dayjs().day(dayjs().day() - 7));
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
 
 	const [filterdate, setFilterdate] = $setting.useState<[DateValue, DateValue]>(
@@ -41,12 +38,11 @@ export function AnalyticsIncidentPage() {
 		}
 	}, []);
 
-	const storeIncident = useStoreIncident();
-
 	const ef = useEnumsFields();
 	const ed = useEnumsDetails();
+	const qi = useQueryIncident();
 
-	const isLoading = useQueryLoading(storeIncident, ef, ed);
+	const isLoading = useQueryLoading(qi, ef, ed);
 
 	const handleYesterday = () => {
 		setFilterdate([
@@ -92,9 +88,6 @@ export function AnalyticsIncidentPage() {
 				</Tabs.List>
 				<Tabs.Panel value="detail">
 					<IncidentDetail filterdate={filterdate} />
-				</Tabs.Panel>
-				<Tabs.Panel value="short">
-					<IncidentShort filterdate={filterdate} />
 				</Tabs.Panel>
 				<Tabs.Panel value="generate">
 					<IncidentGenerate filterdate={filterdate} />
