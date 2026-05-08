@@ -6,7 +6,7 @@ import { Paper } from "@mantine/core";
 export function LabelsHistoryPage() {
 	return (
 		<Paper>
-			<Template.Title>История по этикеткам</Template.Title>
+			<Template.Title>Операции по этикеткам</Template.Title>
 			<LabelsHistory />
 		</Paper>
 	);

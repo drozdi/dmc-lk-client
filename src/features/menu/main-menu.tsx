@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
 		path: "/labels",
 	},
 	{
-		label: "Склад этикеток",
+		label: "Операции по этикеткам",
 		icon: <TbLabel />,
 		path: "/labels/history",
 	},
