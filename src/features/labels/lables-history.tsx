@@ -50,7 +50,7 @@ export const LabelsHistory = () => {
 		<Stack>
 			<Group justify="space-between">
 				<Text px='sm' fz='h2'>
-					{data[0]?.name_production || qp.findNameById(production_id)}
+					{qp.findNameById(production_id)}
 				</Text>
 				<Group>
 					<SelectPlace label='Линия' value={String(place)} onChange={(v) => setPlace(Number(v))} />
