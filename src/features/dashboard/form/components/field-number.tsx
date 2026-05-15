@@ -8,7 +8,6 @@ export interface FieldNumberProps
 
 export function FieldNumber({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -17,7 +16,6 @@ export function FieldNumber({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

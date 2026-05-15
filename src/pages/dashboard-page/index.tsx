@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 
 export const DashboardPage = () => {
+	return '';
 	const storeDashboard = useStoreDashboardSecond();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
@@ -32,6 +33,7 @@ export const DashboardPage = () => {
 	useEffect(() => {
 		storeDashboard.id && open();
 	}, [storeDashboard.id]);
+	
 	return (
 		<Paper>
 			<Template.Title>Аналитика</Template.Title>
@@ -165,8 +167,7 @@ export const DashboardPage = () => {
 						<DashBoardWidget widget="count" filterdate="$filterdate" />
 					</div> */}
 				</UiDashBoard>
-			</DashboardProvider>
-			<Modal
+				<Modal
 				title="Настройка виджета"
 				opened={opened}
 				keepMounted={false}
@@ -193,6 +194,8 @@ export const DashboardPage = () => {
 					<BtnEditMode store={useStoreDashboardSecond} />
 				</Group>
 			</Template.Footer>
+			</DashboardProvider>
+			
 		</Paper>
 	);
 };

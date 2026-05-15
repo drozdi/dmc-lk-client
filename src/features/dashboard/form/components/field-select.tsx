@@ -10,7 +10,6 @@ export interface FieldSelectProps
 
 export function FieldSelect({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -20,7 +19,6 @@ export function FieldSelect({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

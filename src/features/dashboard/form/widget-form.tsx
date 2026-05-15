@@ -1,9 +1,9 @@
+import { useDashboard } from "@/entites/dashboard";
 import { FactoryWidget } from "@/entites/dashboard/utils";
 import { Button, Checkbox, Group, Select, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
-import { type StoreApi, type UseBoundStore } from "zustand";
 import {
 	FieldCheckbox,
 	FieldDate,
@@ -14,20 +14,18 @@ import {
 	FieldText,
 } from "./components";
 
-interface WidgetFormProps {
-	store: UseBoundStore<StoreApi<WidgetContextType>>;
+export interface WidgetFormProps {
 	id?: IWidgetItem["id"];
 	onSave?: (widget: IWidgetItem) => void;
 	layout?: Partial<ILayoutItem>;
 }
 
 export function WidgetForm({
-	store: useStore,
 	id,
 	onSave,
 	layout = {},
 }: WidgetFormProps) {
-	const store = useStore();
+	const store = useDashboard();
 	const { availableWidgets } = store;
 	const [params, setParams] = useState<IWidgetParam[]>([]);
 
@@ -44,7 +42,6 @@ export function WidgetForm({
 			}
 			paramsDefault[item.field] = item.defaultValue
 		}
-
 		form.setFieldValue("params", paramsDefault);
 		setParams(params);
 	});
@@ -119,7 +116,6 @@ export function WidgetForm({
 					return type === "date" || type === "date:range" ? (
 						<FieldDate
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -127,7 +123,6 @@ export function WidgetForm({
 					) : type === "select:array" ? (
 						<FieldSelectArray
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -135,7 +130,6 @@ export function WidgetForm({
 					) : type === "number" ? (
 						<FieldNumber
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -143,7 +137,6 @@ export function WidgetForm({
 					) : type === "text" ? (
 						<FieldText
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -152,7 +145,6 @@ export function WidgetForm({
 						<FieldSelect
 							allowDeselect={false}
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -160,7 +152,6 @@ export function WidgetForm({
 					) : type === "checkbox" ? (
 						<FieldCheckbox
 							type={type}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
@@ -168,7 +159,6 @@ export function WidgetForm({
 					) : (
 						<FieldString
 							type={type as string}
-							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}

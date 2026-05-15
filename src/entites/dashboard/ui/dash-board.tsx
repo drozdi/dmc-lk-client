@@ -37,6 +37,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		margin: [10, 10],
 	});
 	const { width, containerRef, mounted } = useContainerWidth();
+	
 	const { layouts, updateLayout, widgets, edit, key, preview } = useDashboard();
 
 	const isPreview = preview && Object.keys(preview).length > 0;

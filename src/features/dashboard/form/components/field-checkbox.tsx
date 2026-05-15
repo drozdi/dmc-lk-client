@@ -8,7 +8,6 @@ export interface FieldCheckboxProps
 
 export function FieldCheckbox({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -17,7 +16,6 @@ export function FieldCheckbox({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

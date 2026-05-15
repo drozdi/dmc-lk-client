@@ -10,7 +10,6 @@ export interface FieldSelectArrayProps
 
 export function FieldSelectArray({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -20,7 +19,6 @@ export function FieldSelectArray({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

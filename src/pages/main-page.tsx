@@ -7,10 +7,10 @@ import {
 } from "@/entites/dashboard";
 import { BtnClear } from "@/features/dashboard/btn-clear";
 import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
-import { WidgetForm } from "@/features/dashboard/form/widget-form";
+import { ModalForm } from "@/features/dashboard/modal";
 import { Template } from "@/layout";
 import { Widget } from "@/shared/ui";
-import { Group, Modal, Paper } from "@mantine/core";
+import { Group, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -320,34 +320,21 @@ export const MainPage = () => {
 						/>
 					</div>
 				</UiDashBoard>
+				<ModalForm
+					opened={opened}
+					onClose={() => {
+						storeDashboardMain.clear();
+						close();
+					}}
+				/>
+
+				<Template.Footer>
+					<Group>
+						<BtnClear />
+						<BtnEditMode />
+					</Group>
+				</Template.Footer>
 			</DashboardProvider>
-			<Modal
-				title="Настройка виджета"
-				opened={opened}
-				keepMounted={false}
-				onClose={() => {
-					storeDashboardMain.clear();
-					close();
-				}}
-			>
-				{opened && (
-					<WidgetForm
-						id={storeDashboardMain.id}
-						store={useStoreDashboardMain}
-						onSave={() => {
-							storeDashboardMain.clear();
-							close();
-						}}
-						layout={layout}
-					/>
-				)}
-			</Modal>
-			<Template.Footer>
-				<Group>
-					<BtnClear store={useStoreDashboardMain} />
-					<BtnEditMode store={useStoreDashboardMain} />
-				</Group>
-			</Template.Footer>
 		</Paper>
 	);
 };

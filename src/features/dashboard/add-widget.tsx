@@ -1,14 +1,13 @@
 import { ActionIcon, Popover } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { TbSettings } from "react-icons/tb";
-import { type StoreApi, type UseBoundStore } from "zustand";
 import { WidgetForm } from "./form/widget-form";
 
-interface AddWidgetProps {
-	store: UseBoundStore<StoreApi<WidgetContextType>>;
+export interface AddWidgetProps {
+	
 }
 
-export function AddWidget({ store: useStore }: AddWidgetProps) {
+export function AddWidget({ }: AddWidgetProps) {
 	const [opened, { close, toggle }] = useDisclosure(false);
 	return (
 		<Popover opened={opened} onDismiss={close} width={500}>
@@ -19,7 +18,6 @@ export function AddWidget({ store: useStore }: AddWidgetProps) {
 			</Popover.Target>
 			<Popover.Dropdown>
 				<WidgetForm
-					store={useStore}
 					onSave={() => {
 						close();
 					}}

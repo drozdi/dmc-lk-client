@@ -9,7 +9,6 @@ export interface FieldDateProps
 
 export function FieldDate({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -18,7 +17,6 @@ export function FieldDate({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

@@ -1,3 +1,4 @@
+import { useDashboard } from "@/entites/dashboard";
 import {
 	Group,
 	HoverCard,
@@ -9,10 +10,8 @@ import {
 } from "@mantine/core";
 import { cloneElement, useEffect, useMemo, useState } from "react";
 import { TbInfoCircle } from "react-icons/tb";
-import { type StoreApi, type UseBoundStore } from "zustand";
 
 export interface FieldWrapProps {
-	store: UseBoundStore<StoreApi<WidgetContextType>>;
 	type: string;
 	children: React.ReactNode;
 	label?: string;
@@ -25,7 +24,6 @@ export interface FieldWrapProps {
 
 export function FieldWrap({
 	type,
-	store: useStore,
 	children,
 	label,
 	description,
@@ -34,7 +32,7 @@ export function FieldWrap({
 	defaultValue,
 	onChange,
 }: FieldWrapProps) {
-	const store = useStore();
+	const store = useDashboard();
 	const v = useMemo(() => value || defaultValue, [value, defaultValue]);
 	const [mode, setMode] = useState<"field" | "select">(
 		typeof v === "string" && v.startsWith("$") ? "select" : "field",

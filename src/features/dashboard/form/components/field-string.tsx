@@ -10,7 +10,6 @@ export interface FieldStringProps
 
 export function FieldString({
 	type,
-	store,
 	label,
 	description,
 	required,
@@ -20,7 +19,6 @@ export function FieldString({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}

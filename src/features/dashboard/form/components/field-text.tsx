@@ -9,7 +9,6 @@ export interface FieldTextProps
 }
 
 export function FieldText({
-	store,
 	type,
 	label,
 	description,
@@ -20,7 +19,6 @@ export function FieldText({
 	return (
 		<FieldWrap
 			type={type}
-			store={store}
 			label={label}
 			description={description}
 			required={required}
