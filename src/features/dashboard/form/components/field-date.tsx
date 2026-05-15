@@ -26,7 +26,7 @@ export function FieldDate({
 			defaultValue={props.defaultValue}
 			onChange={props.onChange}
 		>
-			{type.startsWith("range:") ? (
+			{type.endsWith("range") ? (
 				<DualCalendarRange required={required} {...props} />
 			) : (
 				<DateInput required={required} {...props} />

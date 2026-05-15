@@ -1,7 +1,7 @@
 import { ActionIcon, Group, HoverCard, Tooltip } from "@mantine/core";
 import { Children } from "react";
 import { TbEdit, TbX } from "react-icons/tb";
-import { WidgetItemProvider, useWidgets } from "../context";
+import { WidgetProvider, useDashboard } from "../context";
 
 type DashBoardItemProps = (
 	| {
@@ -17,12 +17,12 @@ type DashBoardItemProps = (
 };
 
 export function DashBoardItem({ id, children }: DashBoardItemProps) {
-	const dashboard = useWidgets();
+	const dashboard = useDashboard();
 	const widget = dashboard.findWidget(id);
 
 	if (widget) {
 		return (
-			<WidgetItemProvider {...widget}>
+			<WidgetProvider {...widget}>
 				<HoverCard disabled={!dashboard.edit} position="top-end" offset={0}>
 					<HoverCard.Target>
 						{Children.only(children || dashboard.renderWidget(widget))}
@@ -45,7 +45,7 @@ export function DashBoardItem({ id, children }: DashBoardItemProps) {
 						</Group>
 					</HoverCard.Dropdown>
 				</HoverCard>
-			</WidgetItemProvider>
+			</WidgetProvider>
 		);
 	}
 	return children;

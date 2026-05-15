@@ -1,10 +1,11 @@
-import { FactoryWidget } from "@/entites/widget/utils";
+import { FactoryWidget } from "@/entites/dashboard/utils";
 import { Button, Checkbox, Group, Select, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { TbPlus } from "react-icons/tb";
 import { type StoreApi, type UseBoundStore } from "zustand";
 import {
+	FieldCheckbox,
 	FieldDate,
 	FieldNumber,
 	FieldSelect,
@@ -33,48 +34,65 @@ export function WidgetForm({
 	const form = useForm<Partial<IWidgetItem>>({
 		mode: "uncontrolled",
 	});
+
 	form.watch("type", ({ value }) => {
-		form.setFieldValue("params", {});
-		setParams(FactoryWidget.getWidget(value)?.params || []);
+		const params = FactoryWidget.getWidget(value)?.params
+		const paramsDefault = {};
+		for (const item of params) {
+			if (item.defaultValue === undefined || item.defaultValue === null) {
+				continue
+			}
+			paramsDefault[item.field] = item.defaultValue
+		}
+
+		form.setFieldValue("params", paramsDefault);
+		setParams(params);
 	});
 
 	useEffect(() => {
 		const widget = store.findWidget(id);
-
 		if (widget?.id) {
 			form.initialize(widget);
 			form.setInitialValues(widget);
 			form.setValues(widget);
 		} else {
-			const params = {};
+			const paramsDefault = {};
+			for (const item of params) {
+				if (item.defaultValue === undefined || item.defaultValue === null) {
+					continue
+				}
+				paramsDefault[item.field] = item.defaultValue
+			}
 
 			form.initialize({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params,
+				params: paramsDefault,
 			});
 			form.setInitialValues({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params,
+				params: paramsDefault,
 			});
 			form.setValues({
 				type: availableWidgets[0] || "",
 				fixed: false,
-				params,
+				params: paramsDefault,
 			});
 		}
 	}, [id]);
 
 	function handleAdd(widget: Partial<IWidgetItem>) {
 		if (id) {
-			storeWidget(widget as IWidgetItem);
+			store.updateWidget(widget as IWidgetItem);
 		} else {
 			store.addWidget(widget as IWidgetItem, layout);
 		}
 		store.clear();
 		onSave?.(widget as IWidgetItem);
 	}
+
+	console.log(form.values)
 
 	return (
 		<>
@@ -84,6 +102,7 @@ export function WidgetForm({
 					key={form.key("fixed")}
 					{...form.getInputProps("fixed", { type: "checkbox" })}
 				/>
+				
 				<Select
 					allowDeselect={false}
 					placeholder="Выбрать виджет"
@@ -96,15 +115,14 @@ export function WidgetForm({
 					{...form.getInputProps("type")}
 				/>
 
-				{params.map(({ field, type, default: def, ...param }) =>
-					type === "date" || type === "date:range" ? (
+				{params.map(({ field, type, ...param }) => {
+					return type === "date" || type === "date:range" ? (
 						<FieldDate
 							type={type}
 							store={useStore}
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
 						/>
 					) : type === "select:array" ? (
 						<FieldSelectArray
@@ -113,7 +131,6 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
 						/>
 					) : type === "number" ? (
 						<FieldNumber
@@ -122,7 +139,6 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
 						/>
 					) : type === "text" ? (
 						<FieldText
@@ -131,7 +147,6 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
 						/>
 					) : type === "select" ? (
 						<FieldSelect
@@ -141,7 +156,14 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
+						/>
+					) : type === "checkbox" ? (
+						<FieldCheckbox
+							type={type}
+							store={useStore}
+							{...param}
+							key={form.key(`params.${field}`)}
+							{...form.getInputProps(`params.${field}`, param)}
 						/>
 					) : (
 						<FieldString
@@ -150,9 +172,9 @@ export function WidgetForm({
 							{...param}
 							key={form.key(`params.${field}`)}
 							{...form.getInputProps(`params.${field}`, param)}
-							defaultValue={def}
 						/>
-					),
+					)
+				}
 				)}
 			</Stack>
 			<Group mt="xs" justify="flex-end">

@@ -20,7 +20,9 @@ import { ProviderWidget, useWidget } from "./context";
 export interface WidgetMenuItem extends MenuItemProps {}
 
 export interface WidgetMenuProps {
-	options?: WidgetMenuItem[];
+	options?: ({
+		onClick: () => void;
+	} & WidgetMenuItem)[];
 }
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
@@ -31,7 +33,9 @@ export interface WidgetProps extends CardProps {
 	preview?: React.ReactNode;
 	component?: any;
 	expanded?: boolean;
-	menu?: WidgetMenuItem[];
+	menu?: ({
+		onClick: () => void;
+	} & WidgetMenuItem)[];
 	error?: React.ReactNode | IError;
 	wraped?: boolean;
 }
@@ -49,7 +53,7 @@ function WidgetMenu({ options = [] }: WidgetMenuProps) {
 			</Menu.Target>
 			<Menu.Dropdown>
 				{options.map((item) => (
-					<Menu.Item {...item} />
+					<Menu.Item key={item.children as string} {...item} />
 				))}
 			</Menu.Dropdown>
 		</Menu>

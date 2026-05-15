@@ -2,7 +2,7 @@ import { useStoreAuth, useStoreUserProfile } from "@/entites/auth";
 import {
 	useStoreDashboardMain,
 	useStoreDashboardSecond,
-} from "@/entites/widget";
+} from "@/entites/dashboard";
 import { useEffect } from "react";
 
 export const AppLoader = ({ children }: { children: React.ReactNode }) => {

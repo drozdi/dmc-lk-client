@@ -1,13 +1,13 @@
 import { corectQuery, Filterdate, QueryShow } from "@/entites/analytics";
 import {
+	DashboardProvider,
 	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
-	WidgetsProvider,
-} from "@/entites/widget";
-import { BtnClear } from "@/features/widget/btn-clear";
-import { BtnEditMode } from "@/features/widget/btn-edit-mod";
-import { WidgetForm } from "@/features/widget/form/widget-form";
+} from "@/entites/dashboard";
+import { BtnClear } from "@/features/dashboard/btn-clear";
+import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
+import { WidgetForm } from "@/features/dashboard/form/widget-form";
 import { Template } from "@/layout";
 import { Widget } from "@/shared/ui";
 import { Group, Modal, Paper } from "@mantine/core";
@@ -128,7 +128,7 @@ export const MainPage = () => {
 					/>
 				</Template.Header>
 			</Group>
-			<WidgetsProvider store={useStoreDashboardMain}>
+			<DashboardProvider store={useStoreDashboardMain}>
 				<UiDashBoard
 					onSelection={(react: Partial<ILayoutItem>) => {
 						setLayout(react);
@@ -320,7 +320,7 @@ export const MainPage = () => {
 						/>
 					</div>
 				</UiDashBoard>
-			</WidgetsProvider>
+			</DashboardProvider>
 			<Modal
 				title="Настройка виджета"
 				opened={opened}

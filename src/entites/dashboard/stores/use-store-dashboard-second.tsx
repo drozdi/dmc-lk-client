@@ -7,15 +7,17 @@ export const useStoreDashboardSecond = factoryDashboardStore({
 	storageKey: "second",
 	key: "i",
 	availableWidgets: [
-		"test",
-		"analytic-analytic-widget",
+		"analytic-events",
+		"analytic-pie",
+		"analytic-type",
+		"analytic-itog-set",
+		"analytic-labels",
+		"analytic-event-defect",
+
+
 		"analytic-incident-widget",
 		"count-widget",
-
-		"analytic-type",
-		"analytic-pie",
 		"labels-count",
-		"analytic-events",
 	],
 	varibles: {
 		$filterdate: {

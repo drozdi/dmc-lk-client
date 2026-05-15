@@ -1,5 +1,5 @@
 import { hyphenate } from "@/shared/utils";
-import { WidgetItemProvider, useWidgets } from "../context";
+import { WidgetProvider, useDashboard } from "../context";
 
 interface DashBoardWidgetProps {
 	widget: IWidgetItem["type"];
@@ -13,11 +13,11 @@ export function DashBoardWidget({
 	fixed,
 	...params
 }: DashBoardWidgetProps) {
-	const dashboard = useWidgets();
+	const dashboard = useDashboard();
 	widget = hyphenate(widget);
 	return (
-		<WidgetItemProvider id={id} type={widget} fixed={fixed} params={params}>
+		<WidgetProvider id={id} type={widget} fixed={fixed} params={params}>
 			{dashboard.renderWidget({ id, type: widget, fixed, params })}
-		</WidgetItemProvider>
+		</WidgetProvider>
 	);
 }

@@ -8,7 +8,9 @@ import {
 import { type DefaultLegendContentProps } from "recharts";
 
 export function LegendContentPie(props: DefaultLegendContentProps) {
-	const { payload } = props;
+	const { payload, formatter = (value) => NumberFormatter({
+		value
+	}) } = props;
 	return (
 		<Stack
 			bg="var(--mantine-color-body)"
@@ -31,7 +33,7 @@ export function LegendContentPie(props: DefaultLegendContentProps) {
 					>
 						{value}
 					</Text>
-					<NumberFormatter value={payload.value} />
+					{formatter(payload.value)}
 				</Group>
 			))}
 		</Stack>

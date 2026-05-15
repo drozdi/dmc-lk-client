@@ -14,11 +14,13 @@ const ee = useEnumsEvents();
 export interface AnalyticPieProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	events?: AnalyticEvent[];
+	percent?: boolean;
 }
 
 export const AnalyticPie = ({
 	filterdate,
 	events = ["v", "d", "i"],
+	percent
 }: AnalyticPieProps) => {
 	const production_id = Number(
 		useStoreUserProfile((state) => state.production_id) || 0,
@@ -95,9 +97,14 @@ export const AnalyticPie = ({
 		})();
 	}, [query]);
 
+
+	const total = useMemo(() => ddata.reduce((acc, item) => acc + item.value, 0), [ddata])
+
 	useEffect(() => {
 		setQuery((v) => ({ ...v, filterdate }));
 	}, [filterdate]);
+	
+	const formatter = (value: number) => percent? Math.round(value / total *100) + '%': value
 
 	return (
 		<AspectRatio ratio={16 / 9} h="100%">
@@ -108,12 +115,13 @@ export const AnalyticPie = ({
 			) : (
 				<ResponsiveContainer>
 					<PieChart>
-						<Tooltip content={TooltipContentPie} />
+						<Tooltip content={TooltipContentPie} formatter={formatter} />
 						<Legend
 							layout="vertical"
-							verticalAlign="middle"
+							verticalAlign="bottom"
 							align="left"
 							content={LegendContentPie}
+							formatter={formatter}
 						/>
 
 						<Pie data={ddata} dataKey="value" cx="50%" cy="50%" />

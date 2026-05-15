@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { TbColumnRemove, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 
-import { DataTable as MantineDataTable, type DataTableColumn } from "mantine-datatable";
+import { type DataTableColumn } from "mantine-datatable";
 
 interface IncidentGenerateProps {
 	filterdate: [DateValue, DateValue];
@@ -81,7 +81,7 @@ export const IncidentGenerate = ({
 					title: (
 						<HoverCard position="top-end">
 							<HoverCard.Target>
-								<Text>{ef.findLabelByCode(field)}</Text>
+								<Text fz='sm'>{ef.findLabelByCode(field)}</Text>
 							</HoverCard.Target>
 							<HoverCard.Dropdown>
 								<ButtonRemove
@@ -173,13 +173,17 @@ export const IncidentGenerate = ({
 
 	return (
 		<Stack gap="xs">
-			<MantineDataTable striped columns={
+			{/* <br />
+			<MantineDataTable columns={
 				['name', 'missionStatement', 'streetAddress', 'city', 'state', 'state1', 'state2', 'state3'].map((field) => ({
 					accessor: field,
 					sortKey: field,
 					sortable: true,
-					ellipsis: false,
-					noWrap: false,
+					ellipsis: true,
+					noWrap: true,
+					titleStyle: {
+						color: "red"
+					}
 				}))
 			}
 			records={[
@@ -210,8 +214,18 @@ export const IncidentGenerate = ({
 					state1: "CA",
 					state2: "CA",
 					state3: "CA",
+				}, {
+					name: "John Doe",
+					missionStatement: "Lorem ipsum dolor sit amet",
+					streetAddress: "123 Main St",
+					city: "Anytown",
+					state: "CA",
+					state1: "CA",
+					state2: "CA",
+					state3: "CA",
 				}
 			]} />
+			<br /> */}
 			{filter && (
 				<Group gap="xs" justify="space-between">
 					<ul className="list-none flex-1">
@@ -251,6 +265,7 @@ export const IncidentGenerate = ({
 						pinLastColumn
 						columns={computedColumns}
 						records={data}
+						style={{width: '100%', minWidth: '100%'}}
 					/>
 				) : (
 					<Center w="100%" h="10rem" fz="h1" c="dimmed">

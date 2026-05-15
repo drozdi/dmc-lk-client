@@ -39,6 +39,7 @@ interface IWidgetParam {
 	description?: string;
 	required?: boolean;
 	default?: any;
+	defaultValue?: any;
 }
 
 interface WidgetContextType {

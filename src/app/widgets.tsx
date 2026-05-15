@@ -1,5 +1,5 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
-import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
+import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import "@/widgets/analytics";
 import { WidgetCount } from "@/widgets/count-widget";
 import "@/widgets/labels";

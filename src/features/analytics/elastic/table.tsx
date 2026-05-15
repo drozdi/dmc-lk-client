@@ -14,10 +14,12 @@ import {
 	Button,
 	Divider,
 	Group,
+	HoverCard,
 	Select,
+	Stack,
 	Table,
 	Text,
-	Tooltip,
+	Tooltip
 } from "@mantine/core";
 import {
 	flexRender,
@@ -141,6 +143,18 @@ export const AnalyticsElasticTable = ({
 				<ElasticField />
 				<Divider orientation="vertical" mx="lg" />
 				<ElasticFilter flex="1" />
+				<Stack>
+					<Button
+						color="green"
+						onClick={handleSave}
+						loading={newQuery.isPending || updateQuery.isPending}
+					>
+						Сохранить
+					</Button>
+					<Button onClick={() => storeElastic.reset()} loading={isLoading}>
+						Применить
+					</Button>
+				</Stack>
 			</Group>
 
 			<Loading active={isLoading} keepMounted>
@@ -151,24 +165,27 @@ export const AnalyticsElasticTable = ({
 								<Table.Tr key={headerGroup.id + "-" + index}>
 									{headerGroup.headers.map((header) => (
 										<Table.Th key={header.id} colSpan={header.colSpan}>
-											<Group justify="space-between" grow>
-												<Text>
-													{header.isPlaceholder
-														? null
-														: flexRender(
-																header.column.columnDef.header,
-																header.getContext(),
-															)}
-												</Text>
-												<ButtonRemove
-													flex="0"
-													tooltip="Удалить поле"
-													size="xs"
-													onClick={() => handleDelSelect(header.id)}
-												>
-													<TbColumnRemove />
-												</ButtonRemove>
-											</Group>
+											<HoverCard position="top">
+												<HoverCard.Target>
+													<Text>
+														{header.isPlaceholder
+															? null
+															: flexRender(
+																	header.column.columnDef.header,
+																	header.getContext(),
+																)}
+													</Text>
+												</HoverCard.Target>
+												<HoverCard.Dropdown>
+													<ButtonRemove
+														flex="0"
+														tooltip="Удалить поле"
+														onClick={() => handleDelSelect(header.id)}
+													>
+														<TbColumnRemove />
+													</ButtonRemove>
+												</HoverCard.Dropdown>
+											</HoverCard>
 										</Table.Th>
 									))}
 								</Table.Tr>
@@ -200,18 +217,6 @@ export const AnalyticsElasticTable = ({
 				</Table>
 			</Loading>
 			<Template.Footer>
-				<Group>
-					<Button
-						color="green"
-						onClick={handleSave}
-						loading={newQuery.isPending || updateQuery.isPending}
-					>
-						Сохранить
-					</Button>
-					<Button onClick={() => storeElastic.reset()} loading={isLoading}>
-						Применить
-					</Button>
-				</Group>
 				<Group>
 					<Button
 						loading={isLoading}

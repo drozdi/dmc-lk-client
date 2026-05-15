@@ -7,7 +7,7 @@ import {
 } from "react-grid-layout";
 import { GridBackground } from "react-grid-layout/extras";
 import { TbCirclePlus } from "react-icons/tb";
-import { useWidgets } from "../context";
+import { useDashboard } from "../context";
 import { DashBoardItem } from "./item";
 
 interface UiDashBoardProps {
@@ -37,7 +37,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		margin: [10, 10],
 	});
 	const { width, containerRef, mounted } = useContainerWidth();
-	const { layouts, updateLayout, widgets, edit, key, preview } = useWidgets();
+	const { layouts, updateLayout, widgets, edit, key, preview } = useDashboard();
 
 	const isPreview = preview && Object.keys(preview).length > 0;
 

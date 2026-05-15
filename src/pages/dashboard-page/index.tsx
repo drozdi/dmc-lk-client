@@ -1,13 +1,13 @@
 import { Filterdate } from "@/entites/analytics";
 import {
+	DashboardProvider,
 	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardSecond,
-	WidgetsProvider,
-} from "@/entites/widget";
-import { BtnClear } from "@/features/widget/btn-clear";
-import { BtnEditMode } from "@/features/widget/btn-edit-mod";
-import { WidgetForm } from "@/features/widget/form/widget-form";
+} from "@/entites/dashboard";
+import { BtnClear } from "@/features/dashboard/btn-clear";
+import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
+import { WidgetForm } from "@/features/dashboard/form/widget-form";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { Group, Modal, Paper } from "@mantine/core";
@@ -50,7 +50,7 @@ export const DashboardPage = () => {
 					/>
 				</Template.Header>
 			</Group>
-			<WidgetsProvider store={useStoreDashboardSecond}>
+			<DashboardProvider store={useStoreDashboardSecond}>
 				<UiDashBoard
 					onSelection={(react: Partial<ILayoutItem>) => {
 						setLayout(react);
@@ -61,24 +61,9 @@ export const DashboardPage = () => {
 					}}
 				>
 					<div
-						key="analytic-events-table"
+						key="analytic-events"
 						data-grid={{
 							x: 0,
-							y: 0,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-events"
-							type="table"
-							filterdate="$filterdate"
-						/>
-					</div>
-					<div
-						key="analytic-events-bar"
-						data-grid={{
-							x: 6,
 							y: 0,
 							w: 6,
 							h: 6,
@@ -87,57 +72,12 @@ export const DashboardPage = () => {
 						<DashBoardWidget
 							widget="analytic-events"
 							type="bar"
-							events={["v", "d", "p"]}
-							filterdate="$filterdate"
-						/>
-					</div>
-					<div
-						key="analytic-events"
-						data-grid={{
-							x: 0,
-							y: 6,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-events"
-							filterdate="$filterdate"
-						/>
-					</div>
-					<div
-						key="analytic-events-stack"
-						data-grid={{
-							x: 6,
-							y: 6,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-events"
-							type="stack"
 							events={["v", "d", "i"]}
 							filterdate="$filterdate"
+							allowChangeType={true}
 						/>
 					</div>
-					<div
-						key="analytic-events-analitic"
-						data-grid={{
-							x: 0,
-							y: 12,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-events"
-							type="analytic"
-							events={["v", "d", "i"]}
-							filterdate="$filterdate"
-						/>
-					</div>
-
+										
 					<div
 						key="analytic-event-defect"
 						data-grid={{
@@ -225,7 +165,7 @@ export const DashboardPage = () => {
 						<DashBoardWidget widget="count" filterdate="$filterdate" />
 					</div> */}
 				</UiDashBoard>
-			</WidgetsProvider>
+			</DashboardProvider>
 			<Modal
 				title="Настройка виджета"
 				opened={opened}
