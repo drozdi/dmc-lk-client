@@ -2,11 +2,11 @@ import { XColumn, XTable } from "@/shared/ui/table/table";
 
 interface SS {
 	position: number,
-			mass: number,
-			symbol: string,
-			name: string,
-			grouped: string,
-			group?: SS[],
+	mass: number,
+	symbol: string,
+	name: string,
+	grouped?: string,
+	group?: SS[],
 }
 const elements: SS[] = [
 		{
@@ -203,13 +203,14 @@ const elements: SS[] = [
 		},
 	];
 
+
 export function TablePage() {
 	
-	return <XTable<SS> data={elements}>
-				{/* <XColumn<SS> field="group" header="Group" isGroup isGrouped /> */}
-				<XColumn<SS> field="position" header="Element position" />
-				<XColumn<SS> field="name" header="Element name" />
-				<XColumn<SS> field="symbol" header="Symbol" />
-				<XColumn<SS> field="mass" header="Atomic mass" />
+
+	return <XTable data={elements}>
+				<XColumn field="position" header="Element position" />
+				<XColumn field="name" header="Element name" />
+				<XColumn field="symbol" header="Symbol" />
+				<XColumn field="mass" header="Atomic mass" />
 			</XTable>
 }

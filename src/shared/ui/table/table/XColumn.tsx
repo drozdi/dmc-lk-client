@@ -19,6 +19,7 @@ let id = 0;
 
 export interface XColumnProps<T = object> {
 	children?: React.ReactNode,
+	id?: boolean,
 	header?: string,
 	footer?: string,
 	field: keyof T,
