@@ -2,7 +2,6 @@ import { Center, LoadingOverlay } from "@mantine/core";
 import { useEffect } from "react";
 import { AppLoader } from "./app/app-loader";
 import { AppRouters } from "./app/app-routers";
-import "./app/widgets";
 import { useStoreAuth } from "./entites/auth";
 import { LoaderStatus } from "./features/loader/status";
 import "./shared/style/index.css";
