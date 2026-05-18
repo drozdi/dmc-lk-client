@@ -1,9 +1,10 @@
 import { Table } from '@mantine/core';
-import { useDisclosure, useListState } from '@mantine/hooks';
-import { useMemo } from "react";
+import { useDisclosure } from '@mantine/hooks';
+import { Children, useCallback, useMemo } from "react";
 import { TableBody } from "./ui/TableBody";
 import { TableHeader } from "./ui/TableHeader";
-import { XTablerColumsProvider } from "./XTableColumsContext";
+import { type ColumnEntity, type XColumnProps } from "./XColumn";
+import { XTablerProvider } from './XTableContext';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -35,28 +36,33 @@ function groupBy<T = object>(nodes: TableNode<T>[], key: keyof T | undefined): T
 	if (!key) {
 		return nodes;
 	}
-	const result: Record<T<keyof T>, TableNode<T>> = {};
-	nodes.forEach((node) => {
-		if (node.data[key]) {
-			if (!result[node.data[key]]) {
-				result[node.data[key]] = [];
-			}
-			result[node.data[key]].push(node);
-		} else {
-			result[node.index] = node;
+	const groups = new Map<T[keyof T], TableNode<T>[]>();
+
+  for (const node of nodes) {
+    const groupValue = node.data[key];
+    if (!groups.has(groupValue)) {
+      groups.set(groupValue, []);
+    }
+    groups.get(groupValue)!.push(node);
+  }
+
+
+	const result: TableNode<T>[] = [];
+
+  for (const group of groups.values()) {
+    if (group.length === 0) {
+			continue; 
 		}
-	});
-	return Object.values(result).map((val) => {
-		if (Array.isArray(val)) {
-			val[0].nodes = val.slice(1).map((node) => {
-				node.isChildren = true;
-				return node;
-			});
-			val[0].isParent = !!val[0].nodes.length;
-			return val[0];
-		}
-		return val;
-	});
+    const [first, ...rest] = group;
+    first.nodes = rest.map(child => {
+      child.isChildren = true;
+      return child;
+    });
+    first.isParent = rest.length > 0;
+    result.push(first);
+  }
+
+  return result;
 }
 function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = false): TableNode<T>[] {
 	let result = [...nodes];
@@ -84,29 +90,54 @@ export interface XTableProps<T = object> {
 	groupAt?: "begin" | "end";
 }
 
+const calculateColspan = (children) => {
+	if (!children) {
+		return 1;
+	}
+	return Children.toArray(children).reduce((sum, child) => {
+		return sum + calculateColspan(child.props.children);
+	}, 0);
+};
+const calculateIsColumns = (children) => {
+	if (!children) return false;
+	return Children.count(children) > 0;
+};
+
 export function XTable<T = object>({ groupAt = 'begin', children, data = [], ...props }: XTableProps<T>) {
+	const columnsRef = useMemo<ColumnEntity<T>[]>(() => {
+		function calculateColumn(column: XColumnProps<T>, level = 0): ColumnEntity<T> {
+			const col: ColumnEntity<T> = {
+				size: 1,
+				level: level + 1,
+				parentLevel: level,
+				columns: [],
+				isColumns: calculateIsColumns(column.children),
+				isHeader: !!column.header,
+				isField: !!column.field,
+				isEmpty: !column.field,
+				isSorted: !!column.sortable,
+				isToggleable: !!column.toggleable,
+				colspan:
+					calculateColspan(column.children) ||
+					column.size ||
+					1,
+				...column,
+				children: undefined,
+			};
+			col.columns = Children.toArray(column.children).map((child) => {
+				return calculateColumn(child.props, col.level)
+			})
+			return col
+		}
+		
+		const ret: ColumnEntity<T>[] = []
 
-	const [
-		columnsRef,
-		{
-			append,
-			filter,
-		},
-	] = useListState();
+		Children.forEach(children, (child) => {
+			child?.props &&	ret.push(calculateColumn(child.props))
+		})
 
-	const context = useMemo(
-		() => ({
-			addColumn(column) {
-				if (columnsRef.findIndex((v) => v.uid === column.uid) === -1){
-					append(column);
-				}
-			},
-			delColumn(column) {
-				filter((v) => v.uid !== column.uid);
-			},
-		}),
-		[columnsRef]
-	);
+		return ret
+	},[children])
 
 	const columns = useMemo(
 		() =>
@@ -122,17 +153,33 @@ export function XTable<T = object>({ groupAt = 'begin', children, data = [], ...
 		[columnsRef, groupAt]
 	);
 
-	console.log(columns)
+	const primaryKey = useMemo<string[]>(() => {
+		return columns.filter(v => v.id && v.field).map(v => v.field)
+	}, [columns])
+
+	const genId = useCallback((item: T, index) => {
+		if (primaryKey.length) {
+			const ret = []
+			for (const key of primaryKey) {
+				res.push(item[key] || '')
+			}
+			return ret.join("_")
+		}
+		return index;
+	}, [primaryKey])
+
+	const nodes = convertNodes(data);
+
+
 
 
 	return (
-		<XTablerColumsProvider value={context}>
-			{children}
+		<XTablerProvider value={{}}>
 			<Table layout="fixed">
 				<Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>
-				<Table.Tbody><TableBody data={data} columns={columns} /></Table.Tbody>
+				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
 			</Table>
-		</XTablerColumsProvider>
+		</XTablerProvider>
 	);
 };
 

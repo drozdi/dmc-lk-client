@@ -24,25 +24,28 @@ export interface XColumnProps<T = object> {
 	footer?: string,
 	field: keyof T,
 	size?: number,
-	sortable?: boolean,
+	style?: React.CSSProperties,
+	sortable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
+	toggleable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
 	isGroup?: boolean,
 	isGrouped?: boolean,
-	isSorted?: boolean,
 	align?: "left" | "right" | "center",
+	render?: (column: ColumnEntity<T>) => React.ReactNode,
 	body?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
 	edit?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
 }
 
 export interface ColumnEntity<T = object> extends XColumnProps<T> {
-	uid: string,
 	size: number,
 	level: number,
 	parentLevel: number,
 	columns: ColumnEntity<T>[],
+	isSorted: boolean,
 	isColumns: boolean,
 	isHeader: boolean,
 	isField: boolean,
 	isEmpty: boolean,
+	isToggleable: boolean,
 	colspan: number,
 }
 
@@ -54,7 +57,7 @@ export function XColumn<T = object>(props: XColumnProps<T>): null {
 		props: XColumnProps<T>,
 	}, level = 0, uid: string) => {
 		const col: ColumnEntity<T> = {
-			uid: `${uid}-${id++}`,
+			uid: uid,
 			size: 1,
 			level: level + 1,
 			parentLevel: level,
@@ -63,6 +66,8 @@ export function XColumn<T = object>(props: XColumnProps<T>): null {
 			isHeader: !!column.props.header,
 			isField: !!column.props.field,
 			isEmpty: !column.props.field,
+			isSorted: !!column.props.sortable,
+			isToggleable: !!column.props.toggleable,
 			colspan:
 				calculateColspan(column.props.children) ||
 				column.props.size ||

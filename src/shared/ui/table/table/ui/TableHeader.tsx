@@ -1,5 +1,5 @@
 import { Table } from '@mantine/core';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { type ColumnEntity } from '../XColumn';
 import { TableHeaderCell } from './TableHeaderCell';
 
@@ -8,7 +8,6 @@ export interface TableHeaderProps<T = object> {
 }
 
 export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
-	console.log(columns)
 	const rowspan = useMemo(() => {
 		let max = 0;
 		(function recursive(columns: ColumnEntity<T>[]) {
@@ -30,6 +29,16 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 		[columns]
 	);
 
+	const onToggle = useCallback((column: ColumnEntity<T>) => {
+		column.toggleable?.(column)
+	}, []);
+	const onSort = useCallback((column: ColumnEntity<T>) => {
+		column.sortable?.(column)
+	}, []);
+	const onExpand = useCallback((column: ColumnEntity<T>) => {
+
+	}, []);
+
 	const rows = useMemo(() => {
 		const rows = [];
 		(function recursive(columns, level) {
@@ -39,13 +48,13 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 						if (column.isColumns && column.isHeader) {
 							recursive(column.columns, level + 1);
 						} else if (column.isColumns) {
-							return column.columns.map(TableHeaderCell(column));
+							return column.columns.map(TableHeaderCell({ column, onToggle, onSort, onExpand }));
 						}
 						if (column.isGrouped) {
-							return TableHeaderCell(column);
+							return TableHeaderCell({ column, onToggle, onSort, onExpand });
 						}
 						if (column.isHeader && !column.isGroup) {
-							return TableHeaderCell(column);
+							return TableHeaderCell({ column, onToggle, onSort, onExpand });
 						}
 						return null;
 					})
@@ -53,8 +62,8 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 		})(columns, 0);
 		return rows;
 	}, [columns]);
-		console.log(rows)
-		return rows.map((row, index) => (
+
+	return rows.map((row, index) => (
 			<Table.Tr key={index} role="row">
 				{row}
 			</Table.Tr>
