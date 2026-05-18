@@ -2,10 +2,10 @@ import { type Axios, type AxiosError } from "axios";
 import { AxiosInterceptor } from "../utils";
 
 export const api = new AxiosInterceptor({
-	// baseURL: import.meta.env.DEV
-	// 	? "http://10.76.10.145:5059/lk_api/v1/"
-	// 	: "https://lk.dmc-mact.ru/lk_api/v1/",
-	baseURL: "https://lk.dmc-mact.ru/lk_api/v1/",
+	baseURL: import.meta.env.DEV
+		? "http://10.76.10.145:5059/lk_api/v1/"
+		: "https://lk.dmc-mact.ru/lk_api/v1/",
+	// baseURL: "https://lk.dmc-mact.ru/lk_api/v1/",
 	headers: {
 		"Content-Type": "application/json",
 	},
