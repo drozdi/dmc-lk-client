@@ -1,10 +1,11 @@
 import { Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Children, useCallback, useMemo, useState } from "react";
+import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './TableDataContext';
 import { TableBody } from "./ui/TableBody";
 import { TableHeader } from "./ui/TableHeader";
+import { TablePagination } from './ui/TablePagination';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -83,10 +84,11 @@ function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = fa
 		return val;
 	});
 }
+function limitBy<T = object>(nodes: TableNode<T>[], limit: number, offset: number): TableNode<T>[] {
+	return nodes.slice((offset-1)*limit, offset*limit)
+}
 
-
-
-const calculateColspan = (children) => {
+function calculateColspan(children) {
 	if (!children) {
 		return 1;
 	}
@@ -94,20 +96,41 @@ const calculateColspan = (children) => {
 		return sum + calculateColspan(child.props.children);
 	}, 0);
 };
-const calculateIsColumns = (children) => {
+function calculateIsColumns(children) {
 	if (!children) return false;
 	return Children.count(children) > 0;
 };
 
 export interface TableDataProps<T = object> {
 	children?: React.ReactNode;
-	data: T[];
+	data: T[] | ((page: string | number) => Promise<T[]>);
 	groupAt?: "start" | "end";
 	sortKey?: keyof T,
 	sortDesc?: boolean
+	limit?: number,
+	limits: number[],
+	page: number,
+	total?: number
 }
 
-export function TableData<T = object>({ groupAt = 'start', sortKey, sortDesc = false, children, data = [], ...props }: TableDataProps<T>) {
+export function TableData<T = object>({ 
+	children,
+	groupAt = 'start', 
+	sortKey, 
+	sortDesc = false, 
+	data: dataProps, 
+	limit: limitProps = 15, 
+	limits = [15, 30, 50, 75, 100], 
+	page: pageProps = 1, 
+	total: totalProps,
+	...props }: TableDataProps<T>) {
+	const [limit, setLimit] = useState(limitProps)
+	const [page, setPage] = useState(pageProps)
+	const [history, setHistory] = useState<(string | number)[]>([])
+	const [data, setData] = useState<T[]>(Array.isArray(dataProps)? dataProps: [])
+	const [isLoading, setLoading] = useState<boolean>(false)
+	const [error, setError] = useState<string>('')
+
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
 		descending: boolean
@@ -166,7 +189,6 @@ export function TableData<T = object>({ groupAt = 'start', sortKey, sortDesc = f
 
 		return ret
 	},[children])
-
 	const columns = useMemo(
 		() =>
 			[...columnsRef].sort((a, b) => {
@@ -181,19 +203,58 @@ export function TableData<T = object>({ groupAt = 'start', sortKey, sortDesc = f
 		[columnsRef, groupAt]
 	);
 
+	const fetch = useCallback((page: string | number = '') => {
+		if (typeof dataProps !== 'function') {
+			return
+		}
+		setLoading(true)
+		dataProps(page).then((data) => {
+			setData(data)
+			setLoading(false)
+			setHistory(v => [...v, page])
+		}).catch((error: IError) => {
+			setError(error.response?.data?.detail || error?.message || "Ошибка загрузки данных!")
+			setLoading(false)
+		})
+	}, [dataProps])
+
+	useEffect(() => {
+		fetch();
+		setHistory([])
+	}, [fetch])
+
+	useEffect(() => {
+		setLimit(limitProps)
+		setPage(pageProps)
+	}, [limitProps, pageProps])
+
+	useEffect(() => {
+		fetch(page)
+	}, [page])
+	
+	
+
 	let nodes:TableNode<T>[] = convertNodes(data);
+	const total = totalProps || nodes.length
 	if (sort.key) {
 		nodes = sortBy(nodes, sort.key, sort.descending);
 	}
-
+	if (limit > 0) {
+		nodes = limitBy(nodes, limit, page)
+	}
+	
 	return (
 		<TableDataProvider value={useMemo(() => ({
-			sort, changeSort
+			sort, changeSort,
 		}), [sort, changeSort])}>
 			<Table layout="fixed">
 				<Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>
 				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
 			</Table>
+			<TablePagination<T> total={Math.ceil(total/limit)} onChangePage={setPage} limit={limit} onChangeLimit={(val) => {
+				setPage(1)
+				setLimit(val)
+			}} limits={limits} />
 		</TableDataProvider>
 	);
 };
