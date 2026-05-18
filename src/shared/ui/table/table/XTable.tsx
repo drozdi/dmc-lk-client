@@ -1,6 +1,6 @@
 import { Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Children, useCallback, useMemo } from "react";
+import { Children, useCallback, useMemo, useState } from "react";
 import { TableBody } from "./ui/TableBody";
 import { TableHeader } from "./ui/TableHeader";
 import { type ColumnEntity, type XColumnProps } from "./XColumn";
@@ -84,11 +84,7 @@ function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = fa
 	});
 }
 
-export interface XTableProps<T = object> {
-	children?: React.ReactNode;
-	data: T[];
-	groupAt?: "begin" | "end";
-}
+
 
 const calculateColspan = (children) => {
 	if (!children) {
@@ -103,7 +99,39 @@ const calculateIsColumns = (children) => {
 	return Children.count(children) > 0;
 };
 
-export function XTable<T = object>({ groupAt = 'begin', children, data = [], ...props }: XTableProps<T>) {
+export interface XTableProps<T = object> {
+	children?: React.ReactNode;
+	data: T[];
+	groupAt?: "start" | "end";
+	sortKey?: keyof T,
+	sortDesc?: boolean
+}
+
+export function XTable<T = object>({ groupAt = 'start', sortKey, sortDesc = false, children, data = [], ...props }: XTableProps<T>) {
+	const [sort, setSort] = useState<{
+		key?: keyof T | undefined,
+		descending: boolean
+	}>({ key: sortKey, descending: sortDesc})
+	const changeSort = useCallback((field: keyof T) => {
+		setSort(v => {
+			if (v.key === field) {
+				if (v.descending) {
+					return {...v, descending: false }
+				} else {
+					return {
+						key: undefined,
+						descending: true
+					}
+				}
+
+			} else {
+				return {
+					key: field,
+					descending: true
+				}
+			}
+		})
+	}, [])
 	const columnsRef = useMemo<ColumnEntity<T>[]>(() => {
 		function calculateColumn(column: XColumnProps<T>, level = 0): ColumnEntity<T> {
 			const col: ColumnEntity<T> = {
@@ -143,38 +171,25 @@ export function XTable<T = object>({ groupAt = 'begin', children, data = [], ...
 		() =>
 			[...columnsRef].sort((a, b) => {
 				if (a.isGrouped) {
-					return groupAt === "begin" ? -1 : 1;
+					return groupAt === "start" ? -1 : 1;
 				}
 				if (b.isGrouped) {
-					return groupAt === "begin" ? 1 : -1;
+					return groupAt === "start" ? 1 : -1;
 				}
 				return 0;
 			}),
 		[columnsRef, groupAt]
 	);
 
-	const primaryKey = useMemo<string[]>(() => {
-		return columns.filter(v => v.id && v.field).map(v => v.field)
-	}, [columns])
-
-	const genId = useCallback((item: T, index) => {
-		if (primaryKey.length) {
-			const ret = []
-			for (const key of primaryKey) {
-				res.push(item[key] || '')
-			}
-			return ret.join("_")
-		}
-		return index;
-	}, [primaryKey])
-
-	const nodes = convertNodes(data);
-
-
-
+	let nodes:TableNode<T>[] = convertNodes(data);
+	if (sort.key) {
+		nodes = sortBy(nodes, sort.key, sort.descending);
+	}
 
 	return (
-		<XTablerProvider value={{}}>
+		<XTablerProvider value={useMemo(() => ({
+			sort, changeSort
+		}), [sort, changeSort])}>
 			<Table layout="fixed">
 				<Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>
 				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>

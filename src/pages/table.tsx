@@ -1,5 +1,4 @@
 import { XColumn, XTable } from "@/shared/ui/table/table";
-import { useState } from "react";
 
 interface SS {
 	position: number,
@@ -206,32 +205,10 @@ const elements: SS[] = [
 
 
 export function TablePage() {
-	
-	const [tt, setTt] = useState<Record<keyof SS, boolean>>({
-		position: true,
-		name: true,
-		symbol: true,
-		mass: true,
-		grouped: true,
-		group: true,
-	})
-
-	const toggle = (field: keyof SS) => {
-		setTt(v => ({...v, [field]: !v[field]}))
-	}
-
 	return <XTable<SS> data={elements}>
-		{tt.position && <XColumn<SS> toggleable={(column) => {
-			toggle(column.field)
-		}} field="position" header="Element position" />}
-		{tt.name && <XColumn<SS> toggleable={(column) => {
-			toggle(column.field)
-		}} field="name" header="Element name" />}
-		{tt.symbol && <XColumn<SS> toggleable={(column) => {
-			toggle(column.field)
-		}} field="symbol" header="Symbol" />}
-		{tt.mass && <XColumn<SS> toggleable={(column) => {
-			toggle(column.field)
-		}} field="mass" header="Atomic mass" />}
+		<XColumn<SS> sortable field="position" header="Element position" />
+		<XColumn<SS> sortable field="name" header="Element name" />
+		<XColumn<SS> field="symbol" header="Symbol" />
+		<XColumn<SS> field="mass" header="Atomic mass" />
 	</XTable>
 }

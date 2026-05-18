@@ -1,6 +1,7 @@
 import { Table } from '@mantine/core';
 import { useCallback, useMemo } from 'react';
 import { type ColumnEntity } from '../XColumn';
+import { useXTableContext } from '../XTableContext';
 import { TableHeaderCell } from './TableHeaderCell';
 
 export interface TableHeaderProps<T = object> {
@@ -8,6 +9,8 @@ export interface TableHeaderProps<T = object> {
 }
 
 export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
+	const ctx = useXTableContext();
+	
 	const rowspan = useMemo(() => {
 		let max = 0;
 		(function recursive(columns: ColumnEntity<T>[]) {
@@ -33,7 +36,8 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 		column.toggleable?.(column)
 	}, []);
 	const onSort = useCallback((column: ColumnEntity<T>) => {
-		column.sortable?.(column)
+		// column.sortable?.(column)
+		ctx.changeSort(column.field)
 	}, []);
 	const onExpand = useCallback((column: ColumnEntity<T>) => {
 
@@ -48,18 +52,21 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 						if (column.isColumns && column.isHeader) {
 							recursive(column.columns, level + 1);
 						} else if (column.isColumns) {
-							return column.columns.map(TableHeaderCell({ column, onToggle, onSort, onExpand }));
+							return column.columns.map(column =>
+								<TableHeaderCell<T> maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />
+							);
 						}
 						if (column.isGrouped) {
-							return TableHeaderCell({ column, onToggle, onSort, onExpand });
+							return <TableHeaderCell<T> maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
 						}
 						if (column.isHeader && !column.isGroup) {
-							return TableHeaderCell({ column, onToggle, onSort, onExpand });
+							return <TableHeaderCell<T> maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
 						}
 						return null;
 					})
 			);
 		})(columns, 0);
+
 		return rows;
 	}, [columns]);
 
