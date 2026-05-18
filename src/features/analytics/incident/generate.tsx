@@ -6,7 +6,7 @@ import {
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
-import { XColumn, XTable } from "@/shared/ui/table/table";
+import { DataColumn } from "@/shared/ui/table";
 import {
 	ActionIcon,
 	Center,
@@ -128,15 +128,15 @@ export const IncidentGenerate = ({
 			)}
 			<Loading active={isLoading} keepMounted>
 				{data?.length ? (
-					<XTable<IAnalyticsIncidentItem> data={data}>
-						<XColumn<IAnalyticsIncidentItem> field='data' header='Ошибка' sortable ellipsis	noWrap style={{
+					<TableData<IAnalyticsIncidentItem> data={data}>
+						<DataColumn<IAnalyticsIncidentItem> field='data' header='Ошибка' sortable ellipsis	noWrap style={{
 							fontWeight: 'bolder'
 						}} />
-						<XColumn<IAnalyticsIncidentItem> field='total_counter' header='Всего ошибок' sortable ellipsis noWrap />
-						{(template.fields_name || []).map((field) => <XColumn<IAnalyticsIncidentItem> field={field} header={ef.findLabelByCode(field)} toggleable={() => {
+						<DataColumn<IAnalyticsIncidentItem> field='total_counter' header='Всего ошибок' sortable ellipsis noWrap />
+						{(template.fields_name || []).map((field) => <DataColumn<IAnalyticsIncidentItem> field={field} header={ef.findLabelByCode(field)} toggleable={() => {
 							handleRemove(field)
 						}} sortable ellipsis noWrap />)}
-						<XColumn<IAnalyticsIncidentItem> style={{
+						<DataColumn<IAnalyticsIncidentItem> style={{
 							width: 40,
 						}} field='_' header={<HoverCard>
 							<HoverCard.Target>
@@ -160,7 +160,7 @@ export const IncidentGenerate = ({
 								/>
 							</HoverCard.Dropdown>
 						</HoverCard>} body={() => <></>} />
-					</XTable>
+					</TableData>
 				) : (
 					<Center w="100%" h="10rem" fz="h1" c="dimmed">
 						Данные отсутствуют за период{" "}

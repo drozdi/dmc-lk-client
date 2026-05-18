@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { type ColumnEntity } from "../XColumn";
-import { type TableNode } from "../XTable";
+import { type ColumnEntity } from "../DataColumn";
+import { type TableNode } from "../TableData";
 import { TableBodyRow } from "./TableBodyRow";
 
 export interface TableBodyProps<T = object> {

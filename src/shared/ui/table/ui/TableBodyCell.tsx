@@ -1,5 +1,5 @@
 import { Table } from "@mantine/core";
-import { type ColumnEntity } from "../XColumn";
+import { type ColumnEntity } from "../DataColumn";
 
 export interface TableBodyCellProps<T> {
 	item: T;

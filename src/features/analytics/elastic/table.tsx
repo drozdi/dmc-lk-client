@@ -10,7 +10,7 @@ import {
 } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
 import { Loading } from "@/shared/ui";
-import { XColumn, XTable } from "@/shared/ui/table/table";
+import { TableData } from "@/shared/ui/table";
 import {
 	Button,
 	Divider,
@@ -117,14 +117,14 @@ export const AnalyticsElasticTable = ({
 			</Group>
 
 			<Loading active={isLoading} keepMounted>
-				<XTable<IAnalyticsElasticItem> data={data}>
+				<TableData<IAnalyticsElasticItem> data={data}>
 					{columns?.length ? columns.map((column) => (
-						<XColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
-					)): <XColumn<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
+						<DataColumnProps<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
+					)): <DataColumnProps<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
 						textAlign: 'center',
 						fontSize: '3rem'
 					}} />}
-				</XTable>
+				</TableData>
 			</Loading>
 			<Template.Footer>
 				<Group>

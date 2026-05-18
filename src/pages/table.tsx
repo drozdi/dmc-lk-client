@@ -1,4 +1,4 @@
-import { XColumn, XTable } from "@/shared/ui/table/table";
+import { DataColumn, TableData } from "@/shared/ui/table";
 
 interface SS {
 	position: number,
@@ -205,10 +205,10 @@ const elements: SS[] = [
 
 
 export function TablePage() {
-	return <XTable<SS> data={elements}>
-		<XColumn<SS> sortable field="position" header="Element position" />
-		<XColumn<SS> sortable field="name" header="Element name" />
-		<XColumn<SS> field="symbol" header="Symbol" />
-		<XColumn<SS> field="mass" header="Atomic mass" />
-	</XTable>
+	return <TableData<SS> data={elements}>
+		<DataColumn<SS> sortable field="position" header="Element position" />
+		<DataColumn<SS> sortable field="name" header="Element name" />
+		<DataColumn<SS> field="symbol" header="Symbol" />
+		<DataColumn<SS> field="mass" header="Atomic mass" />
+	</TableData>
 }

@@ -1,6 +1,6 @@
 import { Table } from "@mantine/core";
-import { type ColumnEntity } from "../XColumn";
-import { type TableNode } from "../XTable";
+import { type ColumnEntity } from "../DataColumn";
+import { type TableNode } from "../TableData";
 import { TableBodyCell } from "./TableBodyCell";
 
 export interface TableBodyProps<T = object> {

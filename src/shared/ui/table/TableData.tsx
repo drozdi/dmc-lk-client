@@ -1,10 +1,10 @@
 import { Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Children, useCallback, useMemo, useState } from "react";
+import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
+import { TableDataProvider } from './TableDataContext';
 import { TableBody } from "./ui/TableBody";
 import { TableHeader } from "./ui/TableHeader";
-import { type ColumnEntity, type XColumnProps } from "./XColumn";
-import { XTablerProvider } from './XTableContext';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -99,7 +99,7 @@ const calculateIsColumns = (children) => {
 	return Children.count(children) > 0;
 };
 
-export interface XTableProps<T = object> {
+export interface TableDataProps<T = object> {
 	children?: React.ReactNode;
 	data: T[];
 	groupAt?: "start" | "end";
@@ -107,7 +107,7 @@ export interface XTableProps<T = object> {
 	sortDesc?: boolean
 }
 
-export function XTable<T = object>({ groupAt = 'start', sortKey, sortDesc = false, children, data = [], ...props }: XTableProps<T>) {
+export function TableData<T = object>({ groupAt = 'start', sortKey, sortDesc = false, children, data = [], ...props }: TableDataProps<T>) {
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
 		descending: boolean
@@ -133,7 +133,7 @@ export function XTable<T = object>({ groupAt = 'start', sortKey, sortDesc = fals
 		})
 	}, [])
 	const columnsRef = useMemo<ColumnEntity<T>[]>(() => {
-		function calculateColumn(column: XColumnProps<T>, level = 0): ColumnEntity<T> {
+		function calculateColumn(column: DataColumnProps<T>, level = 0): ColumnEntity<T> {
 			const col: ColumnEntity<T> = {
 				size: 1,
 				level: level + 1,
@@ -187,14 +187,14 @@ export function XTable<T = object>({ groupAt = 'start', sortKey, sortDesc = fals
 	}
 
 	return (
-		<XTablerProvider value={useMemo(() => ({
+		<TableDataProvider value={useMemo(() => ({
 			sort, changeSort
 		}), [sort, changeSort])}>
 			<Table layout="fixed">
 				<Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>
 				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
 			</Table>
-		</XTablerProvider>
+		</TableDataProvider>
 	);
 };
 

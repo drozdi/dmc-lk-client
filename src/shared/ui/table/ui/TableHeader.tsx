@@ -1,7 +1,7 @@
 import { Table } from '@mantine/core';
 import { useCallback, useMemo } from 'react';
-import { type ColumnEntity } from '../XColumn';
-import { useXTableContext } from '../XTableContext';
+import { type ColumnEntity } from '../DataColumn';
+import { useTableDataContext } from '../TableDataContext';
 import { TableHeaderCell } from './TableHeaderCell';
 
 export interface TableHeaderProps<T = object> {
@@ -9,7 +9,7 @@ export interface TableHeaderProps<T = object> {
 }
 
 export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
-	const ctx = useXTableContext();
+	const ctx = useTableDataContext();
 	
 	const rowspan = useMemo(() => {
 		let max = 0;

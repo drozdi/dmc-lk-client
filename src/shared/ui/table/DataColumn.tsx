@@ -1,6 +1,6 @@
 import { useId } from "@mantine/hooks";
 import { Children, useEffect } from "react";
-import { useXTableColumsContext } from "./XTableColumsContext";
+import { useDataColumnsContext } from "./DataColumnsContext";
 
 const calculateColspan = (children) => {
 	if (!children) {
@@ -17,7 +17,7 @@ const calculateIsColumns = (children) => {
 
 let id = 0;
 
-export interface XColumnProps<T = object> {
+export interface DataColumnProps<T = object> {
 	children?: React.ReactNode,
 	id?: boolean,
 	header?: React.ReactNode,
@@ -37,7 +37,7 @@ export interface XColumnProps<T = object> {
 	edit?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
 }
 
-export interface ColumnEntity<T = object> extends XColumnProps<T> {
+export interface ColumnEntity<T = object> extends DataColumnProps<T> {
 	size: number,
 	level: number,
 	parentLevel: number,
@@ -51,12 +51,12 @@ export interface ColumnEntity<T = object> extends XColumnProps<T> {
 	colspan: number,
 }
 
-export function XColumn<T = object>(props: XColumnProps<T>): null {
-	const ctx = useXTableColumsContext();
+export function DataColumn<T = object>(props: DataColumnProps<T>): null {
+	const ctx = useDataColumnsContext();
 	const uid = useId();
 
 	const registerColumns = (column: {
-		props: XColumnProps<T>,
+		props: DataColumnProps<T>,
 	}, level = 0, uid: string) => {
 		const col: ColumnEntity<T> = {
 			uid: uid,
@@ -82,7 +82,7 @@ export function XColumn<T = object>(props: XColumnProps<T>): null {
 			Children.forEach(column.props.children, (child) => {
 				col.columns.push(
 					registerColumns(child as {
-						props: XColumnProps<T>,
+						props: DataColumnProps<T>,
 					}, col.level, uid)
 				);
 			});

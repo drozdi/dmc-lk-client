@@ -1,7 +1,7 @@
 import { ActionIcon, Group, Table } from '@mantine/core';
 import { TbArrowDown, TbArrowsVertical, TbArrowUp, TbX } from 'react-icons/tb';
-import { type ColumnEntity } from '../XColumn';
-import { useXTableContext } from '../XTableContext';
+import { type ColumnEntity } from '../DataColumn';
+import { useTableDataContext } from '../TableDataContext';
 
 export interface BaseCellProps<T = object> {
 	column: ColumnEntity<T>
@@ -41,7 +41,7 @@ function TableHeaderCellSort<T = object>({ column, onClick }: TableHeaderCellSor
 	if (!column.isSorted) {
 		return "";
 	}
-	const { sort } = useXTableContext()
+	const { sort } = useTableDataContext()
 	return (
 		<ActionIcon variant="subtle" size='xs' role="img" aria-label={`Sorted`} onClick={() => onClick?.(column)}
 		// aria-label={`Sorted ${sort.descending ? 'descending' : 'ascending'}`}
