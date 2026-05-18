@@ -236,11 +236,11 @@ export function TableData<T = object>({
 
 	let nodes:TableNode<T>[] = convertNodes(data);
 	const total = totalProps || nodes.length
-	if (sort.key) {
-		nodes = sortBy(nodes, sort.key, sort.descending);
-	}
 	if (limit > 0) {
 		nodes = limitBy(nodes, limit, page)
+	}
+	if (sort.key) {
+		nodes = sortBy(nodes, sort.key, sort.descending);
 	}
 	
 	return (
