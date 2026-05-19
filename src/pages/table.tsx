@@ -1,3 +1,4 @@
+import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData } from "@/shared/ui/table";
 
 interface SS {
@@ -485,6 +486,31 @@ const elements: SS[] = [
 
 
 export function TablePage() {
+	
+
+	return <TableData<{id: string}> data={async (limit = 100, page = '') => {
+		const res = await requestAnalyticsElastic({
+			company: {
+				select_field: [],
+				list_where: [],
+				date_limit: {
+					"date_from": "2026-01-20",
+					"date_to": "2026-05-15"
+				},
+			},
+			paginate: {
+				id_record: page as string,
+				limit_page: limit
+			}
+		})
+		return {
+			data: res.data,
+			next: res.last_id_record
+		}
+	}}>
+		<DataColumn<{id: string}> field="id" header="ID" />
+	</TableData>
+
 	return <TableData<SS> data={elements}>
 		<DataColumn<SS> sortable field="position" header="Element position" />
 		<DataColumn<SS> sortable field="name" header="Element name" />

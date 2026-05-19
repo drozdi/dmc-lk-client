@@ -1,7 +1,7 @@
 import { ActionIcon, Group, Table } from '@mantine/core';
 import { TbArrowDown, TbArrowsVertical, TbArrowUp, TbX } from 'react-icons/tb';
 import { type ColumnEntity } from '../DataColumn';
-import { useTableDataContext } from '../TableDataContext';
+import { useTableDataContext } from '../context/TableDataContext';
 
 export interface BaseCellProps<T = object> {
 	column: ColumnEntity<T>

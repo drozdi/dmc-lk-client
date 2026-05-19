@@ -1,6 +1,6 @@
 import { useId } from "@mantine/hooks";
 import { Children, useEffect } from "react";
-import { useDataColumnsContext } from "./DataColumnsContext";
+import { useDataColumnsContext } from "./context/DataColumnsContext";
 
 const calculateColspan = (children) => {
 	if (!children) {

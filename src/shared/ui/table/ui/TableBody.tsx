@@ -32,6 +32,13 @@ export function TableBody<T = object>({data, columns}: TableBodyProps<T>) {
 			);
 		}, [columns, grouped]);
 
+		const colspan = useMemo(
+			() =>
+				columns.reduce((sum: number, column: ColumnEntity<T>) => {
+					return sum + (column.isGroup ? 0 : column.colspan);
+				}, 0) || 1,
+			[columns]
+		);
 
 		
 

@@ -1,11 +1,10 @@
 import { Table } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
-import { TableDataProvider } from './TableDataContext';
+import { TableDataProvider } from './context/TableDataContext';
 import { TableBody } from "./ui/TableBody";
 import { TableHeader } from "./ui/TableHeader";
-import { TablePagination } from './ui/TablePagination';
+import { TablePagination, type TablePaginationProps } from './ui/TablePagination';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -22,16 +21,15 @@ export interface TableNode<T = object> {
 }
 
 function convertNodes<T = object>(items: T[]): TableNode<T>[] {
-	return Object.entries(items).map(([index, item]) => {
-		return {
+	return Object.entries(items).map(([index, item]) => ({
 			data: item,
 			index,
-			expand: useDisclosure(false),
+			//expand: useDisclosure(false),
 			isParent: false,
 			isChildren: false,
 			nodes: [],
-		};
-	});
+		})
+	);
 }
 function groupBy<T = object>(nodes: TableNode<T>[], key: keyof T | undefined): TableNode<T>[] {
 	if (!key) {
@@ -103,17 +101,23 @@ function calculateIsColumns(children) {
 
 export interface TableDataProps<T = object> {
 	children?: React.ReactNode;
-	data: T[] | ((page: string | number) => Promise<T[]>);
+	data: T[] | ((limit: number, page: string | number) => Promise<{
+		data: T[],
+		next: string | number
+	}>);
 	groupAt?: "start" | "end";
 	sortKey?: keyof T,
 	sortDesc?: boolean
 	limit?: number,
-	limits: number[],
-	page: number,
+	limits?: number[],
+	page?: number,
 	total?: number
+	withHeader?: boolean,
+	withPagination?: boolean,
+	pagination?: React.FC<TablePaginationProps<T>>
 }
 
-export function TableData<T = object>({ 
+export function TableData<T = object>({
 	children,
 	groupAt = 'start', 
 	sortKey, 
@@ -123,14 +127,18 @@ export function TableData<T = object>({
 	limits = [15, 30, 50, 75, 100], 
 	page: pageProps = 1, 
 	total: totalProps,
+	withHeader = true,
+	withPagination = true,
+	pagination: Pagination = TablePagination,
 	...props }: TableDataProps<T>) {
 	const [limit, setLimit] = useState(limitProps)
-	const [page, setPage] = useState(pageProps)
+	const [page, setPage] = useState<number>(pageProps)
+	const [next, setNext] = useState<string | number>('')
 	const [history, setHistory] = useState<(string | number)[]>([])
 	const [data, setData] = useState<T[]>(Array.isArray(dataProps)? dataProps: [])
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string>('')
-
+	
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
 		descending: boolean
@@ -202,25 +210,27 @@ export function TableData<T = object>({
 			}),
 		[columnsRef, groupAt]
 	);
+	const fetcher = typeof dataProps === 'function'
 
-	const fetch = useCallback((page: string | number = '') => {
+	const fetch = useCallback((page: string | number = '', saveHistory = true) => {
 		if (typeof dataProps !== 'function') {
 			return
 		}
 		setLoading(true)
-		dataProps(page).then((data) => {
+		dataProps(limit, page).then(({ data, next }) => {
 			setData(data)
+			setNext(next)
 			setLoading(false)
-			setHistory(v => [...v, page])
+			saveHistory && setHistory(v => [...v, page])
 		}).catch((error: IError) => {
 			setError(error.response?.data?.detail || error?.message || "Ошибка загрузки данных!")
 			setLoading(false)
 		})
-	}, [dataProps])
+	}, [dataProps, limit])
 
 	useEffect(() => {
-		fetch();
 		setHistory([])
+		fetch('');
 	}, [fetch])
 
 	useEffect(() => {
@@ -228,33 +238,49 @@ export function TableData<T = object>({
 		setPage(pageProps)
 	}, [limitProps, pageProps])
 
-	useEffect(() => {
-		fetch(page)
-	}, [page])
 	
-	
-
 	let nodes:TableNode<T>[] = convertNodes(data);
 	const total = totalProps || nodes.length
-	if (limit > 0) {
+	if (!fetcher && limit > 0) {
 		nodes = limitBy(nodes, limit, page)
 	}
 	if (sort.key) {
 		nodes = sortBy(nodes, sort.key, sort.descending);
+	}	
+
+	const handlerNext = function () {
+		fetcher && fetch(next, true)
 	}
-	
+	const handlerPprevious = function () {
+		history.pop()
+		setHistory([...history])
+		fetcher && fetch(history.pop(), false)
+	}
+
 	return (
 		<TableDataProvider value={useMemo(() => ({
-			sort, changeSort,
+			sort, changeSort
 		}), [sort, changeSort])}>
 			<Table layout="fixed">
-				<Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>
+				{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
 				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
 			</Table>
-			<TablePagination<T> total={Math.ceil(total/limit)} onChangePage={setPage} limit={limit} onChangeLimit={(val) => {
-				setPage(1)
-				setLimit(val)
-			}} limits={limits} />
+			{withPagination && Pagination({
+				loading: isLoading,
+				onNext: fetcher? handlerNext: undefined,
+				onPprevious: fetcher? handlerPprevious: undefined,
+				activePprevious:history.length > 1,
+				activeNext: !!next,
+				page, 
+				total: Math.ceil(total/limit),
+				limit,
+				limits,
+				onChangePage: setPage,
+				onChangeLimit: (val) => {
+					setPage(1)
+					setLimit(val)
+				}
+			})}
 		</TableDataProvider>
 	);
 };

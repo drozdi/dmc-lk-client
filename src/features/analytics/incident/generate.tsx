@@ -6,7 +6,7 @@ import {
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
-import { DataColumn } from "@/shared/ui/table";
+import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	ActionIcon,
 	Center,
@@ -128,7 +128,7 @@ export const IncidentGenerate = ({
 			)}
 			<Loading active={isLoading} keepMounted>
 				{data?.length ? (
-					<TableData<IAnalyticsIncidentItem> data={data}>
+					<TableData<IAnalyticsIncidentItem> data={data} withPagination={false}>
 						<DataColumn<IAnalyticsIncidentItem> field='data' header='Ошибка' sortable ellipsis	noWrap style={{
 							fontWeight: 'bolder'
 						}} />

@@ -1,7 +1,7 @@
 import { Table } from '@mantine/core';
 import { useCallback, useMemo } from 'react';
 import { type ColumnEntity } from '../DataColumn';
-import { useTableDataContext } from '../TableDataContext';
+import { useTableDataContext } from '../context/TableDataContext';
 import { TableHeaderCell } from './TableHeaderCell';
 
 export interface TableHeaderProps<T = object> {

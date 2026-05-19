@@ -1,14 +1,18 @@
 import { Box, Button, Group, Select } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { TbChevronsLeft, TbChevronsRight } from "react-icons/tb";
 
 export interface TablePaginationProps<T = object> {
+	page: string | number;
 	total: number;
 	limit?: number;
 	limits?: number[];
-	nextLabel?: string;
-	previousLabel?: string;
+	nextLabel?: React.ReactNode;
+	previousLabel?: React.ReactNode;
+	loading?: boolean;
+	activePprevious?: boolean;
+	activeNext?: boolean;
 	onNext?: () => void;
 	onPprevious?: () => void;
 	onChangeLimit?: (limit: number) => void;
@@ -16,7 +20,8 @@ export interface TablePaginationProps<T = object> {
 }
 
 export function TablePagination<T = object>({ 
-	limit, limits = [15, 30, 50, 75, 100], total,
+	page, limit, limits = [15, 30, 50, 75, 100], total,
+	loading, activePprevious, activeNext,
 	onNext, onPprevious, onChangeLimit, onChangePage,
 	nextLabel= 'Следующая', previousLabel= 'Предыдущая', ...props 
 }: TablePaginationProps<T>) {
@@ -37,20 +42,23 @@ export function TablePagination<T = object>({
 		(onNext || pagination.next)()
 	}, [onNext, pagination.next])
 
+	const disabledPrevious = (showed && pagination.active === 1) || (!showed && !activePprevious)
+	const disabledNext = (showed && pagination.active === total) || (!showed && !activeNext)
+
 	return <Box mt='md' {...props}>
 		<Group justify="space-between" align="start">
 			<Group flex='1'>
-				{showed && <Button variant="default" onClick={pagination.first} disabled={pagination.active === 1}>
+				{showed && <Button loading={loading} variant="default" onClick={pagination.first} disabled={pagination.active === 1}>
           <TbChevronsLeft />
         </Button>}
-        <Button variant="default" onClick={handlePprevious} disabled={pagination.active === 1}>
+        <Button loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
           {previousLabel}
         </Button>
 				{showed && pagination.range.map((page, index) =>
           page === 'dots' ? (
             <span key={index}>...</span>
           ) : (
-            <Button
+            <Button loading={loading}
               key={index}
               onClick={() => pagination.setPage(page)}
               variant={pagination.active === page ? 'filled' : 'default'}
@@ -59,15 +67,15 @@ export function TablePagination<T = object>({
             </Button>
           )
         )}
-				<Button variant="default" onClick={handleNext} disabled={pagination.active === total}>
+				<Button loading={loading} variant="default" onClick={handleNext} disabled={disabledNext}>
           {nextLabel}
         </Button>
-        {showed && <Button variant="default" onClick={pagination.last} disabled={pagination.active === total}>
+        {showed && <Button loading={loading} variant="default" onClick={pagination.last} disabled={pagination.active === total}>
           <TbChevronsRight />
         </Button>}
 			</Group>
 			<Box flex='0'>
-				<Select defaultValue={limit} allowDeselect={false} data={limits} onChange={onChangeLimit} />
+				<Select loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={onChangeLimit} />
 			</Box>
 		</Group>
 	</Box>
