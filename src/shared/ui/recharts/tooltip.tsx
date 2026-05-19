@@ -5,7 +5,7 @@ export function TooltipContentPie(props: TooltipContentProps) {
 	const { payload, separator, formatter = (value) => NumberFormatter({
 		value
 	}) } = props;
-	console.log(props)
+
 	if (!payload[0]) {
 		return null;
 	}

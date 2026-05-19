@@ -15,81 +15,65 @@ import {
 } from "./components";
 
 export interface WidgetFormProps {
-	id?: IWidgetItem["id"];
 	onSave?: (widget: IWidgetItem) => void;
-	layout?: Partial<ILayoutItem>;
+	dashboard?: WidgetContextType
 }
 
 export function WidgetForm({
-	id,
 	onSave,
-	layout = {},
+	dashboard = useDashboard()
 }: WidgetFormProps) {
-	const store = useDashboard();
-	const { availableWidgets } = store;
-	const [params, setParams] = useState<IWidgetParam[]>([]);
-
+	const { availableWidgets, id, preview } = dashboard;
 	const form = useForm<Partial<IWidgetItem>>({
 		mode: "uncontrolled",
+		initialValues: {
+			id: '',
+			type: availableWidgets[0] || "",
+			fixed: false,
+			params: {}
+		},
+		validate: function (values) {
+			const ret: Record<string, any> = {}
+			if (values.type === "") {
+				ret.type = "Выберите виджет"
+			}
+			for (const param of params) {
+				ret[`params.${param.field}`] = param.validate?.(values.params[param.field]) || param.required && values.params[param.field] === undefined ? param.label + " обязательный параметр" : null
+			}
+			console.log(ret)
+			return ret
+		}
 	});
+	const [params, setParams] = useState<IWidgetParam[]>(FactoryWidget.getWidget(form.values.type as string)?.params || [])
 
 	form.watch("type", ({ value }) => {
-		const params = FactoryWidget.getWidget(value)?.params
-		const paramsDefault = {};
-		for (const item of params) {
-			if (item.defaultValue === undefined || item.defaultValue === null) {
-				continue
+		const params = FactoryWidget.getWidget(value as string)?.params || []
+		form.setFieldValue("params", params.reduce<Record<string, any>>((acc, { field, defaultValue }) => {
+			if (defaultValue !== undefined && defaultValue !== null) {
+				acc[field] = defaultValue;
 			}
-			paramsDefault[item.field] = item.defaultValue
-		}
-		form.setFieldValue("params", paramsDefault);
-		setParams(params);
+			return acc;
+		}, {}));
+		setParams(params)
 	});
 
 	useEffect(() => {
-		const widget = store.findWidget(id);
+		const widget = dashboard.findWidget(id);
 		if (widget?.id) {
-			form.initialize(widget);
-			form.setInitialValues(widget);
 			form.setValues(widget);
-		} else {
-			const paramsDefault = {};
-			for (const item of params) {
-				if (item.defaultValue === undefined || item.defaultValue === null) {
-					continue
-				}
-				paramsDefault[item.field] = item.defaultValue
-			}
-
-			form.initialize({
-				type: availableWidgets[0] || "",
-				fixed: false,
-				params: paramsDefault,
-			});
-			form.setInitialValues({
-				type: availableWidgets[0] || "",
-				fixed: false,
-				params: paramsDefault,
-			});
-			form.setValues({
-				type: availableWidgets[0] || "",
-				fixed: false,
-				params: paramsDefault,
-			});
-		}
+			form.setFieldValue("params", widget.params)
+		} 
 	}, [id]);
 
 	function handleAdd(widget: Partial<IWidgetItem>) {
 		if (id) {
-			store.updateWidget(widget as IWidgetItem);
+			dashboard.updateWidget(widget as IWidgetItem);
 		} else {
-			store.addWidget(widget as IWidgetItem, layout);
+			dashboard.addWidget(widget as IWidgetItem, preview);
 		}
-		store.clear();
+		dashboard.clear();
 		onSave?.(widget as IWidgetItem);
 	}
-
-	console.log(form.values)
 
 	return (
 		<>
@@ -99,7 +83,6 @@ export function WidgetForm({
 					key={form.key("fixed")}
 					{...form.getInputProps("fixed", { type: "checkbox" })}
 				/>
-				
 				<Select
 					allowDeselect={false}
 					placeholder="Выбрать виджет"
@@ -166,15 +149,16 @@ export function WidgetForm({
 					)
 				}
 				)}
+				<Group justify="flex-end">
+					<Button
+						rightSection={<TbPlus />}
+						onClick={() => form.onSubmit(handleAdd)()}
+					>
+						{id ? "Изменить" : "Добавить"}
+					</Button>
+				</Group>
 			</Stack>
-			<Group mt="xs" justify="flex-end">
-				<Button
-					rightSection={<TbPlus />}
-					onClick={() => form.onSubmit(handleAdd)()}
-				>
-					{id ? "Изменить" : "Добавить"}
-				</Button>
-			</Group>
+			
 		</>
 	);
 }

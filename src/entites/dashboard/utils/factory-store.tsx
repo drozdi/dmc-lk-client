@@ -28,12 +28,19 @@ function dashboardFactory ({
 			key,
 			widgets: [],
 			layouts: [],
+			layout: undefined,
 			varibles,
-			preview: {},
+			preview: undefined,
 			availableWidgets,
 			edit: false,
 			id: 0,
 			values: {},
+			setLayout: (layout) => {
+				set({ layout })
+			},
+			setPreview: (preview) => {
+				set({ preview })
+			},
 			setValue: (key, val) => {
 				set((state) => ({
 					values: {
@@ -51,7 +58,8 @@ function dashboardFactory ({
 			clear: () => {
 				set({
 					id: 0,
-					preview: {},
+					layout: undefined,
+					preview: undefined,
 				});
 			},
 			toggleEdit: () => {
@@ -194,7 +202,6 @@ export const factoryDashboardStore = ({
 		),
 	);
 };
-
 export const oldFactoryDashboardStore = ({
 	storageKey = "",
 	availableWidgets = [],

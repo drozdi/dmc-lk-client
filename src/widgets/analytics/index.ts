@@ -225,6 +225,12 @@ FactoryWidget.register({
 	description: "Информация о этикетках (Description)",
 	params: [
 		{
+			label: "Изменять отображение",
+			field: 'allowChangeType',
+			type: 'checkbox',
+			defaultValue: false,
+		},
+		{
 			label: "Промежуток",
 			field: "filterdate",
 			type: "date:range",

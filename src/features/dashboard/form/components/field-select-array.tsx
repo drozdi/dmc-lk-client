@@ -25,10 +25,11 @@ export function FieldSelectArray({
 			value={props.value}
 			defaultValue={props.defaultValue}
 			onChange={onChange}
+			error={props.error}
 		>
 			<MultiSelect
 				{...props}
-				onChange={(...args) => onChange?.(...args)}
+				onChange={onChange}
 				required={required}
 			/>
 		</FieldWrap>

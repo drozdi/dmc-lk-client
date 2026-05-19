@@ -20,33 +20,38 @@ export interface FieldWrapProps {
 	value?: any;
 	defaultValue?: any;
 	onChange?: (value: any) => void;
+	error?: React.ReactNode
 }
 
-export function FieldWrap({
-	type,
-	children,
-	label,
-	description,
-	required,
-	value,
-	defaultValue,
-	onChange,
-}: FieldWrapProps) {
+export function FieldWrap(props: FieldWrapProps) {
+	const {
+		type,
+		children,
+		label,
+		description,
+		required,
+		value,
+		defaultValue,
+		onChange,
+		error
+	} = props;
+
 	const store = useDashboard();
 	const v = useMemo(() => value || defaultValue, [value, defaultValue]);
 	const [mode, setMode] = useState<"field" | "select">(
 		typeof v === "string" && v.startsWith("$") ? "select" : "field",
 	);
-	const varibles = useMemo(() => {
-		return Object.fromEntries(
-			Object.entries(store.varibles).filter(
-				([key, field]) => field.type === type,
-			),
-		);
+	const varibles = useMemo<ComboboxItem[]>(() => {
+		return Object.entries(store.varibles).filter(
+			([key, field]) => field.type === type,
+		).map(([value, { label }]) => ({
+			value,
+			label,
+		})) as ComboboxItem[];
 	}, [type, store.varibles]);
 
 	const isMakeVarible = useMemo<boolean>(
-		() => Object.values(varibles).length > 0,
+		() => varibles.length > 0,
 		[varibles],
 	);
 
@@ -55,7 +60,7 @@ export function FieldWrap({
 	}, [v]);
 
 	return (
-		<Group justify="space-between" align="flex-start">
+		<Group justify="space-between" align="flex-start" grow wrap="nowrap">
 			{(label || description) && (
 				<Group flex={1} justify="space-between">
 					{label && (
@@ -88,16 +93,15 @@ export function FieldWrap({
 						})
 					) : (
 						<Select
+							allowDeselect={!required}
 							flex={1}
+							required={required}
 							value={value}
 							defaultValue={defaultValue}
-							data={
-								Object.entries(varibles).map(([value, { label }]) => ({
-									value,
-									label,
-								})) as ComboboxItem[]
-							}
+							data={varibles}
+							placeholder="Выберите переменую"
 							onChange={(value) => onChange?.(value)}
+							error={error}
 						/>
 					)}
 				</HoverCard.Target>
@@ -116,7 +120,7 @@ export function FieldWrap({
 							},
 						]}
 						onChange={(val) => {
-							onChange?.("");
+							//onChange?.(varibles[0]?.value);
 							setMode(val as any);
 						}}
 					/>

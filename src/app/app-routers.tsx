@@ -16,7 +16,6 @@ import { LabelsHistoryPage } from "@/pages/labels/lables-history-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
 import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
-import { TablePage } from "@/pages/table";
 import { UsersListPage } from "@/pages/users/list-page";
 import { UsersUserPage } from "@/pages/users/user-page";
 
@@ -58,10 +57,6 @@ const routes = () => [
 			{
 				path: "",
 				element: <MainPage />,
-			},
-			{
-				path: "table",
-				element: <TablePage />,
 			},
 			{
 				path: "dashboard",

@@ -22,7 +22,6 @@ import { type MouseHandlerDataParam } from "recharts";
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
 	const [opened, { open, close }] = useDisclosure(false);
-	const [layout, setLayout] = useState<Partial<ILayoutItem> | undefined>({});
 	const [history, setHistory] = useState([]);
 
 	useEffect(() => {
@@ -129,15 +128,7 @@ export const MainPage = () => {
 				</Template.Header>
 			</Group>
 			<DashboardProvider store={useStoreDashboardMain}>
-				<UiDashBoard
-					onSelection={(react: Partial<ILayoutItem>) => {
-						setLayout(react);
-						useStoreDashboardMain.setState({
-							preview: react,
-						});
-						open();
-					}}
-				>
+				<UiDashBoard>
 					<div
 						key="labels.current.balance"
 						data-grid={{
@@ -320,18 +311,11 @@ export const MainPage = () => {
 						/>
 					</div>
 				</UiDashBoard>
-				<ModalForm
-					opened={opened}
-					onClose={() => {
-						storeDashboardMain.clear();
-						close();
-					}}
-				/>
-
+				<ModalForm dashboard={storeDashboardMain} />
 				<Template.Footer>
 					<Group>
-						<BtnClear />
-						<BtnEditMode />
+						<BtnClear dashboard={storeDashboardMain} />
+						<BtnEditMode dashboard={storeDashboardMain} />
 					</Group>
 				</Template.Footer>
 			</DashboardProvider>

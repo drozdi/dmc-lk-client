@@ -38,7 +38,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 	});
 	const { width, containerRef, mounted } = useContainerWidth();
 	
-	const { layouts, updateLayout, widgets, edit, key, preview } = useDashboard();
+	const { layouts, updateLayout, widgets, edit, key, preview, setPreview } = useDashboard();
 
 	const isPreview = preview && Object.keys(preview).length > 0;
 
@@ -162,8 +162,8 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 			const width = x2 - x1 + 1;
 			const height = y2 - y1 + 1;
 
-			if (isAreaFree(x1, y1, width, height)) {
-				onSelection?.({ x: x1, y: y1, w: width, h: height });
+			if (isAreaFree(x1, y1, width, height)) {	
+				setPreview?.({ x: x1, y: y1, w: width, h: height });
 			}
 		}
 

@@ -5,30 +5,33 @@ import { WidgetForm } from "@/features/dashboard/form/widget-form";
 import { Modal } from "@mantine/core";
 
 export interface ModalFormProps {
-	opened: boolean;
+	dashboard?: WidgetContextType
 	onClose?: () => void;
 }
 
 export function ModalForm ({
-	opened,
+	dashboard = useDashboard(),
 	onClose
 }: ModalFormProps) {
-		const dashboard = useDashboard();
-		return <Modal
-			title="Настройка виджета"
-			opened={opened}
-			keepMounted={false}
-			onClose={onClose}
-		>
-			{opened && (
-				<WidgetForm
-					id={dashboard.id}
-					onSave={() => {
-						dashboard.clear();
-						onClose?.();
-					}}
-					layout={layout}
-				/>
-			)}
-		</Modal>
+	const opened = dashboard.preview || dashboard.id;
+
+	return <Modal
+		title="Настройка виджета"
+		opened={opened}
+		keepMounted={false}
+		onClose={() => {
+			dashboard.clear();
+			onClose?.()
+		}}
+	>
+		{opened && (
+			<WidgetForm
+				dashboard={dashboard}
+				onSave={() => {
+					dashboard.clear();
+					onClose?.();
+				}}
+			/>
+		)}
+	</Modal>
 }

@@ -7,19 +7,15 @@ import {
 } from "@/entites/dashboard";
 import { BtnClear } from "@/features/dashboard/btn-clear";
 import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
-import { WidgetForm } from "@/features/dashboard/form/widget-form";
+import { ModalForm } from "@/features/dashboard/modal";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { Group, Modal, Paper } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Group, Paper } from "@mantine/core";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 export const DashboardPage = () => {
-	return '';
 	const storeDashboard = useStoreDashboardSecond();
-	const [opened, { open, close }] = useDisclosure(false);
-	const [layout, setLayout] = useState<Partial<ILayoutItem>>({});
 	const [query, setQuery] = $setting.useState<
 		Omit<IRequestAnalytics, "step" | "event">
 	>("dashboard-main", {
@@ -30,9 +26,6 @@ export const DashboardPage = () => {
 			dayjs().format("YYYY-MM-DD"),
 		],
 	});
-	useEffect(() => {
-		storeDashboard.id && open();
-	}, [storeDashboard.id]);
 	
 	return (
 		<Paper>
@@ -53,15 +46,7 @@ export const DashboardPage = () => {
 				</Template.Header>
 			</Group>
 			<DashboardProvider store={useStoreDashboardSecond}>
-				<UiDashBoard
-					onSelection={(react: Partial<ILayoutItem>) => {
-						setLayout(react);
-						useStoreDashboardSecond.setState({
-							preview: react,
-						});
-						open();
-					}}
-				>
+				<UiDashBoard>
 					<div
 						key="analytic-events"
 						data-grid={{
@@ -79,12 +64,27 @@ export const DashboardPage = () => {
 							allowChangeType={true}
 						/>
 					</div>
-										
+					<div
+						key="analytic-labels"
+						data-grid={{
+							x: 6,
+							y: 0,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-labels"
+							type="default"
+							filterdate={query.filterdate}
+							allowChangeType={true}
+						/>
+					</div>		
 					<div
 						key="analytic-event-defect"
 						data-grid={{
-							x: 6,
-							y: 12,
+							x: 0,
+							y: 6,
 							w: 6,
 							h: 6,
 						}}
@@ -95,12 +95,11 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
-
 					<div
 						key="analytic-pie"
 						data-grid={{
-							x: 0,
-							y: 18,
+							x: 6,
+							y: 6,
 							w: 6,
 							h: 6,
 						}}
@@ -115,8 +114,8 @@ export const DashboardPage = () => {
 					<div
 						key="analytic-type"
 						data-grid={{
-							x: 6,
-							y: 18,
+							x: 0,
+							y: 12,
 							w: 6,
 							h: 6,
 						}}
@@ -130,8 +129,8 @@ export const DashboardPage = () => {
 					<div
 						key="analytics-incident"
 						data-grid={{
-							x: 0,
-							y: 24,
+							x: 6,
+							y: 12,
 							w: 6,
 							h: 6,
 						}}
@@ -141,6 +140,7 @@ export const DashboardPage = () => {
 							filterdate="$filterdate"
 						/>
 					</div>
+					
 					{/* <div
 						key="analytics-count"
 						data-grid={{
@@ -167,33 +167,13 @@ export const DashboardPage = () => {
 						<DashBoardWidget widget="count" filterdate="$filterdate" />
 					</div> */}
 				</UiDashBoard>
-				<Modal
-				title="Настройка виджета"
-				opened={opened}
-				keepMounted={false}
-				onClose={() => {
-					storeDashboard.clear();
-					close();
-				}}
-			>
-				{opened && (
-					<WidgetForm
-						id={storeDashboard.id}
-						store={useStoreDashboardSecond}
-						onSave={() => {
-							storeDashboard.clear();
-							close();
-						}}
-						layout={layout}
-					/>
-				)}
-			</Modal>
-			<Template.Footer>
-				<Group>
-					<BtnClear store={useStoreDashboardSecond} />
-					<BtnEditMode store={useStoreDashboardSecond} />
-				</Group>
-			</Template.Footer>
+				<ModalForm dashboard={storeDashboard} />
+				<Template.Footer>
+					<Group>
+						<BtnClear dashboard={storeDashboard} />
+						<BtnEditMode dashboard={storeDashboard} />
+					</Group>
+				</Template.Footer>
 			</DashboardProvider>
 			
 		</Paper>

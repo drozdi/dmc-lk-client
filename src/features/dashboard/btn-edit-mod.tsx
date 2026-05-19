@@ -1,18 +1,18 @@
+import { useDashboard } from "@/entites/dashboard";
 import { ActionIcon, Group } from "@mantine/core";
 import { TbEdit } from "react-icons/tb";
 
 export interface BtnClearProps {
-
+	dashboard?: WidgetContextType
 }
 
-export function BtnEditMode({ }: BtnClearProps) {
-	//const store = useDashboard();
+export function BtnEditMode({ dashboard = useDashboard() }: BtnClearProps) {
 	return (
 		<Group>
 			<ActionIcon
-				//color={store.edit ? "green" : ""}
+				color={dashboard.edit ? "green" : ""}
 				onClick={() => {
-					// store.toggleEdit()
+					dashboard.toggleEdit()
 				}}
 			>
 				<TbEdit />

@@ -8,12 +8,12 @@ export interface FieldDateProps
 		Omit<DateInputProps, "description" | "label" | "type"> {}
 
 export function FieldDate({
-	type,
-	label,
-	description,
-	required,
-	...props
-}: FieldDateProps) {
+		type,
+		label,
+		description,
+		required,
+		...props
+	}: FieldDateProps) {
 	return (
 		<FieldWrap
 			type={type}
@@ -23,6 +23,7 @@ export function FieldDate({
 			value={props.value}
 			defaultValue={props.defaultValue}
 			onChange={props.onChange}
+			error={props.error}
 		>
 			{type.endsWith("range") ? (
 				<DualCalendarRange required={required} {...props} />

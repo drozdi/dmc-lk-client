@@ -28,7 +28,7 @@ export function FieldSelect({
 		>
 			<Select
 				{...props}
-				onChange={(...args) => onChange?.(...args)}
+				onChange={onChange}
 				required={required}
 			/>
 		</FieldWrap>

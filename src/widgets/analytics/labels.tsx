@@ -1,5 +1,6 @@
 import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { useWidgetParams } from "@/entites/dashboard";
 import {
 	AnalyticLabels,
 	type AnalyticLabelsProps,
@@ -10,6 +11,7 @@ import { memo, useEffect, useMemo, useState } from "react";
 export interface WidgetAnalyticLabelsProps
 	extends Omit<WidgetProps, "children" | "title">, AnalyticLabelsProps {
 	title?: WidgetProps["title"];
+	allowChangeType?: boolean
 }
 
 export const WidgetAnalyticLabels = memo(
@@ -18,7 +20,8 @@ export const WidgetAnalyticLabels = memo(
 		filterdate,
 		step = "d",
 		event = "p",
-		type = "default",
+		type: typeProp = "default",
+		allowChangeType,
 		...props
 	}: WidgetAnalyticLabelsProps) => {
 		const production_id = Number(
@@ -31,7 +34,8 @@ export const WidgetAnalyticLabels = memo(
 			production_id,
 		});
 		const { isLoading, fetch, error } = useQueryAnalytics(query);
-
+		const [type, setType] = useState(typeProp);
+		const [_, update] = useWidgetParams()
 		useEffect(() => {
 			setQuery((v) => ({
 				...v,
@@ -59,6 +63,24 @@ export const WidgetAnalyticLabels = memo(
 			return "Напечатано этикеток";
 		}, [title, event]);
 
+		const memu = useMemo<any[]>(() => {
+			if (!allowChangeType) {
+				return []
+			}
+			return Object.entries({
+				default: 'Разбивать',
+				stack: 'Объединять',
+				table: 'Таблица',
+			}).map(([value, label]) => ({
+				children: label,
+				color: type === value? "primary": '',
+				onClick: () => {
+					setType(value)
+					update?.('type', value)
+				},
+			}));
+		}, [allowChangeType, type])
+
 		return (
 			<Widget
 				error={error}
@@ -66,6 +88,7 @@ export const WidgetAnalyticLabels = memo(
 				{...props}
 				title={computedTitle}
 				subTitle={<>За <QueryShow {...query} /></>}
+				menu={memu}
 			>
 				<AnalyticLabels
 					filterdate={filterdate}

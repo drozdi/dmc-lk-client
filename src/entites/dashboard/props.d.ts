@@ -18,10 +18,7 @@ interface IWidgetItem {
 	id: ILayoutItem["i"] | ILayoutItem["id"];
 	type: string;
 	fixed?: boolean;
-	params?: {
-		onRemove?: () => void;
-		[key: string]: any;
-	};
+	params?: Record<string, any>
 }
 
 interface IWidget {
@@ -46,10 +43,11 @@ interface WidgetContextType {
 	key: "i" | "id";
 	widgets: IWidgetItem[];
 	layouts: ILayoutItem[];
-	preview: Partial<ILayoutItem> | null;
+	preview?: Partial<ILayoutItem>;
 	availableWidgets: IWidget["type"][];
 	edit: boolean;
 	id: IWidgetItem["id"];
+	layout?: Partial<ILayoutItem>;
 	values: Record<string, any>;
 	varibles: Record<
 		string,
@@ -60,6 +58,8 @@ interface WidgetContextType {
 			required: IWidgetParam["required"];
 		}
 	>;
+	setLayout: (layout?: Partial<ILayoutItem>) => void;
+	setPreview: (preview?: Partial<ILayoutItem>) => void;
 	getValue: (val: unknown) => any;
 	setValue: (key: string, val: unknown) => void;
 	toggleEdit: () => void;
