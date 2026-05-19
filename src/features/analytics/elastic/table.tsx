@@ -9,25 +9,16 @@ import {
 	useStoreElastic,
 } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
-import { ButtonRemove, Loading } from "@/shared/ui";
+import { Loading } from "@/shared/ui";
+import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	Button,
 	Divider,
 	Group,
-	HoverCard,
 	Select,
-	Stack,
-	Table,
-	Text,
-	Tooltip
+	Stack
 } from "@mantine/core";
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
 import { useMemo } from "react";
-import { TbColumnRemove } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { ElasticField } from "./components/field";
 import { ElasticFilter } from "./components/fliter";
@@ -65,12 +56,6 @@ export const AnalyticsElasticTable = ({
 		],
 		[template, findLabelByCode],
 	);
-
-	const table = useReactTable({
-		columns,
-		data,
-		getCoreRowModel: getCoreRowModel(),
-	});
 
 	const handleAddSelect = (select: string) => {
 		if (!select) {
@@ -111,32 +96,6 @@ export const AnalyticsElasticTable = ({
 		}
 	};
 
-	/*const computedColumns = useMemo(
-		() =>
-			Object.entries(qaf.data || {}).map(([key, item]) => ({
-				accessor: key,
-				title: item.label,
-				ellipsis: true,
-				noWrap: true,
-				sortKey: key,
-				// resizable: true,
-				// sortable: true,
-				toggleable: true,
-				defaultToggle: false,
-				// filter: ({ close }) => {
-				// 	return <></>;
-				// },
-				// draggable: true,
-			})),
-		[qaf.data, qaf.findLabelByCode],
-	);*/
-
-	// useEffect(() => {
-	// 	if (storeElastic.id) {
-	// 		storeElastic.reset();
-	// 	}
-	// }, [storeElastic.id]);
-
 	return (
 		<>
 			<Group className={className} justify="space-between" align="self-start">
@@ -158,63 +117,14 @@ export const AnalyticsElasticTable = ({
 			</Group>
 
 			<Loading active={isLoading} keepMounted>
-				<Table striped withColumnBorders mt="xs">
-					<Table.Thead>
-						{columns?.length ? (
-							table.getHeaderGroups().map((headerGroup, index) => (
-								<Table.Tr key={headerGroup.id + "-" + index}>
-									{headerGroup.headers.map((header) => (
-										<Table.Th key={header.id} colSpan={header.colSpan}>
-											<HoverCard position="top">
-												<HoverCard.Target>
-													<Text>
-														{header.isPlaceholder
-															? null
-															: flexRender(
-																	header.column.columnDef.header,
-																	header.getContext(),
-																)}
-													</Text>
-												</HoverCard.Target>
-												<HoverCard.Dropdown>
-													<ButtonRemove
-														flex="0"
-														tooltip="Удалить поле"
-														onClick={() => handleDelSelect(header.id)}
-													>
-														<TbColumnRemove />
-													</ButtonRemove>
-												</HoverCard.Dropdown>
-											</HoverCard>
-										</Table.Th>
-									))}
-								</Table.Tr>
-							))
-						) : (
-							<Table.Tr>
-								<Table.Th ta="center" fz="h2" c="dimmed">
-									Выберите что паказавать
-								</Table.Th>
-							</Table.Tr>
-						)}
-					</Table.Thead>
-					<Table.Tbody>
-						{table.getRowModel().rows.map((row) => (
-							<Tooltip key={row.id} label={`Ошибка #${row.original.id}`}>
-								<Table.Tr>
-									{row.getVisibleCells().map((cell, index) => (
-										<Table.Td key={cell.id + "-" + index}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</Table.Td>
-									))}
-								</Table.Tr>
-							</Tooltip>
-						))}
-					</Table.Tbody>
-				</Table>
+				<TableData<IAnalyticsElasticItem> data={data} withPagination={false}>
+					{columns?.length ? columns.map((column) => (
+						<DataColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
+					)): <DataColumn<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
+						textAlign: 'center',
+						fontSize: '3rem'
+					}} />}
+				</TableData>
 			</Loading>
 			<Template.Footer>
 				<Group>

@@ -5,22 +5,20 @@ import {
 } from "@/entites/analytics";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
-import { ButtonIcon, ButtonRemove, DataTable, Loading } from "@/shared/ui";
+import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
+import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	ActionIcon,
 	Center,
 	Group,
 	HoverCard,
 	Stack,
-	Text,
 	TextInput
 } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
-import { TbColumnRemove, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
-
-import { type DataTableColumn } from "mantine-datatable";
+import { useEffect, useState } from "react";
+import { TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 
 interface IncidentGenerateProps {
 	filterdate: [DateValue, DateValue];
@@ -60,81 +58,6 @@ export const IncidentGenerate = ({
 		updateTemplate({ ...template });
 	};
 
-	const computedColumns = useMemo(
-		() =>
-			[
-				{
-					accessor: "data",
-					title: "Ошибка",
-					sortKey: "data",
-					sortable: true,
-				},
-				{
-					accessor: "total_counter",
-					title: "Всего ошибок",
-					sortKey: "total_counter",
-					sortable: true,
-				},
-			].concat(
-				...(template.fields_name || []).map((field) => ({
-					accessor: field,
-					title: (
-						<HoverCard position="top-end">
-							<HoverCard.Target>
-								<Text fz='sm'>{ef.findLabelByCode(field)}</Text>
-							</HoverCard.Target>
-							<HoverCard.Dropdown>
-								<ButtonRemove
-									tooltip="Удалить"
-									onClick={() => handleRemove(field)}
-								>
-									<TbColumnRemove />
-								</ButtonRemove>
-								</HoverCard.Dropdown>
-							</HoverCard>
-					),
-					sortKey: field,
-					sortable: true,
-					ellipsis: false,
-					noWrap: false,
-				})) as DataTableColumn<IAnalyticsIncidentItem>,
-				{
-					accessor: "actions",
-					title: (
-						<HoverCard>
-							<HoverCard.Target>
-								<ButtonIcon
-									tooltip="Сбросить"
-									onClick={() =>
-										updateTemplate({
-											fields_name: fields,
-										})
-									}
-								>
-									<TbReload />
-								</ButtonIcon>
-							</HoverCard.Target>
-							<HoverCard.Dropdown>
-								<SelectAnalyticsIncidentFields
-									excludeds={template.fields_name}
-									placeholder="Показывать поля"
-									value=""
-									onChange={(val) => handleAddField(val as string)}
-								/>
-							</HoverCard.Dropdown>
-						</HoverCard>
-					),
-					width: 40,
-					textAlign: "right",
-					titleStyle: {
-						backgroundColor: "var(--mantine-color-body)",
-					},
-					render: (record) => "",
-				},
-			),
-		[template, ef.findLabelByCode],
-	);
-
 	const handleAddField = (field: string) => {
 		template.fields_name.push(field);
 		updateTemplate({ ...template });
@@ -173,59 +96,6 @@ export const IncidentGenerate = ({
 
 	return (
 		<Stack gap="xs">
-			{/* <br />
-			<MantineDataTable columns={
-				['name', 'missionStatement', 'streetAddress', 'city', 'state', 'state1', 'state2', 'state3'].map((field) => ({
-					accessor: field,
-					sortKey: field,
-					sortable: true,
-					ellipsis: true,
-					noWrap: true,
-					titleStyle: {
-						color: "red"
-					}
-				}))
-			}
-			records={[
-				{
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}, {
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}, {
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}, {
-					name: "John Doe",
-					missionStatement: "Lorem ipsum dolor sit amet",
-					streetAddress: "123 Main St",
-					city: "Anytown",
-					state: "CA",
-					state1: "CA",
-					state2: "CA",
-					state3: "CA",
-				}
-			]} />
-			<br /> */}
 			{filter && (
 				<Group gap="xs" justify="space-between">
 					<ul className="list-none flex-1">
@@ -258,15 +128,39 @@ export const IncidentGenerate = ({
 			)}
 			<Loading active={isLoading} keepMounted>
 				{data?.length ? (
-					<DataTable<IAnalyticsIncidentItem>
-						withRowBorders={false}
-						striped
-						miw={640}
-						pinLastColumn
-						columns={computedColumns}
-						records={data}
-						style={{width: '100%', minWidth: '100%'}}
-					/>
+					<TableData<IAnalyticsIncidentItem> data={data} withPagination={false}>
+						<DataColumn<IAnalyticsIncidentItem> field='data' header='Ошибка' sortable ellipsis	noWrap style={{
+							fontWeight: 'bolder'
+						}} />
+						<DataColumn<IAnalyticsIncidentItem> field='total_counter' header='Всего ошибок' sortable ellipsis noWrap />
+						{(template.fields_name || []).map((field) => <DataColumn<IAnalyticsIncidentItem> field={field} header={ef.findLabelByCode(field)} toggleable={() => {
+							handleRemove(field)
+						}} sortable ellipsis noWrap />)}
+						<DataColumn<IAnalyticsIncidentItem> style={{
+							width: 40,
+						}} field='_' header={<HoverCard>
+							<HoverCard.Target>
+								<ButtonIcon size='xs'
+									tooltip="Сбросить"
+									onClick={() =>
+										updateTemplate({
+											fields_name: fields,
+										})
+									}
+								>
+									<TbReload size='80%' />
+								</ButtonIcon>
+							</HoverCard.Target>
+							<HoverCard.Dropdown>
+								<SelectAnalyticsIncidentFields
+									excludeds={template.fields_name}
+									placeholder="Показывать поля"
+									value=""
+									onChange={(val) => handleAddField(val as string)}
+								/>
+							</HoverCard.Dropdown>
+						</HoverCard>} body={() => <></>} />
+					</TableData>
 				) : (
 					<Center w="100%" h="10rem" fz="h1" c="dimmed">
 						Данные отсутствуют за период{" "}
