@@ -59,7 +59,7 @@ const routes = () => [
 				path: "",
 				element: <MainPage />,
 			},
-			{
+			import.meta.env.DEV && {
 				path: "table",
 				element: <TablePage />,
 			},
