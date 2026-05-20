@@ -1,4 +1,5 @@
-import { Table } from '@mantine/core';
+import { useBreakpoint } from '@/shared/hooks';
+import { Box, Table } from '@mantine/core';
 import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './context/TableDataContext';
@@ -112,6 +113,8 @@ export interface TableDataProps<T = object> {
 	limits?: number[],
 	page?: number,
 	total?: number
+	editMode?: 'row' | 'cell',
+	onRowEditComplete?: (item: T, index: TableNode<T>['index']) => void,
 	withHeader?: boolean,
 	withPagination?: boolean,
 	pagination?: React.FC<TablePaginationProps<T>>
@@ -130,6 +133,8 @@ export function TableData<T = object>({
 	withHeader = true,
 	withPagination = true,
 	pagination: Pagination = TablePagination,
+	onRowEditComplete,
+	editMode,
 	...props }: TableDataProps<T>) {
 	const [limit, setLimit] = useState(limitProps)
 	const [page, setPage] = useState<number>(pageProps)
@@ -138,6 +143,7 @@ export function TableData<T = object>({
 	const [data, setData] = useState<T[]>(Array.isArray(dataProps)? dataProps: [])
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string>('')
+	const breakpoint = useBreakpoint('md');
 	
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
@@ -257,30 +263,76 @@ export function TableData<T = object>({
 		fetcher && fetch(history.pop(), false)
 	}
 
+
+	const [editableMeta, setEditableMeta] = useState<{
+		columns: ColumnEntity<T>['field'][]
+		index: TableNode<T>['index']
+	}>({
+		columns: [],
+		index: 0
+	})
+	const handleModeChange = useCallback((item: TableNode<T>, column: ColumnEntity<T>) => {
+		if (!editMode) {
+			return
+		}
+		if (editMode === 'row') {
+			setEditableMeta({
+				index: item.index,
+				columns: columns.filter(v => v.isField).map(v => v.field)
+			})
+		} else if (editMode === 'cell') {
+			setEditableMeta({
+				index: item.index,
+				columns: [column.field]
+			})
+		}
+	}, [editMode, columns])
+	const clearModeChange = useCallback(() => {
+		setEditableMeta({
+			index: 0,
+			columns: []
+		})
+	}, [])
+	const editorMode = useCallback((item: TableNode<T>, column: ColumnEntity<T>): boolean => {
+		if (!editMode) {
+			return false
+		}
+		if (editableMeta.index === item.index && editableMeta.columns.includes(column.field)) {
+			return true
+		}
+		return false;
+	}, [editMode, editableMeta])
+	
+	const handleSaveItem = useCallback((item: T, index: TableNode<T>['index']) => {
+		onRowEditComplete?.(item, index)
+	}, [clearModeChange, onRowEditComplete])
+
 	return (
 		<TableDataProvider value={useMemo(() => ({
-			sort, changeSort
-		}), [sort, changeSort])}>
-			<Table layout="fixed">
-				{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
-				<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
-			</Table>
-			{withPagination && Pagination({
-				loading: isLoading,
-				onNext: fetcher? handlerNext: undefined,
-				onPprevious: fetcher? handlerPprevious: undefined,
-				activePprevious:history.length > 1,
-				activeNext: !!next,
-				page, 
-				total: Math.ceil(total/limit),
-				limit,
-				limits,
-				onChangePage: setPage,
-				onChangeLimit: (val) => {
-					setPage(1)
-					setLimit(val)
-				}
-			})}
+			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem
+		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem])}>
+			<Box>
+				<Table layout="fixed">
+					{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
+					<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
+				</Table>
+				{withPagination && <Pagination
+					loading={isLoading}
+					onNext={fetcher? handlerNext: undefined}
+					onPprevious={fetcher? handlerPprevious: undefined}
+					activePprevious={history.length > 1}
+					activeNext={!!next}
+					page={page}
+					total={Math.ceil(total/limit)}
+					limit={limit}
+					limits={limits}
+					onChangePage={setPage}
+					onChangeLimit={(val) => {
+						setPage(1)
+						setLimit(val)
+					}}
+				/> }
+			</Box>
 		</TableDataProvider>
 	);
 };

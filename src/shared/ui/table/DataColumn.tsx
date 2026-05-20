@@ -34,7 +34,7 @@ export interface DataColumnProps<T = object> {
 	align?: "left" | "right" | "center",
 	render?: (column: ColumnEntity<T>) => React.ReactNode,
 	body?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
-	edit?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
+	editor?: (item: T, column: ColumnEntity<T>, onChange: ((value: T[ColumnEntity<T>['field']]) => void), onSave: (() => void)) => React.ReactNode,
 }
 
 export interface ColumnEntity<T = object> extends DataColumnProps<T> {

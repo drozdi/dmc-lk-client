@@ -1,5 +1,7 @@
 import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData } from "@/shared/ui/table";
+import { TextInput } from '@mantine/core';
+import { useState } from 'react';
 
 interface SS {
 	position: number,
@@ -486,7 +488,53 @@ const elements: SS[] = [
 
 
 export function TablePage() {
-		return <TableData<{id: string}> data={async (limit = 100, page = '') => {
+	const [data, setData] = useState<SS[]>(elements)
+	return <TableData<SS> data={data} editMode='row' onRowEditComplete={
+		(item, index) => setData(v => v.map((e, i) => i === index? item: e))}>
+		<DataColumn<SS> 
+			editor={(item, column, onChange, onSave) => 
+				<TextInput defaultValue={item[column.field] as string} 
+					onChange={({target}) => onChange(target.value) }
+					onKeyPress={({ key }) => {
+					if (key === 'Enter') {
+						onSave()
+					}
+				}}
+					/>
+		} sortable field="position" header="Element position" />
+		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+			<TextInput defaultValue={item[column.field] as string} 
+				onChange={({target}) => onChange(target.value) }
+				onKeyPress={({ key }) => {
+					if (key === 'Enter') {
+						onSave()
+					}
+				}}
+				/>
+		} sortable field="name" header="Element name" />
+		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+			<TextInput defaultValue={item[column.field] as string} 
+				onChange={({target}) => onChange(target.value) }
+				onKeyPress={({ key }) => {
+					if (key === 'Enter') {
+						onSave()
+					}
+				}}
+				/>
+		} field="symbol" header="Symbol" />
+		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+			<TextInput defaultValue={item[column.field] as string} 
+				onChange={({target}) => onChange(target.value) }
+				onKeyPress={({ key }) => {
+					if (key === 'Enter') {
+						onSave()
+					}
+				}}
+				/>
+		} field="mass" header="Atomic mass" />
+	</TableData>
+
+	return <TableData<{id: string}> data={async (limit = 100, page = '') => {
 		const res = await requestAnalyticsElastic({
 			company: {
 				select_field: [],
@@ -507,12 +555,5 @@ export function TablePage() {
 		}
 	}}>
 		<DataColumn<{id: string}> field="id" header="ID" />
-	</TableData>
-
-	return <TableData<SS> data={elements}>
-		<DataColumn<SS> sortable field="position" header="Element position" />
-		<DataColumn<SS> sortable field="name" header="Element name" />
-		<DataColumn<SS> field="symbol" header="Symbol" />
-		<DataColumn<SS> field="mass" header="Atomic mass" />
 	</TableData>
 }
