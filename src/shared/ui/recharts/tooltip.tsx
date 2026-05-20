@@ -26,7 +26,6 @@ export function TooltipContentPie(props: TooltipContentProps) {
 		</Group>
 	);
 }
-
 export function TooltipContentBar(props: TooltipContentProps) {
 	const { active, payload, separator, label, labelFormatter } = props;
 	if (active && payload && payload.length) {

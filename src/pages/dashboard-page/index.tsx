@@ -108,6 +108,7 @@ export const DashboardPage = () => {
 							widget="analytic-pie"
 							events={["v", "d", "p"]}
 							filterdate="$filterdate"
+							percent={true}
 							step="mon"
 						/>
 					</div>
