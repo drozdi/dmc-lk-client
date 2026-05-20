@@ -7,6 +7,7 @@ export const useStoreDashboardMain = factoryDashboardStore({
 	storageKey: "main",
 	key: "i",
 	availableWidgets: [
+		'*',
 		"analytic-events",
 		"analytic-type",
 		"analytic-pie",

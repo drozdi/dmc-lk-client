@@ -489,7 +489,7 @@ const elements: SS[] = [
 
 export function TablePage() {
 	const [data, setData] = useState<SS[]>(elements)
-	return <TableData<SS> data={data} editMode='row' onRowEditComplete={
+	return <TableData<SS> data={data} editMode='row' breakpoint='sm' onRowEditComplete={
 		(item, index) => setData(v => v.map((e, i) => i === index? item: e))}>
 		<DataColumn<SS> 
 			editor={(item, column, onChange, onSave) => 

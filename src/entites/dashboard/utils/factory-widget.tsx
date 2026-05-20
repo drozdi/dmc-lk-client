@@ -17,7 +17,12 @@ export class FactoryWidget {
 	}
 
 	static getAvailableTypes(): IWidget["type"][] {
-		return Object.keys(this.registry);
+		const ret: IWidget["type"][] = []
+		const keys = this.registry.keys()
+		for (const key of keys) {
+			ret.push(key)
+		}
+		return ret
 	}
 	static getWidget(type: IWidget["type"]): IWidget {
 		return this.registry.get(type) as IWidget;

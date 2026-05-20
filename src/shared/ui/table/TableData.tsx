@@ -1,10 +1,10 @@
 import { useBreakpoint } from '@/shared/hooks';
-import { Box, Table } from '@mantine/core';
-import { Children, useCallback, useEffect, useMemo, useState } from "react";
+import { Box, Card, Group, SimpleGrid, Table, Text } from '@mantine/core';
+import React, { Children, useCallback, useEffect, useMemo, useState } from "react";
+import { Loading } from '../loading';
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './context/TableDataContext';
-import { TableBody } from "./ui/TableBody";
-import { TableHeader } from "./ui/TableHeader";
+import { TableBody, TableBodyCellSlot, TableHeader, TableHeaderCellSlot } from "./ui";
 import { TablePagination, type TablePaginationProps } from './ui/TablePagination';
 
 export interface TableNode<T = object> {
@@ -101,6 +101,7 @@ function calculateIsColumns(children) {
 };
 
 export interface TableDataProps<T = object> {
+	loading?: boolean;
 	children?: React.ReactNode;
 	data: T[] | ((limit: number, page: string | number) => Promise<{
 		data: T[],
@@ -117,21 +118,42 @@ export interface TableDataProps<T = object> {
 	onRowEditComplete?: (item: T, index: TableNode<T>['index']) => void,
 	withHeader?: boolean,
 	withPagination?: boolean,
+	breakpoint?: string
+	layout?: React.FC<{
+		nodes: TableNode<T>[],
+		columns: ColumnEntity<T>[]
+	}>
 	pagination?: React.FC<TablePaginationProps<T>>
 }
 
 export function TableData<T = object>({
+	loading: loadingProps,
 	children,
 	groupAt = 'start', 
 	sortKey, 
 	sortDesc = false, 
-	data: dataProps, 
-	limit: limitProps = 15, 
+	data: dataProps,
 	limits = [15, 30, 50, 75, 100], 
+	limit: limitProps = limits[0] || 15, 
 	page: pageProps = 1, 
 	total: totalProps,
 	withHeader = true,
 	withPagination = true,
+	breakpoint: breakpointProps,
+	layout: Layout = ({nodes, columns}) => {
+		return <SimpleGrid cols={2}>
+			{nodes.map((item) => <Card key={item.index} withBorder>
+				{columns.filter(column => column.isField).map((column) => <Group key={column.field as string} align='flex-end' justify='space-between' grow style={{
+					borderBottom: '1px dashed var(--mantine-color-default-border)',
+				}}>
+					<TableHeaderCellSlot<T> column={column} />
+					<Text flex={0} fw={600} >
+						<TableBodyCellSlot<T> data={item.data} column={column} />
+					</Text>
+				</Group>)}
+			</Card>)}
+		</SimpleGrid>
+	},
 	pagination: Pagination = TablePagination,
 	onRowEditComplete,
 	editMode,
@@ -143,8 +165,10 @@ export function TableData<T = object>({
 	const [data, setData] = useState<T[]>(Array.isArray(dataProps)? dataProps: [])
 	const [isLoading, setLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string>('')
-	const breakpoint = useBreakpoint('md');
-	
+	const breakpoint = !!breakpointProps && useBreakpoint(breakpointProps);
+	const loading = useMemo<boolean>(() => loadingProps || isLoading, [loadingProps, isLoading])
+
+
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
 		descending: boolean
@@ -244,6 +268,10 @@ export function TableData<T = object>({
 		setPage(pageProps)
 	}, [limitProps, pageProps])
 
+	useEffect(() => {
+		setData(Array.isArray(dataProps)? dataProps: [])
+	}, [dataProps])
+
 	
 	let nodes:TableNode<T>[] = convertNodes(data);
 	const total = totalProps || nodes.length
@@ -262,7 +290,6 @@ export function TableData<T = object>({
 		setHistory([...history])
 		fetcher && fetch(history.pop(), false)
 	}
-
 
 	const [editableMeta, setEditableMeta] = useState<{
 		columns: ColumnEntity<T>['field'][]
@@ -307,15 +334,24 @@ export function TableData<T = object>({
 		onRowEditComplete?.(item, index)
 	}, [clearModeChange, onRowEditComplete])
 
+	const render = useCallback<(nodes: TableNode<T>[], columns:ColumnEntity<T>[]) => React.ReactNode>((nodes: TableNode<T>[], columns:ColumnEntity<T>[]) => {
+		if (breakpoint && Layout) {
+			return <Layout nodes={nodes} columns={columns} />
+		}
+		return <Table layout="fixed">
+			{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
+			<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
+		</Table>
+	}, [withHeader, breakpoint, columns, nodes])
+
 	return (
 		<TableDataProvider value={useMemo(() => ({
 			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem
 		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem])}>
 			<Box>
-				<Table layout="fixed">
-					{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
-					<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
-				</Table>
+				<Loading active={loading} keepMounted>
+					{render(nodes, columns)}
+				</Loading>
 				{withPagination && <Pagination
 					loading={isLoading}
 					onNext={fetcher? handlerNext: undefined}

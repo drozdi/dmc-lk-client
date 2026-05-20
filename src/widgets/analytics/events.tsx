@@ -62,8 +62,7 @@ export const WidgetAnalyticEvents = ({
 			error={error}
 			{...props}
 			title='Сводный расход по событиям'
-			subTitle={<>За <QueryShow {...query} /></>
-			}
+			subTitle={<>За <QueryShow {...query} /></>}
 			menu={memu}
 		>
 			<AnalyticEvents

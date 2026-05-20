@@ -24,11 +24,12 @@ export function WidgetForm({
 	dashboard = useDashboard()
 }: WidgetFormProps) {
 	const { availableWidgets, id, preview } = dashboard;
+
 	const form = useForm<Partial<IWidgetItem>>({
 		mode: "uncontrolled",
 		initialValues: {
 			id: '',
-			type: availableWidgets[0] || "",
+			type: (availableWidgets[0] === '*'? availableWidgets[1] : availableWidgets[0]) || "",
 			fixed: false,
 			params: {}
 		},
@@ -40,10 +41,10 @@ export function WidgetForm({
 			for (const param of params) {
 				ret[`params.${param.field}`] = param.validate?.(values.params[param.field]) || param.required && values.params[param.field] === undefined ? param.label + " обязательный параметр" : null
 			}
-			console.log(ret)
 			return ret
 		}
 	});
+	
 	const [params, setParams] = useState<IWidgetParam[]>(FactoryWidget.getWidget(form.values.type as string)?.params || [])
 
 	form.watch("type", ({ value }) => {
@@ -75,6 +76,11 @@ export function WidgetForm({
 		onSave?.(widget as IWidgetItem);
 	}
 
+	console.log((availableWidgets[0] === '*' ? FactoryWidget.getAvailableTypes(): availableWidgets).map((type) => ({
+						value: type,
+						label: FactoryWidget.getWidget(type)?.label || type,
+					})))
+
 	return (
 		<>
 			<Stack gap="xs">
@@ -87,7 +93,7 @@ export function WidgetForm({
 					allowDeselect={false}
 					placeholder="Выбрать виджет"
 					comboboxProps={{ withinPortal: false }}
-					data={availableWidgets.map((type) => ({
+					data={(availableWidgets[0] === '*' ? FactoryWidget.getAvailableTypes(): availableWidgets).map((type) => ({
 						value: type,
 						label: FactoryWidget.getWidget(type)?.label || type,
 					}))}

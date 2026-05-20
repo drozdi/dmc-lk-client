@@ -9,7 +9,6 @@ import {
 	useStoreElastic,
 } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
-import { Loading } from "@/shared/ui";
 import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	Button,
@@ -42,8 +41,9 @@ export const AnalyticsElasticTable = ({
 
 	const isNext = selectIsNext(storeElastic);
 	const isPrev = selectIsPrev(storeElastic);
-	const date = storeElastic.getDate();
 	const limit = storeElastic.getLimit();
+
+	console.log(data)
 
 	const update = () => storeElastic.save({ ...template });
 
@@ -57,13 +57,6 @@ export const AnalyticsElasticTable = ({
 		[template, findLabelByCode],
 	);
 
-	const handleAddSelect = (select: string) => {
-		if (!select) {
-			return;
-		}
-		template.company.select_field.push(select);
-		update();
-	};
 	const handleDelSelect = (select: string) => {
 		template.company.select_field = template.company.select_field.filter(
 			(item) => item !== select,
@@ -116,16 +109,16 @@ export const AnalyticsElasticTable = ({
 				</Stack>
 			</Group>
 
-			<Loading active={isLoading} keepMounted>
-				<TableData<IAnalyticsElasticItem> data={data} withPagination={false}>
-					{columns?.length ? columns.map((column) => (
-						<DataColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
-					)): <DataColumn<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
-						textAlign: 'center',
-						fontSize: '3rem'
-					}} />}
-				</TableData>
-			</Loading>
+
+			<TableData<IAnalyticsElasticItem> data={data} withPagination={false} loading={isLoading} limit={limit}>
+				{columns?.length ? columns.map((column) => (
+					<DataColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
+				)): <DataColumn<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
+					textAlign: 'center',
+					fontSize: '3rem'
+				}} />}
+			</TableData>
+
 			<Template.Footer>
 				<Group>
 					<Button

@@ -2,6 +2,7 @@ import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import { WidgetAnalyticEvents } from "./events";
 import { WidgetAnalyticEventsDefect } from "./events-defect";
+import { WidgetAnalyticIncident } from './incident';
 import { WidgetAnalyticItogSet } from "./itog-set";
 import { WidgetAnalyticLabels } from "./labels";
 import { WidgetAnalyticPie } from "./pie";
@@ -300,9 +301,25 @@ FactoryWidget.register({
 		},
 	],
 });
+FactoryWidget.register({
+	type: "analytic-incident",
+	component: WidgetAnalyticIncident,
+	label: "Инциденты за",
+	description: "Инциденты за (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "date:range",
+			required: true,
+		},
+	],
+});
+
 
 export * from "./events";
 export * from "./events-defect";
+export * from './incident';
 export * from "./itog-set";
 export * from "./labels";
 export * from "./pie";

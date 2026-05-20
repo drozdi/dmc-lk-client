@@ -3,7 +3,7 @@ import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import "@/widgets/analytics";
 import { WidgetCount } from "@/widgets/count-widget";
 import "@/widgets/labels";
-import { TesstWidget } from "@/widgets/test";
+import { TestWidget } from "@/widgets/test";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
@@ -36,7 +36,7 @@ FactoryWidget.register({
 
 FactoryWidget.register({
 	type: "test",
-	component: TesstWidget,
+	component: TestWidget,
 	label: "Проба",
 	description: "Описание",
 	params: [

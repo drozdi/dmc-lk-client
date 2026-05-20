@@ -81,7 +81,7 @@ export function AnalyticsIncidentPage() {
 				</Group>
 				<DualCalendarRange value={filterdate} onChange={handleChange} />
 			</Group>
-			<Tabs defaultValue="detail" mt="xs">
+			<Tabs defaultValue={searchParams.get("tab") === 'generate'? 'generate': "detail"} mt="xs">
 				<Tabs.List>
 					<Tabs.Tab value="detail">Кратко</Tabs.Tab>
 					<Tabs.Tab value="generate">Детально</Tabs.Tab>

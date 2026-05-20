@@ -136,7 +136,7 @@ export const DashboardPage = () => {
 						}}
 					>
 						<DashBoardWidget
-							widget="analytics-incident"
+							widget="analytic-incident"
 							filterdate="$filterdate"
 						/>
 					</div>

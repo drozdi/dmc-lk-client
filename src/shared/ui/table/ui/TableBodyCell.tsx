@@ -7,6 +7,16 @@ export interface TableBodyCellProps<T> {
 	item: TableNode<T>;
 	column: ColumnEntity<T>;
 }
+export interface TableBodyCellSlotProps<T> {
+	data: T;
+	column: ColumnEntity<T>;
+}
+
+
+
+export function TableBodyCellSlot<T = object>({ data, column }: TableBodyCellSlotProps<T>) {
+	return column.body?.(data, column) || data?.[column.field] || ''
+}
 
 export function TableBodyCell<T = object>({ item, column }: TableBodyCellProps<T>) {
 	const { editorMode, handleModeChange, handleSaveItem, clearModeChange } = useTableDataContext();
@@ -16,6 +26,6 @@ export function TableBodyCell<T = object>({ item, column }: TableBodyCellProps<T
 		}, () => {
 			handleSaveItem(item.data, item.index)
 			clearModeChange()
-		}) || column.body?.(item.data, column) || item.data?.[column.field] || ''}
+		}) || <TableBodyCellSlot<T> data={item.data} column={column} />}
 	</Table.Td>
 }

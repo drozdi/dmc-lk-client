@@ -15,7 +15,7 @@ export interface BaseCellProps<T = object> {
 export interface TableHeaderCellProps<T = object> extends BaseCellProps<T> {
 	
 }
-export interface TableHeaderCellSlotProps<T = object> extends BaseCellProps<T> {
+export interface TableHeaderCellSlotProps<T = object> extends Omit<BaseCellProps<T>, 'maxRow' | 'maxCol'> {
 
 }
 export interface TableHeaderCellSortProps<T = object> extends BaseCellProps<T> {
@@ -29,7 +29,7 @@ export interface TableHeaderCellExpandProps<T = object> extends BaseCellProps<T>
 }
 
 
-function TableHeaderCellSlot<T = object>({column}: TableHeaderCellSlotProps<T>)  {
+export function TableHeaderCellSlot<T = object>({ column }: TableHeaderCellSlotProps<T>)  {
 	return <p style={{
 		overflow: column.ellipsis? 'hidden': '',
 		textOverflow: column.ellipsis? 'ellipsis': '',
@@ -37,7 +37,7 @@ function TableHeaderCellSlot<T = object>({column}: TableHeaderCellSlotProps<T>) 
 	}}>{column.render?.(column) || column.header}</p>
 }
 
-function TableHeaderCellSort<T = object>({ column, onClick }: TableHeaderCellSortProps<T>)  {
+export function TableHeaderCellSort<T = object>({ column, onClick }: TableHeaderCellSortProps<T>)  {
 	if (!column.isSorted) {
 		return "";
 	}
@@ -53,7 +53,7 @@ function TableHeaderCellSort<T = object>({ column, onClick }: TableHeaderCellSor
 	);
 }
 
-function TableHeaderCellToggleable<T = object>({ column, onClick }: TableHeaderCellToggleableProps<T>)  {
+export function TableHeaderCellToggleable<T = object>({ column, onClick }: TableHeaderCellToggleableProps<T>)  {
 	if (!column.isToggleable) {
 		return "";
 	}
@@ -64,7 +64,7 @@ function TableHeaderCellToggleable<T = object>({ column, onClick }: TableHeaderC
 	);
 }
 
-function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHeaderCellExpandProps<T>)  {
+export function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHeaderCellExpandProps<T>)  {
 	return (
 		<Table.Th
 				colSpan={column.colspan}

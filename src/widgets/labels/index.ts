@@ -1,9 +1,7 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
-
 import { WidgetAnalyticsCount } from "./count";
 import { WidgetLabelsCurrentBalance } from "./current-balance";
-import { WidgetAnalyticsIncident } from "./incident";
 
 const es = useEnumsStep();
 const ee = useEnumsEvents();
@@ -35,20 +33,7 @@ FactoryWidget.register({
 });
 
 ///////////
-FactoryWidget.register({
-	type: "analytics-incident",
-	component: WidgetAnalyticsIncident,
-	label: "Инциденты за",
-	description: "Инциденты за (Description)",
-	params: [
-		{
-			label: "Промежуток",
-			field: "filterdate",
-			type: "date:range",
-			required: true,
-		},
-	],
-});
+
 
 FactoryWidget.register({
 	type: "analytics-count",
@@ -59,5 +44,4 @@ FactoryWidget.register({
 });
 
 export * from "./count";
-export * from "./incident";
 
