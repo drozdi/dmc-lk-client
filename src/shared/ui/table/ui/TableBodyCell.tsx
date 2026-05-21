@@ -20,7 +20,7 @@ export function TableBodyCellSlot<T = object>({ data, column }: TableBodyCellSlo
 
 export function TableBodyCell<T = object>({ item, column }: TableBodyCellProps<T>) {
 	const { editorMode, handleModeChange, handleSaveItem, clearModeChange } = useTableDataContext();
-	return <Table.Td onClick={() => handleModeChange(item, column)}>
+	return <Table.Td onClick={() => handleModeChange(item, column)} style={typeof column.style === 'function'? column.style?.(column, item): column.style || {} }>
 		{editorMode(item, column) && column.editor?.(item.data, column, (value) => {
 			item.data[column.field] = value;
 		}, () => {

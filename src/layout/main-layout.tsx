@@ -105,8 +105,10 @@ export function MainLayout() {
 			<AppShell.Footer
 				component={Group}
 				justify="space-between"
+				align="center"
 				gap="xs"
 				px="xs"
+				grow
 			>
 				<Template.Slot name="footer">
 					<div></div>

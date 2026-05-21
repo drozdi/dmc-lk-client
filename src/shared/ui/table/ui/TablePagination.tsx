@@ -1,9 +1,9 @@
-import { Box, Button, Group, Select } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Select, type BoxProps } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
 import React, { useCallback } from "react";
 import { TbChevronsLeft, TbChevronsRight } from "react-icons/tb";
 
-export interface TablePaginationProps<T = object> {
+export interface TablePaginationProps<T = object> extends BoxProps {
 	page: string | number;
 	total: number;
 	limit?: number;
@@ -45,37 +45,38 @@ export function TablePagination<T = object>({
 	const disabledPrevious = (showed && pagination.active === 1) || (!showed && !activePprevious)
 	const disabledNext = (showed && pagination.active === total) || (!showed && !activeNext)
 
-	return <Box mt='md' {...props}>
+	return <Box w='100%' {...props}>
 		<Group justify="space-between" align="start">
 			<Group flex='1'>
-				{showed && <Button loading={loading} variant="default" onClick={pagination.first} disabled={pagination.active === 1}>
-          <TbChevronsLeft />
-        </Button>}
-        <Button loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
-          {previousLabel}
-        </Button>
+				{showed && <ActionIcon loading={loading} variant="default" onClick={pagination.first} disabled={pagination.active === 1}>
+					<TbChevronsLeft />
+				</ActionIcon>}
+				<Button size="compact-md" loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
+					{previousLabel}
+				</Button>
 				{showed && pagination.range.map((page, index) =>
-          page === 'dots' ? (
-            <span key={index}>...</span>
-          ) : (
-            <Button loading={loading}
-              key={index}
-              onClick={() => pagination.setPage(page)}
-              variant={pagination.active === page ? 'filled' : 'default'}
-            >
-              {page}
-            </Button>
-          )
-        )}
-				<Button loading={loading} variant="default" onClick={handleNext} disabled={disabledNext}>
-          {nextLabel}
-        </Button>
-        {showed && <Button loading={loading} variant="default" onClick={pagination.last} disabled={pagination.active === total}>
-          <TbChevronsRight />
-        </Button>}
+					page === 'dots' ? (
+						<span key={index}>...</span>
+					) : (
+						<ActionIcon 
+							loading={loading}
+							key={index}
+							onClick={() => pagination.setPage(page)}
+							variant={pagination.active === page ? 'filled' : 'default'}
+						>
+							{page}
+						</ActionIcon>
+					)
+				)}
+				<Button size="compact-md" loading={loading} variant="default" onClick={handleNext} disabled={disabledNext}>
+					{nextLabel}
+				</Button>
+				{showed && <ActionIcon loading={loading} variant="default" onClick={pagination.last} disabled={pagination.active === total}>
+					<TbChevronsRight />
+				</ActionIcon>}
 			</Group>
 			<Box flex='0'>
-				<Select loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={onChangeLimit} />
+				<Select size="xs" w='4rem' loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={onChangeLimit} />
 			</Box>
 		</Group>
 	</Box>

@@ -1,21 +1,14 @@
 import { useBreakpoint } from '@/shared/hooks';
-import { Box, Card, Group, SimpleGrid, Table, Text } from '@mantine/core';
+import { Card, Group, SimpleGrid, Stack, Table, Text, type TableProps } from '@mantine/core';
 import React, { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { Loading } from '../loading';
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './context/TableDataContext';
-import { TableBody, TableBodyCellSlot, TableHeader, TableHeaderCellSlot } from "./ui";
-import { TablePagination, type TablePaginationProps } from './ui/TablePagination';
+import { TableBody, TableBodyCellSlot, TableEmpty, TableHeader, TableHeaderCellSlot, TablePagination, type TablePaginationProps } from "./ui";
 
 export interface TableNode<T = object> {
 	data: T;
 	index: string | number;
-	expand: [boolean, {
-		set: (value: boolean) => void;
-    open: () => void;
-    close: () => void;
-    toggle: () => void;
-	}];
 	isParent: boolean;
 	isChildren: boolean;
 	nodes: TableNode<T>[];
@@ -23,52 +16,44 @@ export interface TableNode<T = object> {
 
 function convertNodes<T = object>(items: T[]): TableNode<T>[] {
 	return Object.entries(items).map(([index, item]) => ({
-			data: item,
-			index,
-			//expand: useDisclosure(false),
-			isParent: false,
-			isChildren: false,
-			nodes: [],
-		})
-	);
+		data: item,
+		index,
+		isParent: false,
+		isChildren: false,
+		nodes: [],
+	}));
 }
 function groupBy<T = object>(nodes: TableNode<T>[], key: keyof T | undefined): TableNode<T>[] {
 	if (!key) {
 		return nodes;
 	}
 	const groups = new Map<T[keyof T], TableNode<T>[]>();
-
-  for (const node of nodes) {
-    const groupValue = node.data[key];
-    if (!groups.has(groupValue)) {
-      groups.set(groupValue, []);
-    }
-    groups.get(groupValue)!.push(node);
-  }
-
-
+	for (const node of nodes) {
+		const groupValue = node.data[key];
+		if (!groups.has(groupValue)) {
+			groups.set(groupValue, []);
+		}
+		groups.get(groupValue)!.push(node);
+	}
 	const result: TableNode<T>[] = [];
-
-  for (const group of groups.values()) {
-    if (group.length === 0) {
+	for (const group of groups.values()) {
+		if (group?.length === 0) {
 			continue; 
 		}
-    const [first, ...rest] = group;
-    first.nodes = rest.map(child => {
-      child.isChildren = true;
-      return child;
-    });
-    first.isParent = rest.length > 0;
-    result.push(first);
-  }
+		const [first, ...rest] = group;
+		(first as TableNode<T>).nodes = rest.map(child => {
+			child.isChildren = true;
+			return child;
+		});
+		(first as TableNode<T>).isParent = (rest?.length || 0) > 0;
+		result.push(first as TableNode<T>);
+	}
 
-  return result;
+	return result;
 }
 function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = false): TableNode<T>[] {
 	let result = [...nodes];
-	const fn = (a, b) => {
-		a = a.data;
-		b = b.data;
+	const fn = ({ data: a }: TableNode<T>, { data: b }: TableNode<T>) => {
 		if (a[key] > b[key]) {
 			return descending ? -1 : 1;
 		}
@@ -87,20 +72,24 @@ function limitBy<T = object>(nodes: TableNode<T>[], limit: number, offset: numbe
 	return nodes.slice((offset-1)*limit, offset*limit)
 }
 
-function calculateColspan(children) {
+type Child = React.ReactNode
+
+function calculateColspan(children: Child | Child[]): number {
 	if (!children) {
 		return 1;
 	}
-	return Children.toArray(children).reduce((sum, child) => {
-		return sum + calculateColspan(child.props.children);
+	return Children.toArray(children).reduce<number>((sum, child) => {
+		return sum + calculateColspan(child?.props?.children);
 	}, 0);
 };
-function calculateIsColumns(children) {
-	if (!children) return false;
+function calculateIsColumns(children?: Child): boolean {
+	if (!children) {
+		return false;
+	}
 	return Children.count(children) > 0;
 };
 
-export interface TableDataProps<T = object> {
+export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 'data'> {
 	loading?: boolean;
 	children?: React.ReactNode;
 	data: T[] | ((limit: number, page: string | number) => Promise<{
@@ -124,6 +113,8 @@ export interface TableDataProps<T = object> {
 		columns: ColumnEntity<T>[]
 	}>
 	pagination?: React.FC<TablePaginationProps<T>>
+	minHeight?: number
+	noDataText?: string
 }
 
 export function TableData<T = object>({
@@ -140,23 +131,27 @@ export function TableData<T = object>({
 	withHeader = true,
 	withPagination = true,
 	breakpoint: breakpointProps,
-	layout: Layout = ({nodes, columns}) => {
-		return <SimpleGrid cols={2}>
-			{nodes.map((item) => <Card key={item.index} withBorder>
-				{columns.filter(column => column.isField).map((column) => <Group key={column.field as string} align='flex-end' justify='space-between' grow style={{
-					borderBottom: '1px dashed var(--mantine-color-default-border)',
-				}}>
-					<TableHeaderCellSlot<T> column={column} />
-					<Text flex={0} fw={600} >
-						<TableBodyCellSlot<T> data={item.data} column={column} />
-					</Text>
-				</Group>)}
-			</Card>)}
-		</SimpleGrid>
-	},
+	layout: Layout = ({nodes, columns}) => <SimpleGrid cols={2}>
+		{nodes.map((item) => <Card key={item.index} withBorder>
+			{columns.filter(column => column.isField).map((column) => <Group key={column.field as string} align='flex-end' justify='space-between' grow style={{
+				borderBottom: '1px dashed var(--mantine-color-default-border)',
+			}}>
+				<TableHeaderCellSlot<T> column={column} />
+				<Text flex={0} fw={600} >
+					<TableBodyCellSlot<T> data={item.data} column={column} />
+				</Text>
+			</Group>)}
+		</Card>)}
+	</SimpleGrid>,
+	minHeight,
 	pagination: Pagination = TablePagination,
 	onRowEditComplete,
 	editMode,
+	noDataText = 'No records',
+	striped = true,
+	highlightOnHover = true,
+	horizontalSpacing = '0.5rem',
+	verticalSpacing = '0.5rem',
 	...props }: TableDataProps<T>) {
 	const [limit, setLimit] = useState(limitProps)
 	const [page, setPage] = useState<number>(pageProps)
@@ -274,7 +269,7 @@ export function TableData<T = object>({
 
 	
 	let nodes:TableNode<T>[] = convertNodes(data);
-	const total = totalProps || nodes.length
+	const total = totalProps || nodes?.length
 	if (!fetcher && limit > 0) {
 		nodes = limitBy(nodes, limit, page)
 	}
@@ -338,25 +333,26 @@ export function TableData<T = object>({
 		if (breakpoint && Layout) {
 			return <Layout nodes={nodes} columns={columns} />
 		}
-		return <Table layout="fixed">
+		return <Table layout="fixed" striped={striped} highlightOnHover={highlightOnHover} horizontalSpacing={horizontalSpacing} verticalSpacing={verticalSpacing} {...props}>
 			{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
 			<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
 		</Table>
-	}, [withHeader, breakpoint, columns, nodes])
+	}, [withHeader, breakpoint, columns, nodes, props])
 
 	return (
 		<TableDataProvider value={useMemo(() => ({
 			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem
 		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem])}>
-			<Box>
-				<Loading active={loading} keepMounted>
+			<Stack mih={minHeight} gap='md'>
+				<Loading active={loading} keepMounted mih={minHeight}>
 					{render(nodes, columns)}
 				</Loading>
+				{!nodes?.length && <TableEmpty text={noDataText} />}
 				{withPagination && <Pagination
 					loading={isLoading}
 					onNext={fetcher? handlerNext: undefined}
 					onPprevious={fetcher? handlerPprevious: undefined}
-					activePprevious={history.length > 1}
+					activePprevious={history?.length > 1}
 					activeNext={!!next}
 					page={page}
 					total={Math.ceil(total/limit)}
@@ -368,7 +364,7 @@ export function TableData<T = object>({
 						setLimit(val)
 					}}
 				/> }
-			</Box>
+			</Stack>
 		</TableDataProvider>
 	);
 };

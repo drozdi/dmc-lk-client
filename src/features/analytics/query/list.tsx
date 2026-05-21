@@ -1,10 +1,10 @@
 import { useQueryQueryDelete, useQueryQueryList } from "@/entites/analytics";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
-import { Item, ItemLabel, ItemSection, List, Loading } from "@/shared/ui";
-import { ActionIcon, Button, Group, Select, Stack, Text } from "@mantine/core";
+import { ButtonRemove, DataColumn, TableData } from "@/shared/ui";
+import { Button, Group, Select, Stack } from "@mantine/core";
 import { TbCircleMinus } from "react-icons/tb";
-import { Link as LinkRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface ListQueriesProps {
 	className?: string;
@@ -39,45 +39,34 @@ export const AnalyticsQueryList = ({ className }: ListQueriesProps) => {
 
 	return (
 		<Stack className={className}>
-			<Loading active={isLoading || deleteQuery.isPending} keepMounted>
-				<List separator>
-					{(data || []).length > 0 ? (
-						(data || []).map((item: IAnalyticsElastic) => (
-							<Item
-								dense
-								key={item.id}
-								component={LinkRouter}
-								to={`/analytics/${item.id}`}
-								hoverable
-							>
-								<ItemSection row top>
-									<ItemLabel>{item.name_query}</ItemLabel>
-								</ItemSection>
-								<ItemSection side>
-									<ActionIcon
-										color="red"
-										title="Удалить"
-										loading={deleteQuery.isPending}
-										onClick={(event) => {
-											event.stopPropagation();
-											event.preventDefault();
-											handleRemove(item);
-										}}
-									>
-										<TbCircleMinus />
-									</ActionIcon>
-								</ItemSection>
-							</Item>
-						))
-					) : (
-						<Text fz="h2" ta="center" c="dimmed">
-							Запросов не существует
-						</Text>
-					)}
-				</List>
-			</Loading>
+			<TableData<IAnalyticsElastic> noDataText='Запросов не существует' data={data} loading={isLoading || deleteQuery.isPending} withPagination={false}>
+				<DataColumn<IAnalyticsElastic> field='name_query' body={(item, column) => <Link to={`/analytics/${item.id}`}>
+					{item.name_query}
+				</Link>} />
+				<DataColumn<IAnalyticsElastic> 
+					field='.actions' 
+					style={(column, item) => {
+						if (item.index) {
+							return {
+								textAlign: "right",
+							}
+						}
+						return {}
+					}}
+					body={(item, column) => <ButtonRemove
+						tooltip="Удалить"
+						loading={deleteQuery.isPending}
+						onClick={(event) => {
+							event.stopPropagation();
+							event.preventDefault();
+							handleRemove(item);
+						}}>
+						<TbCircleMinus />
+					</ButtonRemove>} 
+				/>
+			</TableData>
 			<Template.Footer>
-				<Button component={LinkRouter} to="/analytics/elastic">
+				<Button component={Link} to="/analytics/elastic">
 					Добавить
 				</Button>
 				<Group>

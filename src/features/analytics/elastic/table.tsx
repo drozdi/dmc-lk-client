@@ -113,7 +113,7 @@ export const AnalyticsElasticTable = ({
 			<TableData<IAnalyticsElasticItem> data={data} withPagination={false} loading={isLoading} limit={limit}>
 				{columns?.length ? columns.map((column) => (
 					<DataColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
-				)): <DataColumn<IAnalyticsElasticItem> field='_' header='Выберите что паказавать' style={{
+				)): <DataColumn<IAnalyticsElasticItem> field='.' header='Выберите что паказавать' style={{
 					textAlign: 'center',
 					fontSize: '3rem'
 				}} />}

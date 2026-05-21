@@ -1,6 +1,7 @@
 import { useId } from "@mantine/hooks";
 import { Children, useEffect } from "react";
 import { useDataColumnsContext } from "./context/DataColumnsContext";
+import { type TableNode } from "./TableData";
 
 const calculateColspan = (children) => {
 	if (!children) {
@@ -22,9 +23,9 @@ export interface DataColumnProps<T = object> {
 	id?: boolean,
 	header?: React.ReactNode,
 	footer?: string,
-	field: keyof T,
+	field: `.${string}` | keyof T,
 	size?: number,
-	style?: React.CSSProperties,
+	style?: React.CSSProperties | ((column: ColumnEntity<T>, type: TableNode<T> | 'header' | 'body' | 'footer') => React.CSSProperties),
 	sortable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
 	toggleable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
 	ellipsis?: boolean,

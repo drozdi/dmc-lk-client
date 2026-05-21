@@ -488,6 +488,29 @@ const elements: SS[] = [
 
 
 export function TablePage() {
+	return <TableData<{id: string}> data={async (limit = 100, page = '') => {
+		const res = await requestAnalyticsElastic({
+			company: {
+				select_field: [],
+				list_where: [],
+				date_limit: {
+					"date_from": "2026-01-20",
+					"date_to": "2026-05-15"
+				},
+			},
+			paginate: {
+				id_record: page as string,
+				limit_page: limit
+			}
+		})
+		return {
+			data: res.data,
+			next: res.last_id_record
+		}
+	}}>
+		<DataColumn<{id: string}> field="id" header="ID" />
+	</TableData>
+
 	const [data, setData] = useState<SS[]>(elements)
 	return <TableData<SS> data={data} editMode='row' breakpoint='sm' onRowEditComplete={
 		(item, index) => setData(v => v.map((e, i) => i === index? item: e))}>
@@ -534,26 +557,5 @@ export function TablePage() {
 		} field="mass" header="Atomic mass" />
 	</TableData>
 
-	return <TableData<{id: string}> data={async (limit = 100, page = '') => {
-		const res = await requestAnalyticsElastic({
-			company: {
-				select_field: [],
-				list_where: [],
-				date_limit: {
-					"date_from": "2026-01-20",
-					"date_to": "2026-05-15"
-				},
-			},
-			paginate: {
-				id_record: page as string,
-				limit_page: limit
-			}
-		})
-		return {
-			data: res.data,
-			next: res.last_id_record
-		}
-	}}>
-		<DataColumn<{id: string}> field="id" header="ID" />
-	</TableData>
+	
 }

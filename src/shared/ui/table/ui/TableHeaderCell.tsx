@@ -91,7 +91,7 @@ export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	
 			rowSpan={
 				column.isColumns ? 1 : maxRow - column.parentLevel
 			}
-			style={column.style || {}}
+			style={typeof column.style === 'function'? column.style(column, 'header'): column.style || {}}
 			role="columnheader"
 		>
 			<Group justify='space-between' wrap='nowrap' gap='0'>

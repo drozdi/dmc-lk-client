@@ -138,7 +138,7 @@ export const IncidentGenerate = ({
 						}} sortable ellipsis noWrap />)}
 						<DataColumn<IAnalyticsIncidentItem> style={{
 							width: 40,
-						}} field='_' header={<HoverCard>
+						}} field='.' header={<HoverCard>
 							<HoverCard.Target>
 								<ButtonIcon size='xs'
 									tooltip="Сбросить"
