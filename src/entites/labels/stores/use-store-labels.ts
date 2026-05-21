@@ -122,15 +122,16 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		set({
 			isLoading: true,
 			error: "",
-			
 		});
 
 
 		try {
-			const formatPrints = await queryClient.fetchQuery({
+			
+			const {formatPrints, formats} = await queryClient.fetchQuery({
 				queryKey: ["labels-formats"],
 				queryFn: async () => {
 					let formatPrints: ILabel[] = []
+					let formats = {}
 					let response = {}
 					const params = {
 						size: 100,
@@ -150,11 +151,15 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 									format: item.add_label_format,
 									print: item.statistics_print_format,
 								}))
-						]
+						];
+						(response?.data?.response || []).filter(item =>	item.is_reference_template).forEach(item => {
+							formats[item.production_id] = formats[item.production_id] || []
+							formats[item.production_id].push(item);
+						})
 						params.number++
 					} while (response.success && response?.data?.response?.length >= params.size);
 
-					return formatPrints;
+					return {formatPrints, formats};
 				},
 				staleTime: 0,
 				gcTime: 0,
@@ -162,7 +167,8 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 
 			set({
 				isLoading: false,
-				formatPrints: formatPrints.filter(item => !item.is_reference_template),
+				formatPrints,
+				formats
 			});
 		} catch (e: IError) {
 			console.error(e);

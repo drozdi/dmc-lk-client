@@ -26,8 +26,8 @@ export function GroupedProvider({
 		}),
 	);
 	function handleDragEnd (event: DragEndEvent) {
-		const print = event.active?.id;
-		const newFormat = event.over?.id;
+		const print = event.active?.id as string;
+		const newFormat = event.over?.id as string;
 		const current = storeLabels.formatPrints.find((item) => 
 			item.print === print && item.production_id === production_id
 		)

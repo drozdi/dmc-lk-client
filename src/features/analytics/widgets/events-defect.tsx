@@ -181,6 +181,8 @@ export const AnalyticEventsDefect = ({
 	const onLegendClick = (arg: LegendPayload) => {
 		setSelected(v=> v === arg.value? '': arg.value)
 	};
+
+
 	return (
 		<Stack h="100%">
 			{isEmpty ? (
@@ -196,14 +198,15 @@ export const AnalyticEventsDefect = ({
 								align="left"
 								layout="vertical"
 								verticalAlign="top"
+								width='50%'
 								content={LegendContentPieFactory(selected)}
 								onClick={onLegendClick}
 							/>
 							<Pie
 								shape={renderActiveShape}
 								id={selected}
-								hide={false}
 								data={ddata}
+								width='50%'
 								dataKey="value"
 								nameKey="name"
 								cx="50%"

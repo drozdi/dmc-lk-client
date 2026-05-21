@@ -25,7 +25,7 @@ interface Values {
 	print: string
 }
 
-export const LabelsGroupAdd = ({production_id, ...props}: LabelsGroupAddProps) => {
+export const LabelsGroupAdd = ({ production_id, ...props }: LabelsGroupAddProps) => {
 	if (!production_id) {
 		return null
 	}
@@ -68,16 +68,21 @@ export const LabelsGroupAdd = ({production_id, ...props}: LabelsGroupAddProps) =
 		if (!format || /W[0-9]+(?:\.[0-9]*)?H[0-9]+(?:\.[0-9]*)?G[0-9]+(?:\.[0-9]*)?/i.test(format)) {
 			form.setFieldValue('format', `W${width}H${height}G${gap}`)
 		}
+	}
+	function print (width = form.values.width, height = form.values.height, gap = form.values.gap) {
 		form.setFieldValue('print', `W${width}H${height}G${gap}`)
 	}
 	form.watch('width', ({value}) => {
 		format(value)
+		print(value)
 	})
 	form.watch('height', ({value}) => {
 		format(undefined, value)
+		print(undefined, value)
 	})
 	form.watch('gap', ({value}) => {
 		format(undefined, undefined, value)
+		print(undefined, undefined, value)
 	})
 
 	const handleAddFormat = async (fields: Values) => {
