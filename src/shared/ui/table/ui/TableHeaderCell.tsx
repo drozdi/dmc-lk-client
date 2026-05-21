@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Table } from '@mantine/core';
-import { TbArrowDown, TbArrowsVertical, TbArrowUp, TbX } from 'react-icons/tb';
+import { TbChevronDown, TbChevronUp, TbSelector, TbX } from 'react-icons/tb';
 import { type ColumnEntity } from '../DataColumn';
 import { useTableDataContext } from '../context/TableDataContext';
 
@@ -47,8 +47,8 @@ export function TableHeaderCellSort<T = object>({ column, onClick }: TableHeader
 		// aria-label={`Sorted ${sort.descending ? 'descending' : 'ascending'}`}
 		>
 			{sort.key === column.field ? 
-				sort.descending ? <TbArrowDown /> : <TbArrowUp />
-			: <TbArrowsVertical />}
+				sort.descending ? <TbChevronDown /> : <TbChevronUp />
+			: <TbSelector />}
 		</ActionIcon>
 	);
 }
@@ -82,7 +82,8 @@ export function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHead
 }
 
 export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand }: TableHeaderCellProps<T>) {
-	if (column.isGrouped) {
+	console.log(column)
+	if (column.isGroup) {
 		return <TableHeaderCellExpand<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}
 	return (

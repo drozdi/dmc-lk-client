@@ -23,7 +23,7 @@ export interface DataColumnProps<T = object> {
 	id?: boolean,
 	header?: React.ReactNode,
 	footer?: string,
-	field: `.${string}` | keyof T,
+	field: keyof T,
 	size?: number,
 	style?: React.CSSProperties | ((column: ColumnEntity<T>, type: TableNode<T> | 'header' | 'body' | 'footer') => React.CSSProperties),
 	sortable?: boolean | ((column: ColumnEntity<T>) => boolean | void),

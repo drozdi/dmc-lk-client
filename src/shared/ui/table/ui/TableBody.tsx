@@ -4,11 +4,11 @@ import { type TableNode } from "../TableData";
 import { TableBodyRow } from "./TableBodyRow";
 
 export interface TableBodyProps<T = object> {
-	data: TableNode<T>[];
+	nodes: TableNode<T>[];
 	columns: ColumnEntity<T>[];
 }
 
-export function TableBody<T = object>({data, columns}: TableBodyProps<T>) {
+export function TableBody<T = object>({nodes, columns}: TableBodyProps<T>) {
 		const grouped = useMemo<ColumnEntity<T> | undefined>(() => {
 			return columns.find((v) => v.isGrouped);
 		}, [columns]);
@@ -32,17 +32,7 @@ export function TableBody<T = object>({data, columns}: TableBodyProps<T>) {
 			);
 		}, [columns, grouped]);
 
-		const colspan = useMemo(
-			() =>
-				columns.reduce((sum: number, column: ColumnEntity<T>) => {
-					return sum + (column.isGroup ? 0 : column.colspan);
-				}, 0) || 1,
-			[columns]
-		);
-
-		
-
-		return <>{data.map((item, index) => {
-			return <TableBodyRow<T> item={item} columns={fields} key={index} />;
+		return <>{nodes.map((node) => {
+			return <TableBodyRow<T> node={node} columns={fields} key={node.index} />;
 		})}</>
 }

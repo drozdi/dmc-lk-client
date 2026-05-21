@@ -9,6 +9,7 @@ export interface TableHeaderProps<T = object> {
 }
 
 export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
+	console.log(columns)
 	const ctx = useTableDataContext();
 	
 	const rowspan = useMemo(() => {
@@ -69,7 +70,7 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 
 		return rows;
 	}, [columns, onToggle, onSort, onExpand]);
-
+	console.log(rows)
 	return rows.map((row, index) => (
 			<Table.Tr key={index} role="row">
 				{row}

@@ -1,10 +1,11 @@
 import { useBreakpoint } from '@/shared/hooks';
 import { Card, Group, SimpleGrid, Stack, Table, Text, type TableProps } from '@mantine/core';
-import React, { Children, useCallback, useEffect, useMemo, useState } from "react";
+import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { Loading } from '../loading';
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './context/TableDataContext';
 import { TableBody, TableBodyCellSlot, TableEmpty, TableHeader, TableHeaderCellSlot, TablePagination, type TablePaginationProps } from "./ui";
+import { calculateColspan, calculateIsColumns, convertNodes, limitBy, sortBy } from './utils';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -13,81 +14,6 @@ export interface TableNode<T = object> {
 	isChildren: boolean;
 	nodes: TableNode<T>[];
 }
-
-function convertNodes<T = object>(items: T[]): TableNode<T>[] {
-	return Object.entries(items).map(([index, item]) => ({
-		data: item,
-		index,
-		isParent: false,
-		isChildren: false,
-		nodes: [],
-	}));
-}
-function groupBy<T = object>(nodes: TableNode<T>[], key: keyof T | undefined): TableNode<T>[] {
-	if (!key) {
-		return nodes;
-	}
-	const groups = new Map<T[keyof T], TableNode<T>[]>();
-	for (const node of nodes) {
-		const groupValue = node.data[key];
-		if (!groups.has(groupValue)) {
-			groups.set(groupValue, []);
-		}
-		groups.get(groupValue)!.push(node);
-	}
-	const result: TableNode<T>[] = [];
-	for (const group of groups.values()) {
-		if (group?.length === 0) {
-			continue; 
-		}
-		const [first, ...rest] = group;
-		(first as TableNode<T>).nodes = rest.map(child => {
-			child.isChildren = true;
-			return child;
-		});
-		(first as TableNode<T>).isParent = (rest?.length || 0) > 0;
-		result.push(first as TableNode<T>);
-	}
-
-	return result;
-}
-function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = false): TableNode<T>[] {
-	let result = [...nodes];
-	const fn = ({ data: a }: TableNode<T>, { data: b }: TableNode<T>) => {
-		if (a[key] > b[key]) {
-			return descending ? -1 : 1;
-		}
-		if (a[key] < b[key]) {
-			return descending ? 1 : -1;
-		}
-		return 0;
-	};
-	result.sort(fn);
-	return result.map((val) => {
-		Array.isArray(val.nodes) && val.nodes.sort(fn);
-		return val;
-	});
-}
-function limitBy<T = object>(nodes: TableNode<T>[], limit: number, offset: number): TableNode<T>[] {
-	return nodes.slice((offset-1)*limit, offset*limit)
-}
-
-type Child = React.ReactNode
-
-function calculateColspan(children: Child | Child[]): number {
-	if (!children) {
-		return 1;
-	}
-	return Children.toArray(children).reduce<number>((sum, child) => {
-		return sum + calculateColspan(child?.props?.children);
-	}, 0);
-};
-function calculateIsColumns(children?: Child): boolean {
-	if (!children) {
-		return false;
-	}
-	return Children.count(children) > 0;
-};
 
 export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 'data'> {
 	loading?: boolean;
@@ -115,6 +41,7 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	pagination?: React.FC<TablePaginationProps<T>>
 	minHeight?: number
 	noDataText?: string
+	multiple?: boolean
 }
 
 export function TableData<T = object>({
@@ -147,6 +74,7 @@ export function TableData<T = object>({
 	pagination: Pagination = TablePagination,
 	onRowEditComplete,
 	editMode,
+	multiple,
 	noDataText = 'No records',
 	striped = true,
 	highlightOnHover = true,
@@ -286,6 +214,22 @@ export function TableData<T = object>({
 		fetcher && fetch(history.pop(), false)
 	}
 
+	const [expands, setExpands] = useState<TableNode<T>['index'][]>([])
+	const toggleExpand = useCallback((index: TableNode<T>['index']) => {
+		if (multiple) {
+			setExpands((v) => {
+				if (v.includes(index)) {
+					return v.filter(v => v !== index)
+				} else {
+					return [...v, index]
+				}
+			})
+		} else {
+			setExpands(v => v[0] === index? []: [index])
+		}
+	}, [multiple])
+
+
 	const [editableMeta, setEditableMeta] = useState<{
 		columns: ColumnEntity<T>['field'][]
 		index: TableNode<T>['index']
@@ -335,14 +279,14 @@ export function TableData<T = object>({
 		}
 		return <Table layout="fixed" striped={striped} highlightOnHover={highlightOnHover} horizontalSpacing={horizontalSpacing} verticalSpacing={verticalSpacing} {...props}>
 			{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
-			<Table.Tbody><TableBody<T> data={nodes} columns={columns} /></Table.Tbody>
+			<Table.Tbody><TableBody<T> nodes={nodes} columns={columns} /></Table.Tbody>
 		</Table>
 	}, [withHeader, breakpoint, columns, nodes, props])
 
 	return (
 		<TableDataProvider value={useMemo(() => ({
-			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem
-		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem])}>
+			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand
+		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand])}>
 			<Stack mih={minHeight} gap='md'>
 				<Loading active={loading} keepMounted mih={minHeight}>
 					{render(nodes, columns)}
