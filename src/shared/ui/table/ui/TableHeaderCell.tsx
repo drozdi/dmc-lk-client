@@ -28,13 +28,30 @@ export interface TableHeaderCellExpandProps<T = object> extends BaseCellProps<T>
 	onClick?: BaseCellProps<T>['onExpand']
 }
 
+export interface TableHeaderCellWrapProps<T = object> extends BaseCellProps<T> {
+	children?: React.ReactNode
+}
+
+export function TableHeaderCellWrap<T = object>({ maxCol, maxRow, column, children }: TableHeaderCellWrapProps<T>) {
+	return <Table.Th
+		colSpan={column.colspan}
+		rowSpan={
+			column.isColumns ? 1 : maxRow - column.parentLevel
+		}
+		style={typeof column.style === 'function'? column.style(column, 'header'): column.style || {}}
+		role="columnheader"
+	>
+		{children}
+	</Table.Th>
+}
+
 
 export function TableHeaderCellSlot<T = object>({ column }: TableHeaderCellSlotProps<T>)  {
 	return <p style={{
-		overflow: column.ellipsis? 'hidden': '',
-		textOverflow: column.ellipsis? 'ellipsis': '',
-		whiteSpace: column.noWrap? 'nowrap': ''
-	}}>{column.render?.(column) || column.header}</p>
+		overflow: column.ellipsis? 'hidden': undefined,
+		textOverflow: column.ellipsis? 'ellipsis': undefined,
+		whiteSpace: column.noWrap? 'nowrap': undefined
+	}}>{typeof column.header === 'function'? column.header(column): column.header}</p>
 }
 
 export function TableHeaderCellSort<T = object>({ column, onClick }: TableHeaderCellSortProps<T>)  {
@@ -76,32 +93,25 @@ export function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHead
 				}
 				role="columnheader"
 			>
-				{TableHeaderCellSlot<T>({column})}
+				<TableHeaderCellSlot<T> column={column} />
 			</Table.Th>
 	);
 }
 
+
 export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand }: TableHeaderCellProps<T>) {
-	console.log(column)
 	if (column.isGroup) {
 		return <TableHeaderCellExpand<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}
 	return (
-		<Table.Th
-			colSpan={column.colspan}
-			rowSpan={
-				column.isColumns ? 1 : maxRow - column.parentLevel
-			}
-			style={typeof column.style === 'function'? column.style(column, 'header'): column.style || {}}
-			role="columnheader"
-		>
+		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol} >
 			<Group justify='space-between' wrap='nowrap' gap='0'>
-				<TableHeaderCellSlot<T> column={column} maxRow={maxRow} maxCol={maxCol} />
+				<TableHeaderCellSlot<T> column={column} />
 				<Group flex='0' gap='0' justify='flex-end' wrap="nowrap">
 					<TableHeaderCellSort<T> column={column} onClick={onSort} maxRow={maxRow} maxCol={maxCol} />
 					<TableHeaderCellToggleable<T> column={column} onClick={onToggle} maxRow={maxRow} maxCol={maxCol} />
 				</Group>
 			</Group>
-		</Table.Th>
+		</TableHeaderCellWrap>
 	);
 }

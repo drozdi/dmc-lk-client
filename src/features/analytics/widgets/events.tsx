@@ -23,6 +23,7 @@ export interface AnalyticEventsProps {
 	percent?: AnalyticEvent[];
 	stop?: SliceStep;
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
+	onLoaded?: (data: any) => void;
 }
 
 const ee = useEnumsEvents();
@@ -39,6 +40,7 @@ export const AnalyticEvents = ({
 	stop = "m",
 	percent = ["d"],
 	onClick,
+	onLoaded
 }: AnalyticEventsProps) => {
 	const production_id = Number(
 		useStoreUserProfile((state) => state.production_id) || 0,
@@ -150,6 +152,10 @@ export const AnalyticEvents = ({
 		}
 		onClick?.(arg, e);
 	};
+
+	useEffect(() => {
+		onLoaded?.(dddata);
+	}, [onLoaded, dddata]);
 
 	return (
 		<Stack h="100%">

@@ -25,7 +25,8 @@ export function TablePagination<T = object>({
 	onNext, onPprevious, onChangeLimit, onChangePage,
 	nextLabel= 'Следующая', previousLabel= 'Предыдущая', ...props 
 }: TablePaginationProps<T>) {
-	const showed = !(onNext && onPprevious)
+	const showedSibling = onNext && onPprevious
+	const showed = !(showedSibling) && total > 1
 
 	const pagination = usePagination({
 		total: total,
@@ -51,9 +52,9 @@ export function TablePagination<T = object>({
 				{showed && <ActionIcon loading={loading} variant="default" onClick={pagination.first} disabled={pagination.active === 1}>
 					<TbChevronsLeft />
 				</ActionIcon>}
-				<Button size="compact-md" loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
+				{(showed || showedSibling) && <Button size="compact-md" loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
 					{previousLabel}
-				</Button>
+				</Button>}
 				{showed && pagination.range.map((page, index) =>
 					page === 'dots' ? (
 						<span key={index}>...</span>
@@ -68,9 +69,9 @@ export function TablePagination<T = object>({
 						</ActionIcon>
 					)
 				)}
-				<Button size="compact-md" loading={loading} variant="default" onClick={handleNext} disabled={disabledNext}>
+				{(showed || showedSibling) && <Button size="compact-md" loading={loading} variant="default" onClick={handleNext} disabled={disabledNext}>
 					{nextLabel}
-				</Button>
+				</Button>}
 				{showed && <ActionIcon loading={loading} variant="default" onClick={pagination.last} disabled={pagination.active === total}>
 					<TbChevronsRight />
 				</ActionIcon>}

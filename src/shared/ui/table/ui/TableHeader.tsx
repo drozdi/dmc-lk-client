@@ -9,36 +9,14 @@ export interface TableHeaderProps<T = object> {
 }
 
 export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
-	console.log(columns)
-	const ctx = useTableDataContext();
+	const { changeSort, rowspan, colspan } = useTableDataContext();
 	
-	const rowspan = useMemo(() => {
-		let max = 0;
-		(function recursive(columns: ColumnEntity<T>[]) {
-			for ( const column of columns ) {
-				max = max > column.level ? max : column.level;
-				if (column.isColumns) {
-					recursive(column.columns);
-				}
-			}
-		})(columns);
-		return max;
-	}, [columns]);
-
-	const colspan = useMemo(
-		() =>
-			columns.reduce((sum: number, column: ColumnEntity<T>) => {
-				return sum + (column.isGroup ? 0 : column.colspan);
-			}, 0) || 1,
-		[columns]
-	);
-
 	const onToggle = useCallback((column: ColumnEntity<T>) => {
 		column.toggleable?.(column)
 	}, []);
 	const onSort = useCallback((column: ColumnEntity<T>) => {
 		// column.sortable?.(column)
-		ctx.changeSort(column.field)
+		changeSort(column.field)
 	}, []);
 	const onExpand = useCallback((column: ColumnEntity<T>) => {
 
@@ -60,7 +38,10 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 						if (column.isGrouped) {
 							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
 						}
-						if (column.isHeader && !column.isGroup) {
+						if (column.isGroup) {
+							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
+						}
+						if (column.isHeader) {
 							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
 						}
 						return null;
@@ -70,10 +51,10 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 
 		return rows;
 	}, [columns, onToggle, onSort, onExpand]);
-	console.log(rows)
+
 	return rows.map((row, index) => (
-			<Table.Tr key={index} role="row">
-				{row}
-			</Table.Tr>
-		));
+		<Table.Tr key={index} role="row">
+			{row}
+		</Table.Tr>
+	));
 }

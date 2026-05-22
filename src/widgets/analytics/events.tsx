@@ -5,7 +5,9 @@ import {
 	type AnalyticEventsProps,
 } from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { useEffect, useMemo, useState } from "react";
+import { downloadExcel } from "@/shared/utils/excel";
+import dayjs from "dayjs";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export interface WidgetAnalyticEventsProps
 	extends WidgetProps, AnalyticEventsProps {
@@ -30,12 +32,33 @@ export const WidgetAnalyticEvents = ({
 	const { isLoading, error } = useQueryAnalytics(query);
 	const [type, setType] = useState(typeProp);
   const [_, update] = useWidgetParams()
+	const formatedData = useRef<any[]>([])
 
 	const memu = useMemo<any[]>(() => {
+		const ret = [{
+			children: 'Скачать',
+			onClick: () => {
+				if (!formatedData.current?.length) {
+					alert('Нет данных для скачивания')
+					return
+				}
+				const h: string[] = []
+				formatedData.current.forEach((row) => {
+					h.push(...Object.keys(row).filter((key) => key !== 'date' && key !== 'total'))
+				})
+				downloadExcel(formatedData.current.map(({date, total, ...row}) => {
+					return {
+						...row,
+						"Дата": dayjs(date).format('DD.MM.YYYY'),
+						"Всего": total,
+					}
+				}), 'printed', ['Дата', ...new Set(h), 'Всего'])
+			},
+		}]
 		if (!allowChangeType) {
-			return []
+			return ret
 		}
-		return Object.entries({
+		return ret.concat(Object.entries({
 			line: 'Линии',
 			bar: 'Столбцы',
 			stack: 'Столбцы (Совмещеные)',
@@ -48,7 +71,7 @@ export const WidgetAnalyticEvents = ({
 				setType(value)
 				update?.('type', value)
 			},
-		}));
+		})));
 	}, [allowChangeType, type])
 
 	useEffect(() => {
@@ -72,6 +95,10 @@ export const WidgetAnalyticEvents = ({
 				stop={stop}
 				percent={percent}
 				onClick={onClick}
+				onLoaded={(data) => {
+					console.log(data)
+					formatedData.current = data
+				}}
 			/>
 		</Widget>
 	);

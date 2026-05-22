@@ -6,7 +6,9 @@ import {
 	type AnalyticLabelsProps,
 } from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
-import { memo, useEffect, useMemo, useState } from "react";
+import { downloadExcel } from '@/shared/utils/excel';
+import dayjs from "dayjs";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 export interface WidgetAnalyticLabelsProps
 	extends Omit<WidgetProps, "children" | "title">, AnalyticLabelsProps {
@@ -34,6 +36,8 @@ export const WidgetAnalyticLabels = memo(
 			production_id,
 		});
 		const { isLoading, fetch, error } = useQueryAnalytics(query);
+		const formatedData = useRef<any[]>([])
+
 		const [type, setType] = useState(typeProp);
 		const [_, update] = useWidgetParams()
 		useEffect(() => {
@@ -64,10 +68,32 @@ export const WidgetAnalyticLabels = memo(
 		}, [title, event]);
 
 		const memu = useMemo<any[]>(() => {
+			const ret = [{
+				children: 'Скачать',
+				onClick: () => {
+					if (!formatedData.current?.length) {
+						alert('Нет данных для скачивания')
+						return
+					}
+					const h: string[] = []
+					formatedData.current.forEach((row) => {
+						h.push(...Object.keys(row).filter((key) => key !== 'date' && key !== 'total'))
+					})
+					downloadExcel(formatedData.current.map(({date, total, ...row}) => {
+						return {
+							...row,
+							"Дата": dayjs(date).format('DD.MM.YYYY'),
+							"Всего": total,
+						}
+					}), 'printed', ['Дата', ...new Set(h), 'Всего'])
+
+				},
+			}]
+			
 			if (!allowChangeType) {
-				return []
+				return ret
 			}
-			return Object.entries({
+			return ret.concat(Object.entries({
 				default: 'Разбивать',
 				stack: 'Объединять',
 				table: 'Таблица',
@@ -78,7 +104,7 @@ export const WidgetAnalyticLabels = memo(
 					setType(value)
 					update?.('type', value)
 				},
-			}));
+			})));
 		}, [allowChangeType, type])
 
 		return (
@@ -95,6 +121,9 @@ export const WidgetAnalyticLabels = memo(
 					step={step}
 					event={event}
 					type={type}
+					onLoaded={(data) => {
+						formatedData.current = data
+					}}
 				/>
 			</Widget>
 		);

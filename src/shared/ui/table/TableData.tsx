@@ -1,11 +1,12 @@
 import { useBreakpoint } from '@/shared/hooks';
 import { Card, Group, SimpleGrid, Stack, Table, Text, type TableProps } from '@mantine/core';
+import { useMounted } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useState } from "react";
 import { Loading } from '../loading';
 import { type ColumnEntity, type DataColumnProps } from "./DataColumn";
 import { TableDataProvider } from './context/TableDataContext';
 import { TableBody, TableBodyCellSlot, TableEmpty, TableHeader, TableHeaderCellSlot, TablePagination, type TablePaginationProps } from "./ui";
-import { calculateColspan, calculateIsColumns, convertNodes, limitBy, sortBy } from './utils';
+import { calculateColspan, calculateIsColumns, convertNodes, groupBy, limitBy, sortBy } from './utils';
 
 export interface TableNode<T = object> {
 	data: T;
@@ -42,6 +43,8 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	minHeight?: number
 	noDataText?: string
 	multiple?: boolean
+	level?: number,
+	columns?: ColumnEntity<T>[]
 }
 
 export function TableData<T = object>({
@@ -59,13 +62,13 @@ export function TableData<T = object>({
 	withPagination = true,
 	breakpoint: breakpointProps,
 	layout: Layout = ({nodes, columns}) => <SimpleGrid cols={2}>
-		{nodes.map((item) => <Card key={item.index} withBorder>
+		{nodes.map((node) => <Card key={node.index} withBorder>
 			{columns.filter(column => column.isField).map((column) => <Group key={column.field as string} align='flex-end' justify='space-between' grow style={{
 				borderBottom: '1px dashed var(--mantine-color-default-border)',
 			}}>
 				<TableHeaderCellSlot<T> column={column} />
 				<Text flex={0} fw={600} >
-					<TableBodyCellSlot<T> data={item.data} column={column} />
+					<TableBodyCellSlot<T> node={node} column={column} />
 				</Text>
 			</Group>)}
 		</Card>)}
@@ -76,26 +79,36 @@ export function TableData<T = object>({
 	editMode,
 	multiple,
 	noDataText = 'No records',
-	striped = true,
-	highlightOnHover = true,
-	horizontalSpacing = '0.5rem',
-	verticalSpacing = '0.5rem',
-	...props }: TableDataProps<T>) {
+	level = 0,
+	columns: columnsProps,
+	...other }: TableDataProps<T>) {
+	const props = useMemo(() => ({
+  	striped: true,
+		highlightOnHover: true,
+		horizontalSpacing: '0.5rem',
+		verticalSpacing: '0.5rem',
+		...other
+	}), [other]);
 	const [limit, setLimit] = useState(limitProps)
 	const [page, setPage] = useState<number>(pageProps)
 	const [next, setNext] = useState<string | number>('')
 	const [history, setHistory] = useState<(string | number)[]>([])
 	const [data, setData] = useState<T[]>(Array.isArray(dataProps)? dataProps: [])
-	const [isLoading, setLoading] = useState<boolean>(false)
-	const [error, setError] = useState<string>('')
-	const breakpoint = !!breakpointProps && useBreakpoint(breakpointProps);
-	const loading = useMemo<boolean>(() => loadingProps || isLoading, [loadingProps, isLoading])
-
-
 	const [sort, setSort] = useState<{
 		key?: keyof T | undefined,
 		descending: boolean
 	}>({ key: sortKey, descending: sortDesc})
+	const [editableMeta, setEditableMeta] = useState<{
+		columns: ColumnEntity<T>['field'][]
+		index: TableNode<T>['index']
+	}>({
+		columns: [],
+		index: 0
+	})
+	const [isLoading, setLoading] = useState<boolean>(false)
+	const [error, setError] = useState<string>('')
+	const breakpoint = !!breakpointProps && useBreakpoint(breakpointProps);
+	const loading = useMemo<boolean>(() => loadingProps || isLoading, [loadingProps, isLoading])
 	const changeSort = useCallback((field: keyof T) => {
 		setSort(v => {
 			if (v.key === field) {
@@ -107,7 +120,6 @@ export function TableData<T = object>({
 						descending: true
 					}
 				}
-
 			} else {
 				return {
 					key: field,
@@ -117,6 +129,10 @@ export function TableData<T = object>({
 		})
 	}, [])
 	const columnsRef = useMemo<ColumnEntity<T>[]>(() => {
+		if (columnsProps) {
+			return columnsProps
+		}
+
 		function calculateColumn(column: DataColumnProps<T>, level = 0): ColumnEntity<T> {
 			const col: ColumnEntity<T> = {
 				size: 1,
@@ -149,7 +165,7 @@ export function TableData<T = object>({
 		})
 
 		return ret
-	},[children])
+	},[columnsProps, children])
 	const columns = useMemo(
 		() =>
 			[...columnsRef].sort((a, b) => {
@@ -163,10 +179,11 @@ export function TableData<T = object>({
 			}),
 		[columnsRef, groupAt]
 	);
+	const mounted = useMounted();
 	const fetcher = typeof dataProps === 'function'
 
 	const fetch = useCallback((page: string | number = '', saveHistory = true) => {
-		if (typeof dataProps !== 'function') {
+		if (!mounted || typeof dataProps !== 'function') {
 			return
 		}
 		setLoading(true)
@@ -179,40 +196,69 @@ export function TableData<T = object>({
 			setError(error.response?.data?.detail || error?.message || "Ошибка загрузки данных!")
 			setLoading(false)
 		})
-	}, [dataProps, limit])
+	}, [dataProps, limit, mounted])
 
-	useEffect(() => {
-		setHistory([])
-		fetch('');
-	}, [fetch])
+	const groupKey = useMemo<ColumnEntity<T>['field'] | undefined>(() => {
+		for (const column of columns) {
+				if (column.isGrouped && !column.isGroup) {
+				return column.field;
+			}
+		}
+		return undefined;
+	}, [columns]);
 
-	useEffect(() => {
-		setLimit(limitProps)
-		setPage(pageProps)
-	}, [limitProps, pageProps])
-
-	useEffect(() => {
-		setData(Array.isArray(dataProps)? dataProps: [])
-	}, [dataProps])
-
+	const rowspan = useMemo(() => {
+		let max = 0;
+		(function recursive(columns: ColumnEntity<T>[]) {
+			for ( const column of columns ) {
+				max = max > column.level ? max : column.level;
+				if (column.isColumns) {
+					recursive(column.columns);
+				}
+			}
+		})(columns);
+		return max;
+	}, [columns]);
+	const colspan = useMemo(
+		() =>
+			columns.reduce((sum: number, column: ColumnEntity<T>) => {
+				return sum + (column.isGroup ? 0 : column.colspan);
+			}, 0) || 1,
+		[columns]
+	);
 	
-	let nodes:TableNode<T>[] = convertNodes(data);
-	const total = totalProps || nodes?.length
-	if (!fetcher && limit > 0) {
-		nodes = limitBy(nodes, limit, page)
-	}
-	if (sort.key) {
-		nodes = sortBy(nodes, sort.key, sort.descending);
-	}	
+	let total = totalProps || data?.length
+	const nodes:TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
+		let nodes:TableNode<T>[] = convertNodes(data);
+		if (groupKey) {
+			nodes = groupBy(nodes, groupKey);
+		}
+		total = totalProps || nodes?.length
+		if (!fetcher && limit > 0) {
+			nodes = limitBy(nodes, limit, page)
+		}
+		if (sort.key) {
+			nodes = sortBy(nodes, sort.key, sort.descending);
+		}	
+		return nodes
+	}, [data, sort, groupKey, limit]);
 
 	const handlerNext = function () {
-		fetcher && fetch(next, true)
+		if (fetcher) {
+			fetch(next, true)
+		}
 	}
-	const handlerPprevious = function () {
-		history.pop()
-		setHistory([...history])
-		fetcher && fetch(history.pop(), false)
-	}
+	const handlerPprevious = useCallback(function () {
+		setHistory((prev) => {
+			const newHistory = [...prev]
+			newHistory.pop(); // удаляем текущую страницу
+			const prevPage = newHistory[newHistory.length - 1];
+			if (fetcher && prevPage !== undefined) {
+				fetch(prevPage, false);
+			}
+			return newHistory;
+		})
+	}, [fetch])
 
 	const [expands, setExpands] = useState<TableNode<T>['index'][]>([])
 	const toggleExpand = useCallback((index: TableNode<T>['index']) => {
@@ -228,17 +274,12 @@ export function TableData<T = object>({
 			setExpands(v => v[0] === index? []: [index])
 		}
 	}, [multiple])
-
-
-	const [editableMeta, setEditableMeta] = useState<{
-		columns: ColumnEntity<T>['field'][]
-		index: TableNode<T>['index']
-	}>({
-		columns: [],
-		index: 0
-	})
+	
 	const handleModeChange = useCallback((item: TableNode<T>, column: ColumnEntity<T>) => {
 		if (!editMode) {
+			return
+		}
+		if (!column.editor) {
 			return
 		}
 		if (editMode === 'row') {
@@ -277,16 +318,31 @@ export function TableData<T = object>({
 		if (breakpoint && Layout) {
 			return <Layout nodes={nodes} columns={columns} />
 		}
-		return <Table layout="fixed" striped={striped} highlightOnHover={highlightOnHover} horizontalSpacing={horizontalSpacing} verticalSpacing={verticalSpacing} {...props}>
+		return <Table layout="fixed" {...props}>
 			{withHeader && <Table.Thead><TableHeader<T> columns={columns} /></Table.Thead>}
-			<Table.Tbody><TableBody<T> nodes={nodes} columns={columns} /></Table.Tbody>
+			<Table.Tbody><TableBody<T> nodes={nodes} columns={columns} level={level} /></Table.Tbody>
 		</Table>
 	}, [withHeader, breakpoint, columns, nodes, props])
 
+
+	useEffect(() => {
+		setHistory([])
+		fetch('');
+	}, [fetch])
+
+	useEffect(() => {
+		setLimit(limitProps)
+		setPage(pageProps)
+	}, [limitProps, pageProps])
+
+	useEffect(() => {
+		setData(Array.isArray(dataProps)? dataProps: [])
+	}, [dataProps])
+
 	return (
 		<TableDataProvider value={useMemo(() => ({
-			sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand
-		}), [sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand])}>
+			props, sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand, groupAt, colspan, rowspan,
+		}), [props, sort, changeSort, breakpoint, editorMode, handleModeChange, clearModeChange, handleSaveItem, expands, toggleExpand, groupAt, colspan, rowspan,])}>
 			<Stack mih={minHeight} gap='md'>
 				<Loading active={loading} keepMounted mih={minHeight}>
 					{render(nodes, columns)}

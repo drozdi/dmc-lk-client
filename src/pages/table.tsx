@@ -20,7 +20,7 @@ const elements: SS[] = [
 			grouped: "1",
 			group: [
 				{
-					position: 6,
+					position: 8,
 					mass: 12.011,
 					symbol: "C",
 					name: "Carbon",
@@ -492,20 +492,19 @@ export function TablePage() {
 
 	const [data, setData] = useState<SS[]>(elements)
 	return <TableData<SS> data={data} editMode='row' breakpoint='sm' onRowEditComplete={
-		(item, index) => setData(v => v.map((e, i) => i === index? item: e))}>
+		(item, index) => setData(v => v.map((e, i) => i === index? item: e))} groupAt='start'>
 		
-		<DataColumn<SS> field="group" header="Group" isGroup />
+		<DataColumn<SS> field="group" isGroup />
 
-		<DataColumn<SS>
-			editor={(item, column, onChange, onSave) => 
+		{/* <DataColumn<SS> field="grouped" header="Grouped" /> */}
+		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
 				<TextInput defaultValue={item[column.field] as string} 
 					onChange={({target}) => onChange(target.value) }
 					onKeyPress={({ key }) => {
 					if (key === 'Enter') {
 						onSave()
 					}
-				}}
-					/>
+				}} />
 		} sortable field="position" header="Element position" />
 		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
 			<TextInput defaultValue={item[column.field] as string} 

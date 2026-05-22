@@ -13,6 +13,7 @@ export interface AnalyticLabelsProps {
 	event?: IRequestAnalytics["event"];
 	step?: IRequestAnalytics["step"];
 	type: "stack" | "default" | "table";
+	onLoaded?: (data: any) => void;
 }
 
 export const AnalyticLabels = memo(
@@ -21,6 +22,7 @@ export const AnalyticLabels = memo(
 		step = "d",
 		event = "p",
 		type = "default",
+		onLoaded,
 	}: AnalyticLabelsProps) => {
 		const production_id = Number(
 			useStoreUserProfile((state) => state.production_id) || 0,
@@ -126,6 +128,11 @@ export const AnalyticLabels = memo(
 				step,
 			});
 		}, [filterdate, step]);
+
+		useEffect(() => {
+			onLoaded?.(formatData)
+		}, [onLoaded, formatData])
+
 
 		return (
 			<Stack h="100%">

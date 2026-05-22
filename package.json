@@ -57,6 +57,7 @@
 		"dayjs": "^1.11.20",
 		"embla-carousel": "^8.6.0",
 		"embla-carousel-react": "^8.6.0",
+		"file-saver": "^2.0.5",
 		"libphonenumber-js": "^1.12.35",
 		"mantine-contextmenu": "^8.3.13",
 		"mantine-datatable": "^8.3.13",
@@ -71,6 +72,7 @@
 		"react-router-dom": "^7.13.0",
 		"recharts": "^3.7.0",
 		"tailwind-preset-mantine": "^4.0.2",
+		"xlsx": "^0.18.5",
 		"yup": "^1.7.1",
 		"zustand": "^5.0.10"
 	},

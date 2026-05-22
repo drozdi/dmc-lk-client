@@ -6,9 +6,10 @@ import { TableBodyRow } from "./TableBodyRow";
 export interface TableBodyProps<T = object> {
 	nodes: TableNode<T>[];
 	columns: ColumnEntity<T>[];
+	level?: number;
 }
 
-export function TableBody<T = object>({nodes, columns}: TableBodyProps<T>) {
+export function TableBody<T = object>({ nodes, columns, level }: TableBodyProps<T>) {
 		const grouped = useMemo<ColumnEntity<T> | undefined>(() => {
 			return columns.find((v) => v.isGrouped);
 		}, [columns]);
@@ -33,6 +34,6 @@ export function TableBody<T = object>({nodes, columns}: TableBodyProps<T>) {
 		}, [columns, grouped]);
 
 		return <>{nodes.map((node) => {
-			return <TableBodyRow<T> node={node} columns={fields} key={node.index} />;
+			return <TableBodyRow<T> node={node} columns={fields} key={node.index} level={level} />;
 		})}</>
 }
