@@ -22,6 +22,10 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 
 	}, []);
 
+	const onSelected = useCallback((column: ColumnEntity<T>) => {
+
+	}, []);
+
 	const rows = useMemo(() => {
 		const rows = [];
 		(function recursive(columns, level) {
@@ -32,17 +36,17 @@ export function TableHeader<T = object>({ columns }:TableHeaderProps<T>) {
 							recursive(column.columns, level + 1);
 						} else if (column.isColumns) {
 							return column.columns.map(column =>
-								<TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />
+								<TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} onSelected={onSelected} />
 							);
 						}
 						if (column.isGrouped) {
-							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
+							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} onSelected={onSelected} />;
 						}
 						if (column.isGroup) {
-							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
+							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} onSelected={onSelected} />;
 						}
 						if (column.isHeader) {
-							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} />;
+							return <TableHeaderCell<T> key={column.field as string} maxRow={rowspan} maxCol={colspan} column={column} onToggle={onToggle} onSort={onSort} onExpand={onExpand} onSelected={onSelected} />;
 						}
 						return null;
 					})

@@ -10,6 +10,7 @@ export interface BaseCellProps<T = object> {
 	onToggle?: (column: ColumnEntity<T>) => void
 	onSort?: (column: ColumnEntity<T>) => void
 	onExpand?: (column: ColumnEntity<T>) => void
+	onSelected?: (column: ColumnEntity<T>) => void
 }
 
 export interface TableHeaderCellProps<T = object> extends BaseCellProps<T> {
@@ -99,7 +100,7 @@ export function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHead
 }
 
 
-export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand }: TableHeaderCellProps<T>) {
+export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand, onSelected }: TableHeaderCellProps<T>) {
 	if (column.isGroup) {
 		return <TableHeaderCellExpand<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}

@@ -241,7 +241,7 @@ export function TableData<T = object>({
 			nodes = sortBy(nodes, sort.key, sort.descending);
 		}	
 		return nodes
-	}, [data, sort, groupKey, limit]);
+	}, [data, sort, groupKey, limit, page]);
 
 	const handlerNext = function () {
 		if (fetcher) {
