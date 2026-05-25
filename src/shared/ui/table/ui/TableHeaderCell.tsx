@@ -1,7 +1,11 @@
-import { ActionIcon, Group, Table } from '@mantine/core';
+import { ActionIcon, Box, Group, Table } from '@mantine/core';
+import { useRef } from 'react';
 import { TbChevronDown, TbChevronUp, TbSelector, TbX } from 'react-icons/tb';
 import { type ColumnEntity } from '../DataColumn';
 import { useTableDataContext } from '../context/TableDataContext';
+import classes from './style.module.css';
+
+const MIN_COLUMN_WIDTH = 50;
 
 export interface BaseCellProps<T = object> {
 	column: ColumnEntity<T>
@@ -11,6 +15,7 @@ export interface BaseCellProps<T = object> {
 	onSort?: (column: ColumnEntity<T>) => void
 	onExpand?: (column: ColumnEntity<T>) => void
 	onSelected?: (column: ColumnEntity<T>) => void
+	onResize?: (column: ColumnEntity<T>, width: number, nextWidth: number) => void
 }
 
 export interface TableHeaderCellProps<T = object> extends BaseCellProps<T> {
@@ -28,6 +33,9 @@ export interface TableHeaderCellToggleableProps<T = object> extends BaseCellProp
 export interface TableHeaderCellExpandProps<T = object> extends BaseCellProps<T> {
 	onClick?: BaseCellProps<T>['onExpand']
 }
+export interface TableHeaderCellResizeProps<T = object> extends Omit<BaseCellProps<T>, 'maxRow' | 'maxCol'> {
+
+}
 
 export interface TableHeaderCellWrapProps<T = object> extends BaseCellProps<T> {
 	children?: React.ReactNode
@@ -35,12 +43,14 @@ export interface TableHeaderCellWrapProps<T = object> extends BaseCellProps<T> {
 
 export function TableHeaderCellWrap<T = object>({ maxCol, maxRow, column, children }: TableHeaderCellWrapProps<T>) {
 	return <Table.Th
+		pos='relative'
 		colSpan={column.colspan}
 		rowSpan={
 			column.isColumns ? 1 : maxRow - column.parentLevel
 		}
-		style={typeof column.style === 'function'? column.style(column, 'header'): column.style || {}}
-		role="columnheader"
+		w={column.isGroup? 72: undefined}
+		style={typeof column.style === 'function'? column.style(column, 'header'): column.style}
+		role="columnheader"				
 	>
 		{children}
 	</Table.Th>
@@ -82,27 +92,98 @@ export function TableHeaderCellToggleable<T = object>({ column, onClick }: Table
 	);
 }
 
-export function TableHeaderCellExpand<T = object>({ column, maxRow } : TableHeaderCellExpandProps<T>)  {
+export function TableHeaderCellExpand<T = object>({ column, maxRow, maxCol } : TableHeaderCellExpandProps<T>)  {
 	return (
-		<Table.Th
-				colSpan={column.colspan}
-				rowSpan={column.isColumns ? 1 : maxRow - column.parentLevel}
-				style={
-					column.style || {
-						width: 72,
-					}
-				}
-				role="columnheader"
-			>
-				<TableHeaderCellSlot<T> column={column} />
-			</Table.Th>
+		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol}>
+			<TableHeaderCellSlot<T> column={column} />
+		</TableHeaderCellWrap>
 	);
 }
 
+export function TableHeaderCellResize<T = object> ({
+	column,
+	onResize
+}: TableHeaderCellResizeProps<T>) {
+	if (!column.isResizable) {
+		return "";
+	}
+	const columnRef = useRef<HTMLDivElement>(null);
+	const dragState = useRef<{
+		startX: number,
+		currentWidth: number, 
+		nextWidth: number
+	}>({
+		startX: 0,
+		currentWidth: 0, 
+		nextWidth: 0 
+	});
 
-export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand, onSelected }: TableHeaderCellProps<T>) {
+	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+ 		e.preventDefault();
+    e.stopPropagation();
+		if (!columnRef.current) {
+			return;
+		}
+
+		const th = columnRef.current.closest('th')
+		const nextTh = th?.nextElementSibling as HTMLTableCellElement;
+		if (!th) {
+			return;
+		}
+
+		dragState.current = {
+			startX: e.clientX,
+      currentWidth: th?.offsetWidth,
+      nextWidth: nextTh?.offsetWidth,
+    };
+
+		const handleMouseMove = (event: MouseEvent) => {
+			let deltaX = event.clientX - dragState.current.startX;
+
+      const maxShrinkCurrent = dragState.current.currentWidth - MIN_COLUMN_WIDTH;
+      const maxShrinkNext = dragState.current.nextWidth - MIN_COLUMN_WIDTH;
+
+      const constrainedDelta = Math.max(-maxShrinkCurrent, Math.min(deltaX, maxShrinkNext));
+
+      const finalCurrentWidth = dragState.current.currentWidth + constrainedDelta;
+      const finalNextWidth = (dragState.current.nextWidth || 0) - constrainedDelta;
+			
+			
+			th.style.width = `${finalCurrentWidth}px`
+			if (nextTh) {
+				nextTh.style.width = `${finalNextWidth}px`
+			}
+			onResize?.(column, finalCurrentWidth, finalNextWidth)
+		};
+
+    const handleMouseUp = () => {
+			document.body.style.cursor = 'initial';
+      document.body.style.userSelect = 'initial';
+      
+			document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+			window.removeEventListener('blur', handleMouseUp);
+    };
+
+		document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+		window.addEventListener('blur', handleMouseUp);
+	}
+
+	return <Box 
+		ref={columnRef} 
+		className={classes.resize}
+		onMouseDown={handleMouseDown}
+		onClick={(event) => event.stopPropagation()} />
+}
+
+
+export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	onSort,	onExpand, onResize, onSelected }: TableHeaderCellProps<T>) {
 	if (column.isGroup) {
-		return <TableHeaderCellExpand<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
+		return <TableHeaderCellExpand<T> column={column} maxRow={maxRow} maxCol={maxCol} onExpand={onExpand} />;
 	}
 	return (
 		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol} >
@@ -113,6 +194,7 @@ export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	
 					<TableHeaderCellToggleable<T> column={column} onClick={onToggle} maxRow={maxRow} maxCol={maxCol} />
 				</Group>
 			</Group>
+			<TableHeaderCellResize<T> column={column} onResize={onResize} />
 		</TableHeaderCellWrap>
 	);
 }

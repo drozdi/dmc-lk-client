@@ -12,6 +12,7 @@ export interface DataColumnProps<T = object> {
 	style?: React.CSSProperties | ((column: ColumnEntity<T>, type: TableNode<T> | 'header' | 'body' | 'footer') => React.CSSProperties),
 	sortable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
 	toggleable?: boolean | ((column: ColumnEntity<T>) => boolean | void),
+	resizable?: boolean,
 	ellipsis?: boolean,
 	noWrap?: boolean,
 	isGroup?: boolean,
@@ -30,6 +31,7 @@ export interface ColumnEntity<T = object> extends DataColumnProps<T> {
 	isField: boolean,
 	isEmpty: boolean,
 	isToggleable: boolean,
+	isResizable: boolean,
 	colspan: number,
 }
 

@@ -140,6 +140,7 @@ export function TableData<T = object>({
 				parentLevel: level,
 				columns: [],
 				isColumns: calculateIsColumns(column.children),
+				isResizable: !!column.resizable,
 				isHeader: !!column.header,
 				isField: !!column.field,
 				isEmpty: !column.field,

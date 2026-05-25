@@ -1,0 +1,21 @@
+.resize {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -4px;
+	width: 8px;
+	cursor: col-resize;
+	background-color: transparent;
+	z-index: 100;
+	opacity: 0;
+	transition: all 0.2s ease;
+}
+
+th:hover .resize {
+	opacity: 1;
+	background-color: var(--mantine-color-gray-4)
+}
+
+th:last-child .resize {
+	display: none;
+}

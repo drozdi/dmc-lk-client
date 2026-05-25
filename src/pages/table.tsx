@@ -497,7 +497,7 @@ export function TablePage() {
 		<DataColumn<SS> field="group" isGroup />
 
 		{/* <DataColumn<SS> field="grouped" header="Grouped" /> */}
-		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+		<DataColumn<SS> resizable editor={(item, column, onChange, onSave) => 
 				<TextInput defaultValue={item[column.field] as string} 
 					onChange={({target}) => onChange(target.value) }
 					onKeyPress={({ key }) => {
@@ -506,7 +506,7 @@ export function TablePage() {
 					}
 				}} />
 		} sortable field="position" header="Element position" />
-		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+		<DataColumn<SS> resizable editor={(item, column, onChange, onSave) => 
 			<TextInput defaultValue={item[column.field] as string} 
 				onChange={({target}) => onChange(target.value) }
 				onKeyPress={({ key }) => {
@@ -516,7 +516,7 @@ export function TablePage() {
 				}}
 				/>
 		} sortable field="name" header="Element name" />
-		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+		<DataColumn<SS> resizable editor={(item, column, onChange, onSave) => 
 			<TextInput defaultValue={item[column.field] as string} 
 				onChange={({target}) => onChange(target.value) }
 				onKeyPress={({ key }) => {
@@ -526,7 +526,7 @@ export function TablePage() {
 				}}
 				/>
 		} field="symbol" header="Symbol" />
-		<DataColumn<SS> editor={(item, column, onChange, onSave) => 
+		<DataColumn<SS> resizable editor={(item, column, onChange, onSave) => 
 			<TextInput defaultValue={item[column.field] as string} 
 				onChange={({target}) => onChange(target.value) }
 				onKeyPress={({ key }) => {

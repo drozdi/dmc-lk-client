@@ -1,5 +1,5 @@
 import { createElement as h } from 'react'
-import * as TbIcons from 'react-icons/tb'
+import * as MdIcons from 'react-icons/md'
 import { camelize, capitalize, cls } from '../../utils'
 
 interface IconProps {
@@ -17,7 +17,7 @@ const replace = (str: string) => {
 	return str.replace('mdi-', 'tb-')
 }
 const getIcon = (name: string) => {
-	return TbIcons?.[capitalize(camelize(name))] || ''
+	return MdIcons?.[capitalize(camelize(name))] || ''
 }
 
 export function Icon({ children, className, color, size, title, as = 'i', ...props }: IconProps) {
@@ -29,11 +29,11 @@ export function Icon({ children, className, color, size, title, as = 'i', ...pro
 
 	let name = replace(children)
 
-	if (!/^tb-/.test(name)) {
-		name = 'tb-' + name
+	if (!/^mb-/.test(name)) {
+		name = 'md-' + name
 	}
-	if (name === 'tb-close') {
-		name = 'tb-x'
+	if (name === 'tb-x') {
+		name = 'md-close'
 	}
 
 	const Icon = getIcon(name)
