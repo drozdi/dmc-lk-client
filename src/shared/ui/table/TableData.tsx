@@ -260,7 +260,7 @@ export function TableData<T = object>({
 			}
 			return newHistory;
 		})
-	}, [fetch])
+	}, [fetcher, fetch])
 
 	const [expands, setExpands] = useState<TableNode<T>['index'][]>([])
 	const toggleExpand = useCallback((index: TableNode<T>['index']) => {
