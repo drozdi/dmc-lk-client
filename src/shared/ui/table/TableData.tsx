@@ -73,6 +73,7 @@ export function TableData<T = object>({
 			</Group>)}
 		</Card>)}
 	</SimpleGrid>,
+	
 	minHeight,
 	pagination: Pagination = TablePagination,
 	onRowEditComplete,

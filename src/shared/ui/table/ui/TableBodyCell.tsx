@@ -62,6 +62,9 @@ export function TableBodyCellWrap<T = object>({ node, column, level = 0, onClick
 	</Table.Td>
 }
 export function TableBodyCellSlot<T = object>({ node: { data }, column, onClick }: TableBodyCellSlotProps<T>) {
+	if (column.isGroup) {
+		return ''
+	}
 	return <Text flex='1' maw='100%' onClick={onClick}>{column.body?.(data, column) || data?.[column.field]}</Text>
 }
 
