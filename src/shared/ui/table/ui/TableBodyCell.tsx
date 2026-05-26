@@ -1,6 +1,5 @@
 import { ActionIcon, Box, Group, Table, type ActionIconProps } from "@mantine/core";
 import { TbCircleChevronLeft, TbCircleChevronRight } from 'react-icons/tb';
-import { Text } from "../../text";
 import { useTableDataContext } from '../context';
 import { type ColumnEntity } from "../DataColumn";
 import { type TableNode } from '../TableData';
@@ -65,7 +64,7 @@ export function TableBodyCellSlot<T = object>({ node: { data }, column, onClick 
 	if (column.isGroup) {
 		return ''
 	}
-	return <Text flex='1' maw='100%' onClick={onClick}>{column.body?.(data, column) || data?.[column.field]}</Text>
+	return <Box flex='1' maw='100%' onClick={onClick}>{column.body?.(data, column) || data?.[column.field]}</Box>
 }
 
 

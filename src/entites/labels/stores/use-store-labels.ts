@@ -90,7 +90,10 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 			});
 			set({
 				isLoading: false,
-				formats,
+				formats: Object.fromEntries(Object.entries(formats).map(([production_id, formats]) => [production_id, formats.map(item => ({
+					...item,
+					production_id: Number(production_id)
+				}))])),
 			});
 		} catch (e: IError) {
 			console.error(e);
@@ -126,12 +129,10 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 
 
 		try {
-			
-			const {formatPrints, formats} = await queryClient.fetchQuery({
+			const formatPrints = await queryClient.fetchQuery({
 				queryKey: ["labels-formats"],
 				queryFn: async () => {
 					let formatPrints: ILabel[] = []
-					let formats = {}
 					let response = {}
 					const params = {
 						size: 100,
@@ -152,23 +153,17 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 									print: item.statistics_print_format,
 								}))
 						];
-						(response?.data?.response || []).filter(item =>	item.is_reference_template).forEach(item => {
-							formats[item.production_id] = formats[item.production_id] || []
-							formats[item.production_id].push(item);
-						})
 						params.number++
 					} while (response.success && response?.data?.response?.length >= params.size);
 
-					return {formatPrints, formats};
+					return formatPrints;
 				},
 				staleTime: 0,
 				gcTime: 0,
 			});
-
 			set({
 				isLoading: false,
-				formatPrints,
-				formats
+				formatPrints
 			});
 		} catch (e: IError) {
 			console.error(e);
@@ -272,6 +267,7 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 						item.add_label_format !== format,
 				),
 			}));
+			notification.success(`Группа "${format}" успешно удалена!`);
 			return true;
 		} catch (e: IError) {
 			console.error(e);
@@ -288,8 +284,56 @@ export const useStoreLabels = create<IStoreLabels>((set, get) => ({
 		return false;
 	},
 
-	async updateFormat () {
+	async updateFormat (id, data) {
+		set({
+			isLoading: true,
+			error: "",
+		});
+		const { formats, formatPrints } = get()
+		const oldName = formats[data.production_id]?.find(item => item.id === id)?.add_label_format
+		const newName = data.add_label_format
 
+		try {
+			const res = (
+				await requestLabelsJoinedUpdate(Number(id), {
+					...(get().formatPrints.find(
+						(item) => String(item.id) === String(id),
+					) || {}),
+					...data,
+				})
+			).data;
+			set(state => ({
+				isLoading: false,
+				formats: {
+					...state.formats,
+					[data.production_id]: state.formats[data.production_id].map((item) => item.id === id ? {
+						...item, add_label_format: newName,
+						format: newName,
+					} : item)
+				},
+				formatPrints: state.formatPrints.map((item) => 
+					item.production_id === data.production_id && item.add_label_format === oldName? {
+						...item,
+						add_label_format: newName,
+						format: newName,
+					}: item
+				) as ILabel[]
+			}));
+			notification.success(`Группа переименована "${oldName}" в "${newName}"`)
+			return res;
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail ||
+				e?.message ||
+				e ||
+				"Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+		return undefined;
 	},
 
 	async addFormatPrint(data) {

@@ -17,14 +17,13 @@ export const AnalyticType = ({
 	step = "d",
 	event = "p",
 }: AnalyticTypeProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const productions = useStoreUserProfile((state) => state.productions);
+	
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
 		event,
-		production_id,
+		production_id: productions,
 	});
 	const { fetch, data } = useQueryAnalytics(query);
 
@@ -77,9 +76,6 @@ export const AnalyticType = ({
 			};
 		}
 		for (const production of data.production) {
-			if (production_id > 0 && production_id !== production.production_id) {
-				continue;
-			}
 			for (const item of production.data) {
 				if (item.data.length > 11) {
 					continue;
@@ -94,7 +90,7 @@ export const AnalyticType = ({
 			}
 		}
 		return Object.values(ddata);
-	}, [data, labels, production_id]);
+	}, [data, labels, productions]);
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
 

@@ -16,14 +16,12 @@ export const WidgetAnalyticEventsDefect = ({
 	event = "d",
 	...props
 }: WidgetAnalyticEventsDefectProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const productions = useStoreUserProfile((state) => state.productions);
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
 		event,
-		production_id,
+		production_id: productions,
 	});
 
 	const { isLoading, error, fetch } = useAnalytics(query);
@@ -33,8 +31,8 @@ export const WidgetAnalyticEventsDefect = ({
 	}, [query]);
 
 	useEffect(() => {
-		setQuery({ filterdate, step, event, production_id });
-	}, [filterdate, step, event, production_id]);
+		setQuery({ filterdate, step, event, production_id: productions });
+	}, [filterdate, step, event, productions]);
 
 	return (
 		<Widget

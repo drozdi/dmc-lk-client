@@ -16,7 +16,8 @@ export const WidgetAnalyticIncident = ({
 }: WidgetAnalyticsIncidentProps) => {
 	//return "";
 	const isLoading = useStoreIncident(state => state.isLoading);
-	const production_id = Number(useStoreUserProfile((state) => state.production_id) || 0);
+	const productions = useStoreUserProfile((state) => state.productions);
+	
 	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
 		filterdate: filterdate || [null, null],
 		data: [],

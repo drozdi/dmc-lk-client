@@ -1,23 +1,27 @@
 import { useStoreUserProfile } from "@/entites/auth";
-import { SelectProductions } from "@/entites/users";
+import { MultiSelectProductions } from "@/entites/users";
 import { useShallow } from "zustand/shallow";
 
 export const ChangeProduct = () => {
-	const { userInfo, production_id, setProductionId } = useStoreUserProfile(useShallow(state => ({
+	const { productions, setProductions } = useStoreUserProfile(useShallow(state => ({
 		userInfo: state.userInfo,
-		production_id: state.production_id,
-		setProductionId: state.setProductionId,
+		productions: state.productions,
+		setProductions: state.setProductions,
 	})));
 
-	const handleChange = (value: string) => {
-		setProductionId(Number(value));
+	const handleChange = (value: string[]) => {
+		setProductions(value);
 	};
 
-	return <SelectProductions
-		allowDeselect={false}
-		excludeds={userInfo?.is_superuser ? [] : ["0"]}
+	return <MultiSelectProductions
 		variant="underline"
-		value={String(production_id)}
-		onChange={(value) => handleChange(value as string)}
+		value={productions as string[]}
+		allLabel="Все площадки"
+		maw={200}
+		mah={60}
+		style={{
+			overflow: "hidden",
+		}}
+		onChange={(value) => handleChange(value)}
 	/>
 };

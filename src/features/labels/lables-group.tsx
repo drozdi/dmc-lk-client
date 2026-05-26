@@ -3,6 +3,9 @@ import {
 	GroupedItem,
 	GroupedProvider,
 	randomColorLabel,
+	selectFormatForProduction,
+	selectPrintsForProduction,
+	selectSelectFormatPrintsForProduction,
 	useGrouped,
 	useProductionCount,
 	useProductionFormatsCode,
@@ -13,17 +16,19 @@ import {
 import { notification } from "@/shared/notification";
 import { Loading, Text, type LoadingProps } from "@/shared/ui";
 import {
+	Button,
 	Center,
 	Grid,
 	Group,
 	NumberFormatter,
 	NumberInput,
 	SimpleGrid,
-	Stack
+	Stack,
+	TextInput
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useEffect, useRef } from "react";
-import { TbPlus, TbX } from "react-icons/tb";
+import { TbCursorText, TbPlus, TbX } from "react-icons/tb";
 import { Container } from "./ui/container";
 import { Item } from "./ui/item";
 
@@ -46,6 +51,10 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 	const storeLabels = useStoreLabels();
 	const count = useProductionCount(production_id);
 
+	const _prints = selectPrintsForProduction(production_id)(storeLabels);
+	const _formats = selectFormatForProduction(production_id)(storeLabels);
+	const _formatPrints = selectSelectFormatPrintsForProduction(production_id)(storeLabels)
+	
 	const containers = useGrouped(production_id);
 	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
@@ -76,13 +85,53 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 		});
 	};
 
-	const handleRenameFormat = (format, newFormat) => {}
+	const handleRenameFormat = (print: ILabel["add_label_format"]) => {
+		const handleRename = async (newFormat = inputRef.current?.value) => {
+			if (newFormat === labelFormat(print)) {
+				modals.close(modal)
+				// return
+			}
+
+			const item = storeLabels.formats[production_id].find((item) => {
+				return item.statistics_print_format === print
+			})
+
+			if (!item) {
+				modals.close(modal)
+				return
+			}
+
+			await storeLabels.updateFormat(item.id, {
+				production_id,
+				add_label_format: newFormat
+			})
+
+			modals.close(modal)
+		}
+		const modal = modals.open({
+			title: `Переименовать группу "${labelFormat(print)} (${print})"`,
+			children: <Stack>
+				<TextInput defaultValue={labelFormat(print)} ref={inputRef} />
+				<Group justify="flex-end">
+					<Button onClick={() => modals.close(modal)}>
+						Отмена
+					</Button>
+					<Button color='lime' onClick={() => handleRename()}>
+						Сохранить
+					</Button>
+				</Group>
+			</Stack>,
+			onEnterTransitionEnd: () => {
+				inputRef.current?.focus();
+			},
+		})
+	}
 
 	const handleAddCount = (label_format: ILabel['statistics_print_format']) => {
 		async function handleAdd() {
 			const count_label = Number(inputRef.current?.value) || 0
 			if (count_label > 0) {
-				const res = await useStoreCountLabel.getState().addCount({
+				await useStoreCountLabel.getState().addCount({
 					place_name: "Пополнение этикеток",
 					count_label: count_label,
 					label_format,
@@ -132,14 +181,19 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 								>
 									<Container label={`${item} (${codeFormat(item)})`} menu={[
 										{ 
-											children: 'Удалить', 
-											onClick: () => handleDeleteFormat(item),
-											rightSection: <TbX />,
-										},
-										{ 
 											children: 'Дабавить количество', 
 											onClick: () => handleAddCount(codeFormat(item)),
 											rightSection: <TbPlus />,
+										},
+										{ 
+											children: 'Переименовать', 
+											onClick: () => handleRenameFormat(codeFormat(item)),
+											rightSection: <TbCursorText />,
+										},
+										{ 
+											children: 'Удалить', 
+											onClick: () => handleDeleteFormat(item),
+											rightSection: <TbX />,
 										},
 									]} title={<Group justify="space-between">
 										<div>

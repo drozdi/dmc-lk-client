@@ -42,9 +42,7 @@ export const AnalyticEvents = ({
 	onClick,
 	onLoaded
 }: AnalyticEventsProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const production_id = useStoreUserProfile((state) => state.productions);
 
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
@@ -72,10 +70,6 @@ export const AnalyticEvents = ({
 			for (const event in data) {
 				for (const production of data[event as AnalyticEvent]?.production ||
 					[]) {
-					if (production_id > 0 && production.production_id !== production_id) {
-						continue;
-					}
-
 					for (const item of production.data) {
 						if (step === "s") {
 							if (dayjs(item.timestamp).format("ss") === date) {

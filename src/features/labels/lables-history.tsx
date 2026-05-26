@@ -10,23 +10,22 @@ import {
 } from "@/shared/ui";
 import { factorySelect, type factorySelectProps } from "@/shared/utils";
 import { Card, Group, SimpleGrid, Stack } from "@mantine/core";
-import "@style";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 
 export const LabelsHistory = () => {
-	const production_id = Number(useStoreUserProfile(state => state.production_id)) || 0
+	const productions = useStoreUserProfile(state => state.productions)
 	const storeCountLabel = useStoreCountLabel();
 	const qp = useQueryProductions();
 
-	const SelectPlace = factorySelect(useQueryPlace(production_id))
+	const SelectPlace = factorySelect(useQueryPlace(productions.map(Number)))
 	const SelectPrint = factorySelect(useMemo<factorySelectProps>(() => ({
 		isLoading: storeCountLabel.isLoading,
 		dataSelect: [{
 			value: '',
 			label: 'Все этикетки'
 		}].concat(
-			[...new Set(selectHistoryForProduction(production_id)(storeCountLabel).map(item => item.format_template))].map(value => ({
+			[...new Set(selectHistoryForProduction(productions)(storeCountLabel).map(item => item.format_template))].map(value => ({
 				value,
 				label: value
 			}))
@@ -37,8 +36,8 @@ export const LabelsHistory = () => {
 	const [print, setPrint] = useState('')
 
 	const data = useMemo<ICountLabelHistoryItem[]>(() => {
-		return selectHistoryForProduction(production_id)(storeCountLabel).filter(item => place === 0 || item.place_id === place).filter(item => !print || item.format_template === print)
-	}, [storeCountLabel.history, production_id, place, print])
+		return selectHistoryForProduction(productions)(storeCountLabel).filter(item => place === 0 || item.place_id === place).filter(item => !print || item.format_template === print)
+	}, [storeCountLabel.history, productions, place, print])
 	
 	useEffect(() => {
 		storeCountLabel.loadHistory();
@@ -48,7 +47,7 @@ export const LabelsHistory = () => {
 		<Stack>
 			<Group justify="space-between">
 				<Text px='sm' fz='h2'>
-					{qp.findNameById(production_id)}
+					{productions.map(i => qp.findNameById(i))}
 				</Text>
 				<Group>
 					<SelectPlace label='Линия' value={String(place)} onChange={(v) => setPlace(Number(v))} />

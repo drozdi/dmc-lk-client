@@ -22,13 +22,12 @@ export const AnalyticPie = ({
 	events = ["v", "d", "i"],
 	percent
 }: AnalyticPieProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const productions = useStoreUserProfile((state) => state.productions);
+	
 	const [query, setQuery] = useState<IRequestAnalytics>(
 		corectQuery({
 			filterdate,
-			production_id,
+			production_id: productions,
 		} as IRequestAnalytics),
 	);
 
@@ -79,7 +78,7 @@ export const AnalyticPie = ({
 			value,
 			fill: color,
 		}));
-	}, [data, events, production_id]);
+	}, [data, events, productions]);
 
 	const isEmpty = useMemo(
 		() => !ddata.reduce((acc, { value }) => acc && value > 0, true),

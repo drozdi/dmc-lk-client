@@ -20,12 +20,19 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 	userInfo: undefined,
 	settings: [],
 	production_id: Number($setting.get("production.id", 0)),
+	productions: $setting.get("productions.id", []),
 
 	setProductionId(production_id) {
 		set({
 			production_id,
 		});
 		$setting.set("production.id", String(production_id));
+	},
+	setProductions(productions) {
+		set({
+			productions,
+		});
+		$setting.set("productions.id", productions);
 	},
 
 	setUserInfo(userInfo: IUserInfo) {

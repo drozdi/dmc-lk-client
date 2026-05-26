@@ -24,10 +24,8 @@ export const AnalyticLabels = memo(
 		type = "default",
 		onLoaded,
 	}: AnalyticLabelsProps) => {
-		const production_id = Number(
-			useStoreUserProfile((state) => state.production_id) || 0,
-		);
-
+		const production_id = useStoreUserProfile((state) => state.productions)
+		
 		const { fetch, data, query } = useAnalytics({
 			filterdate,
 			step,
@@ -62,9 +60,6 @@ export const AnalyticLabels = memo(
 					total: 0,
 				};
 				for (const prod of data.production) {
-					if (production_id > 0 && production_id !== prod.production_id) {
-						continue;
-					}
 					for (const item of prod.data) {
 						if (item.data.length > 15) {
 							continue;

@@ -27,7 +27,7 @@ export const useWidget = (): IWidgetItem => {
 export const useWidgetParams = () => {
 	const widget = useWidget();
 	const dashboard = useDashboard();
-	const update = useCallback((key, value) => {
+	const update = useCallback<(key: string, value: never) => void>((key, value) => {
 		if (!widget?.id) {
 			return
 		}

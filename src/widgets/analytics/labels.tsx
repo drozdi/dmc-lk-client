@@ -26,28 +26,27 @@ export const WidgetAnalyticLabels = memo(
 		allowChangeType,
 		...props
 	}: WidgetAnalyticLabelsProps) => {
-		const production_id = Number(
-			useStoreUserProfile((state) => state.production_id) || 0,
-		);
+		const productions = useStoreUserProfile((state) => state.productions)
+
 		const [query, setQuery] = useState<IRequestAnalytics>({
 			filterdate,
 			step,
 			event,
-			production_id,
+			production_id: productions.map(Number),
 		});
 		const { isLoading, fetch, error } = useQueryAnalytics(query);
 		const formatedData = useRef<any[]>([])
 
-		const [type, setType] = useState(typeProp);
+		const [type, setType] = useState<AnalyticLabelsProps['type']>(typeProp);
 		const [_, update] = useWidgetParams()
 		useEffect(() => {
 			setQuery((v) => ({
 				...v,
 				filterdate,
 				step,
-				production_id,
+				production_id: productions,
 			}));
-		}, [filterdate, step, production_id]);
+		}, [filterdate, step, productions]);
 
 		useEffect(() => {
 			fetch();
@@ -101,7 +100,7 @@ export const WidgetAnalyticLabels = memo(
 				children: label,
 				color: type === value? "primary": '',
 				onClick: () => {
-					setType(value)
+					setType(value as AnalyticLabelsProps['type'])
 					update?.('type', value)
 				},
 			})));

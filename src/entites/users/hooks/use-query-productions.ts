@@ -28,25 +28,13 @@ export function useQueryProductions() {
 	const dataSelect = useMemo<
 		ComboboxItem<IProduction["production_id"]>[]
 	>(() => {
-		return [
-			{
-				value: "0",
-				label: "Все площадки",
-			},
-		].concat(
-			(q.data || []).map((item) => ({
+		return (q.data || []).map((item) => ({
 				value: String(item.production_id),
 				label: item.production_name as string,
-			})),
-		);
+			}))
 	}, [q.data]);
 	const findById = useCallback(
 		(id: IProduction["production_id"]) => {
-			if (id === 0) {
-				return {
-					production_name: "Все площадки",
-				};
-			}
 			return (q.data || []).find((item) => item.production_id === id);
 		},
 		[q.data],

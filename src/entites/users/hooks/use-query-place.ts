@@ -3,13 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { requestUsersPlaceList } from "../api/place";
 
-export function useQueryPlace(production_id: IPlace["production_id"]) {
+export function useQueryPlace(production: IPlace["production_id"] | IPlace["production_id"][]) {
+	const productions = [].concat(production as never[]).map(Number);
 	const q = useQuery({
-		queryKey: ["users-place", production_id],
+		queryKey: ["users-place"],
 		queryFn: async () => {
-			const res = await requestUsersPlaceList({
-				production_id,
-			});
+			const res = await requestUsersPlaceList();
 			if (!res.success) {
 				throw new Error(
 					res.message || "Список запросов: подумать над ошибкой!",
@@ -28,12 +27,13 @@ export function useQueryPlace(production_id: IPlace["production_id"]) {
 				label: "Все линии",
 			},
 		].concat(
-			(q.data || []).map((item) => ({
+			(q.data || []).filter(item => productions.includes(item.production_id as never)).map((item) => ({
 				value: String(item.place_id),
 				label: `${item.place_name} ${item.place_type}`,
 			})),
 		);
-	}, [q.data]);
+	}, [q.data, JSON.stringify(productions)]);
+
 	const findById = useCallback(
 		(id: IPlace["place_id"]) => {
 			if (id === 0) {
@@ -48,7 +48,7 @@ export function useQueryPlace(production_id: IPlace["production_id"]) {
 	const findNameById = useCallback(
 		(id: IPlace["place_id"]) => {
 			const item = findById(id);
-			return `${item?.place_name} ${item?.place_type}` || `Линия #${id}`;
+			return `${item?.place_name} ${item?.place_name}` || `Линия #${id}`;
 		},
 		[findById],
 	);

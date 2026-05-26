@@ -35,8 +35,10 @@ interface IStoreUserProfile extends IStore {
 	userInfo?: IUserInfo;
 	settings: ISetting[];
 	production_id: IProduction["production_id"];
+	productions: IProduction["production_id"][];
 
 	setProductionId(id: IProduction["production_id"]): void;
+	setProductions(productions: IProduction["production_id"][]): void;
 
 	setUserInfo(data: Partial<IUserInfo>): void;
 	updateUserInfo(iserInfo: Partial<IUserInfo>): Promise<boolean>;

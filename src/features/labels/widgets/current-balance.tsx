@@ -12,7 +12,7 @@ export interface LabelsCurrentBalanceProps {
 export const LabelsCurrentBalance = ({
 	type = "cnt",
 }: LabelsCurrentBalanceProps) => {
-	const production_id = Number(useStoreUserProfile((state) => state.production_id)) || 0;
+	const productions = useStoreUserProfile((state) => state.productions)
 	const storeCountLabel = useStoreCountLabel(
 		useShallow((state) => ({
 			count: state.count,
@@ -21,7 +21,7 @@ export const LabelsCurrentBalance = ({
 	);
 	
 	const value = useMemo(() => {
-		const count = selectCountForProduction(production_id)(storeCountLabel as IStoreCountLabel);
+		const count = selectCountForProduction(productions)(storeCountLabel as IStoreCountLabel);
 		
 		let value = 0;
 		const key = type === "cnt" ? "sum" : "sum_consumption";
@@ -36,7 +36,7 @@ export const LabelsCurrentBalance = ({
 			value,
 		);
 		return value;
-	}, [storeCountLabel.count, type, production_id]);
+	}, [storeCountLabel.count, type, productions]);
 
 	useEffect(() => {
 		storeCountLabel.loadCount();

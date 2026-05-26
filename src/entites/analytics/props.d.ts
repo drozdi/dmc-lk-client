@@ -100,7 +100,7 @@ interface IRequestAnalytics {
 	filterdate: [string | Date | null, string | Date | null];
 	step: SliceStep;
 	event: AnalyticEvent;
-	production_id?: number | number[];
+	production_id?: (number | string) | (number | string)[];
 	place_id?: number | number[];
 }
 interface IResponseAnalytics {

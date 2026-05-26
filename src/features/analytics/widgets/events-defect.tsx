@@ -143,9 +143,7 @@ export const AnalyticEventsDefect = ({
 	step = "d",
 	event = "d",
 }: AnalyticEventsDefectProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const production_id = useStoreUserProfile((state) => state.productions);
 	const { data } = useAnalytics({ filterdate, step, event, production_id });
 
 	// Извлекаем, групируем данные
@@ -157,10 +155,6 @@ export const AnalyticEventsDefect = ({
 		const ddata: Record<string, number> = {};
 
 		for (const production of data.production || []) {
-			if (production_id > 0 && production_id !== production.production_id) {
-				continue;
-			}
-
 			for (const item of production.data) {
 				const d = calckDefect(item.data);
 				ddata[d] = ddata[d] || 0;

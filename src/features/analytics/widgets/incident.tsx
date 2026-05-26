@@ -18,7 +18,7 @@ export const AnalyticIncident = ({
 	filterdate,
 }: AnalyticIncidentProps) => {
 	const storeIncident = useStoreIncident();
-	const production_id = Number(useStoreUserProfile((state) => state.production_id) || 0);
+	const production_id = useStoreUserProfile((state) => state.productions);
 	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
 		filterdate: filterdate || [null, null],
 		data: [],
@@ -35,10 +35,7 @@ export const AnalyticIncident = ({
 			.send(query)
 			.then(({ data = [] }: IResponseAnalyticsIncident) => {
 				setData(
-					data.filter(
-						(item) =>
-							production_id === 0 || production_id === item.production_id,
-					) as IAnalyticsIncidentItem[],
+					data as IAnalyticsIncidentItem[],
 				)
 			});
 	}, [query, production_id]);
