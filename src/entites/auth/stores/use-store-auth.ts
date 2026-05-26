@@ -82,18 +82,18 @@ export const useStoreAuth = create<IStoreAuth>((set, get) => ({
 			return false;
 		},
 		async refreshAuth() {
-			const refresh = api.getRefreshToken();
+			const refreshToken = api.getRefreshToken();
 
-			if (!refresh) {
+			if (!refreshToken) {
 				throw new Error("Нет refresh token");
 			}
 
 			try {
-				const response = await requestRegistrationRefresh(refresh);
-				const { accessToken, refreshToken } = response;
-				api.setAccessToken(accessToken);
-				api.setRefreshToken(refreshToken);
-				return { accessToken, refreshToken };
+				const response = (await requestRegistrationRefresh(refreshToken)).data.token;
+				const { access, refresh } = response;
+				api.setAccessToken(access);
+				api.setRefreshToken(refresh);
+				return { access, refresh };
 			} catch (error) {
 				get().clearAuth();
 				throw error;
@@ -133,8 +133,8 @@ export const useStoreAuth = create<IStoreAuth>((set, get) => ({
 				error: "",
 			});
 			try {
-				const response = await requestRegistrationRegister(userData);
-				const { token, user } = response.data;
+				const response = await requestRegistrationRegister(userData as IUserInfo);
+				const { token } = response.data;
 				api.setAccessToken(token.access);
 				api.setRefreshToken(token.refresh);
 				set({

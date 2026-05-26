@@ -9,12 +9,16 @@ import { requestAnalytics } from "../api/analytics";
 
 const DEFAULT_DATA: IResponseAnalytics = {
   id: 0,
-  all_records: 0,
-  sum_company: 0,
-  min_company: 0,
-  max_company: 0,
-  average_company: 0,
-  production: [],
+	all_records: 0,
+	sum_company: 0,
+	min_company: 0,
+	max_company: 0,
+	average_company: 0,
+	sum_consumption_m: 0,
+	min_consumption_m: 0,
+	max_consumption_m: 0,
+	average_consumption_m: 0,
+	production: [],
 };
 
 /**
@@ -54,14 +58,14 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
   const fetch = useCallback(
     async (query: Partial<IRequestAnalytics> = {}): Promise<IResponseAnalytics | undefined> => {
       // Слияние параметров с особым правилом для filterdate
-      const mergedParams: IRequestAnalytics = {
+      const mergedParams = {
         ...baseParams,
         ...query,
         filterdate: [
-          baseParams.filterdate?.[0] ?? query.filterdate?.[0],
+          baseParams.filterdate?.[0] ?? query.filterdate?.[0] ?? '',
           baseParams.filterdate?.[1] ?? query.filterdate?.[1] ?? "",
         ],
-      };
+      } as IRequestAnalytics;
 
       setActiveParams(mergedParams);
 

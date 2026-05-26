@@ -175,9 +175,6 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 export function selectHistoryForProduction (production: ICountLabelHistoryItem['production_id'] | ICountLabelHistoryItem['production_id'][]) {
 	const productions = [].concat(production as never[]).map(Number)
 	return (state: IStoreCountLabel): ICountLabelHistoryItem[] => {
-		if (!productions.length) {
-			return state.history
-		}
 		return state.history.filter(item => productions.includes(Number(item.production_id)))
 	}
 }
@@ -190,9 +187,6 @@ export const selectCountForProduction = (production: ICountLabelHistoryItem['pro
 		distributed: ICountLabelItem[];
 		not_distributed: ICountLabelItem[];
 	} => {
-		if (!productions.length) {
-			return state.count
-		}
 		return {
 			distributed: state.count.distributed.filter(item => productions.includes(Number(item.production_id))),
 			not_distributed: state.count.not_distributed.filter(item => productions.includes(Number(item.production_id))),

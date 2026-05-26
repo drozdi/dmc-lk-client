@@ -1,11 +1,6 @@
-type ILayoutItem = (
-	| {
-			i: string;
-	  }
-	| {
-			id: string;
-	  }
-) & {
+type ILayoutItem = {
+	i?: string;
+	id?: string;
 	x: number;
 	y: number;
 	w: number;

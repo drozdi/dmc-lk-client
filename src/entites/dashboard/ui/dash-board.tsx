@@ -12,10 +12,9 @@ import { DashBoardItem } from "./item";
 
 interface UiDashBoardProps {
 	children: React.ReactNode;
-	onSelection?: (react: Partial<ILayoutItem>) => void;
 }
 
-export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
+export function UiDashBoard({ children }: UiDashBoardProps) {
 	const { colorScheme } = useMantineColorScheme();
 	const [isSelecting, setIsSelecting] = useState(false);
 	const [selectionStart, setSelectionStart] = useState<{
@@ -79,7 +78,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		});
 	};
 
-	const getCellFromMouseEvent = useCallback((e: MouseEvent) => {
+	const getCellFromMouseEvent = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		if (!containerRef.current) {
 			return null;
 		}
@@ -116,7 +115,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		return true;
 	};
 
-	const handleMouseDown = (e: MouseEvent) => {
+	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
 		// Если клик на виджете — не начинаем выделение, пусть RGL работает
 		if ((e.target as HTMLElement).closest(".react-grid-item") || !edit) {
 			return;
@@ -130,7 +129,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 		}
 	};
 
-	const handleMouseMove = (e: MouseEvent) => {
+	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 		if (!isSelecting || !selectionStart) {
 			return;
 		}
@@ -239,7 +238,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 			{mounted && (
 				<>
 					{Children.map(children, (child) => {
-						return child?.key ? null : child;
+						return (child as React.ReactElement)?.key ? null : child;
 					})}
 					{edit && (
 						<GridBackground
@@ -266,7 +265,7 @@ export function UiDashBoard({ children, onSelection }: UiDashBoardProps) {
 						}}
 					>
 						{Children.map(children, (child) => {
-							return child?.key ? child : null;
+							return (child as React.ReactElement)?.key ? child : null;
 						})}
 						{widgets.map((widget) => (
 							<div key={widget.id}>

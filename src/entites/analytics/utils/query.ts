@@ -1,5 +1,5 @@
 import { type DateValue } from "@mantine/dates";
-import dayjs from "dayjs";
+import dayjs, { type OpUnitType } from "dayjs";
 
 function getStep(filterdate: [DateValue, DateValue]): SliceStep {
 	if (!filterdate?.[0]) {
@@ -44,8 +44,8 @@ export function corectQuery(state: IRequestAnalytics): IRequestAnalytics {
 				step === 's'? 
 					' HH:mm:ss': 
 					'')
-	filterdate[0] = dayjs(filterdate[0]).startOf(step).format(format);
-	filterdate[1] = dayjs(filterdate[1]).endOf(step).format(format);
+	filterdate[0] = dayjs(filterdate[0]).startOf(step as OpUnitType).format(format);
+	filterdate[1] = dayjs(filterdate[1]).endOf(step as OpUnitType).format(format);
 	return {
 		...state,
 		step: step === "M" ? "mon" : step,

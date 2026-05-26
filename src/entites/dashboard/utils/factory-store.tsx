@@ -33,7 +33,7 @@ function dashboardFactory ({
 			preview: undefined,
 			availableWidgets,
 			edit: false,
-			id: 0,
+			id: '',
 			values: {},
 			setLayout: (layout) => {
 				set({ layout })
@@ -57,7 +57,7 @@ function dashboardFactory ({
 			},
 			clear: () => {
 				set({
-					id: 0,
+					id: '',
 					layout: undefined,
 					preview: undefined,
 				});

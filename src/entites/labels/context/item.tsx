@@ -5,7 +5,7 @@ import { Children, cloneElement } from "react";
 
 export interface GroupedItemProps {
 	id: string;
-	children: React.ReactNode;
+	children: React.ReactElement;
 }
 
 export function GroupedItem({ children, id, ...data }: GroupedItemProps) {

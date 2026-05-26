@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+import { requestLabelsHistory } from "../api/count_label";
 
 export function useQueryHistory() {
 	return useQuery({
 		queryKey: ["labels-count"],
-		initialData: {
-			distributed: [],
-			not_distributed: [],
-		},
+		// initialData: {
+		// 	distributed: [],
+		// 	not_distributed: [],
+		// },
 		queryFn: async () => {
 			const params = {
 				size: 100,

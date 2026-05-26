@@ -128,6 +128,7 @@ export function Widget({
 					h="100%"
 					pos="relative"
 					pb="md"
+					type="always"
 				>
 					<Text c="red">{error?.message || error}</Text>
 					{keepMounted || isExpanded ? preview : null}

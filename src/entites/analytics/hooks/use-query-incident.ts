@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { requestAnalyticsIncident } from "../api/incident";
 
-
 const DEFAULT_DATA: IAnalyticsIncidentItem[] = [];
 
 export function useQueryIncident(baseParams: Partial<IRequestAnalyticsIncident> = {}) {
@@ -35,7 +34,7 @@ export function useQueryIncident(baseParams: Partial<IRequestAnalyticsIncident> 
         ...baseParams,
         ...query,
         filterdate: [
-          baseParams.filterdate?.[0] ?? query.filterdate?.[0],
+          baseParams.filterdate?.[0] ?? query.filterdate?.[0] ?? '',
           baseParams.filterdate?.[1] ?? query.filterdate?.[1] ?? "",
         ],
       };
