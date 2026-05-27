@@ -12,7 +12,6 @@ import { Template } from "@/layout";
 import { Widget } from "@/shared/ui";
 import { Group, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
-import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { TbArrowBackUp, TbReload } from "react-icons/tb";
@@ -21,12 +20,7 @@ import { type MouseHandlerDataParam } from "recharts";
 
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
-	const [opened, { open, close }] = useDisclosure(false);
 	const [history, setHistory] = useState([]);
-
-	useEffect(() => {
-		storeDashboardMain.id && open();
-	}, [storeDashboardMain.id]);
 
 	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>(
 		storeDashboardMain.getValue("$filterdate"),

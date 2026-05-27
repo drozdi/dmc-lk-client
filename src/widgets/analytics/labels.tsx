@@ -67,27 +67,7 @@ export const WidgetAnalyticLabels = memo(
 		}, [title, event]);
 
 		const memu = useMemo<any[]>(() => {
-			const ret = [{
-				children: 'Скачать',
-				onClick: () => {
-					if (!formatedData.current?.length) {
-						alert('Нет данных для скачивания')
-						return
-					}
-					const h: string[] = []
-					formatedData.current.forEach((row) => {
-						h.push(...Object.keys(row).filter((key) => key !== 'date' && key !== 'total'))
-					})
-					downloadExcel(formatedData.current.map(({date, total, ...row}) => {
-						return {
-							...row,
-							"Дата": dayjs(date).format('DD.MM.YYYY'),
-							"Всего": total,
-						}
-					}), 'printed', ['Дата', ...new Set(h), 'Всего'])
-
-				},
-			}]
+			const ret = []
 			
 			if (!allowChangeType) {
 				return ret
@@ -114,6 +94,23 @@ export const WidgetAnalyticLabels = memo(
 				title={computedTitle}
 				subTitle={<>За <QueryShow {...query} /></>}
 				menu={memu}
+				onDownload={() => {
+					if (!formatedData.current?.length) {
+						alert('Нет данных для скачивания')
+						return
+					}
+					const h: string[] = []
+					formatedData.current.forEach((row) => {
+						h.push(...Object.keys(row).filter((key) => key !== 'date' && key !== 'total'))
+					})
+					downloadExcel(formatedData.current.map(({date, total, ...row}) => {
+						return {
+							...row,
+							"Дата": dayjs(date).format('DD.MM.YYYY'),
+							"Всего": total,
+						}
+					}), 'printed', ['Дата', ...new Set(h), 'Всего'])
+				}}
 			>
 				<AnalyticLabels
 					filterdate={filterdate}
