@@ -1,10 +1,11 @@
 import {
+	QueryShow,
 	useEnumsEvents,
 	useFilterdateStep,
 	useQueryAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { AspectRatio, Center, Stack } from "@mantine/core";
+import { Center, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { type MouseHandlerDataParam } from "recharts";
@@ -13,6 +14,7 @@ import { EventsBar } from "./ui/events-bar";
 import { EventsLine } from "./ui/events-line";
 import { EventsStack } from "./ui/events-stack";
 import { EventsTable } from "./ui/events-table";
+
 type Element = Record<AnalyticEvent, number>;
 
 export interface AnalyticEventsProps {
@@ -28,7 +30,7 @@ export interface AnalyticEventsProps {
 
 const ee = useEnumsEvents();
 
-const ititValue = Object.fromEntries(
+const initValue = Object.fromEntries(
 	Object.keys(ee.data).map((item) => [item, 0]),
 );
 
@@ -65,7 +67,7 @@ export const AnalyticEvents = ({
 		const ddata: Record<string, Element> = {};
 
 		for (const date of labels) {
-			ddata[date] = ddata[date] || ({ ...ititValue } as Element);
+			ddata[date] = ddata[date] || ({ ...initValue } as Element);
 
 			for (const event in data) {
 				for (const production of data[event as AnalyticEvent]?.production ||
@@ -154,8 +156,9 @@ export const AnalyticEvents = ({
 	return (
 		<Stack h="100%">
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed">
-					Данные ненашлись!
+				<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
+					Данные не нашлись!<br />
+					За <QueryShow {...query} />
 				</Center>
 			) : type === "table" ? (
 				<EventsTable
@@ -166,41 +169,33 @@ export const AnalyticEvents = ({
 					onClick={handleClick}
 				/>
 			) : type === "bar" ? (
-				<AspectRatio ratio={16 / 9}>
 					<EventsBar
 						query={query as IRequestAnalytics}
 						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				</AspectRatio>
 			) : type === "analytic" ? (
-				<AspectRatio ratio={16 / 9}>
 					<EventsAnalytic
 						query={query as IRequestAnalytics}
 						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				</AspectRatio>
 			) : type === "stack" ? (
-				<AspectRatio ratio={16 / 9}>
 					<EventsStack
 						query={query as IRequestAnalytics}
 						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				</AspectRatio>
 			) : (
-				<AspectRatio ratio={16 / 9}>
 					<EventsLine
 						query={query as IRequestAnalytics}
 						data={dddata}
 						events={events}
 						onClick={handleClick}
 					/>
-				</AspectRatio>
 			)}
 		</Stack>
 	);

@@ -1,4 +1,4 @@
-import { useAnalytics, useFilterdateStep } from "@/entites/analytics";
+import { QueryShow, useAnalytics, useFilterdateStep } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
@@ -141,8 +141,9 @@ export const AnalyticLabels = memo(
 					</MantineTooltip>
 				</Group>
 				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
+					<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
+						Данные ненашлись!<br />
+						За <QueryShow {...query} />
 					</Center>
 				) : type === "table" ? (
 					<LabelsTable query={query} data={formatData} bars={bars} />

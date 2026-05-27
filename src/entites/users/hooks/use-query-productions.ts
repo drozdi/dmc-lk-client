@@ -35,14 +35,19 @@ export function useQueryProductions() {
 	}, [q.data]);
 	const findById = useCallback(
 		(id: IProduction["production_id"]) => {
-			return (q.data || []).find((item) => item.production_id === id);
+			return (q.data || []).find((item) => String(item.production_id) === String(id));
 		},
 		[q.data],
 	);
 	const findNameById = useCallback(
-		(id: IProduction["production_id"]) =>
-			findById(id)?.production_name || `Площадка #${id}`,
+		(id: IProduction["production_id"]) => findById(id)?.name_production || `Площадка #${id}`,
 		[findById],
 	);
-	return { ...q, dataSelect, findById, findNameById };
+	const findNameByIds = useCallback(
+		(productions: IProduction["production_id"][]) =>
+			q.data?.length === productions.length ? 'Все площадки' :productions.map((id) => findNameById(id)).join(', '),
+		[findNameById, q.data]
+	);
+
+	return { ...q, dataSelect, findById, findNameById, findNameByIds };
 }

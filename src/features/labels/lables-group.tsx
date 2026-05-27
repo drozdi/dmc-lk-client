@@ -16,19 +16,18 @@ import {
 import { notification } from "@/shared/notification";
 import { Loading, Text, type LoadingProps } from "@/shared/ui";
 import {
-	Button,
 	Center,
 	Grid,
 	Group,
 	NumberFormatter,
 	NumberInput,
 	SimpleGrid,
-	Stack,
-	TextInput
+	Stack
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useEffect, useRef } from "react";
 import { TbCursorText, TbPlus, TbX } from "react-icons/tb";
+import { useLabelsGroupRename } from './hooks';
 import { Container } from "./ui/container";
 import { Item } from "./ui/item";
 
@@ -86,45 +85,11 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 	};
 
 	const handleRenameFormat = (print: ILabel["add_label_format"]) => {
-		const handleRename = async (newFormat = inputRef.current?.value) => {
-			if (newFormat === labelFormat(print)) {
-				modals.close(modal)
-				// return
-			}
-
-			const item = storeLabels.formats[production_id].find((item) => {
-				return item.statistics_print_format === print
-			})
-
-			if (!item) {
-				modals.close(modal)
-				return
-			}
-
-			await storeLabels.updateFormat(item.id, {
-				production_id,
-				add_label_format: newFormat
-			})
-
-			modals.close(modal)
-		}
-		const modal = modals.open({
-			title: `Переименовать группу "${labelFormat(print)} (${print})"`,
-			children: <Stack>
-				<TextInput defaultValue={labelFormat(print)} ref={inputRef} />
-				<Group justify="flex-end">
-					<Button onClick={() => modals.close(modal)}>
-						Отмена
-					</Button>
-					<Button color='lime' onClick={() => handleRename()}>
-						Сохранить
-					</Button>
-				</Group>
-			</Stack>,
-			onEnterTransitionEnd: () => {
-				inputRef.current?.focus();
-			},
+		const item = storeLabels.formats[production_id].find((item) => {
+			return item.statistics_print_format === print
 		})
+
+		useLabelsGroupRename(item);
 	}
 
 	const handleAddCount = (label_format: ILabel['statistics_print_format']) => {
@@ -225,14 +190,15 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 					<Grid.Col span={3} pl='xs'>
 						<GroupedContainer id=".default">
 							<Container label={labelFormat('.default')}>
-								{(containers[".default"] || []).map((item) => (
+								{containers[".default"]?.length ? containers[".default"].map((item) => (
 									<GroupedItem key={item.id} id={item.id}>
 										<Item 
 											cnt={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum || '-'} 
 											len={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum_consumption || '-'}
 										>{item.id}</Item>
 									</GroupedItem>
-								))}
+								)): 
+								<Message mih="50vh">Этикетки не найдены</Message>}
 							</Container>
 						</GroupedContainer>
 					</Grid.Col>

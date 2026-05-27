@@ -1,22 +1,26 @@
 import { Box, LoadingOverlay, type BoxProps } from "@mantine/core";
 
-export interface LoadingProps extends BoxProps {
+export type LoadingProps<T extends BoxProps> = T & {
 	children: React.ReactNode;
 	active?: boolean;
 	keepMounted?: boolean;
+	component?: React.FC<T>;
 }
 
-export function Loading({
+export function Loading<T extends BoxProps>({
 	children,
 	active,
 	keepMounted,
+	component: Component = Box,
 	...props
-}: LoadingProps) {
+}: LoadingProps<T>) {
 	return (
-		<Box
+		<Component
 			pos="relative"
 			miw={active ? 300 : undefined}
 			mih={active ? 300 : undefined}
+			w={active ? 300 : undefined}
+			h={active ? 300 : undefined}
 			{...props}
 		>
 			<LoadingOverlay
@@ -26,6 +30,6 @@ export function Loading({
 				loaderProps={{ color: "pink", type: "bars" }}
 			/>
 			{(keepMounted || !active) && children}
-		</Box>
+		</Component>
 	);
 }

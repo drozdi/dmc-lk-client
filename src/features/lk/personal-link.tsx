@@ -6,7 +6,7 @@ export function PersonalLink() {
 	const navigate = useNavigate();
 	return (
 		<ActionIcon
-			onClick={() => navigate("/")}
+			onClick={() => navigate("/lk")}
 			variant="default"
 			size="xl"
 			radius="100%"

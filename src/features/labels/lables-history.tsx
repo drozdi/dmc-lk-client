@@ -16,28 +16,34 @@ import { useEffect, useMemo, useState } from "react";
 export const LabelsHistory = () => {
 	const productions = useStoreUserProfile(state => state.productions)
 	const storeCountLabel = useStoreCountLabel();
-	const qp = useQueryProductions();
+	const { findNameByIds } = useQueryProductions();
+
+	const dataHistory = useMemo<ICountLabelHistoryItem[]>(() => {
+		return selectHistoryForProduction(productions)(storeCountLabel)
+	}, [storeCountLabel.history, productions])
 
 	const SelectPlace = factorySelect(useQueryPlace(productions.map(Number)))
+	const [place, setPlace] = useState(0)
+	const placeHistory = useMemo<ICountLabelHistoryItem[]>(() => {
+		return dataHistory.filter(item => place === 0 || item.place_id === place)
+	}, [dataHistory, place])
+
 	const SelectPrint = factorySelect(useMemo<factorySelectProps>(() => ({
 		isLoading: storeCountLabel.isLoading,
 		dataSelect: [{
 			value: '',
 			label: 'Все этикетки'
 		}].concat(
-			[...new Set(selectHistoryForProduction(productions)(storeCountLabel).map(item => item.format_template))].map(value => ({
+			[...new Set(placeHistory.map(item => item.format_template))].map(value => ({
 				value,
 				label: value
 			}))
 		)
-	}), [storeCountLabel.isLoading, storeCountLabel.history]))
-	
-	const [place, setPlace] = useState(0)
+	}), [storeCountLabel.isLoading, placeHistory]))
 	const [print, setPrint] = useState('')
-
 	const data = useMemo<ICountLabelHistoryItem[]>(() => {
-		return selectHistoryForProduction(productions)(storeCountLabel).filter(item => place === 0 || item.place_id === place).filter(item => !print || item.format_template === print)
-	}, [storeCountLabel.history, productions, place, print])
+		return placeHistory.filter(item => !print || item.format_template === print)
+	}, [placeHistory, print])
 	
 	useEffect(() => {
 		storeCountLabel.loadHistory();
@@ -45,11 +51,11 @@ export const LabelsHistory = () => {
 	
 	return <Loading active={storeCountLabel.isLoading} keepMounted>
 		<Stack>
-			<Group justify="space-between">
-				<Text px='sm' fz='h2'>
-					{productions.map(i => qp.findNameById(i))}
+			<Group justify="space-between" grow>
+				<Text px='sm' fz='h4' maw='100%' flex='1'>
+					{findNameByIds(productions)}
 				</Text>
-				<Group>
+				<Group miw={320} justify="space-between" flex='0' grow>
 					<SelectPlace label='Линия' value={String(place)} onChange={(v) => setPlace(Number(v))} />
 					<SelectPrint label='Этикетка' value={print} onChange={setPrint} />
 				</Group>

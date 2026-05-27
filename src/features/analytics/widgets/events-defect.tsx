@@ -1,4 +1,5 @@
 import {
+	QueryShow,
 	useAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
@@ -180,8 +181,9 @@ export const AnalyticEventsDefect = ({
 	return (
 		<Stack h="100%">
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed">
-					Данные ненашлись!
+				<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
+					Данные ненашлись!<br />
+					За <QueryShow filterdate={filterdate} step={step} event={event} />
 				</Center>
 			) : (
 				<AspectRatio ratio={16 / 9}>

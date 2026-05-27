@@ -1,7 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-
-import { useStoreIncident } from "@/entites/analytics";
+import { QueryShow, useStoreIncident } from '@/entites/analytics';
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import {
@@ -9,6 +6,8 @@ import {
 	TooltipContentPie
 } from "@/shared/ui";
 import { AspectRatio, Center } from "@mantine/core";
+import { useEffect, useMemo, useState } from "react";
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export interface AnalyticIncidentProps {
 	filterdate: IRequestAnalyticsIncident["filterdate"];
@@ -53,8 +52,9 @@ export const AnalyticIncident = ({
 	return (
 		<AspectRatio ratio={16 / 9}>
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed">
-					Данные ненашлись!
+				<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
+					Данные ненашлись!<br />
+					За <QueryShow filterdate={filterdate} />
 				</Center>
 			) : (
 				<ResponsiveContainer>

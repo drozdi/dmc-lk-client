@@ -1,62 +1,74 @@
 import { useStoreUserProfile } from "@/entites/auth";
 import { useQueryProductions } from "@/entites/users";
-import { Button, Checkbox, Group, Popover, Stack, Text } from '@mantine/core';
-import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { Loading } from "@/shared/ui";
+import { Button, Checkbox, Group, Popover, ScrollArea, Stack, Text, type ScrollAreaProps } from '@mantine/core';
+import { useDebouncedCallback, useDisclosure } from "@mantine/hooks";
+import { useEffect, useState } from "react";
+import { TbSelector } from "react-icons/tb";
 import { useShallow } from "zustand/shallow";
 
 export const ChangeProduct = () => {
 	const [opened, { close, open }] = useDisclosure(false);
-	const qp = useQueryProductions()
+	const { data, isLoading, findNameByIds } = useQueryProductions()
 	const { productions, setProductions } = useStoreUserProfile(useShallow(state => ({
-		userInfo: state.userInfo,
 		productions: state.productions,
 		setProductions: state.setProductions,
 	})));
+	const [value, setValue] = useState(productions);
+  const changeProductions = useDebouncedCallback((value) => {
+		setProductions(value)
+	}, 500);
 
 	const handleChange = (value: string[]) => {
 		if (value.length) {
 			setValue(value);
 		} else {
-			setValue([String(qp.data?.[0]?.production_id)])
+			setValue([String(data?.[0]?.production_id)])
 		}
 	};
 	const handleChangeAll = () => {
-		if (qp.data?.length === productions.length) {
-			setProductions([String(qp.data?.[0]?.production_id)])
+		if (data?.length === value.length) {
+			setValue([String(data?.[0]?.production_id)])
 		} else {
-			setProductions(qp.data?.map(item => String(item.production_id)) || [])
+			setValue(data?.map(item => String(item.production_id)) || [])
 		}
 	}
 
-	const [value, setValue] = useState(productions);
-  const [debounced, setVal] = useDebouncedValue(value, 500);
-
+	useEffect(() => {
+		changeProductions(value)
+	}, [value])
 
 	return <Popover opened={opened} offset={0}>
 		<Popover.Target>
-			<Button onMouseEnter={open} onMouseLeave={close}>
-				ewrewrew
+			<Button onMouseEnter={open} onMouseLeave={close} radius="xs" variant="subtle" color="gray" rightSection={<TbSelector />} maw={256} >
+				<Text style={{
+					overflow: 'hidden',
+					textOverflow: 'ellipsis',
+					whiteSpace: 'nowrap',
+					maxWidth: '100%'
+				}}>{findNameByIds(productions)}</Text>
 			</Button>
 		</Popover.Target>
 		<Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>
-			<Stack>
-				<Checkbox.Card withBorder={false} onClick={handleChangeAll}>
+			<Checkbox.Card withBorder={false} onClick={handleChangeAll}>
 					<Group wrap="nowrap" align="center">
-						<Checkbox.Indicator checked={qp.data?.length === value.length} indeterminate={value.length !== qp.data?.length && !!value.length} />
+						<Checkbox.Indicator checked={data?.length === value.length} indeterminate={value.length !== data?.length && !!value.length} />
 						<Text>Все площадки</Text>
 					</Group>
 				</Checkbox.Card>
-				<Checkbox.Group value={value} onChange={handleChange}>
-					{qp.data?.map(item => 
-						<Checkbox.Card withBorder={false} key={item.production_id} value={String(item.production_id)} ml='md'>
-							<Group wrap="nowrap" align="center">
-								<Checkbox.Indicator />
-								<Text>{item.name_production}</Text>
-							</Group>
-						</Checkbox.Card>
-					)}
-			</Checkbox.Group>
+			<Stack>
+				<Loading<ScrollAreaProps> active={isLoading} h={250} maw={256} component={ScrollArea} offsetScrollbars scrollbars="y" keepMounted>
+					<Checkbox.Group value={value} onChange={handleChange}>
+						{data?.map(item => 
+							<Checkbox.Card withBorder={false} key={item.production_id} value={String(item.production_id)} ml='md'>
+								<Group wrap="nowrap" align="center">
+									<Checkbox.Indicator />
+									<Text>{item.name_production}</Text>
+								</Group>
+							</Checkbox.Card>
+						)}
+				</Checkbox.Group>
+			</Loading>
 			</Stack>
 		</Popover.Dropdown>
 	</Popover>

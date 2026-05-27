@@ -8,26 +8,13 @@ import {
 	TextInput
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useRef } from "react";
 
-export interface useLabelsGroupRenameProps {
-	id: ILabel['id'];
-}
-
-export const useLabelsGroupRename = ({ id = 0 }: useLabelsGroupRenameProps) => {
-	if (!id) {
-		return null;
-	}
-
-	const storeLabels = useStoreLabels();
-	
-	const item = storeLabels.formatPrints.find((item) => {
-		return item.id === id
-	})
-
+export function useLabelsGroupRename (item?: ILabel): void {
 	if (!item) {
-		return null
+		return
 	}
+
+	const storeLabels = useStoreLabels.getState();
 
 	const {
 		production_id,
@@ -35,16 +22,17 @@ export const useLabelsGroupRename = ({ id = 0 }: useLabelsGroupRenameProps) => {
 		statistics_print_format
 	} = item;
 
+	const inputRef:React.Ref<HTMLInputElement> = {
+		current: null
+	}
 
-	const inputRef = useRef<HTMLInputElement>(null);
-
-	async function handleRename (newFormat = inputRef.current?.value) {
+	async function handleRename (newFormat = inputRef?.current?.value) {
 		if (add_label_format === newFormat) {
 			modals.close(modal)
 			return
 		}
 
-		await storeLabels.updateFormat(id, {
+		await storeLabels.updateFormat(item?.id, {
 			production_id,
 			add_label_format: newFormat
 		})
@@ -69,6 +57,4 @@ export const useLabelsGroupRename = ({ id = 0 }: useLabelsGroupRenameProps) => {
 			inputRef.current?.focus();
 		},
 	})
-
-	return null;
 };
