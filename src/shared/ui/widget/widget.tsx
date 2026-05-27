@@ -6,13 +6,13 @@ import {
 	Menu,
 	Modal,
 	ScrollArea,
-	Tooltip,
 	type CardProps,
-	type MenuItemProps,
+	type MenuItemProps
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import { TbArrowsMaximize, TbArrowsMinimize, TbDots } from "react-icons/tb";
+import { TbArrowsMaximize, TbArrowsMinimize, TbDots, TbFileDownload } from "react-icons/tb";
+import { ButtonIcon } from '../button';
 import { Text } from "../text";
 import { Title } from "../title";
 import { ProviderWidget, useWidget } from "./context";
@@ -36,6 +36,7 @@ export interface WidgetProps extends CardProps {
 	menu?: ({
 		onClick: () => void;
 	} & WidgetMenuItem)[];
+	onDownload?: () => void;
 	error?: React.ReactNode | IError;
 	wraped?: boolean;
 }
@@ -72,6 +73,7 @@ export function Widget({
 	error,
 	menu = [],
 	wraped = true,
+	onDownload,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -103,15 +105,16 @@ export function Widget({
 						<Title fw={500} lh="1" flex="1" order={6} tt="uppercase">
 							{title}
 						</Title>
-						{(expanded || menu?.length) && (
+						{(expanded || menu?.length || onDownload) && (
 							<Group mr="-xs" gap="0">
+								{onDownload && <ButtonIcon tooltip="Скаачать" variant="subtle" onClick={onDownload}>
+									<TbFileDownload />
+								</ButtonIcon>}
 								{menu?.length && <WidgetMenu options={menu} />}
 								{expanded && (
-									<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
-										<ActionIcon variant="subtle" onClick={toggle}>
-											{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
-										</ActionIcon>
-									</Tooltip>
+									<ButtonIcon tooltip={isExpanded ? "Свернуть" : "Развернуть"} variant="subtle" onClick={toggle}>
+										{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
+									</ButtonIcon>
 								)}
 							</Group>
 						)}
