@@ -94,7 +94,6 @@ export const WidgetAnalyticEvents = ({
 				percent={percent}
 				onClick={onClick}
 				onLoaded={(data) => {
-					console.log(data)
 					formatedData.current = data
 				}}
 			/>

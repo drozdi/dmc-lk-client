@@ -9,7 +9,7 @@ import { useEffect } from "react";
 export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
-	const { data } = useQueryProductions()
+	const { data, refetch } = useQueryProductions()
 
 	useEffect(() => {
 		if (!storeAuth.isAuthenticated) {
@@ -17,20 +17,21 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 		}
 		useStoreDashboardMain.resetFromDB();
 		useStoreDashboardSecond.resetFromDB();
-		storeUserProfile.load();
+		(async function () {
+			await storeUserProfile.load();
+			await refetch?.()
+		})()
 	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
 		if (!storeAuth.isAuthenticated) {
 			return
 		}
-		if (!storeUserProfile.isLoading) {
-			const { productions, setProductions } = storeUserProfile;
-			if (!productions?.length) {
-				setProductions((data || [])?.map(item => String(item.production_id)))
-			}	
-		}
-	}, [data, storeUserProfile.isLoading, storeAuth.isAuthenticated]);
+		const { productions, setProductions } = storeUserProfile;
+		if (data?.length && !productions?.length) {
+			setProductions((data || [])?.map(item => String(item.production_id)))
+		}	
+	}, [data, storeUserProfile.productions, storeAuth.isAuthenticated]);
 
 	return children;
 };

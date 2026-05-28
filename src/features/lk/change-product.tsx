@@ -15,8 +15,6 @@ export const ChangeProduct = () => {
 		setProductions(value)
 	}, 500);
 
-	console.log(value)
-
 	const handleChange = (value: string[]) => {
 		if (value.length) {
 			setValue(value);
@@ -35,6 +33,12 @@ export const ChangeProduct = () => {
 	useEffect(() => {
 		changeProductions(value)
 	}, [value])
+
+	useEffect(() => {
+		if (value?.length !== productions?.length) {
+			setValue((productions || []).map(String));
+		}
+	}, [value, productions])
 
 	return <Popover opened={opened} offset={0}>
 		<Popover.Target>

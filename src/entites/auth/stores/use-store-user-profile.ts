@@ -248,6 +248,8 @@ export const useStoreUserProfile = create<IStoreUserProfile>((set, get) => ({
 	},
 
 	reset() {
+		$setting.remove("production.id")
+		$setting.remove("productions.id")
 		set({
 			userInfo: undefined,
 			settings: [],
