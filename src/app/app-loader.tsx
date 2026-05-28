@@ -3,11 +3,13 @@ import {
 	useStoreDashboardMain,
 	useStoreDashboardSecond,
 } from "@/entites/dashboard";
+import { useQueryProductions } from '@/entites/users';
 import { useEffect } from "react";
 
 export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
+	const { data } = useQueryProductions()
 
 	useEffect(() => {
 		if (!storeAuth.isAuthenticated) {
@@ -19,19 +21,16 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
-		const userData = storeUserProfile.userInfo;
-		if (userData) {
-			if (
-				!userData.is_superuser &&
-				!userData.id_production?.includes(
-					Number(storeUserProfile.production_id),
-				)
-			) {
-				userData.id_production?.length &&
-					storeUserProfile.setProductionId(Number(userData.id_production[0]));
-			}
+		if (!storeAuth.isAuthenticated) {
+			return
 		}
-	}, [storeUserProfile.userInfo]);
+		if (!storeUserProfile.isLoading) {
+			const { productions, setProductions } = storeUserProfile;
+			if (!productions?.length) {
+				setProductions((data || [])?.map(item => String(item.production_id)))
+			}	
+		}
+	}, [data, storeUserProfile.isLoading, storeAuth.isAuthenticated]);
 
 	return children;
 };

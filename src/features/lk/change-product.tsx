@@ -5,19 +5,17 @@ import { Button, Checkbox, Group, Popover, ScrollArea, Stack, Text, type ScrollA
 import { useDebouncedCallback, useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { TbSelector } from "react-icons/tb";
-import { useShallow } from "zustand/shallow";
 
 export const ChangeProduct = () => {
 	const [opened, { close, open }] = useDisclosure(false);
 	const { data, isLoading, findNameByIds } = useQueryProductions()
-	const { productions, setProductions } = useStoreUserProfile(useShallow(state => ({
-		productions: state.productions,
-		setProductions: state.setProductions,
-	})));
-	const [value, setValue] = useState(productions);
+	const { productions, setProductions } = useStoreUserProfile();
+	const [value, setValue] = useState((productions || []).map(String));
   const changeProductions = useDebouncedCallback((value) => {
 		setProductions(value)
 	}, 500);
+
+	console.log(value)
 
 	const handleChange = (value: string[]) => {
 		if (value.length) {
