@@ -7,7 +7,7 @@ export interface DataColumnProps<T = object> {
 	body?: (item: T, column: ColumnEntity<T>) => React.ReactNode,
 	editor?: (item: T, column: ColumnEntity<T>, onChange: ((value: T[ColumnEntity<T>['field']]) => void), onSave: (() => void)) => React.ReactNode,
 	footer?: React.ReactNode | ((column: ColumnEntity<T>) => React.ReactNode),
-	field: keyof T,
+	field: keyof T | `.${string}`,
 	size?: number,
 	style?: React.CSSProperties | ((column: ColumnEntity<T>, type: TableNode<T> | 'header' | 'body' | 'footer') => React.CSSProperties),
 	sortable?: boolean | ((column: ColumnEntity<T>) => boolean | void),

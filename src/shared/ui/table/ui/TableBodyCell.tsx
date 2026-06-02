@@ -57,7 +57,7 @@ export function TableBodyCellWrap<T = object>({ node, column, level = 0, onClick
 		...(typeof column.style === 'function'? column.style?.(column, node): column.style || {}),
 		paddingLeft: column.isGrouped || column.isGroup? `calc(calc(var(--mantine-spacing-base, 0.25rem) * var(--mantine-scale)) * 9 * ${level} + var(--table-horizontal-spacing, 0.5rem))`: '',
 	}}>
-		{children? <Group justify="flex-start" align="center" grow wrap="nowrap">{children}</Group>: null}
+		{children? <Group justify="flex-start" align="center" grow>{children}</Group>: null}
 	</Table.Td>
 }
 export function TableBodyCellSlot<T = object>({ node: { data }, column, onClick }: TableBodyCellSlotProps<T>) {
@@ -69,7 +69,7 @@ export function TableBodyCellSlot<T = object>({ node: { data }, column, onClick 
 
 
 export function TableBodyCellExpand<T = object>({ node, column, level = 0 }: TableBodyCellExpandProps<T>) {
-	if (!node.data[column.field]) {
+	if (!node?.data?.[column.field]) {
 		return <TableBodyCellWrap<T> column={column} />
 	}
 	return <TableBodyCellWrap<T> node={node} column={column} level={level}>

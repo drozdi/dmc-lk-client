@@ -187,7 +187,9 @@ export function TableHeaderCell<T = object>({ maxRow, maxCol, column, onToggle,	
 	}
 	return (
 		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol} >
-			<Group justify='space-between' wrap='nowrap' gap='0'>
+			<Group justify={
+				column.align === 'right'? 'flex-end': column.align === 'left'? 'flex-strart' : column.align === 'center'? 'center': 'space-between'
+			}  wrap='nowrap' gap='0'>
 				<TableHeaderCellSlot<T> column={column} />
 				<Group flex='0' gap='0' justify='flex-end' wrap="nowrap">
 					<TableHeaderCellSort<T> column={column} onClick={onSort} maxRow={maxRow} maxCol={maxCol} />
