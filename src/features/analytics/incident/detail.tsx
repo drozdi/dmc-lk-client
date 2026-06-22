@@ -7,8 +7,6 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { IncidentDetailItem } from "./detail-item";
 
-let i = 0;
-
 export const IncidentDetail = ({
 	filterdate,
 	...props
@@ -39,15 +37,15 @@ export const IncidentDetail = ({
 					<Accordion multiple chevronPosition="left" onChange={setOpenend}>
 						{data.map((item: IAnalyticsIncidentItem) => (
 							<Accordion.Item
-								key={item.data || `acc-${i++}`}
-								value={item.data || `acc-${i}`}
+								key={item.id}
+								value={item.id}
 							>
 								<Accordion.Control icon={item?.total_counter}>
 									{item.data}
 								</Accordion.Control>
 								<Accordion.Panel>
 									<div style={{ minHeight: 100 }}>
-										{openend.includes(item.data) && (
+										{openend.includes(item.id) && (
 											<IncidentDetailItem {...query} data={item.data} />
 										)}
 									</div>

@@ -116,15 +116,28 @@ export const AnalyticEvents = ({
 	);
 
 	useEffect(() => {
+		let cancelled = false;
+
 		(async function () {
-			setData({
-				v: (await fetch({ ...query, event: "v" })) as IResponseAnalytics,
-				i: (await fetch({ ...query, event: "i" })) as IResponseAnalytics,
-				d: (await fetch({ ...query, event: "d" })) as IResponseAnalytics,
-				p: (await fetch({ ...query, event: "p" })) as IResponseAnalytics,
-			});
+			const results = await Promise.all(
+				events.map((event) => fetch({ ...query, event })),
+			);
+
+			if (cancelled) {
+				return;
+			}
+
+			setData(
+				Object.fromEntries(
+					events.map((event, index) => [event, results[index]]),
+				) as Record<AnalyticEvent, IResponseAnalytics>,
+			);
 		})();
-	}, [query]);
+
+		return () => {
+			cancelled = true;
+		};
+	}, [query, events]);
 
 	useEffect(() => {
 		setQuery({

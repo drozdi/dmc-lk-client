@@ -1,6 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { requestAnalyticsIncident } from "../api/incident";
+import {
+	ANALYTICS_QUERY_GC_TIME,
+	ANALYTICS_QUERY_STALE_TIME,
+} from "../constants";
 
 const DEFAULT_DATA: IAnalyticsIncidentItem[] = [];
 
@@ -15,8 +19,8 @@ export function useQueryIncident(baseParams: Partial<IRequestAnalyticsIncident> 
   } = useQuery({
     queryKey: ["incident", activeParams],
     queryFn: async () => await requestAnalyticsIncident(activeParams!).then((res) => res.data),
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: ANALYTICS_QUERY_STALE_TIME,
+    gcTime: ANALYTICS_QUERY_GC_TIME,
     retry: false,
   });
 
@@ -43,10 +47,10 @@ export function useQueryIncident(baseParams: Partial<IRequestAnalyticsIncident> 
 
       try {
         const result = await queryClient.fetchQuery({
-          queryKey: ["analytics", mergedParams],
+          queryKey: ["incident", mergedParams],
           queryFn: async () => await requestAnalyticsIncident(mergedParams).then((res) => res.data),
-          staleTime: 0,
-    			gcTime: 0,
+          staleTime: ANALYTICS_QUERY_STALE_TIME,
+          gcTime: ANALYTICS_QUERY_GC_TIME,
         });
         return result;
       } catch (e) {

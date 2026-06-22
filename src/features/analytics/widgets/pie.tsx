@@ -86,15 +86,26 @@ export const AnalyticPie = ({
 	);
 
 	useEffect(() => {
+		let cancelled = false;
+
 		(async function () {
-			setData({
-				v: await fetch({ ...query, event: "v" }),
-				i: await fetch({ ...query, event: "i" }),
-				d: await fetch({ ...query, event: "d" }),
-				p: await fetch({ ...query, event: "p" }),
-			});
+			const results = await Promise.all(
+				events.map((event) => fetch({ ...query, event })),
+			);
+
+			if (cancelled) {
+				return;
+			}
+
+			setData(
+				Object.fromEntries(events.map((event, index) => [event, results[index]])),
+			);
 		})();
-	}, [query]);
+
+		return () => {
+			cancelled = true;
+		};
+	}, [query, events]);
 
 
 	const total = useMemo(() => ddata.reduce((acc, item) => acc + item.value, 0), [ddata])

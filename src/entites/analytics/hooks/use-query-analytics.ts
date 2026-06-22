@@ -1,6 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { requestAnalytics } from "../api/analytics";
+import {
+	ANALYTICS_QUERY_GC_TIME,
+	ANALYTICS_QUERY_STALE_TIME,
+} from "../constants";
 
 // Типы (предположительно определены глобально или импортированы)
 // type IRequestAnalytics = ...
@@ -38,8 +42,8 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
     queryKey: ["analytics", activeParams],
     queryFn: async () => await requestAnalytics(activeParams!).then((res) => res.data),
     enabled: false,
-    staleTime: 0,          // данные сразу считаются устаревшими (или настройте по необходимости)
-    gcTime: 0,             // кеш очищается сразу после удаления из наблюдателей
+    staleTime: ANALYTICS_QUERY_STALE_TIME,
+    gcTime: ANALYTICS_QUERY_GC_TIME,
     retry: false,
   });
 
@@ -74,8 +78,8 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
         const result = await queryClient.fetchQuery({
           queryKey: ["analytics", mergedParams],
           queryFn: async () => await requestAnalytics(mergedParams).then((res) => res.data),
-          staleTime: 0,
-					gcTime: 0,
+          staleTime: ANALYTICS_QUERY_STALE_TIME,
+          gcTime: ANALYTICS_QUERY_GC_TIME,
         });
         return result;
       } catch (e) {

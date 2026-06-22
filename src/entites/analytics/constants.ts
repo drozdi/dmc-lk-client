@@ -1,3 +1,6 @@
+export const ANALYTICS_QUERY_STALE_TIME = 120_000;
+export const ANALYTICS_QUERY_GC_TIME = 300_000;
+
 export const mapStep: Record<string, string> = {
 	s: "секунда",
 	m: "минута",
