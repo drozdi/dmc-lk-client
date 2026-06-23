@@ -3,6 +3,9 @@ import {
 	GroupedItem,
 	GroupedProvider,
 	randomColorLabel,
+	selectFormatForProduction,
+	selectPrintsForProduction,
+	selectSelectFormatPrintsForProduction,
 	useGrouped,
 	useProductionCount,
 	useProductionFormatsCode,
@@ -23,7 +26,8 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { useEffect, useRef } from "react";
-import { TbPlus, TbX } from "react-icons/tb";
+import { TbCursorText, TbPlus, TbX } from "react-icons/tb";
+import { useLabelsGroupRename } from './hooks';
 import { Container } from "./ui/container";
 import { Item } from "./ui/item";
 
@@ -46,6 +50,10 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 	const storeLabels = useStoreLabels();
 	const count = useProductionCount(production_id);
 
+	const _prints = selectPrintsForProduction(production_id)(storeLabels);
+	const _formats = selectFormatForProduction(production_id)(storeLabels);
+	const _formatPrints = selectSelectFormatPrintsForProduction(production_id)(storeLabels)
+	
 	const containers = useGrouped(production_id);
 	const formats = Object.keys(containers).filter((item) => item !== ".default");
 
@@ -76,13 +84,19 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 		});
 	};
 
-	const handleRenameFormat = (format, newFormat) => {}
+	const handleRenameFormat = (print: ILabel["add_label_format"]) => {
+		const item = storeLabels.formats[production_id].find((item) => {
+			return item.statistics_print_format === print
+		})
+
+		useLabelsGroupRename(item);
+	}
 
 	const handleAddCount = (label_format: ILabel['statistics_print_format']) => {
 		async function handleAdd() {
 			const count_label = Number(inputRef.current?.value) || 0
 			if (count_label > 0) {
-				const res = await useStoreCountLabel.getState().addCount({
+				await useStoreCountLabel.getState().addCount({
 					place_name: "Пополнение этикеток",
 					count_label: count_label,
 					label_format,
@@ -132,14 +146,19 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 								>
 									<Container label={`${item} (${codeFormat(item)})`} menu={[
 										{ 
-											children: 'Удалить', 
-											onClick: () => handleDeleteFormat(item),
-											rightSection: <TbX />,
-										},
-										{ 
 											children: 'Дабавить количество', 
 											onClick: () => handleAddCount(codeFormat(item)),
 											rightSection: <TbPlus />,
+										},
+										{ 
+											children: 'Переименовать', 
+											onClick: () => handleRenameFormat(codeFormat(item)),
+											rightSection: <TbCursorText />,
+										},
+										{ 
+											children: 'Удалить', 
+											onClick: () => handleDeleteFormat(item),
+											rightSection: <TbX />,
 										},
 									]} title={<Group justify="space-between">
 										<div>
@@ -171,14 +190,15 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 					<Grid.Col span={3} pl='xs'>
 						<GroupedContainer id=".default">
 							<Container label={labelFormat('.default')}>
-								{(containers[".default"] || []).map((item) => (
+								{containers[".default"]?.length ? containers[".default"].map((item) => (
 									<GroupedItem key={item.id} id={item.id}>
 										<Item 
 											cnt={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum || '-'} 
 											len={count.not_distributed.find((count) => count.add_label_format === item.id)?.sum_consumption || '-'}
 										>{item.id}</Item>
 									</GroupedItem>
-								))}
+								)): 
+								<Message mih="50vh">Этикетки не найдены</Message>}
 							</Container>
 						</GroupedContainer>
 					</Grid.Col>

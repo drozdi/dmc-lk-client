@@ -1,8 +1,8 @@
-import { useAnalytics, useFilterdateStep } from "@/entites/analytics";
+import { AnalyticsEmpty, useAnalytics, useFilterdateStep } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
-import { Center, Checkbox, Group, Tooltip as MantineTooltip, Stack } from "@mantine/core";
+import { Checkbox, Group, Stack, Tooltip as MantineTooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { LabelsBar } from "./ui/labels-bar";
@@ -13,6 +13,7 @@ export interface AnalyticLabelsProps {
 	event?: IRequestAnalytics["event"];
 	step?: IRequestAnalytics["step"];
 	type: "stack" | "default" | "table";
+	onLoaded?: (data: any) => void;
 }
 
 export const AnalyticLabels = memo(
@@ -21,11 +22,10 @@ export const AnalyticLabels = memo(
 		step = "d",
 		event = "p",
 		type = "default",
+		onLoaded,
 	}: AnalyticLabelsProps) => {
-		const production_id = Number(
-			useStoreUserProfile((state) => state.production_id) || 0,
-		);
-
+		const production_id = useStoreUserProfile((state) => state.productions)
+		
 		const { fetch, data, query } = useAnalytics({
 			filterdate,
 			step,
@@ -60,9 +60,6 @@ export const AnalyticLabels = memo(
 					total: 0,
 				};
 				for (const prod of data.production) {
-					if (production_id > 0 && production_id !== prod.production_id) {
-						continue;
-					}
 					for (const item of prod.data) {
 						if (item.data.length > 15) {
 							continue;
@@ -127,6 +124,11 @@ export const AnalyticLabels = memo(
 			});
 		}, [filterdate, step]);
 
+		useEffect(() => {
+			onLoaded?.(formatData)
+		}, [onLoaded, formatData])
+
+
 		return (
 			<Stack h="100%">
 				<Group gap="0" justify="flex-end">
@@ -139,9 +141,7 @@ export const AnalyticLabels = memo(
 					</MantineTooltip>
 				</Group>
 				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
-					</Center>
+					<AnalyticsEmpty query={query} />
 				) : type === "table" ? (
 					<LabelsTable query={query} data={formatData} bars={bars} />
 				) : (

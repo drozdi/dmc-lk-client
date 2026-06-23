@@ -62,7 +62,6 @@ export const useStoreElastic = create<IStoreElastic>((set, get) => ({
 		set({ id });
 	},
 	save(template) {
-		console.log("update", { ...template });
 		set({
 			template,
 		});
@@ -166,7 +165,7 @@ export const useStoreElastic = create<IStoreElastic>((set, get) => ({
 		});
 		get()._load("", true);
 	},
-	async load(reloading = false) {
+	async load() {
 		await get().reset();
 	},
 

@@ -5,8 +5,8 @@ import { Navigate } from "react-router-dom";
 export const SignOutPage = () => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
-	storeAuth.logout();
 	storeUserProfile.reset();
 	queryClient.resetQueries();
-	return <Navigate to="/" />;
+	storeAuth.logout();
+	return <Navigate to="/auth/sign-in" />;
 };

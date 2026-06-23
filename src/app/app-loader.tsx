@@ -2,12 +2,14 @@ import { useStoreAuth, useStoreUserProfile } from "@/entites/auth";
 import {
 	useStoreDashboardMain,
 	useStoreDashboardSecond,
-} from "@/entites/widget";
+} from "@/entites/dashboard";
+import { useQueryProductions } from '@/entites/users';
 import { useEffect } from "react";
 
 export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 	const storeAuth = useStoreAuth();
 	const storeUserProfile = useStoreUserProfile();
+	const { data, refetch } = useQueryProductions()
 
 	useEffect(() => {
 		if (!storeAuth.isAuthenticated) {
@@ -15,23 +17,21 @@ export const AppLoader = ({ children }: { children: React.ReactNode }) => {
 		}
 		useStoreDashboardMain.resetFromDB();
 		useStoreDashboardSecond.resetFromDB();
-		storeUserProfile.load();
+		(async function () {
+			await storeUserProfile.load();
+			await refetch?.()
+		})()
 	}, [storeAuth.isAuthenticated]);
 
 	useEffect(() => {
-		const userData = storeUserProfile.userInfo;
-		if (userData) {
-			if (
-				!userData.is_superuser &&
-				!userData.id_production?.includes(
-					Number(storeUserProfile.production_id),
-				)
-			) {
-				userData.id_production?.length &&
-					storeUserProfile.setProductionId(Number(userData.id_production[0]));
-			}
+		if (!storeAuth.isAuthenticated) {
+			return
 		}
-	}, [storeUserProfile.userInfo]);
+		const { productions, setProductions } = storeUserProfile;
+		if (data?.length && !productions?.length) {
+			setProductions((data || [])?.map(item => String(item.production_id)))
+		}	
+	}, [data, storeUserProfile.productions, storeAuth.isAuthenticated]);
 
 	return children;
 };

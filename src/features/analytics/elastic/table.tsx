@@ -9,23 +9,15 @@ import {
 	useStoreElastic,
 } from "@/entites/analytics/stores/use-store-elastic";
 import { Template } from "@/layout";
-import { ButtonRemove, Loading } from "@/shared/ui";
+import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	Button,
 	Divider,
 	Group,
 	Select,
-	Table,
-	Text,
-	Tooltip,
+	Stack
 } from "@mantine/core";
-import {
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
 import { useMemo } from "react";
-import { TbColumnRemove } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { ElasticField } from "./components/field";
 import { ElasticFilter } from "./components/fliter";
@@ -49,7 +41,6 @@ export const AnalyticsElasticTable = ({
 
 	const isNext = selectIsNext(storeElastic);
 	const isPrev = selectIsPrev(storeElastic);
-	const date = storeElastic.getDate();
 	const limit = storeElastic.getLimit();
 
 	const update = () => storeElastic.save({ ...template });
@@ -64,19 +55,6 @@ export const AnalyticsElasticTable = ({
 		[template, findLabelByCode],
 	);
 
-	const table = useReactTable({
-		columns,
-		data,
-		getCoreRowModel: getCoreRowModel(),
-	});
-
-	const handleAddSelect = (select: string) => {
-		if (!select) {
-			return;
-		}
-		template.company.select_field.push(select);
-		update();
-	};
 	const handleDelSelect = (select: string) => {
 		template.company.select_field = template.company.select_field.filter(
 			(item) => item !== select,
@@ -109,98 +87,13 @@ export const AnalyticsElasticTable = ({
 		}
 	};
 
-	/*const computedColumns = useMemo(
-		() =>
-			Object.entries(qaf.data || {}).map(([key, item]) => ({
-				accessor: key,
-				title: item.label,
-				ellipsis: true,
-				noWrap: true,
-				sortKey: key,
-				// resizable: true,
-				// sortable: true,
-				toggleable: true,
-				defaultToggle: false,
-				// filter: ({ close }) => {
-				// 	return <></>;
-				// },
-				// draggable: true,
-			})),
-		[qaf.data, qaf.findLabelByCode],
-	);*/
-
-	// useEffect(() => {
-	// 	if (storeElastic.id) {
-	// 		storeElastic.reset();
-	// 	}
-	// }, [storeElastic.id]);
-
 	return (
 		<>
 			<Group className={className} justify="space-between" align="self-start">
 				<ElasticField />
 				<Divider orientation="vertical" mx="lg" />
 				<ElasticFilter flex="1" />
-			</Group>
-
-			<Loading active={isLoading} keepMounted>
-				<Table striped withColumnBorders mt="xs">
-					<Table.Thead>
-						{columns?.length ? (
-							table.getHeaderGroups().map((headerGroup, index) => (
-								<Table.Tr key={headerGroup.id + "-" + index}>
-									{headerGroup.headers.map((header) => (
-										<Table.Th key={header.id} colSpan={header.colSpan}>
-											<Group justify="space-between" grow>
-												<Text>
-													{header.isPlaceholder
-														? null
-														: flexRender(
-																header.column.columnDef.header,
-																header.getContext(),
-															)}
-												</Text>
-												<ButtonRemove
-													flex="0"
-													tooltip="Удалить поле"
-													size="xs"
-													onClick={() => handleDelSelect(header.id)}
-												>
-													<TbColumnRemove />
-												</ButtonRemove>
-											</Group>
-										</Table.Th>
-									))}
-								</Table.Tr>
-							))
-						) : (
-							<Table.Tr>
-								<Table.Th ta="center" fz="h2" c="dimmed">
-									Выберите что паказавать
-								</Table.Th>
-							</Table.Tr>
-						)}
-					</Table.Thead>
-					<Table.Tbody>
-						{table.getRowModel().rows.map((row) => (
-							<Tooltip key={row.id} label={`Ошибка #${row.original.id}`}>
-								<Table.Tr>
-									{row.getVisibleCells().map((cell, index) => (
-										<Table.Td key={cell.id + "-" + index}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
-										</Table.Td>
-									))}
-								</Table.Tr>
-							</Tooltip>
-						))}
-					</Table.Tbody>
-				</Table>
-			</Loading>
-			<Template.Footer>
-				<Group>
+				<Stack>
 					<Button
 						color="green"
 						onClick={handleSave}
@@ -211,7 +104,20 @@ export const AnalyticsElasticTable = ({
 					<Button onClick={() => storeElastic.reset()} loading={isLoading}>
 						Применить
 					</Button>
-				</Group>
+				</Stack>
+			</Group>
+
+
+			<TableData<IAnalyticsElasticItem> data={data} withPagination={false} loading={isLoading} limit={limit}>
+				{columns?.length ? columns.map((column) => (
+					<DataColumn<IAnalyticsElasticItem> field={column.accessorKey} header={column.header} toggleable={(column) => handleDelSelect(column.field)} ellipsis noWrap />
+				)): <DataColumn<IAnalyticsElasticItem> field='.' header='Выберите что паказавать' style={{
+					textAlign: 'center',
+					fontSize: '3rem'
+				}} />}
+			</TableData>
+
+			<Template.Footer>
 				<Group>
 					<Button
 						loading={isLoading}

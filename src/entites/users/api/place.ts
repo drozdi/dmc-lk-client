@@ -1,8 +1,9 @@
 import { api } from "@/shared/api";
 
 export async function requestUsersPlaceList(params: {
-	production_id: IPlace["production_id"] | IPlace["production_id"];
-}): Promise<IResponse<IPlace[]>> {
+	production_id?: IPlace["production_id"] | IPlace["production_id"];
+	[key: string]: any
+} = {}): Promise<IResponse<IPlace[]>> {
 	const arr = [];
 	for (const key in params) {
 		if (Array.isArray(params[key])) {

@@ -28,33 +28,26 @@ export function useQueryProductions() {
 	const dataSelect = useMemo<
 		ComboboxItem<IProduction["production_id"]>[]
 	>(() => {
-		return [
-			{
-				value: "0",
-				label: "Все площадки",
-			},
-		].concat(
-			(q.data || []).map((item) => ({
+		return (q.data || []).map((item) => ({
 				value: String(item.production_id),
 				label: item.production_name as string,
-			})),
-		);
+			}))
 	}, [q.data]);
 	const findById = useCallback(
 		(id: IProduction["production_id"]) => {
-			if (id === 0) {
-				return {
-					production_name: "Все площадки",
-				};
-			}
-			return (q.data || []).find((item) => item.production_id === id);
+			return (q.data || []).find((item) => String(item.production_id) === String(id));
 		},
 		[q.data],
 	);
 	const findNameById = useCallback(
-		(id: IProduction["production_id"]) =>
-			findById(id)?.production_name || `Площадка #${id}`,
+		(id: IProduction["production_id"]) => findById(id)?.name_production || `Площадка #${id}`,
 		[findById],
 	);
-	return { ...q, dataSelect, findById, findNameById };
+	const findNameByIds = useCallback(
+		(productions: IProduction["production_id"][]) =>
+			q.data?.length === productions.length ? 'Все площадки' :productions.map((id) => findNameById(id)).join(', '),
+		[findNameById, q.data]
+	);
+
+	return { ...q, dataSelect, findById, findNameById, findNameByIds };
 }

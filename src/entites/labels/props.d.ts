@@ -33,7 +33,7 @@ interface IStoreLabels extends IStore {
 		production_id: ILabel["production_id"];
 	}): Promise<ILabel | undefined>;
 
-	updateFormat(format: ILabel['add_label_format'], newFormat: Partial<ILabel>): Promise<ILabel | undefined>
+	updateFormat(id: ILabel["id"], data: Partial<ILabel>): Promise<ILabel | undefined>
 
 	deleteFormat(query: {
 		format: ILabel["add_label_format"];

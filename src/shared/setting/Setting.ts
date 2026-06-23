@@ -1,11 +1,8 @@
-import type {
-	UseDisclosureHandlers,
-	UseDisclosureOptions,
-} from "@mantine/hooks";
-import { useDisclosure, useSetState } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import { Config } from "./Config";
-import { storageLocal } from "./storages/storage-local";
+import type { UseDisclosureHandlers, UseDisclosureOptions } from '@mantine/hooks';
+import { useDisclosure, useSetState } from '@mantine/hooks';
+import { useEffect, useState } from 'react';
+import { Config } from './Config';
+import { storageLocal } from './storages/storage-local';
 
 export class Setting {
 	config?: Config;
@@ -16,7 +13,7 @@ export class Setting {
 	constructor(
 		config: Config | ConfigObject,
 		options: SettingOptions = {},
-		key: string = "",
+		key: string = '',
 	) {
 		// Обработка вызова без new
 		if (!this || !(this as any).sub) {
@@ -27,14 +24,14 @@ export class Setting {
 		this.config = config instanceof Config ? config : new Config(config);
 
 		// Обработка ключа
-		this._key = this.config.resolveValue(key || "").toLowerCase();
+		this._key = this.config.resolveValue(key || '').toLowerCase();
 
 		// Применение дефолтных настроек
 		this.default(options || {});
 	}
 
 	key(name: string): string {
-		return [this._key, name].join(".");
+		return [this._key, name].join('.');
 	}
 
 	add(settings: SettingOptions): void {
@@ -78,13 +75,8 @@ export class Setting {
 		let result: any = storageLocal.get(fullKey, null);
 
 		// Обработка ссылок вида "@other_setting"
-		if (typeof result === "string" && result.startsWith("@")) {
-			const refKey = result.substring(1);
-			result = storageLocal.get(this.key(refKey), null);
-
-			if (result === null) {
-				result = this.config?.get(refKey, null);
-			}
+		if (typeof result === 'string' && result.startsWith('@')) {
+			result = this.get(result.substring(1), null);
 		}
 
 		// Проверка родительских настроек
@@ -92,15 +84,30 @@ export class Setting {
 			result = this.parent.get(name, null, type);
 		}
 
-		// Использование значения из конфига по умолчанию
+		// Шаблон из конфига — подстановка %...% выполняется ниже через Setting
 		if (result === null) {
-			result = this.config?.get(name, def);
+			result = this.config?.getRaw(name, def);
 		}
 
-		// Разрешение значения и преобразование типа
-		result = this.config?.resolveValue(result);
+		result = this.resolveValue(result);
 
 		return type?.(result ?? def) ?? result ?? def;
+	}
+
+	resolveValue(value: any): any {
+		if (typeof value !== 'string') {
+			return value;
+		}
+
+		return this.config?.unescapeValue(
+			value.replace(/%%|%([^%\s]+)%/g, (match, refName) => {
+				if (match === '%%') {
+					return '%%';
+				}
+
+				return this.get(refName) ?? '';
+			}),
+		);
 	}
 
 	all(): SettingOptions {
@@ -149,7 +156,7 @@ export class Setting {
 		config?: Config | ConfigObject,
 	): Setting {
 		const resolvedKey = String(
-			this.config?.resolveValue(key || "") || "",
+			this.config?.resolveValue(key || '') || '',
 		).toLowerCase();
 
 		if (!this._[resolvedKey]) {
@@ -157,7 +164,7 @@ export class Setting {
 			const subSetting = new Setting(
 				subConfig as Config | ConfigObject,
 				options,
-				[this._key, key].join("."),
+				[this._key, key].join('.'),
 			);
 
 			subSetting.parent = this;
@@ -172,19 +179,14 @@ export class Setting {
 		initial: boolean,
 		options?: UseDisclosureOptions,
 	): [boolean, UseDisclosureHandlers] {
-		const [state, actions] = useDisclosure(
-			this.get(name, initial, options),
-		);
+		const [state, actions] = useDisclosure(this.get(name, initial), options);
 		useEffect(() => {
 			this.set(name, state);
 		}, [state]);
 		return [state, actions];
 	}
 
-	useState<T>(
-		name: string,
-		initial?: T,
-	): [T, (value: T | ((prev: T) => T)) => void] {
+	useState<T>(name: string, initial?: T): [T, (value: T | ((prev: T) => T)) => void] {
 		const [state, setState] = useState<T>(this.get(name, initial));
 		useEffect(() => {
 			this.set(name, state);

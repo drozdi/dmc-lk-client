@@ -1,7 +1,7 @@
-import { Divider, Group, Popover, TextInput } from "@mantine/core";
+import { Divider, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
 import { Calendar, type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const formatDate = (date: DateValue): string => {
 	return date ? dayjs(date).format("LL") : "";
@@ -65,6 +65,7 @@ export interface DualCalendarRangeProps {
 	defaultValue?: [DateValue, DateValue];
 	value?: [DateValue, DateValue];
 	onChange?: (value: [DateValue, DateValue]) => void;
+	error?: React.ReactNode;
 	[key: string]: any;
 }
 
@@ -72,6 +73,7 @@ export function DualCalendarRange({
 	defaultValue = [null, null],
 	value = [null, null],
 	onChange,
+	error,
 	...props
 }: DualCalendarRangeProps) {
 	const isControlled = value !== undefined;
@@ -138,22 +140,25 @@ export function DualCalendarRange({
 	return (
 		<Popover>
 			<Popover.Target>
-				<Group justify="center" gap="0" {...props}>
-					<TextInput
-						label="От"
-						value={formatDate(startDate)}
-						variant="сontained"
-						readOnly
-						radius="0"
-					/>
-					<TextInput
-						label="До"
-						value={formatDate(endDate)}
-						variant="сontained"
-						radius="0"
-						readOnly
-					/>
-				</Group>
+				<Stack>
+					<Group justify="center" gap="0" {...props}>
+						<TextInput
+							label="От"
+							value={formatDate(startDate)}
+							variant="сontained"
+							readOnly
+							radius="0"
+						/>
+						<TextInput
+							label="До"
+							value={formatDate(endDate)}
+							variant="сontained"
+							radius="0"
+							readOnly
+						/>
+					</Group>
+					{error && <Text size="xs" c="red">{error}</Text>}
+				</Stack>
 			</Popover.Target>
 			<Popover.Dropdown>
 				<Group>

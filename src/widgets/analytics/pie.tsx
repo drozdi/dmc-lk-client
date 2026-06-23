@@ -12,6 +12,7 @@ export const WidgetAnalyticPie = memo(
 	({
 		filterdate,
 		events = ["v", "d", "i"],
+		percent,
 		...props
 	}: WidgetAnalyticPieProps) => {
 		const { isLoading, error } = useQueryAnalytics();
@@ -37,7 +38,7 @@ export const WidgetAnalyticPie = memo(
 					</>
 				}
 			>
-				<AnalyticPie {...query} events={events} />
+				<AnalyticPie {...query} events={events} percent={percent} />
 			</Widget>
 		);
 	},

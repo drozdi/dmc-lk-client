@@ -2,13 +2,12 @@ import { Widget } from "@/shared/ui";
 import { Center, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-export const TesstWidget = ({
+export const TestWidget = ({
 	timeout = 10,
 	title = "Title",
 	description = "Описание виджета",
 	...props
 }) => {
-	return "";
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		setTimeout(() => {

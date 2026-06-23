@@ -5,7 +5,7 @@ import { Children, cloneElement } from "react";
 
 export interface GroupedContainerProps {
 	id: string;
-  children: React.ReactNode;
+  children: React.ReactElement;
 	color?: string;
 }
 

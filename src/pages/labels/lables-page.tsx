@@ -117,7 +117,7 @@ export function LabelsPage() {
 
 	return (
 		<Paper>
-			<Template.Title>Групировка этикеток</Template.Title>
+			<Template.Title>Группировка этикеток</Template.Title>
 			<Group justify="space-between">
 				<Group>
 					<Text>

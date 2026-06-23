@@ -39,7 +39,7 @@ export const useStoreIncident = create<IStoreIncident>((set, get) => ({
 		});
 		$setting.set("incident", template);
 	},
-	async load(reloading = false) {
+	async load() {
 		const res = await get().send(get().template);
 		if (res) {
 			set({

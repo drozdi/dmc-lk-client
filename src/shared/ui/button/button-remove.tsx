@@ -7,7 +7,7 @@ export function ButtonRemove({
 	children = <TbCircleX />,
 	...props
 }: ButtonRemoveProps) {
-	return <ButtonIcon {...props}>
+	return <ButtonIcon color='red' {...props}>
 		{children}
 	</ButtonIcon>;
 }

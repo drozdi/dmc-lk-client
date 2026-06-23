@@ -2,17 +2,17 @@ import {
 	ActionIcon,
 	Card,
 	Group,
-	LoadingOverlay,
 	Menu,
 	Modal,
 	ScrollArea,
-	Tooltip,
 	type CardProps,
-	type MenuItemProps,
+	type MenuItemProps
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import { TbArrowsMaximize, TbArrowsMinimize, TbDots } from "react-icons/tb";
+import { TbArrowsMaximize, TbArrowsMinimize, TbDots, TbFileDownload } from "react-icons/tb";
+import { ButtonIcon } from '../button';
+import { ChartSkeleton } from "../skeleton";
 import { Text } from "../text";
 import { Title } from "../title";
 import { ProviderWidget, useWidget } from "./context";
@@ -20,7 +20,9 @@ import { ProviderWidget, useWidget } from "./context";
 export interface WidgetMenuItem extends MenuItemProps {}
 
 export interface WidgetMenuProps {
-	options?: WidgetMenuItem[];
+	options?: ({
+		onClick: () => void;
+	} & WidgetMenuItem)[];
 }
 export interface WidgetProps extends CardProps {
 	title: React.ReactNode;
@@ -31,9 +33,13 @@ export interface WidgetProps extends CardProps {
 	preview?: React.ReactNode;
 	component?: any;
 	expanded?: boolean;
-	menu?: WidgetMenuItem[];
+	menu?: ({
+		onClick: () => void;
+	} & WidgetMenuItem)[];
+	onDownload?: () => void;
 	error?: React.ReactNode | IError;
 	wraped?: boolean;
+	loadingSkeleton?: React.ReactNode;
 }
 
 function WidgetMenu({ options = [] }: WidgetMenuProps) {
@@ -49,7 +55,7 @@ function WidgetMenu({ options = [] }: WidgetMenuProps) {
 			</Menu.Target>
 			<Menu.Dropdown>
 				{options.map((item) => (
-					<Menu.Item {...item} />
+					<Menu.Item key={item.children as string} {...item} />
 				))}
 			</Menu.Dropdown>
 		</Menu>
@@ -68,6 +74,8 @@ export function Widget({
 	error,
 	menu = [],
 	wraped = true,
+	onDownload,
+	loadingSkeleton = <ChartSkeleton height="100%" mih={180} />,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -99,15 +107,16 @@ export function Widget({
 						<Title fw={500} lh="1" flex="1" order={6} tt="uppercase">
 							{title}
 						</Title>
-						{(expanded || menu?.length) && (
+						{(expanded || menu?.length || onDownload) && (
 							<Group mr="-xs" gap="0">
+								{onDownload && <ButtonIcon tooltip="Скачать" variant="subtle" onClick={onDownload}>
+									<TbFileDownload />
+								</ButtonIcon>}
 								{menu?.length && <WidgetMenu options={menu} />}
 								{expanded && (
-									<Tooltip label={isExpanded ? "Свернуть" : "Развернуть"}>
-										<ActionIcon variant="subtle" onClick={toggle}>
-											{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
-										</ActionIcon>
-									</Tooltip>
+									<ButtonIcon tooltip={isExpanded ? "Свернуть" : "Развернуть"} variant="subtle" onClick={toggle}>
+										{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
+									</ButtonIcon>
 								)}
 							</Group>
 						)}
@@ -124,10 +133,10 @@ export function Widget({
 					h="100%"
 					pos="relative"
 					pb="md"
+					type="always"
 				>
 					<Text c="red">{error?.message || error}</Text>
-					{keepMounted || isExpanded ? preview : null}
-					<LoadingOverlay visible={loading} zIndex={1000} />
+					{loading ? loadingSkeleton : keepMounted || isExpanded ? preview : null}
 				</Card.Section>
 				<Modal
 					opened={isExpanded}

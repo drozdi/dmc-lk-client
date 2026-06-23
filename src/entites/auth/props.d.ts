@@ -24,7 +24,7 @@ interface IStoreAuth extends IStore {
 	isAuthenticated: boolean;
 	load(): Promise<void>;
 	clearAuth(): void;
-	refreshAuth(): Promise<{ accessToken: string; refreshToken: string }>;
+	refreshAuth(): Promise<{ access: string; refresh: string }>;
 	verification(link: string): Promise<any>;
 	login(email: string, password: string): Promise<boolean>;
 	register(userData: Partial<IUserInfo>): Promise<any>;
@@ -35,8 +35,10 @@ interface IStoreUserProfile extends IStore {
 	userInfo?: IUserInfo;
 	settings: ISetting[];
 	production_id: IProduction["production_id"];
+	productions: IProduction["production_id"][];
 
 	setProductionId(id: IProduction["production_id"]): void;
+	setProductions(productions: IProduction["production_id"][]): void;
 
 	setUserInfo(data: Partial<IUserInfo>): void;
 	updateUserInfo(iserInfo: Partial<IUserInfo>): Promise<boolean>;

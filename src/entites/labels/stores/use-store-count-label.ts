@@ -7,6 +7,7 @@ import {
 	requestLabelsHistory,
 	requestLabelsReset,
 } from "../api";
+import { useStoreLabels } from "./use-store-labels";
 
 export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	isLoading: false,
@@ -119,11 +120,13 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		});
 		try {
 			const res = (await requestLabelsCountAdd(param)).data;
-			const count = get().count;
+			await useStoreLabels.getState().loadFormats();
+			const format_template = useStoreLabels.getState().formats[res.production_id]?.find(item => item.statistics_print_format === res.format_template)?.add_label_format || res.format_template;
+			const { count } = get();
 			for (const [, colections] of Object.entries(count)) {
 				const item = colections.find(
 					(item) =>
-						item.add_label_format === res.format_template &&
+						item.add_label_format === format_template &&
 						item.production_id === res.production_id,
 				);
 				if (item) {
@@ -131,6 +134,7 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 					item.sum_consumption += res.consumption_m || 0;
 				}
 			}
+			
 			set(state => ({
 				isLoading: false,
 				history: [...state.history, res],
@@ -168,31 +172,24 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 }));
 
 		
-export function selectHistoryForProduction (production_id: ICountLabelHistoryItem['production_id'] = 0) {
-	production_id = Number(production_id) || 0
+export function selectHistoryForProduction (production: ICountLabelHistoryItem['production_id'] | ICountLabelHistoryItem['production_id'][]) {
+	const productions = [].concat(production as never[]).map(Number)
 	return (state: IStoreCountLabel): ICountLabelHistoryItem[] => {
-		if (!production_id) {
-			return state.history
-		}
-		return state.history.filter(item => item.production_id === production_id)
+		return state.history.filter(item => productions.includes(Number(item.production_id)))
 	}
 }
-
-export const selectCountForProduction = (production_id: ICountLabelHistoryItem['production_id']): ((state: IStoreCountLabel) => {
-		distributed: ICountLabelItem[];
-		not_distributed: ICountLabelItem[];
-	}) => {
-	production_id = Number(production_id) || 0
+export const selectCountForProduction = (production: ICountLabelHistoryItem['production_id'] | ICountLabelHistoryItem['production_id'][]): ((state: IStoreCountLabel) => {
+	distributed: ICountLabelItem[];
+	not_distributed: ICountLabelItem[];
+}) => {
+	const productions = [].concat(production as never[]).map(Number)
 	return (state: IStoreCountLabel): {
 		distributed: ICountLabelItem[];
 		not_distributed: ICountLabelItem[];
 	} => {
-		if (!production_id) {
-			return state.count
-		}
 		return {
-			distributed: state.count.distributed.filter(item => item.production_id === production_id),
-			not_distributed: state.count.not_distributed.filter(item => item.production_id === production_id),
+			distributed: state.count.distributed.filter(item => productions.includes(Number(item.production_id))),
+			not_distributed: state.count.not_distributed.filter(item => productions.includes(Number(item.production_id))),
 		}
 	}
 }

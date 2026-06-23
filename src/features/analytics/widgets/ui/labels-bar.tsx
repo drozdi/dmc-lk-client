@@ -25,7 +25,7 @@ export const LabelsBar = memo(
 			}
 			setHide((v) => (inactive ? v.filter((i) => i !== value) : [...v, value]));
 		};
-
+	
 		return (
 			<AspectRatio ratio={16 / 9}>
 				<ResponsiveContainer>

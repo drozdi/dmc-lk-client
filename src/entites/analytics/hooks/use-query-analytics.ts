@@ -1,6 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { requestAnalytics } from "../api/analytics";
+import {
+	ANALYTICS_QUERY_GC_TIME,
+	ANALYTICS_QUERY_STALE_TIME,
+} from "../constants";
+import { isAnalyticsQueryReady } from "../utils/analytics-query";
 
 // Типы (предположительно определены глобально или импортированы)
 // type IRequestAnalytics = ...
@@ -9,12 +14,16 @@ import { requestAnalytics } from "../api/analytics";
 
 const DEFAULT_DATA: IResponseAnalytics = {
   id: 0,
-  all_records: 0,
-  sum_company: 0,
-  min_company: 0,
-  max_company: 0,
-  average_company: 0,
-  production: [],
+	all_records: 0,
+	sum_company: 0,
+	min_company: 0,
+	max_company: 0,
+	average_company: 0,
+	sum_consumption_m: 0,
+	min_consumption_m: 0,
+	max_consumption_m: 0,
+	average_consumption_m: 0,
+	production: [],
 };
 
 /**
@@ -34,8 +43,8 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
     queryKey: ["analytics", activeParams],
     queryFn: async () => await requestAnalytics(activeParams!).then((res) => res.data),
     enabled: false,
-    staleTime: 0,          // данные сразу считаются устаревшими (или настройте по необходимости)
-    gcTime: 0,             // кеш очищается сразу после удаления из наблюдателей
+    staleTime: ANALYTICS_QUERY_STALE_TIME,
+    gcTime: ANALYTICS_QUERY_GC_TIME,
     retry: false,
   });
 
@@ -53,15 +62,18 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
    */
   const fetch = useCallback(
     async (query: Partial<IRequestAnalytics> = {}): Promise<IResponseAnalytics | undefined> => {
-      // Слияние параметров с особым правилом для filterdate
-      const mergedParams: IRequestAnalytics = {
+      const mergedParams = {
         ...baseParams,
         ...query,
         filterdate: [
-          baseParams.filterdate?.[0] ?? query.filterdate?.[0],
+          baseParams.filterdate?.[0] ?? query.filterdate?.[0] ?? '',
           baseParams.filterdate?.[1] ?? query.filterdate?.[1] ?? "",
         ],
-      };
+      } as IRequestAnalytics;
+
+      if (!isAnalyticsQueryReady(mergedParams)) {
+        return DEFAULT_DATA;
+      }
 
       setActiveParams(mergedParams);
 
@@ -70,8 +82,8 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
         const result = await queryClient.fetchQuery({
           queryKey: ["analytics", mergedParams],
           queryFn: async () => await requestAnalytics(mergedParams).then((res) => res.data),
-          staleTime: 0,
-					gcTime: 0,
+          staleTime: ANALYTICS_QUERY_STALE_TIME,
+          gcTime: ANALYTICS_QUERY_GC_TIME,
         });
         return result;
       } catch (e) {

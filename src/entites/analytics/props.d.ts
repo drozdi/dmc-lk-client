@@ -9,12 +9,17 @@ interface IAnalyticsIncidentItem {
 	data: string;
 	timestamp: string;
 	id: string;
+	device_id: number;
+	production_id: number;
+	device_name: string;
+	name_production: string;
+	address_production: string;
 	[key: string]: string | number;
 }
 
 interface IRequestAnalyticsIncident {
 	filterdate: [string | Date | null, string | Date | null];
-	data?: string[];
+	data?: string | string[];
 	fields_name?: string[];
 }
 
@@ -95,7 +100,7 @@ interface IRequestAnalytics {
 	filterdate: [string | Date | null, string | Date | null];
 	step: SliceStep;
 	event: AnalyticEvent;
-	production_id?: number | number[];
+	production_id?: (number | string) | (number | string)[];
 	place_id?: number | number[];
 }
 interface IResponseAnalytics {

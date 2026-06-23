@@ -1,7 +1,8 @@
 import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
-import { FactoryWidget } from "@/entites/widget/utils/factory-widget";
+import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import { WidgetAnalyticEvents } from "./events";
 import { WidgetAnalyticEventsDefect } from "./events-defect";
+import { WidgetAnalyticIncident } from './incident';
 import { WidgetAnalyticItogSet } from "./itog-set";
 import { WidgetAnalyticLabels } from "./labels";
 import { WidgetAnalyticPie } from "./pie";
@@ -17,6 +18,12 @@ FactoryWidget.register({
 	description: "График за (Description)",
 	params: [
 		{
+			label: "Изменять отображение",
+			field: 'allowChangeType',
+			type: 'checkbox',
+			defaultValue: false,
+		},
+		{
 			label: "Промежуток",
 			field: "filterdate",
 			type: "date:range",
@@ -26,7 +33,7 @@ FactoryWidget.register({
 			label: "Шаг (разрез)",
 			field: "step",
 			type: "select",
-			default: "d",
+			defaultValue: "d",
 			data: es.dataSelect,
 		},
 		{
@@ -34,14 +41,21 @@ FactoryWidget.register({
 			field: "events",
 			type: "select:array",
 			required: true,
-			default: ["p"],
+			defaultValue: ["p"],
+			data: ee.dataSelect,
+		},
+		{
+			label: "Проценты (для отображение таблицы)",
+			field: "percent",
+			type: "select:array",
+			defaultValue: ["d"],
 			data: ee.dataSelect,
 		},
 		{
 			label: "Отображение",
 			field: "type",
 			type: "select",
-			default: "line",
+			defaultValue: "line",
 			data: [
 				{
 					label: "Линиями",
@@ -59,21 +73,17 @@ FactoryWidget.register({
 					label: "Аналитика",
 					value: "analytic",
 				},
+				{
+					label: "Столбцами (совмещённые)",
+					value: "stack",
+				},
 			],
-		},
-		{
-			label: "Проценты (для отображение таблицы)",
-			field: "events",
-			type: "select:array",
-			required: true,
-			default: ["d"],
-			data: ee.dataSelect,
 		},
 		{
 			label: "Разбивать до",
 			field: "stop",
 			type: "select",
-			default: "m",
+			defaultValue: "m",
 			data: [
 				{
 					label: "Секунд",
@@ -124,9 +134,16 @@ FactoryWidget.register({
 			field: "events",
 			type: "select:array",
 			required: true,
-			default: ["v", "d", "i"],
+			defaultValue: ["v", "d", "i"],
 			data: ee.dataSelect,
 		},
+		{
+			label: "Отображать проценты",
+			field: "percent",
+			type: "checkbox",
+			defaultValue: false,
+		},
+		
 	],
 });
 FactoryWidget.register({
@@ -145,14 +162,14 @@ FactoryWidget.register({
 			label: "Шаг (разрез)",
 			field: "step",
 			type: "select",
-			default: "d",
+			defaultValue: "d",
 			data: es.dataSelect,
 		},
 		{
 			label: "Событие",
 			field: "event",
 			type: "select",
-			default: "p",
+			defaultValue: "p",
 			data: ee.dataSelect,
 		},
 	],
@@ -173,14 +190,14 @@ FactoryWidget.register({
 			label: "Событие",
 			field: "event",
 			type: "select",
-			default: "p",
+			defaultValue: "p",
 			data: ee.dataSelect,
 		},
 		{
 			label: "Тип",
 			field: "type",
 			type: "select",
-			default: "sum",
+			defaultValue: "sum",
 			data: [
 				{
 					label: "Сумма",
@@ -209,6 +226,12 @@ FactoryWidget.register({
 	description: "Информация о этикетках (Description)",
 	params: [
 		{
+			label: "Изменять отображение",
+			field: 'allowChangeType',
+			type: 'checkbox',
+			defaultValue: false,
+		},
+		{
 			label: "Промежуток",
 			field: "filterdate",
 			type: "date:range",
@@ -218,21 +241,21 @@ FactoryWidget.register({
 			label: "Шаг (разрез)",
 			field: "step",
 			type: "select",
-			default: "d",
+			defaultValue: "d",
 			data: es.dataSelect,
 		},
 		{
 			label: "Событие",
 			field: "event",
 			type: "select",
-			default: "p",
+			defaultValue: "p",
 			data: ee.dataSelect,
 		},
 		{
 			label: "Отображение",
 			field: "type",
 			type: "select",
-			default: "default",
+			defaultValue: "default",
 			data: [
 				{
 					label: "Разбивать",
@@ -266,22 +289,39 @@ FactoryWidget.register({
 			label: "Шаг (разрез)",
 			field: "step",
 			type: "select",
-			default: "d",
+			defaultValue: "d",
 			data: es.dataSelect,
 		},
 		{
 			label: "Событие",
 			field: "event",
 			type: "select",
-			default: "p",
+			defaultValue: "p",
 			data: ee.dataSelect,
 		},
 	],
 });
+FactoryWidget.register({
+	type: "analytic-incident",
+	component: WidgetAnalyticIncident,
+	label: "Инциденты за",
+	description: "Инциденты за (Description)",
+	params: [
+		{
+			label: "Промежуток",
+			field: "filterdate",
+			type: "date:range",
+			required: true,
+		},
+	],
+});
+
 
 export * from "./events";
 export * from "./events-defect";
+export * from './incident';
 export * from "./itog-set";
 export * from "./labels";
 export * from "./pie";
 export * from "./type";
+

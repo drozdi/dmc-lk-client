@@ -205,11 +205,11 @@ export const themeMantine = createTheme({
 		}),
 		Table: Table.extend({
 			defaultProps: {
-				striped: true,
+			 	striped: true,
 				highlightOnHover: true,
-				layout: "fixed",
-				horizontalSpacing: "0.25rem",
-				verticalSpacing: "0.25rem",
+			 	layout: "fixed",
+			 	horizontalSpacing: "0.25rem",
+			 	verticalSpacing: "0.25rem",
 			},
 		}),
 		Flex: Flex.extend({

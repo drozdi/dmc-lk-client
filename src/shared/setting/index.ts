@@ -7,6 +7,7 @@ export const $setting = new Setting(
 	{
 		"api.timeout": 5,
 		"production.id": 0,
+		"productions.id": [],
 		size: "15",
 		limits: ["15", "30", "50", "75", "100"],
 		formatDate: "DD.MM.YYYY",
@@ -18,6 +19,7 @@ export const $setting = new Setting(
 	{
 		"api.timeout": 5,
 		"production.id": 0,
+		"productions.id": [],
 	},
 	"dmc-lk",
 );

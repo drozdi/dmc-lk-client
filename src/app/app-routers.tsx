@@ -1,11 +1,9 @@
 import { ProtectedRoute } from "@/features/auth/protected-route";
 import { AuthLayout, MainLayout } from "@/layout";
+import { Center, Loader } from "@mantine/core";
+import { lazy, Suspense } from "react";
 import { Navigate, Outlet, useLocation, useRoutes } from "react-router-dom";
 
-import { AnalyticsElasticFormPage } from "@/pages/analytics/elastic/form-page";
-import { AnalyticsIncidentPage } from "@/pages/analytics/incident";
-import { AnalyticsQueryItemPage } from "@/pages/analytics/query/item-page";
-import { AnalyticsQueryListPage } from "@/pages/analytics/query/list-page";
 import { DashboardPage } from "@/pages/dashboard-page";
 
 import { SignInPage } from "@/pages/auth/sign-in-page";
@@ -16,8 +14,44 @@ import { LabelsHistoryPage } from "@/pages/labels/lables-history-page";
 import { LabelsPage } from "@/pages/labels/lables-page";
 import { MainPage } from "@/pages/main-page";
 import { PersonalPage } from "@/pages/personal-page";
+import { TablePage } from "@/pages/table";
 import { UsersListPage } from "@/pages/users/list-page";
 import { UsersUserPage } from "@/pages/users/user-page";
+
+const AnalyticsIncidentPage = lazy(() =>
+	import("@/pages/analytics/incident").then((module) => ({
+		default: module.AnalyticsIncidentPage,
+	})),
+);
+const AnalyticsElasticFormPage = lazy(() =>
+	import("@/pages/analytics/elastic/form-page").then((module) => ({
+		default: module.AnalyticsElasticFormPage,
+	})),
+);
+const AnalyticsQueryListPage = lazy(() =>
+	import("@/pages/analytics/query/list-page").then((module) => ({
+		default: module.AnalyticsQueryListPage,
+	})),
+);
+const AnalyticsQueryItemPage = lazy(() =>
+	import("@/pages/analytics/query/item-page").then((module) => ({
+		default: module.AnalyticsQueryItemPage,
+	})),
+);
+
+function PageSuspense({ children }: { children: React.ReactNode }) {
+	return (
+		<Suspense
+			fallback={
+				<Center mih={320}>
+					<Loader />
+				</Center>
+			}
+		>
+			{children}
+		</Suspense>
+	);
+}
 
 const routes = () => [
 	{
@@ -58,6 +92,10 @@ const routes = () => [
 				path: "",
 				element: <MainPage />,
 			},
+			import.meta.env.DEV && {
+				path: "table",
+				element: <TablePage />,
+			},
 			{
 				path: "dashboard",
 				element: <DashboardPage />,
@@ -80,19 +118,35 @@ const routes = () => [
 				children: [
 					{
 						path: "incident",
-						element: <AnalyticsIncidentPage />,
+						element: (
+							<PageSuspense>
+								<AnalyticsIncidentPage />
+							</PageSuspense>
+						),
 					},
 					{
 						path: "elastic",
-						element: <AnalyticsElasticFormPage />,
+						element: (
+							<PageSuspense>
+								<AnalyticsElasticFormPage />
+							</PageSuspense>
+						),
 					},
 					{
 						path: "queries",
-						element: <AnalyticsQueryListPage />,
+						element: (
+							<PageSuspense>
+								<AnalyticsQueryListPage />
+							</PageSuspense>
+						),
 					},
 					{
 						path: ":id_query",
-						element: <AnalyticsQueryItemPage />,
+						element: (
+							<PageSuspense>
+								<AnalyticsQueryItemPage />
+							</PageSuspense>
+						),
 					},
 				],
 			},
@@ -118,9 +172,7 @@ function RequireTrailingSlash({ children }: { children: JSX.Element }) {
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	// Если путь не является корневым '/' и не заканчивается на '/'
 	if (pathname !== "/" && !pathname.endsWith("/")) {
-		// Формируем новый путь: старый путь + '/', остальное (search, hash) не меняем
 		const newPathname = `${pathname}/`;
 		return <Navigate to={{ ...location, pathname: newPathname }} replace />;
 	}

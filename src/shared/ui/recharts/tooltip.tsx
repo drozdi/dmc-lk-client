@@ -2,7 +2,9 @@ import { Box, ColorSwatch, Group, NumberFormatter, Text } from "@mantine/core";
 import { type TooltipContentProps } from "recharts";
 
 export function TooltipContentPie(props: TooltipContentProps) {
-	const { payload, separator } = props;
+	const { payload, separator, formatter = (value) => NumberFormatter({
+		value
+	}) } = props;
 
 	if (!payload[0]) {
 		return null;
@@ -20,11 +22,10 @@ export function TooltipContentPie(props: TooltipContentProps) {
 		>
 			<ColorSwatch color={color as string} size={12} />
 			<Text flex="1">{name}</Text>
-			<NumberFormatter value={value} />
+			{formatter(value)}
 		</Group>
 	);
 }
-
 export function TooltipContentBar(props: TooltipContentProps) {
 	const { active, payload, separator, label, labelFormatter } = props;
 	if (active && payload && payload.length) {

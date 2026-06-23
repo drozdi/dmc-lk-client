@@ -1,4 +1,4 @@
-import { useQueryAnalytics } from "@/entites/analytics";
+import { useQueryAnalytics, AnalyticsEmpty } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { labelName } from "@/shared/utils";
@@ -17,14 +17,13 @@ export const AnalyticType = ({
 	step = "d",
 	event = "p",
 }: AnalyticTypeProps) => {
-	const production_id = Number(
-		useStoreUserProfile((state) => state.production_id) || 0,
-	);
+	const productions = useStoreUserProfile((state) => state.productions);
+	
 	const [query, setQuery] = useState<IRequestAnalytics>({
 		filterdate,
 		step,
 		event,
-		production_id,
+		production_id: productions,
 	});
 	const { fetch, data } = useQueryAnalytics(query);
 
@@ -77,9 +76,6 @@ export const AnalyticType = ({
 			};
 		}
 		for (const production of data.production) {
-			if (production_id > 0 && production_id !== production.production_id) {
-				continue;
-			}
 			for (const item of production.data) {
 				if (item.data.length > 11) {
 					continue;
@@ -94,7 +90,7 @@ export const AnalyticType = ({
 			}
 		}
 		return Object.values(ddata);
-	}, [data, labels, production_id]);
+	}, [data, labels, productions]);
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
 
@@ -119,9 +115,7 @@ export const AnalyticType = ({
 			</Group>
 			<AspectRatio ratio={16 / 9}>
 				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
-					</Center>
+					<AnalyticsEmpty query={query} />
 				) : (
 					<TypeBar data={ddata} bars={labels} />
 				)}

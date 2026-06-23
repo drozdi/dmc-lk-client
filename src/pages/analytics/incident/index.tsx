@@ -1,11 +1,10 @@
 import {
 	useEnumsDetails,
 	useEnumsFields,
-	useStoreIncident,
+	useQueryIncident
 } from "@/entites/analytics";
 import { IncidentDetail } from "@/features/analytics/incident/detail";
 import { IncidentGenerate } from "@/features/analytics/incident/generate";
-import { IncidentShort } from "@/features/analytics/incident/short";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
@@ -13,21 +12,25 @@ import { DualCalendarRange } from "@/shared/ui";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function AnalyticsIncidentPage() {
 	const [searchParams] = useSearchParams();
 
-	const fromDay = dayjs(
-		searchParams.get("from") || dayjs().day(dayjs().day() - 7),
-	);
+	const fromDay = dayjs(searchParams.get("from") || dayjs().day(dayjs().day() - 7));
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
+	const initialDataFilters = useMemo(
+		() => searchParams.getAll("data").filter(Boolean),
+		[searchParams],
+	);
+	const defaultTab = searchParams.get("tab") === "generate" ? "generate" : "detail";
 
 	const [filterdate, setFilterdate] = $setting.useState<[DateValue, DateValue]>(
 		"incident.filterdate",
 		[fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")],
 	);
+	const [activeTab, setActiveTab] = useState(defaultTab);
 
 	const handleChange = (filterdate: [DateValue, DateValue]) => {
 		if (filterdate[0] && filterdate[1]) {
@@ -41,12 +44,15 @@ export function AnalyticsIncidentPage() {
 		}
 	}, []);
 
-	const storeIncident = useStoreIncident();
+	useEffect(() => {
+		setActiveTab(defaultTab);
+	}, [defaultTab]);
 
 	const ef = useEnumsFields();
 	const ed = useEnumsDetails();
+	const qi = useQueryIncident();
 
-	const isLoading = useQueryLoading(storeIncident, ef, ed);
+	const isLoading = useQueryLoading(qi, ef, ed);
 
 	const handleYesterday = () => {
 		setFilterdate([
@@ -85,7 +91,7 @@ export function AnalyticsIncidentPage() {
 				</Group>
 				<DualCalendarRange value={filterdate} onChange={handleChange} />
 			</Group>
-			<Tabs defaultValue="detail" mt="xs">
+			<Tabs value={activeTab} onChange={(value) => value && setActiveTab(value)} mt="xs">
 				<Tabs.List>
 					<Tabs.Tab value="detail">Кратко</Tabs.Tab>
 					<Tabs.Tab value="generate">Детально</Tabs.Tab>
@@ -93,11 +99,11 @@ export function AnalyticsIncidentPage() {
 				<Tabs.Panel value="detail">
 					<IncidentDetail filterdate={filterdate} />
 				</Tabs.Panel>
-				<Tabs.Panel value="short">
-					<IncidentShort filterdate={filterdate} />
-				</Tabs.Panel>
 				<Tabs.Panel value="generate">
-					<IncidentGenerate filterdate={filterdate} />
+					<IncidentGenerate
+						filterdate={filterdate}
+						initialDataFilters={initialDataFilters}
+					/>
 				</Tabs.Panel>
 			</Tabs>
 		</Paper>

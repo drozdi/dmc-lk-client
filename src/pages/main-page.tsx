@@ -1,18 +1,17 @@
 import { corectQuery, Filterdate, QueryShow } from "@/entites/analytics";
 import {
+	DashboardProvider,
 	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
-	WidgetsProvider,
-} from "@/entites/widget";
-import { BtnClear } from "@/features/widget/btn-clear";
-import { BtnEditMode } from "@/features/widget/btn-edit-mod";
-import { WidgetForm } from "@/features/widget/form/widget-form";
+} from "@/entites/dashboard";
+import { BtnClear } from "@/features/dashboard/btn-clear";
+import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
+import { ModalForm } from "@/features/dashboard/modal";
 import { Template } from "@/layout";
 import { Widget } from "@/shared/ui";
-import { Group, Modal, Paper } from "@mantine/core";
+import { Group, Paper } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
-import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { TbArrowBackUp, TbReload } from "react-icons/tb";
@@ -21,13 +20,7 @@ import { type MouseHandlerDataParam } from "recharts";
 
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
-	const [opened, { open, close }] = useDisclosure(false);
-	const [layout, setLayout] = useState<Partial<ILayoutItem> | undefined>({});
 	const [history, setHistory] = useState([]);
-
-	useEffect(() => {
-		storeDashboardMain.id && open();
-	}, [storeDashboardMain.id]);
 
 	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>(
 		storeDashboardMain.getValue("$filterdate"),
@@ -128,16 +121,8 @@ export const MainPage = () => {
 					/>
 				</Template.Header>
 			</Group>
-			<WidgetsProvider store={useStoreDashboardMain}>
-				<UiDashBoard
-					onSelection={(react: Partial<ILayoutItem>) => {
-						setLayout(react);
-						useStoreDashboardMain.setState({
-							preview: react,
-						});
-						open();
-					}}
-				>
+			<DashboardProvider store={useStoreDashboardMain}>
+				<UiDashBoard>
 					<div
 						key="labels.current.balance"
 						data-grid={{
@@ -320,34 +305,14 @@ export const MainPage = () => {
 						/>
 					</div>
 				</UiDashBoard>
-			</WidgetsProvider>
-			<Modal
-				title="Настройка виджета"
-				opened={opened}
-				keepMounted={false}
-				onClose={() => {
-					storeDashboardMain.clear();
-					close();
-				}}
-			>
-				{opened && (
-					<WidgetForm
-						id={storeDashboardMain.id}
-						store={useStoreDashboardMain}
-						onSave={() => {
-							storeDashboardMain.clear();
-							close();
-						}}
-						layout={layout}
-					/>
-				)}
-			</Modal>
-			<Template.Footer>
-				<Group>
-					<BtnClear store={useStoreDashboardMain} />
-					<BtnEditMode store={useStoreDashboardMain} />
-				</Group>
-			</Template.Footer>
+				<ModalForm dashboard={storeDashboardMain} />
+				<Template.Footer>
+					<Group>
+						<BtnClear dashboard={storeDashboardMain} />
+						<BtnEditMode dashboard={storeDashboardMain} />
+					</Group>
+				</Template.Footer>
+			</DashboardProvider>
 		</Paper>
 	);
 };

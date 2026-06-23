@@ -6,7 +6,7 @@ interface DbMiddlewareOptions<T> {
 	// Функция сохранения (state -> Promise или void)
 	save: (key: string, state: T) => Promise<void> | void;
 	// Функция загрузки (возвращает загруженное состояние или его часть)
-	load?: (key: string) => Promise<Partial<T> | T>;
+	load?: (key: string) => Promise<Partial<T> | T | undefined | void>;
 	// Задержка перед сохранением (мс), для снижения частоты запросов
 	delay?: number;
 	// Колбэк ошибок (по умолчанию console.error)

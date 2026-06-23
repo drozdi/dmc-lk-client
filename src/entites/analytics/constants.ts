@@ -1,3 +1,10 @@
+export const ANALYTICS_QUERY_STALE_TIME = 120_000;
+export const ANALYTICS_QUERY_GC_TIME = 300_000;
+
+export const ANALYTICS_EMPTY_TITLE = "Данные не найдены";
+export const ANALYTICS_EMPTY_HINT =
+	"Попробуйте изменить период, шаг или фильтры.";
+
 export const mapStep: Record<string, string> = {
 	s: "секунда",
 	m: "минута",
