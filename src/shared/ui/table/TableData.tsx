@@ -1,21 +1,36 @@
 import { useBreakpoint } from '@/shared/hooks';
 import { Card, Group, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useMounted } from '@mantine/hooks';
-import { Children, useCallback, useEffect, useMemo, useState } from "react";
+import { Children, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loading } from '../loading';
 import { TableDataProvider } from './context/TableDataContext';
 import { useColumnHidden, useColumnOrder, useColumnSort, useNodeSelect } from './hooks';
 import type { ColumnEntity, DataColumnProps, TableDataProps, TableNode, TableStorage } from './type';
 import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePagination } from "./ui";
 import { TableError } from './ui/TableError';
-import { calculateColspan, calculateIsColumns, convertNodes, groupBy, limitBy, sortBy } from './utils';
+import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByKeys, limitBy, purgeRemovedColumnStorage, sortByRules } from './utils';
+import type { ExpandKind, TableExpandablesState, TableExpandsState } from './type';
 
 function genStorage(storageKey: string): TableStorage {
+	const prefix = `${storageKey}.`;
+
 	function keyStorage(key: string): string {
-		return `${storageKey}.${key}`;
+		return `${prefix}${key}`;
 	}
+
 	return {
-		clear() {},
+		clear() {
+			const keysToRemove: string[] = [];
+			for (let i = 0; i < localStorage.length; i++) {
+				const key = localStorage.key(i);
+				if (key?.startsWith(prefix)) {
+					keysToRemove.push(key);
+				}
+			}
+			for (const key of keysToRemove) {
+				localStorage.removeItem(key);
+			}
+		},
 		setItem(key, value) {
 			localStorage.setItem(keyStorage(key), JSON.stringify(value));
 		},
@@ -62,8 +77,11 @@ export function TableData<T = object>({
 	withHeader = true,
 	withPagination = true,
 	groupAt = 'start',
+	groupKeys: initialGroupKeys,
 	sortKey,
 	sortDesc = false,
+	multiSort = false,
+	sortRules: initialSortRules,
 
 	////////
 
@@ -124,7 +142,8 @@ export function TableData<T = object>({
 		align: 'center',
 	};
 	const mounted = useMounted();
-	const breakpoint = !!initialBreakpoint && useBreakpoint(initialBreakpoint);
+	const matchesBreakpoint = useBreakpoint(initialBreakpoint ?? 'xs');
+	const breakpoint = !!initialBreakpoint && matchesBreakpoint;
 	const fetcher = typeof initialData === 'function';
 	const storage = useMemo<TableStorage | undefined>(() => {
 		if (!initialStorage) {
@@ -157,7 +176,10 @@ export function TableData<T = object>({
 
 	const [error, setError] = useState<React.ReactNode>(initialError);
 	const [isLoading, setLoading] = useState<boolean>(false);
-	const [expands, setExpands] = useState<TableNode<T>['index'][]>([]);
+	const [expands, setExpands] = useState<TableExpandsState<T>>({
+		group: [],
+		grouped: [],
+	});
 
 	const [editableMeta, setEditableMeta] = useState<{
 		columns: ColumnEntity<T>['field'][];
@@ -206,21 +228,32 @@ export function TableData<T = object>({
 			return col;
 		}
 
-		const ret: ColumnEntity<T>[] = [selectColumn];
+		const ret: ColumnEntity<T>[] = initialSelectable ? [selectColumn] : [];
 
 		Children.forEach(children, (child: any) => {
 			child?.props && ret.push(calculateColumn(child.props));
 		});
 
 		return ret;
-	}, [initialColumns, children]);
+	}, [initialColumns, children, initialSelectable]);
 
-	const fields = useMemo(() => columnsRaw.map((column) => column.field), [columnsRaw]);
+	const columnFields = useMemo(() => getColumnFields(columnsRaw), [columnsRaw]);
 
-	const { sort, changeSort } = useColumnSort(columnsRaw, storage, sortKey, sortDesc)
-	const { columnOrder, setColumnOrder, sortColumn, setInternalColumnOrder } =
-		useColumnOrder(columnsRaw, storage, initialColumnOrder, onInitialColumnOrder);
-	const { hiddenColumns, toggleColumn, setInternalHiddenColumns } = useColumnHidden(
+	const { sort, changeSort } = useColumnSort(
+		columnsRaw,
+		storage,
+		sortKey,
+		sortDesc,
+		multiSort,
+		initialSortRules,
+	);
+	const { columnOrder, setColumnOrder, sortColumn } = useColumnOrder(
+		columnsRaw,
+		storage,
+		initialColumnOrder,
+		onInitialColumnOrder,
+	);
+	const { hiddenColumns, toggleColumn } = useColumnHidden(
 		columnsRaw,
 		storage,
 		initialHiddenColumns,
@@ -292,24 +325,35 @@ export function TableData<T = object>({
 	);
 
 	const toggleExpand = useCallback(
-		(index: TableNode<T>['index'] | TableNode<T>['index'][]) => {
-			if (initialMultiple) {
-				if (Array.isArray(index)) {
-					setExpands(index);
-				} else {
-					setExpands((v) => {
-						if (v.includes(index)) {
-							return v.filter((v) => v !== index);
-						} else {
-							return [...v, index];
-						}
-					});
-				}
-			} else {
-				setExpands((v) => (v[0] === index?.[0] || index ? [] : [index?.[0] || index]));
-			}
+		(
+			index: TableNode<T>['index'] | TableNode<T>['index'][],
+			kind: ExpandKind,
+		) => {
+			setExpands((prev) => {
+				const updateKind = (current: TableNode<T>['index'][]) => {
+					if (Array.isArray(index)) {
+						return index;
+					}
+					if (initialMultiple) {
+						return current.includes(index)
+							? current.filter((item) => item !== index)
+							: [...current, index];
+					}
+					return current.includes(index) ? [] : [index];
+				};
+
+				return {
+					...prev,
+					[kind]: updateKind(prev[kind]),
+				};
+			});
 		},
 		[initialMultiple],
+	);
+
+	const isExpanded = useCallback(
+		(index: TableNode<T>['index'], kind: ExpandKind) => expands[kind].includes(index),
+		[expands],
 	);
 
 	const render = useCallback<
@@ -341,20 +385,26 @@ export function TableData<T = object>({
 		[Layout, withHeader, breakpoint, props, level],
 	);
 
+	const columnFieldsKey = columnFields.join('|');
+	const prevColumnFieldsKeyRef = useRef(columnFieldsKey);
 	useEffect(() => {
-		setInternalColumnOrder((prev) => {
-			const newColumnOrder = [...new Set(prev).intersection(new Set(fields))];
-			setColumnOrder(newColumnOrder);
-			return newColumnOrder;
-		});
-		if (storage) {
-			setInternalHiddenColumns((prev) => {
-				const newHidden = [...new Set(prev).intersection(new Set(fields))];
-				storage?.setItem('columns.hidden', newHidden);
-				return newHidden as (keyof T)[];
+		if (prevColumnFieldsKeyRef.current === columnFieldsKey) {
+			return;
+		}
+		const prevFields = prevColumnFieldsKeyRef.current.split('|').filter(Boolean) as (keyof T)[];
+		const removedFields = prevFields.filter((field) => !columnFields.includes(field));
+		if (storage && removedFields.length && !initialColumnWidth) {
+			purgeRemovedColumnStorage(storage, removedFields);
+			setInternalWidths((prev) => {
+				const next = { ...prev };
+				for (const field of removedFields) {
+					delete next[field];
+				}
+				return next;
 			});
 		}
-	}, [storage, columnsRaw]);
+		prevColumnFieldsKeyRef.current = columnFieldsKey;
+	}, [columnFieldsKey, columnFields, storage, initialColumnWidth]);
 
 	const columns = useMemo(() => {
 		const grouped = columnsRaw.filter(
@@ -384,14 +434,14 @@ export function TableData<T = object>({
 		return columns.filter((col) => !hiddenColumns.includes(col.field as keyof T));
 	}, [columns, hiddenColumns]);
 
-	const groupKey = useMemo<ColumnEntity<T>['field'] | undefined>(() => {
-		for (const column of columns) {
-			if (column.isGrouped) {
-				return column.field;
-			}
+	const groupKeys = useMemo<(keyof T)[]>(() => {
+		if (initialGroupKeys?.length) {
+			return initialGroupKeys;
 		}
-		return undefined;
-	}, [columns]);
+		return columnsRaw
+			.filter((column) => column.isGrouped && column.field)
+			.map((column) => column.field as keyof T);
+	}, [initialGroupKeys, columnsRaw]);
 
 	const rowspan = useMemo(() => {
 		let max = 0;
@@ -465,7 +515,11 @@ export function TableData<T = object>({
 					return prevData;
 				}
 				const newData = [...prevData];
-				newData[idx] = { ...newData[idx], [field]: value };
+				const item = newData[idx];
+				if (!item) {
+					return prevData;
+				}
+				newData[idx] = { ...item, [field]: value };
 				return newData;
 			});
 		},
@@ -476,8 +530,9 @@ export function TableData<T = object>({
 		(index: TableNode<T>['index']) => {
 			// Берём актуальный элемент из состояния data (не из node.data!)
 			const idx = data.findIndex((_, i) => i.toString() === index.toString());
-			if (idx !== -1) {
-				onRowEditComplete?.(data[idx], index);
+			const item = data[idx];
+			if (item !== undefined) {
+				onRowEditComplete?.(item, index);
 			}
 			clearModeChange(); // выходим из режима редактирования
 		},
@@ -514,32 +569,48 @@ export function TableData<T = object>({
 	);
 
 	const nodes: TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
-		let nodes: TableNode<T>[] = convertNodes(data);
-		if (groupKey) {
-			nodes = groupBy<T>(nodes, groupKey as keyof T);
+		let nextNodes: TableNode<T>[] = convertNodes(data);
+		if (groupKeys.length) {
+			nextNodes = groupByKeys<T>(nextNodes, groupKeys);
 		}
-
-		setTotal(initialProps || nodes?.length);
 
 		if (!fetcher && limit > 0) {
-			nodes = limitBy(nodes, limit, page);
+			nextNodes = limitBy(nextNodes, limit, page);
 		}
-		if (sort.key) {
-			nodes = sortBy(nodes, sort.key, sort.descending);
+		if (sort.rules.length) {
+			nextNodes = sortByRules(nextNodes, sort.rules);
 		}
-		return nodes;
-	}, [data, sort, groupKey, limit, page, initialProps, fetcher]);
+		return nextNodes;
+	}, [data, sort.rules, groupKeys, limit, page, fetcher]);
 
-	const expandables = useMemo<TableNode<T>['index'][]>(() => {
-		const column = columns.find((col) => col.isGroup);
-		if (!column || !column.field) {
-			return [];
+	useEffect(() => {
+		if (initialProps !== undefined) {
+			setTotal(initialProps);
+			return;
 		}
-		return nodes
-			.filter((node) => node?.data?.[column.field as keyof T]?.length)
-			.map((node) => node.index);
+		setTotal(data.length);
+	}, [initialProps, data.length]);
+
+	const expandables = useMemo<TableExpandablesState<T>>(() => {
+		const groupColumn = columns.find((col) => col.isGroup);
+		const groupedColumn = columns.find((col) => col.isGrouped);
+
+		const group =
+			groupColumn?.field
+				? nodes
+						.filter((node) => {
+							const value = node.data[groupColumn.field as keyof T];
+							return Array.isArray(value) && value.length > 0;
+						})
+						.map((node) => node.index)
+				: [];
+
+		const grouped = groupedColumn
+			? nodes.filter((node) => node.nodes?.length).map((node) => node.index)
+			: [];
+
+		return { group, grouped };
 	}, [nodes, columns]);
-	//
 
 	const handlerNext = function () {
 		if (fetcher) {
@@ -562,9 +633,12 @@ export function TableData<T = object>({
 	);
 
 	useEffect(() => {
+		if (!fetcher) {
+			return;
+		}
 		setHistory([]);
 		fetch(page);
-	}, [fetch, page]);
+	}, [fetch, page, fetcher]);
 
 	useEffect(() => {
 		setLimit(initialLimit);
@@ -583,7 +657,7 @@ export function TableData<T = object>({
 		useNodeSelect(nodes, storage, initialSelectedRows, onInitialSelectedRowsChange);
 
 	return (
-		<TableDataProvider<T>
+		<TableDataProvider
 			value={useMemo(
 				() => ({
 					selectedRows,
@@ -607,12 +681,14 @@ export function TableData<T = object>({
 					props,
 					sort,
 					changeSort,
+					multiSort,
 					breakpoint,
 					editorMode,
 					handleModeChange,
 					clearModeChange,
 					commitEdit,
 					expands,
+					isExpanded,
 					toggleExpand,
 					groupAt,
 					colspan,
@@ -625,17 +701,25 @@ export function TableData<T = object>({
 					storage,
 				}),
 				[
+					selectedRows,
+					toggleRow,
+					selectAll,
+					isRowSelected,
+					someSelected,
+					allSelected,
 					hiddenColumns,
 					toggleColumn,
 					props,
 					sort,
 					changeSort,
+					multiSort,
 					breakpoint,
 					editorMode,
 					handleModeChange,
 					clearModeChange,
 					commitEdit,
 					expands,
+					isExpanded,
 					toggleExpand,
 					groupAt,
 					colspan,
@@ -655,9 +739,11 @@ export function TableData<T = object>({
 		>
 			<Stack mih={minHeight} gap="md">
 				<Loading active={loading} keepMounted mih={minHeight}>
-					{render(nodes, columns, visibleColumns)}
 					{error && <TableError>{error}</TableError>}
-					{!error && !nodes?.length && <TableEmpty text={noDataText} />}
+					{!error &&
+						(nodes.length
+							? render(nodes, columns, visibleColumns)
+							: <TableEmpty text={noDataText} />)}
 				</Loading>
 				{withPagination && (
 					<Pagination

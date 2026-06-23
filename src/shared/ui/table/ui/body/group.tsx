@@ -8,10 +8,10 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 	if (!column.isGroup || !node.data[column.field as keyof T]) {
 		return null;
 	}
-	const { props, expands, colspan, groupAt, columnWidths, resizeColumn, columnOrder, onColumnOrder } =
+	const { props, isExpanded, colspan, groupAt, columnWidths, resizeColumn, columnOrder, onColumnOrder } =
 		useTableDataContext<T>();
 
-	const isExpand = expands.includes(node.index);
+	const isExpand = isExpanded(node.index, 'group');
 
 	let isRendered = false;
 	

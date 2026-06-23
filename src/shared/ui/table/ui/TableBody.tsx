@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useTableDataContext } from '../context';
 import { type ColumnEntity } from "../DataColumn";
-import { type TableNode } from "../TableData";
-import { TableBodyRow } from "./TableBodyRow";
+import { type TableNode } from '../type';
+import { TableBodyRow } from "./body/row";
 
 export interface TableBodyProps<T = object> {
 	nodes: TableNode<T>[];

@@ -1,6 +1,14 @@
 import { type TableProps } from '@mantine/core';
 import { createSafeContext } from "../../../internal/utils/create-safe-context";
-import type { ColumnEntity, TableDataProps, TableNode } from "../type";
+import type {
+	ColumnEntity,
+	ExpandKind,
+	TableDataProps,
+	TableExpandablesState,
+	TableExpandsState,
+	TableNode,
+	TableSortState
+} from "../type";
 
 export interface TableDataContext<T = object> {
 	breakpoint: boolean;
@@ -9,16 +17,18 @@ export interface TableDataContext<T = object> {
 	colspan: number;
 	rowspan: number;
 	editMode: TableDataProps<T>['editMode'];
+	multiSort: boolean;
 
-	changeSort: (field: keyof T) => void;
-	sort: {
-		key?: keyof T | undefined;
-		descending: boolean;
-	};
+	changeSort: (field: keyof T, options?: { multi?: boolean }) => void;
+	sort: TableSortState<T>;
 
-	expandables: TableNode<T>['index'][];
-	toggleExpand: (index: TableNode<T>['index'] | TableNode<T>['index'][]) => void;
-	expands: TableNode<T>['index'][];
+	expandables: TableExpandablesState<T>;
+	isExpanded: (index: TableNode<T>['index'], kind: ExpandKind) => boolean;
+	toggleExpand: (
+		index: TableNode<T>['index'] | TableNode<T>['index'][],
+		kind: ExpandKind,
+	) => void;
+	expands: TableExpandsState<T>;
 
 	columnWidths?: Record<keyof T, number>;
 	resizeColumn: (column: ColumnEntity<T>, width: number, nextWidth: number) => void;

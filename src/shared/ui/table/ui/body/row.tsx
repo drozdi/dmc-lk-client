@@ -12,6 +12,6 @@ export function TableBodyRow<T = object>({ node, columns, level = 0, group, grou
 			})}
 		</Table.Tr>
 		{grouped && <TableBodyGrouped node={node} columns={columns} column={grouped} level={level + 1} />}
-		{!grouped && group && <TableBodyGroup node={node} columns={columns} column={group} level={level + 1} />}
+		{group && <TableBodyGroup node={node} columns={columns} column={group} level={level + 1} />}
 	</>
 }

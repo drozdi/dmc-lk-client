@@ -1,6 +1,30 @@
 import { type TableProps } from '@mantine/core';
 import type { TablePaginationProps } from './ui/type';
 
+/** Тип раскрытия строк: nested-таблица (group) или сгруппированные siblings (grouped). */
+export type ExpandKind = 'group' | 'grouped';
+
+export interface TableExpandsState<T = object> {
+	group: TableNode<T>['index'][];
+	grouped: TableNode<T>['index'][];
+}
+
+export interface TableExpandablesState<T = object> {
+	group: TableNode<T>['index'][];
+	grouped: TableNode<T>['index'][];
+}
+
+export interface SortRule<T = object> {
+	key: keyof T;
+	descending: boolean;
+}
+
+export interface TableSortState<T = object> {
+	rules: SortRule<T>[];
+	/** Первое правило — для обратной совместимости с одиночной сортировкой. */
+	key?: keyof T;
+	descending: boolean;
+}
 
 export interface TableNode<T = object> {
 	data: T;
@@ -47,8 +71,13 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	withHeader?: boolean;
 	withPagination?: boolean;
 	groupAt?: 'start' | 'end';
+	/** Явный список ключей группировки (порядок = уровни вложенности). */
+	groupKeys?: (keyof T)[];
 	sortKey?: keyof T;
 	sortDesc?: boolean;
+	/** Мульти-сортировка: Shift+клик или повторный клик добавляет правило. */
+	multiSort?: boolean;
+	sortRules?: SortRule<T>[];
 
 	children?: React.ReactNode;
 	editMode?: 'row' | 'cell';
@@ -99,6 +128,12 @@ export interface DataColumnProps<T = object> {
 	ellipsis?: boolean;
 	noWrap?: boolean;
 	draggable?: boolean;
+	/**
+	 * group — поле содержит вложенный массив строк (nested TableData при раскрытии).
+	 * grouped — строки таблицы объединяются по значению поля (groupBy), siblings в node.nodes.
+	 * Можно использовать одновременно на разных колонках: grouped сворачивает строки,
+	 * group раскрывает вложенную таблицу в поле записи.
+	 */
 	group?: boolean;
 	grouped?: boolean;
 	align?: 'left' | 'right' | 'center';

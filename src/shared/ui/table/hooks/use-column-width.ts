@@ -1,11 +1,16 @@
 import { useCallback, useState } from 'react';
-import type { ColumnEntity, TableStorage } from '../types';
+import type { ColumnEntity, TableStorage } from '../type';
 
 export function useColumnWidth<T>(
 	columns: ColumnEntity<T>[],
-	storage?: TableStorage, 
+	columnOrder: (keyof T)[],
+	storage?: TableStorage,
 	initialColumnWidth?: Record<keyof T, number>,
-	onInitialColumnResize?: (column: ColumnEntity<T>, width: number, nextWidth: number) => void
+	onInitialColumnResize?: (
+		column: ColumnEntity<T>,
+		width: number,
+		nextWidth: number,
+	) => void,
 ) {
 	const [internalWidths, setInternalWidths] = useState<Partial<Record<keyof T, number>>>(
 		() => {
@@ -34,7 +39,7 @@ export function useColumnWidth<T>(
 				return;
 			}
 			setColumnWidths((prev) => {
-				const next: Record<keyof T, number> = {
+				const next: Partial<Record<keyof T, number>> = {
 					...prev,
 					[column.field as keyof T]: width,
 				};
@@ -50,8 +55,9 @@ export function useColumnWidth<T>(
 					if (nextWidth !== undefined) {
 						const idx = columnOrder.indexOf(column.field as keyof T);
 						const nextField = columnOrder[idx + 1];
-						if (nextField)
+						if (nextField) {
 							storage.setItem(`columns.${String(nextField)}.width`, nextWidth);
+						}
 					}
 				}
 				return next;
@@ -60,6 +66,7 @@ export function useColumnWidth<T>(
 		},
 		[columnOrder, storage, initialColumnWidth, onInitialColumnResize],
 	);
+
 	const getColumnWidth = useCallback(
 		(column: ColumnEntity<T>) => {
 			if (column.isGroup) {
@@ -69,5 +76,11 @@ export function useColumnWidth<T>(
 		},
 		[columnWidths],
 	);
-	return {};
+
+	return {
+		columnWidths,
+		resizeColumn,
+		getColumnWidth,
+		setInternalWidths: setColumnWidths,
+	};
 }

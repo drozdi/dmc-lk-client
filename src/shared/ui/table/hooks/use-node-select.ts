@@ -13,46 +13,64 @@ export function useNodeSelect<T = object>(
 		if (initialSelectedRows) {
 			return initialSelectedRows;
 		}
-		return storage?.getItem('nodes.selected') as TableNode<T>['index'][] | [];
+		return (storage?.getItem('nodes.selected') as TableNode<T>['index'][] | null) ?? [];
 	});
 
 	const selectedRows = initialSelectedRows ?? internalSelectedRows;
+
+	const setSelectedRows = useCallback(
+		(
+			newSelected:
+				| TableNode<T>['index'][]
+				| ((prev: TableNode<T>['index'][]) => TableNode<T>['index'][]),
+		) => {
+			if (initialSelectedRows !== undefined) {
+				const resolved =
+					typeof newSelected === 'function'
+						? newSelected(initialSelectedRows)
+						: newSelected;
+				onInitialSelectedRowsChange?.(resolved);
+				return;
+			}
+
+			setInternalSelectedRows((prev) => {
+				const resolved =
+					typeof newSelected === 'function' ? newSelected(prev) : newSelected;
+				storage?.setItem('nodes.selected', resolved);
+				onInitialSelectedRowsChange?.(resolved);
+				return resolved;
+			});
+		},
+		[initialSelectedRows, onInitialSelectedRowsChange, storage],
+	);
 
 	const isRowSelected = useCallback(
 		(index: TableNode<T>['index']) => selectedRows?.includes(index),
 		[selectedRows],
 	);
 
-	const setSelectedRows = useCallback(
-		(newSelected: TableNode<T>['index'][]) => {
-			if (initialSelectedRows) {
-				onInitialSelectedRowsChange?.(newSelected);
-			} else {
-				setInternalSelectedRows(newSelected);
-				onInitialSelectedRowsChange?.(newSelected);
-			}
-		},
-		[initialSelectedRows, onInitialSelectedRowsChange],
-	);
 	const toggleRow = useCallback(
 		(index: TableNode<T>['index']) => {
 			setSelectedRows((prev) => {
 				const idx = prev.indexOf(index);
-				if (idx === -1) return [...prev, index];
+				if (idx === -1) {
+					return [...prev, index];
+				}
 				return prev.filter((i) => i !== index);
 			});
 		},
 		[setSelectedRows],
 	);
+
 	const selectAll = useCallback(
 		(selected: boolean) => {
-			const indices = nodes.map((_) => _.index);
+			const indices = nodes.map((node) => node.index);
 			setSelectedRows(selected ? indices : []);
 		},
 		[nodes, setSelectedRows],
 	);
-	
-	const someSelected = selectedRows?.length && selectedRows.length < nodes.length;
+
+	const someSelected = !!(selectedRows?.length && selectedRows.length < nodes.length);
 	const allSelected = nodes.length > 0 && selectedRows?.length === nodes.length;
 
 	return {

@@ -20,7 +20,7 @@ export function TableHeaderCell<T = object>({
 	if (column.isSelecting) {
 		return <TableHeaderCellSelector column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}
-	if (column.isGroup) {
+	if (column.isGroup || column.isGrouped) {
 		return <TableHeaderCellGroup<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}
 	const justifyContent =

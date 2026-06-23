@@ -14,20 +14,21 @@ export function TableHeaderCellSorter<T = object>({
 	if (!column.isSorted || !column.field) {
 		return null;
 	}
-	const { sort, changeSort } = useTableDataContext<T>();
+	const { sort, changeSort, multiSort } = useTableDataContext<T>();
 
-	const isSorted = sort.key === column.field;
-	const isDescending = sort.descending;
+	const ruleIndex = sort.rules.findIndex((rule) => rule.key === column.field);
+	const isSorted = ruleIndex !== -1;
+	const isDescending = isSorted ? sort.rules[ruleIndex].descending : sort.descending;
 
 	const ariaLabel = isSorted
-		? `Отсортировано ${isDescending ? 'по убыванию' : 'по возрастанию'}`
-		: 'Нажмите для сортировки'; // <-- Улучшение: призыв к действию
+		? `Отсортировано ${isDescending ? 'по убыванию' : 'по возрастанию'}${multiSort && sort.rules.length > 1 ? ` (приоритет ${ruleIndex + 1})` : ''}`
+		: 'Нажмите для сортировки';
 
 	const handleClick = (event: React.MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
 		if (column.field) {
-			changeSort(column.field as keyof T);
+			changeSort(column.field as keyof T, { multi: event.shiftKey || multiSort });
 		}
 	};
 

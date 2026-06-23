@@ -4,19 +4,28 @@ import {
 	TbCircleChevronRight
 } from 'react-icons/tb';
 import { useTableDataContext } from '../../context/TableDataContext';
+import type { ExpandKind } from '../../type';
 import type { TableHeaderCellExpanderProps } from '../type';
+
+function resolveExpandKind<T>(column: TableHeaderCellExpanderProps<T>['column']): ExpandKind {
+	return column.isGroup ? 'group' : 'grouped';
+}
 
 export function TableHeaderCellExpander<T = object>({
 	column,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
 	const { expands, toggleExpand, groupAt, expandables } = useTableDataContext<T>();
-	const isExpandable = Array.isArray(expandables) && expandables.length > 0;
+	const kind = resolveExpandKind(column);
+	const kindExpandables = expandables[kind];
+	const kindExpands = expands[kind];
+
+	const isExpandable = kindExpandables.length > 0;
 	if (!isExpandable) {
 		return null;
 	}
-	
-	const isExpand = isExpandable && expands.length === expandables.length;
+
+	const isExpand = kindExpands.length === kindExpandables.length;
 	const ariaLabel = isExpand ? 'Свернуть все группы' : 'Развернуть все группы';
 	const rotateAngle = isExpand ? groupAt === 'end' ? '-90deg' : '90deg' : undefined;
 
@@ -32,14 +41,7 @@ export function TableHeaderCellExpander<T = object>({
 				rotate: rotateAngle,
 			}}
 			onClick={() => {
-				if (!isExpandable) {
-					return;
-				}
-				if (isExpand) {
-					toggleExpand([]);
-				} else {
-					toggleExpand(expandables);
-				}
+				toggleExpand(isExpand ? [] : kindExpandables, kind);
 			}}
 		>
 			{groupAt === 'end' ? <TbCircleChevronLeft /> : <TbCircleChevronRight />}
