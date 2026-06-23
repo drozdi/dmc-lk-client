@@ -5,8 +5,9 @@ import {
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { LegendContentPie, TooltipContentPie } from "@/shared/ui";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
 import { AspectRatio } from "@mantine/core";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const ee = useEnumsEvents();
@@ -15,16 +16,18 @@ export interface AnalyticPieProps {
 	filterdate: IRequestAnalytics["filterdate"];
 	events?: AnalyticEvent[];
 	percent?: boolean;
+	onLoading?: (loading: boolean) => void;
 }
 
 export const AnalyticPie = memo(function AnalyticPie({
 	filterdate,
 	events = ["v", "d", "i"],
 	percent,
+	onLoading,
 }: AnalyticPieProps) {
 	const productions = useStoreUserProfile((state) => state.productions);
 
-	const { data, query } = useFetchAnalyticsEvents(
+	const { data, query, isLoading, isFetching } = useFetchAnalyticsEvents(
 		{
 			filterdate,
 			production_id: productions,
@@ -80,12 +83,20 @@ export const AnalyticPie = memo(function AnalyticPie({
 		[ddata],
 	);
 
+	const showSkeleton = (isLoading || isFetching) && !Object.keys(data).length;
+
+	useEffect(() => {
+		onLoading?.(isLoading || isFetching);
+	}, [isLoading, isFetching, onLoading]);
+
 	const formatter = (value: number) =>
 		percent ? `${Math.round((value / total) * 100)}%` : value;
 
 	return (
 		<AspectRatio ratio={16 / 9} h="100%">
-			{isEmpty ? (
+			{showSkeleton ? (
+				<ChartSkeleton height="100%" mih={180} />
+			) : isEmpty ? (
 				<AnalyticsEmpty query={query} />
 			) : (
 				<ResponsiveContainer>

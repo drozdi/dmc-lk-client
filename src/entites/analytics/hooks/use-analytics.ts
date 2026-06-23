@@ -1,5 +1,4 @@
 import { useQueryAnalytics } from "@/entites/analytics";
-import { isAnalyticsQueryReady } from "@/entites/analytics/utils/analytics-query";
 import { deepEqual } from "@/shared/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { corectQuery } from "../utils";
@@ -43,17 +42,11 @@ export function useAnalytics(
 	]);
 
 	useEffect(() => {
-		if (!isAnalyticsQueryReady(query)) {
-			return;
-		}
-
-		res.fetch(query);
-
 		if (!deepEqual(query, oldQuery.current)) {
 			oldQuery.current = query;
 			onChange?.(query);
 		}
-	}, [query]);
+	}, [query, onChange]);
 
 	return {
 		...res,

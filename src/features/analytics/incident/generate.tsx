@@ -202,7 +202,7 @@ export const IncidentGenerate = ({
 									onChange={(val) => handleAddField(val as string)}
 								/>
 							</HoverCard.Dropdown>
-						</HoverCard>} body={() => <></>} />
+						</HoverCard>} body={() => <></>} align='right' width={36} />
 					</TableData>
 				) : (
 					<IncidentEmpty filterdate={filterdate} />

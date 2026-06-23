@@ -1,4 +1,4 @@
-import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow } from "@/entites/analytics";
 import {
 	AnalyticPie,
 	type AnalyticPieProps,
@@ -15,8 +15,6 @@ export const WidgetAnalyticPie = memo(
 		percent,
 		...props
 	}: WidgetAnalyticPieProps) => {
-		const { isLoading, error } = useQueryAnalytics();
-
 		const [query, setQuery] = useState<Partial<IRequestAnalytics>>({
 			filterdate,
 			step: "mon",
@@ -28,8 +26,6 @@ export const WidgetAnalyticPie = memo(
 
 		return (
 			<Widget
-				error={error}
-				loading={isLoading}
 				{...props}
 				title='Сводная по событиям'
 				subTitle={

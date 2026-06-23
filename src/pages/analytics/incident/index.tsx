@@ -18,8 +18,10 @@ import { useSearchParams } from "react-router-dom";
 export function AnalyticsIncidentPage() {
 	const [searchParams] = useSearchParams();
 
-	const fromDay = dayjs(searchParams.get("from") || dayjs().day(dayjs().day() - 7));
-	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
+	const fromDay = dayjs(
+		searchParams.get("from") || dayjs().subtract(7, "day"),
+	);
+	const toDay = dayjs(searchParams.get("to") || dayjs());
 	const initialDataFilters = useMemo(
 		() => searchParams.getAll("data").filter(Boolean),
 		[searchParams],
@@ -56,19 +58,19 @@ export function AnalyticsIncidentPage() {
 
 	const handleYesterday = () => {
 		setFilterdate([
-			dayjs().day(-1).format("YYYY-MM-DD"),
+			dayjs().subtract(1, "day").format("YYYY-MM-DD"),
 			dayjs().format("YYYY-MM-DD"),
 		]);
 	};
 	const handleWeek = () => {
 		setFilterdate([
-			dayjs().day(-7).format("YYYY-MM-DD"),
+			dayjs().subtract(7, "day").format("YYYY-MM-DD"),
 			dayjs().format("YYYY-MM-DD"),
 		]);
 	};
 	const handleMonth = () => {
 		const filterdate: [DateValue, DateValue] = [
-			dayjs().day(-28).format("YYYY-MM-DD"),
+			dayjs().subtract(28, "day").format("YYYY-MM-DD"),
 			dayjs().format("YYYY-MM-DD"),
 		];
 		setFilterdate(filterdate);

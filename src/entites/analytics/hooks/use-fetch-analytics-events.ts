@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import {
 	fetchAnalyticsEvents,
-	isAnalyticsQueryReady,
+	isAnalyticsBaseQueryReady,
 } from "../utils/analytics-query";
 import { corectQuery } from "../utils/query";
 
@@ -37,7 +37,7 @@ export function useFetchAnalyticsEvents(
 	]);
 
 	useEffect(() => {
-		if (!isAnalyticsQueryReady(query) || !events.length) {
+		if (!isAnalyticsBaseQueryReady(query) || !events.length) {
 			return;
 		}
 
@@ -64,6 +64,7 @@ export function useFetchAnalyticsEvents(
 	return {
 		data,
 		isLoading,
+		isFetching: isLoading,
 		query,
 		setQuery,
 	};

@@ -1,11 +1,11 @@
 import {
 	AnalyticsEmpty,
-	QueryShow,
 	useEnumsEvents,
 	useFetchAnalyticsEvents,
 	useFilterdateStep,
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
 import { Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useEffect, useMemo } from "react";
@@ -27,6 +27,7 @@ export interface AnalyticEventsProps {
 	stop?: SliceStep;
 	onClick?: (arg: MouseHandlerDataParam, e: React.MouseEvent) => void;
 	onLoaded?: (data: any) => void;
+	onLoading?: (loading: boolean) => void;
 }
 
 const ee = useEnumsEvents();
@@ -44,10 +45,11 @@ export const AnalyticEvents = memo(function AnalyticEvents({
 	percent = ["d"],
 	onClick,
 	onLoaded,
+	onLoading,
 }: AnalyticEventsProps) {
 	const production_id = useStoreUserProfile((state) => state.productions);
 
-	const { data, query } = useFetchAnalyticsEvents(
+	const { data, query, isLoading, isFetching } = useFetchAnalyticsEvents(
 		{
 			filterdate,
 			step,
@@ -127,13 +129,21 @@ export const AnalyticEvents = memo(function AnalyticEvents({
 		onClick?.(arg, e);
 	};
 
+	const showSkeleton = (isLoading || isFetching) && !Object.keys(data).length;
+
+	useEffect(() => {
+		onLoading?.(isLoading || isFetching);
+	}, [isLoading, isFetching, onLoading]);
+
 	useEffect(() => {
 		onLoaded?.(dddata);
 	}, [onLoaded, dddata]);
 
 	return (
 		<Stack h="100%">
-			{isEmpty ? (
+			{showSkeleton ? (
+				<ChartSkeleton height="100%" mih={180} />
+			) : isEmpty ? (
 				<AnalyticsEmpty query={query} />
 			) : type === "table" ? (
 				<EventsTable

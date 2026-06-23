@@ -1,4 +1,4 @@
-import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
+import { QueryShow } from "@/entites/analytics";
 import { useWidgetParams } from "@/entites/dashboard";
 import {
 	AnalyticEvents,
@@ -29,7 +29,6 @@ export const WidgetAnalyticEvents = ({
 		filterdate,
 		step,
 	});
-	const { isLoading, error } = useQueryAnalytics(query);
 	const [type, setType] = useState(typeProp);
   const [_, update] = useWidgetParams()
 	const formatedData = useRef<any[]>([])
@@ -62,8 +61,6 @@ export const WidgetAnalyticEvents = ({
 
 	return (
 		<Widget
-			loading={isLoading}
-			error={error}
 			{...props}
 			title='Сводный расход по событиям'
 			subTitle={<>За <QueryShow {...query} /></>}
