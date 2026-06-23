@@ -10,13 +10,16 @@ export function TableHeaderToggling<T = object>({ columns }: TableHeaderToggling
 	const { hiddenColumns, toggleColumn } = useTableDataContext<T>();
 	return (
 		<Stack>
-			{columns.filter(column => column.isToggleable).map((column) => (
+			{columns.filter((column) => column.isToggleable).map((column) => (
 				<Checkbox
 					key={column.field as string}
 					value={column.field as string}
 					label={<TableHeaderCellSlot column={column} />}
 					checked={!hiddenColumns.includes(column.field as keyof T)}
-					onChange={(event) => toggleColumn(column, event.currentTarget.checked)}
+					onChange={(event) => {
+						const isVisible = event.currentTarget.checked;
+						toggleColumn(column, !isVisible);
+					}}
 				/>
 			))}
 		</Stack>

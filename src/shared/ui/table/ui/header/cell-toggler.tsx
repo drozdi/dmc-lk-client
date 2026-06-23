@@ -22,13 +22,13 @@ export function TableHeaderCellToggler<T = object>({
 			event.stopPropagation();
 			if (
 				typeof column.toggleable === 'function' &&
-				false !== column.toggleable(column)
+				column.toggleable(column) === false
 			) {
-				return
+				return;
 			}
 			toggleColumn(column);
 		},
-		[column],
+		[column, toggleColumn],
 	);
 
 	return (

@@ -38,27 +38,35 @@ export function useColumnHidden<T = object>(
 
 	const toggleColumn = useCallback(
 		(column: ColumnEntity<T>, hidden?: boolean) => {
-			if (!column.isToggleable) {
+			if (!column.isToggleable || !column.field) {
+				return;
+			}
+
+			const field = column.field as keyof T;
+
+			const resolveHidden = (prev: (keyof T)[]) => {
+				if (hidden !== undefined) {
+					return hidden
+						? prev.includes(field)
+							? prev
+							: [...prev, field]
+						: prev.filter((f) => f !== field);
+				}
+				return prev.includes(field) ? prev.filter((f) => f !== field) : [...prev, field];
+			};
+
+			if (initialHiddenColumns !== undefined) {
+				const newHidden = resolveHidden(initialHiddenColumns);
+				onInitialHiddenColumns?.(column, newHidden.includes(field));
 				return;
 			}
 
 			setInternalHiddenColumns((prev) => {
-				const field = column.field as keyof T;
-				let newHidden: (keyof T)[];
-				if (hidden !== undefined) {
-					newHidden = hidden
-						? [...prev, field].filter((f, i, arr) => arr.indexOf(f) === i)
-						: prev.filter((f) => f !== field);
-				} else {
-					newHidden = prev.includes(field)
-						? prev.filter((f) => f !== field)
-						: [...prev, field];
-				}
-
-				if (storage && !initialHiddenColumns) {
+				const newHidden = resolveHidden(prev);
+				if (storage) {
 					storage.setItem('columns.hidden', newHidden);
 				}
-				onInitialHiddenColumns?.(column, hidden);
+				onInitialHiddenColumns?.(column, newHidden.includes(field));
 				return newHidden;
 			});
 		},

@@ -1,4 +1,3 @@
-import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData, TableRowActionsPanel } from '@/shared/ui/table';
 import type { ColumnEntity, TableBulkAction, TableRowAction, TableRowActionsPanelProps } from '@/shared/ui/table/type';
 import { Badge, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
@@ -242,6 +241,527 @@ const elements: SS[] = [
 	},
 ];
 
+interface SSS {
+	position: number;
+	mass: number;
+	symbol: string;
+	name: string;
+	grouped?: string;
+	group?:
+		| SS[]
+		| ((input?: { limit: number; page: string | number }) => Promise<{
+				data: SS[];
+				next: string | number;
+				total?: number;
+				pages?: number;
+		  }>);
+}
+const elementsS: SSS[] = [
+	{
+		position: 6,
+		mass: 12.011,
+		symbol: 'C',
+		name: 'Carbon',
+		grouped: '1',
+		// group: [
+		// 	{
+		// 		position: 8,
+		// 		mass: 12.011,
+		// 		symbol: "C",
+		// 		name: "Carbon",
+		// 	},
+		// 	{
+		// 		position: 7,
+		// 		mass: 14.007,
+		// 		symbol: "N",
+		// 		name: "Nitrogen",
+		// 	},
+		// 	{
+		// 		position: 39,
+		// 		mass: 88.906,
+		// 		symbol: "Y",
+		// 		name: "Yttrium",
+		// 	},
+		// 	{
+		// 		position: 56,
+		// 		mass: 137.33,
+		// 		symbol: "Ba",
+		// 		name: "Barium",
+		// 	},
+		// ],
+		group: async () => {
+			return {
+				data: [
+					{
+						position: 8,
+						mass: 12.011,
+						symbol: 'C',
+						name: 'Carbon',
+					},
+					{
+						position: 7,
+						mass: 14.007,
+						symbol: 'N',
+						name: 'Nitrogen',
+					},
+					{
+						position: 39,
+						mass: 88.906,
+						symbol: 'Y',
+						name: 'Yttrium',
+					},
+					{
+						position: 56,
+						mass: 137.33,
+						symbol: 'Ba',
+						name: 'Barium',
+					},
+				],
+			};
+		},
+	},
+	{
+		position: 7,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+		group: [
+			{
+				position: 6,
+				mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+			},
+			{
+				position: 7,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+			},
+			{
+				position: 39,
+				mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+			},
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+			},
+		],
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 6,
+		mass: 12.011,
+		symbol: 'C',
+		name: 'Carbon',
+		grouped: '3',
+	},
+	{
+		position: 7,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '1',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '2',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '3',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '1',
+	},
+	{
+		position: 6,
+		mass: 12.011,
+		symbol: 'C',
+		name: 'Carbon',
+		grouped: '2',
+	},
+	{
+		position: 7,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '3',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '1',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '2',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '3',
+	},
+	{
+		position: 6,
+		mass: 12.011,
+		symbol: 'C',
+		name: 'Carbon',
+		grouped: '1',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+	{
+		position: 100,
+		mass: 14.007,
+		symbol: 'N',
+		name: 'Nitrogen',
+		grouped: '2',
+	},
+	{
+		position: 39,
+		mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+	},
+	{
+		position: 56,
+		mass: 137.33,
+		symbol: 'Ba',
+		name: 'Barium',
+		grouped: '1',
+	},
+	{
+		position: 58,
+		mass: 140.12,
+		symbol: 'Ce',
+		name: 'Cerium',
+		grouped: '2',
+	},
+];
+
+
 function editorCell(
 	item: SS,
 	column: ColumnEntity<SS>,
@@ -340,8 +860,9 @@ export function TablePage() {
 					<Stack gap="xs" mb="md">
 						<Title order={4}>3 уровня: region → category → status</Title>
 						<Text size="sm" c="dimmed">
-							Раскрывайте строки поэтапно: каждый уровень — вложенная таблица со
-							следующим ключом группировки. Expander — в колонке текущего уровня.
+							Раскрывайте строки поэтапно: каждый уровень — вложенная
+							таблица со следующим ключом группировки. Expander — в колонке
+							текущего уровня.
 						</Text>
 					</Stack>
 					<TableData<MultiGroupRow>
@@ -350,11 +871,32 @@ export function TablePage() {
 						storage="demo.multi-group"
 						limit={50}
 					>
-						<DataColumn<MultiGroupRow> field="region" grouped header="Регион" />
-						<DataColumn<MultiGroupRow> field="category" grouped header="Категория" />
-						<DataColumn<MultiGroupRow> field="status" grouped header="Статус" />
-						<DataColumn<MultiGroupRow> field="name" header="Название" sortable />
-						<DataColumn<MultiGroupRow> field="amount" header="Сумма" sortable align="right" />
+						<DataColumn<MultiGroupRow>
+							field="region"
+							grouped
+							header="Регион"
+						/>
+						<DataColumn<MultiGroupRow>
+							field="category"
+							grouped
+							header="Категория"
+						/>
+						<DataColumn<MultiGroupRow>
+							field="status"
+							grouped
+							header="Статус"
+						/>
+						<DataColumn<MultiGroupRow>
+							field="name"
+							header="Название"
+							sortable
+						/>
+						<DataColumn<MultiGroupRow>
+							field="amount"
+							header="Сумма"
+							sortable
+							align="right"
+						/>
 					</TableData>
 				</Tabs.Panel>
 
@@ -363,9 +905,10 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>group + grouped — разные колонки</Title>
 							<Text size="sm" c="dimmed">
-								<b>grouped</b> — строки сворачиваются по складу и зоне (поэтапное
-								раскрытие). <b>group</b> — колонка «Комплектация» раскрывает вложенную
-								таблицу из массива <code>items</code>.
+								<b>grouped</b> — строки сворачиваются по складу и зоне
+								(поэтапное раскрытие). <b>group</b> — колонка
+								«Комплектация» раскрывает вложенную таблицу из массива{' '}
+								<code>items</code>.
 							</Text>
 							<TableData<CombinedRow>
 								data={combinedData}
@@ -374,22 +917,45 @@ export function TablePage() {
 								storage="demo.group-grouped"
 								limit={50}
 							>
-								<DataColumn<CombinedRow> field="items" group header="Комплектация" />
-								<DataColumn<CombinedRow> field="warehouse" grouped header="Склад" />
-								<DataColumn<CombinedRow> field="zone" grouped header="Зона" />
-								<DataColumn<CombinedRow> field="product" header="Товар" sortable />
+								<DataColumn<CombinedRow>
+									field="items"
+									group
+									header="Комплектация"
+								/>
+								<DataColumn<CombinedRow>
+									field="warehouse"
+									grouped
+									header="Склад"
+								/>
+								<DataColumn<CombinedRow>
+									field="zone"
+									grouped
+									header="Зона"
+								/>
+								<DataColumn<CombinedRow>
+									field="product"
+									header="Товар"
+									sortable
+								/>
 								<DataColumn<CombinedRow> field="sku" header="SKU" />
-								<DataColumn<CombinedRow> field="amount" header="Сумма" sortable align="right" />
+								<DataColumn<CombinedRow>
+									field="amount"
+									header="Сумма"
+									sortable
+									align="right"
+								/>
 							</TableData>
 						</Stack>
 
 						<Stack gap="xs">
 							<Title order={4}>group + grouped — одна колонка</Title>
 							<Text size="sm" c="dimmed">
-								Колонка <code>department</code> одновременно <b>grouped</b> (сворачивает
-								строки по отделу) и <b>group</b> (раскрывает сотрудников из{' '}
-								<code>departmentItems</code>). Скалярное значение — в <code>department</code>,
-								вложенный массив — по соглашению <code>{'{field}Items'}</code> или через{' '}
+								Колонка <code>department</code> одновременно{' '}
+								<b>grouped</b> (сворачивает строки по отделу) и{' '}
+								<b>group</b> (раскрывает сотрудников из{' '}
+								<code>departmentItems</code>). Скалярное значение — в{' '}
+								<code>department</code>, вложенный массив — по соглашению{' '}
+								<code>{'{field}Items'}</code> или через{' '}
 								<code>groupItemsField</code>.
 							</Text>
 							<TableData<UnifiedRow>
@@ -405,8 +971,17 @@ export function TablePage() {
 									grouped
 									header="Отдел"
 								/>
-								<DataColumn<UnifiedRow> field="employee" header="Сотрудник" sortable />
-								<DataColumn<UnifiedRow> field="salary" header="Зарплата" sortable align="right" />
+								<DataColumn<UnifiedRow>
+									field="employee"
+									header="Сотрудник"
+									sortable
+								/>
+								<DataColumn<UnifiedRow>
+									field="salary"
+									header="Зарплата"
+									sortable
+									align="right"
+								/>
 							</TableData>
 						</Stack>
 					</Stack>
@@ -416,16 +991,42 @@ export function TablePage() {
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Мульти-сортировка</Title>
 						<Text size="sm" c="dimmed">
-							Клик по заголовку — цикл desc/asc/off. Shift+клик или multiSort —
-							добавляет поле в цепочку (бейдж с приоритетом).
+							Клик по заголовку — цикл desc/asc/off. Shift+клик или
+							multiSort — добавляет поле в цепочку (бейдж с приоритетом).
 						</Text>
 					</Stack>
-					<TableData<MultiGroupRow> data={multiGroupData} multiSort storage="demo.multi-sort" limit={50}>
-						<DataColumn<MultiGroupRow> field="region" header="Регион" sortable />
-						<DataColumn<MultiGroupRow> field="category" header="Категория" sortable />
-						<DataColumn<MultiGroupRow> field="status" header="Статус" sortable />
-						<DataColumn<MultiGroupRow> field="name" header="Название" sortable />
-						<DataColumn<MultiGroupRow> field="amount" header="Сумма" sortable align="right" />
+					<TableData<MultiGroupRow>
+						data={multiGroupData}
+						multiSort
+						storage="demo.multi-sort"
+						limit={50}
+					>
+						<DataColumn<MultiGroupRow>
+							field="region"
+							header="Регион"
+							sortable
+						/>
+						<DataColumn<MultiGroupRow>
+							field="category"
+							header="Категория"
+							sortable
+						/>
+						<DataColumn<MultiGroupRow>
+							field="status"
+							header="Статус"
+							sortable
+						/>
+						<DataColumn<MultiGroupRow>
+							field="name"
+							header="Название"
+							sortable
+						/>
+						<DataColumn<MultiGroupRow>
+							field="amount"
+							header="Сумма"
+							sortable
+							align="right"
+						/>
 					</TableData>
 				</Tabs.Panel>
 
@@ -433,8 +1034,8 @@ export function TablePage() {
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Редактирование строк + nested group</Title>
 						<Text size="sm" c="dimmed">
-							Enter — сохранить ячейку. Колонка group — вложенная таблица в поле
-							записи.
+							Enter — сохранить ячейку. Колонка group — вложенная таблица в
+							поле записи.
 						</Text>
 					</Stack>
 					<TableData<SS>
@@ -462,8 +1063,18 @@ export function TablePage() {
 							field="name"
 							header="Element name"
 						/>
-						<DataColumn<SS> resizable editor={editorCell} field="symbol" header="Symbol" />
-						<DataColumn<SS> resizable editor={editorCell} field="mass" header="Atomic mass" />
+						<DataColumn<SS>
+							resizable
+							editor={editorCell}
+							field="symbol"
+							header="Symbol"
+						/>
+						<DataColumn<SS>
+							resizable
+							editor={editorCell}
+							field="mass"
+							header="Atomic mass"
+						/>
 					</TableData>
 				</Tabs.Panel>
 
@@ -472,9 +1083,10 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>Hover-панель</Title>
 							<Text size="sm" c="dimmed">
-								Наведите на строку — справа появится панель. Добавляется нулевая
-								колонка-слот (без ширины) в заголовке и строке для выравнивания.{' '}
-								<code>bulkActions</code> — в заголовке колонки выделения.
+								Наведите на строку — справа появится панель. Добавляется
+								нулевая колонка-слот (без ширины) в заголовке и строке для
+								выравнивания. <code>bulkActions</code> — в заголовке
+								колонки выделения.
 							</Text>
 							<TableData<ActionDemoRow>
 								data={actionData}
@@ -486,7 +1098,11 @@ export function TablePage() {
 								storage="demo.row-actions-hover"
 								limit={50}
 							>
-								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow>
+									field="name"
+									header="Имя"
+									sortable
+								/>
 								<DataColumn<ActionDemoRow> field="role" header="Роль" />
 							</TableData>
 						</Stack>
@@ -494,9 +1110,10 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>Колонка действий (inline)</Title>
 							<Text size="sm" c="dimmed">
-								<code>DataColumn actions</code> — отдельная колонка. Заголовок может быть
-								пустым — ячейка остаётся. При <code>selectable</code> и выделенных строках
-								в заголовке появляется панель <code>bulkActions</code>.
+								<code>DataColumn actions</code> — отдельная колонка.
+								Заголовок может быть пустым — ячейка остаётся. При{' '}
+								<code>selectable</code> и выделенных строках в заголовке
+								появляется панель <code>bulkActions</code>.
 							</Text>
 							<TableData<ActionDemoRow>
 								data={actionData}
@@ -507,7 +1124,11 @@ export function TablePage() {
 								storage="demo.row-actions-column"
 								limit={50}
 							>
-								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow>
+									field="name"
+									header="Имя"
+									sortable
+								/>
 								<DataColumn<ActionDemoRow> field="role" header="Роль" />
 								<DataColumn<ActionDemoRow>
 									field="_actions"
@@ -522,8 +1143,9 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>Колонка с меню</Title>
 							<Text size="sm" c="dimmed">
-								<code>actionsMenu</code> — одна кнопка «⋯». Массовые действия в заголовке
-								тоже открываются через меню, если колонка с <code>actionsMenu</code>.
+								<code>actionsMenu</code> — одна кнопка «⋯». Массовые
+								действия в заголовке тоже открываются через меню, если
+								колонка с <code>actionsMenu</code>.
 							</Text>
 							<TableData<ActionDemoRow>
 								data={actionData}
@@ -543,7 +1165,11 @@ export function TablePage() {
 									header=""
 									width={48}
 								/>
-								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow>
+									field="name"
+									header="Имя"
+									sortable
+								/>
 								<DataColumn<ActionDemoRow> field="role" header="Роль" />
 							</TableData>
 						</Stack>
@@ -554,31 +1180,89 @@ export function TablePage() {
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Cursor pagination (fetcher)</Title>
 					</Stack>
-					<TableData<{ id: string }>
-						data={async (input) => {
-							const limit = input?.limit ?? 100;
-							const page = input?.page ?? '';
-							const res = await requestAnalyticsElastic({
-								company: {
-									select_field: [],
-									list_where: [],
-									date_limit: {
-										date_from: '2026-01-20',
-										date_to: '2026-05-15',
-									},
-								},
-								paginate: {
-									id_record: page as string,
-									limit_page: limit,
-								},
-							});
-							return {
-								data: res.data as { id: string }[],
-								next: res.last_id_record ?? '',
-							};
-						}}
+					<TableData<SSS>
+						data={elementsS}
 					>
-						<DataColumn<{ id: string }> field="id" header="ID" />
+						<DataColumn<SS>
+							sortable
+							draggable
+							resizable
+							editor={(item, column, onChange, onSave) => (
+								<TextInput
+									defaultValue={
+										item[column.field as keyof SS] as string
+									}
+									onChange={({ target }) => onChange(target.value)}
+									onKeyPress={({ key }) => {
+										if (key === 'Enter') {
+											onSave();
+										}
+									}}
+								/>
+							)}
+							field="position"
+							header="Element position"
+						/>
+						<DataColumn<SS>
+							sortable
+							draggable
+							resizable
+							editor={(item, column, onChange, onSave) => (
+								<TextInput
+									defaultValue={
+										item[column.field as keyof SS] as string
+									}
+									onChange={({ target }) => onChange(target.value)}
+									onKeyPress={({ key }) => {
+										if (key === 'Enter') {
+											onSave();
+										}
+									}}
+								/>
+							)}
+							field="name"
+							header="Element name"
+						/>
+						<DataColumn<SS>
+							draggable
+							resizable
+							toggleable
+							editor={(item, column, onChange, onSave) => (
+								<TextInput
+									defaultValue={
+										item[column.field as keyof SS] as string
+									}
+									onChange={({ target }) => onChange(target.value)}
+									onKeyPress={({ key }) => {
+										if (key === 'Enter') {
+											onSave();
+										}
+									}}
+								/>
+							)}
+							field="symbol"
+							header="Symbol"
+						/>
+						<DataColumn<SS>
+							draggable
+							resizable
+							toggleable
+							editor={(item, column, onChange, onSave) => (
+								<TextInput
+									defaultValue={
+										item[column.field as keyof SS] as string
+									}
+									onChange={({ target }) => onChange(target.value)}
+									onKeyPress={({ key }) => {
+										if (key === 'Enter') {
+											onSave();
+										}
+									}}
+								/>
+							)}
+							field="mass"
+							header="Atomic mass"
+						/>
 					</TableData>
 				</Tabs.Panel>
 			</Tabs>
