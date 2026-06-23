@@ -48,7 +48,7 @@ export function IncidentDetailItem(props: IRequestAnalyticsIncident) {
 				"place_id",
 			]),
 		}));
-	}, [props]);
+	}, [props.filterdate, props.data, props.fields_name, ef]);
 
 	const [{ name_production, production_id }, setProduction] = useState<{
 		name_production: IProduction["production_name"];
@@ -104,7 +104,7 @@ export function IncidentDetailItem(props: IRequestAnalyticsIncident) {
 			active={isLoading}
 			skeleton={<TableSkeleton rows={4} mih={120} />}
 		>
-			<Group justify="center">
+			<Group justify="center" mb='md'>
 				{production_id && (
 					<Button
 						color="red"

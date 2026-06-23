@@ -9,7 +9,9 @@ export function useFilterdateStep(query: IRequestAnalytics) {
 		const cnt = dayjs(e).diff(s, step);
 		const labels: string[] = [];
 		for (let i = 0; i <= cnt; i++) {
-			if (step === "h") {
+			if (step === "s") {
+				labels.push(s.add(i, "s").format("HH:mm:ss"));
+			} else if (step === "h") {
 				labels.push(s.add(i, "h").format("HH"));
 			} else if (step === "m") {
 				labels.push(s.add(i, "m").format("mm"));

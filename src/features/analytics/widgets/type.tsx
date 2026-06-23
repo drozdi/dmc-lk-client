@@ -1,9 +1,10 @@
-import { useQueryAnalytics, AnalyticsEmpty } from "@/entites/analytics";
+import { AnalyticsEmpty, useAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { labelName } from "@/shared/utils";
-import { AspectRatio, Center, Checkbox, Group, Stack, Tooltip } from "@mantine/core";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
+import { AspectRatio, Checkbox, Group, Stack, Tooltip } from "@mantine/core";
+import { useCallback, useMemo, useState } from "react";
 import { TypeBar } from "./ui/type-bar";
 
 export interface AnalyticTypeProps {
@@ -18,14 +19,13 @@ export const AnalyticType = ({
 	event = "p",
 }: AnalyticTypeProps) => {
 	const productions = useStoreUserProfile((state) => state.productions);
-	
-	const [query, setQuery] = useState<IRequestAnalytics>({
+
+	const { data, query, isLoading, isFetching } = useAnalytics({
 		filterdate,
 		step,
 		event,
 		production_id: productions,
 	});
-	const { fetch, data } = useQueryAnalytics(query);
 
 	const [filterGap, setFilterGap] = useState<boolean>(true);
 
@@ -37,14 +37,13 @@ export const AnalyticType = ({
 		[filterGap],
 	);
 
-	// Извлекаем список дат
 	const labels = useMemo<string[]>(() => {
 		let res: string[] = [];
 		if (data) {
 			for (const p of data?.production || []) {
 				res = res.concat(
 					((p.data as any) || [])
-						.filter((item) => item.data.length < 12)
+						.filter((item: IAnalyticsDataItem) => item.data.length < 12)
 						.map((item: IAnalyticsDataItem) => formatName(item.data)),
 				);
 			}
@@ -52,7 +51,6 @@ export const AnalyticType = ({
 		return [...new Set(res)].sort();
 	}, [data, formatName]);
 
-	// Извлекаем, групируем данные
 	const ddata = useMemo<
 		Array<{
 			name: string;
@@ -90,17 +88,10 @@ export const AnalyticType = ({
 			}
 		}
 		return Object.values(ddata);
-	}, [data, labels, productions]);
+	}, [data, labels]);
 
-	const isEmpty = useMemo(() => !ddata.length, [ddata]);
-
-	useEffect(() => {
-		fetch();
-	}, [query]);
-
-	useEffect(() => {
-		setQuery((v) => ({ ...v, filterdate, step, event }));
-	}, [filterdate, step, event]);
+	const isEmpty = useMemo(() => !ddata.some(({ value }) => value > 0), [ddata]);
+	const showSkeleton = (isLoading || isFetching) && !data?.production?.length;
 
 	return (
 		<Stack h="100%">
@@ -114,7 +105,9 @@ export const AnalyticType = ({
 					</Tooltip>
 			</Group>
 			<AspectRatio ratio={16 / 9}>
-				{isEmpty ? (
+				{showSkeleton ? (
+					<ChartSkeleton height="100%" mih={180} />
+				) : isEmpty ? (
 					<AnalyticsEmpty query={query} />
 				) : (
 					<TypeBar data={ddata} bars={labels} />

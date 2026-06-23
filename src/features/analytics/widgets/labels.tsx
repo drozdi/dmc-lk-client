@@ -1,7 +1,13 @@
-import { AnalyticsEmpty, useAnalytics, useFilterdateStep } from "@/entites/analytics";
+import {
+	AnalyticsEmpty,
+	formatTimestampByStep,
+	useAnalytics,
+	useFilterdateStep,
+} from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
 import { Checkbox, Group, Stack, Tooltip as MantineTooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -25,8 +31,8 @@ export const AnalyticLabels = memo(
 		onLoaded,
 	}: AnalyticLabelsProps) => {
 		const production_id = useStoreUserProfile((state) => state.productions)
-		
-		const { fetch, data, query } = useAnalytics({
+
+		const { data, query, isLoading, isFetching } = useAnalytics({
 			filterdate,
 			step,
 			event,
@@ -43,10 +49,9 @@ export const AnalyticLabels = memo(
 			[filterGap],
 		);
 
-		// Извлекаем список дат
 		const labels = useFilterdateStep(query);
+		const hasData = !!data?.production?.length;
 
-		// Извлекаем, групируем данные
 		const ddata = useMemo<
 			Array<{
 				date: string;
@@ -64,23 +69,19 @@ export const AnalyticLabels = memo(
 						if (item.data.length > 15) {
 							continue;
 						}
-						let date = dayjs(item.timestamp).format("YYYY-MM-DD");
-						if (query.step === "h") {
-							date = dayjs(item.timestamp).format("HH");
-						} else if (query.step === "m") {
-							date = dayjs(item.timestamp).format("mm");
-						} else if (query.step === "s") {
-							date = dayjs(item.timestamp).format("ss");
-						}
-						if (!labels.includes(date)) {
+						const itemDate = formatTimestampByStep(
+							item.timestamp,
+							query.step,
+						);
+						if (!labels.includes(itemDate)) {
 							continue;
 						}
 
 						const label = formatName(item.data);
-						ddata[date] = ddata[date] || {
+						ddata[itemDate] = ddata[itemDate] || {
 							total: 0,
 						};
-						ddata[date][label] = (ddata[date][label] || 0) + item.count;
+						ddata[itemDate][label] = (ddata[itemDate][label] || 0) + item.count;
 					}
 				}
 			}
@@ -91,7 +92,7 @@ export const AnalyticLabels = memo(
 					date,
 					total: Object.values(v).reduce((a, b) => a + b, 0),
 				}));
-		}, [data, labels, production_id, formatName]);
+		}, [data, labels, query.step, formatName]);
 
 		const bars = useMemo(() => {
 			const bars = [];
@@ -101,7 +102,7 @@ export const AnalyticLabels = memo(
 			return [...new Set(bars)];
 		}, [ddata]);
 
-		const isEmpty = useMemo(() => !ddata.length, [bars]);
+		const isEmpty = useMemo(() => !ddata.length, [ddata]);
 
 		const formatData = useMemo(() => {
 			return ddata
@@ -118,16 +119,10 @@ export const AnalyticLabels = memo(
 		}, [ddata, query.step]);
 
 		useEffect(() => {
-			fetch({
-				filterdate,
-				step,
-			});
-		}, [filterdate, step]);
-
-		useEffect(() => {
 			onLoaded?.(formatData)
 		}, [onLoaded, formatData])
 
+		const showSkeleton = (isLoading || isFetching) && !hasData;
 
 		return (
 			<Stack h="100%">
@@ -140,7 +135,9 @@ export const AnalyticLabels = memo(
 						/>
 					</MantineTooltip>
 				</Group>
-				{isEmpty ? (
+				{showSkeleton ? (
+					<ChartSkeleton height="100%" mih={180} />
+				) : isEmpty ? (
 					<AnalyticsEmpty query={query} />
 				) : type === "table" ? (
 					<LabelsTable query={query} data={formatData} bars={bars} />

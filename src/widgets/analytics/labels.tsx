@@ -1,14 +1,14 @@
-import { QueryShow, useQueryAnalytics } from "@/entites/analytics";
-import { useStoreUserProfile } from "@/entites/auth";
+import { QueryShow } from "@/entites/analytics";
 import { useWidgetParams } from "@/entites/dashboard";
 import {
 	AnalyticLabels,
 	type AnalyticLabelsProps,
 } from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
+import { notification } from "@/shared/notification/notification";
 import { downloadExcel } from '@/shared/utils/excel';
 import dayjs from "dayjs";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 
 export interface WidgetAnalyticLabelsProps
 	extends Omit<WidgetProps, "children" | "title">, AnalyticLabelsProps {
@@ -26,31 +26,10 @@ export const WidgetAnalyticLabels = memo(
 		allowChangeType,
 		...props
 	}: WidgetAnalyticLabelsProps) => {
-		const productions = useStoreUserProfile((state) => state.productions)
-
-		const [query, setQuery] = useState<IRequestAnalytics>({
-			filterdate,
-			step,
-			event,
-			production_id: productions.map(Number),
-		});
-		const { isLoading, fetch, error } = useQueryAnalytics(query);
 		const formatedData = useRef<any[]>([])
 
 		const [type, setType] = useState<AnalyticLabelsProps['type']>(typeProp);
 		const [_, update] = useWidgetParams()
-		useEffect(() => {
-			setQuery((v) => ({
-				...v,
-				filterdate,
-				step,
-				production_id: productions,
-			}));
-		}, [filterdate, step, productions]);
-
-		useEffect(() => {
-			fetch();
-		}, [query]);
 
 		const computedTitle = useMemo(() => {
 			if (title) {
@@ -88,15 +67,13 @@ export const WidgetAnalyticLabels = memo(
 
 		return (
 			<Widget
-				error={error}
-				loading={isLoading}
 				{...props}
 				title={computedTitle}
-				subTitle={<>За <QueryShow {...query} /></>}
+				subTitle={<>За <QueryShow filterdate={filterdate} step={step} event={event} /></>}
 				menu={memu}
 				onDownload={() => {
 					if (!formatedData.current?.length) {
-						alert('Нет данных для скачивания')
+						notification.alert("Нет данных для скачивания");
 						return
 					}
 					const h: string[] = []

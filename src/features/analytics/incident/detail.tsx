@@ -2,6 +2,7 @@ import { useQueryIncident } from "@/entites/analytics";
 import { exportIncidentSummary } from "@/features/analytics/incident/utils/export-excel";
 import { buildIncidentReportUrl } from "@/features/analytics/incident/utils/incident-navigation";
 import { IncidentEmpty } from "@/features/analytics/incident/ui/incident-empty";
+import { notification } from "@/shared/notification/notification";
 import { Loading } from "@/shared/ui";
 import { ListSkeleton } from "@/shared/ui/skeleton";
 import { Accordion, Button, Group } from "@mantine/core";
@@ -14,9 +15,11 @@ import { IncidentDetailItem } from "./detail-item";
 
 export const IncidentDetail = ({
 	filterdate,
+	onLoading,
 	...props
 }: {
 	filterdate: [DateValue, DateValue];
+	onLoading?: (loading: boolean) => void;
 	[key: string]: unknown;
 }) => {
 	const [query, setQuery] = useState({
@@ -31,9 +34,13 @@ export const IncidentDetail = ({
 		setQuery((v) => ({ ...v, filterdate }));
 	}, [filterdate]);
 
+	useEffect(() => {
+		onLoading?.(isLoading);
+	}, [isLoading, onLoading]);
+
 	const handleExport = () => {
 		if (!data?.length) {
-			alert("Нет данных для скачивания");
+			notification.alert("Нет данных для скачивания");
 			return;
 		}
 

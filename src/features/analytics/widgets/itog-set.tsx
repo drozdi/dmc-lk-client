@@ -2,6 +2,7 @@ import { useAnalytics, useEnumsEvents } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { LabelFormat, Text } from "@/shared/ui";
+import { StatSkeleton } from "@/shared/ui/skeleton";
 import { Group, HoverCard, NumberFormatter } from "@mantine/core";
 import dayjs from "dayjs";
 import { Fragment, useMemo } from "react";
@@ -22,7 +23,7 @@ export const AnalyticItogSet = ({
 	onChange,
 }: AnalyticItogSetProps) => {
 	const production_id = useStoreUserProfile((state) => state.productions);
-	const { data, query } = useAnalytics(
+	const { data, query, isLoading, isFetching } = useAnalytics(
 		{
 			filterdate,
 			event,
@@ -31,12 +32,12 @@ export const AnalyticItogSet = ({
 		onChange,
 	);
 
-	let value = useMemo(() => {
+	const value = useMemo(() => {
 		if (!data) {
 			return 0;
 		}
 		if (type === "min") {
-			let min = data.max_company;
+			let min = Infinity;
 			for (const production of data.production) {
 				for (const item of production.data) {
 					if (item.data.length > 15) {
@@ -45,17 +46,15 @@ export const AnalyticItogSet = ({
 					min = Math.min(min, item.count);
 				}
 			}
-			return min;
+			return min === Infinity ? (data.min_company ?? 0) : min;
 		}
 
-		return type === "min"
-			? (data.min_company ?? 0)
-			: type === "max"
-				? (data.max_company ?? 0)
-				: type === "avg"
-					? Math.round(data.all_records ?? 0)
-					: (data.sum_company ?? 0);
-	}, [type, data, production_id]);
+		return type === "max"
+			? (data.max_company ?? 0)
+			: type === "avg"
+				? Math.round(data.average_company ?? 0)
+				: (data.sum_company ?? 0);
+	}, [type, data]);
 
 	const info = useMemo<
 		{
@@ -89,7 +88,7 @@ export const AnalyticItogSet = ({
 			});
 		});
 		return info;
-	}, [value, data, query.event, type, production_id]);
+	}, [value, data, query.event, type]);
 
 	const groupInfo = useMemo<
 		{
@@ -111,6 +110,12 @@ export const AnalyticItogSet = ({
 			list,
 		}));
 	}, [info]);
+
+	const showSkeleton = (isLoading || isFetching) && !data?.production?.length;
+
+	if (showSkeleton) {
+		return <StatSkeleton />;
+	}
 
 	return (
 		<HoverCard disabled={info.length === 0} width={300}>

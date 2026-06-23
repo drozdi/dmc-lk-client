@@ -6,6 +6,7 @@ import {
 	type AnalyticIncidentProps,
 	type AnalyticIncidentSlice,
 } from '@/features/analytics/widgets';
+import { notification } from "@/shared/notification/notification";
 import {
 	Widget,
 	type WidgetProps
@@ -45,7 +46,7 @@ export const WidgetAnalyticIncident = ({
 			}
 			onDownload={() => {
 				if (!chartData.current.length) {
-					alert("Нет данных для скачивания");
+					notification.alert("Нет данных для скачивания");
 					return;
 				}
 

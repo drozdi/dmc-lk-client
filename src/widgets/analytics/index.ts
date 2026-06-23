@@ -276,8 +276,8 @@ FactoryWidget.register({
 FactoryWidget.register({
 	type: "analytic-event-defect",
 	component: WidgetAnalyticEventsDefect,
-	label: "Информация о этикетках",
-	description: "Информация о этикетках (Description)",
+	label: "Отчёт по дефектам",
+	description: "Сводный отчёт по дефектам печати",
 	params: [
 		{
 			label: "Промежуток",

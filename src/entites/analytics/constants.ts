@@ -39,23 +39,10 @@ export const mapEvents: Record<
 	},
 };
 
-// export const mapEvent: Record<AnalyticEvent, string> = Object.fromEntries(
-// 	Object.entries(mapEvents).map(([key, { label }]) => [key as AnalyticEvent, label]),
-// );
-// export const mapEventColor: Record<AnalyticEvent, string> = Object.fromEntries(
-// 	Object.entries(mapEvents).map(([key, { color }]) => [key as AnalyticEvent, color]),
-// );
+export const mapEvent: Record<AnalyticEvent, string> = Object.fromEntries(
+	Object.entries(mapEvents).map(([key, { label }]) => [key as AnalyticEvent, label]),
+) as Record<AnalyticEvent, string>;
 
-export const mapEvent: Record<AnalyticEvent, string> = {
-	v: "верифицировано",
-	i: "инцидент",
-	d: "дефект",
-	p: "печать",
-};
-
-export const mapEventColor: Record<AnalyticEvent, string> = {
-	v: "#00ff84",
-	i: "#ff6384",
-	d: "#35a2eb",
-	p: "#006384",
-};
+export const mapEventColor: Record<AnalyticEvent, string> = Object.fromEntries(
+	Object.entries(mapEvents).map(([key, { color }]) => [key as AnalyticEvent, color]),
+) as Record<AnalyticEvent, string>;

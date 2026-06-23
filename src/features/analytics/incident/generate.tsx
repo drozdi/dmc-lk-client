@@ -9,6 +9,7 @@ import {
 } from "@/features/analytics/incident/utils/export-excel";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
+import { notification } from "@/shared/notification/notification";
 import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
 import { TableSkeleton } from "@/shared/ui/skeleton";
 import { DataColumn, TableData } from "@/shared/ui/table";
@@ -21,7 +22,7 @@ import {
 	TextInput
 } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TbDownload, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 
 interface IncidentGenerateProps {
@@ -29,6 +30,7 @@ interface IncidentGenerateProps {
 	filter?: boolean;
 	fields?: string[];
 	initialDataFilters?: string[];
+	onLoading?: (loading: boolean) => void;
 }
 
 export const IncidentGenerate = ({
@@ -43,6 +45,7 @@ export const IncidentGenerate = ({
 		"node_name",
 	],
 	initialDataFilters = [],
+	onLoading,
 }: IncidentGenerateProps) => {
 	const [template, updateTemplate] = $setting.useSetState<
 		Required<IRequestAnalyticsIncident>
@@ -57,37 +60,54 @@ export const IncidentGenerate = ({
 	const isLoading = useQueryLoading(qi, ef);
 	const { data } = qi;
 
+	useEffect(() => {
+		onLoading?.(isLoading);
+	}, [isLoading, onLoading]);
+
+	const templateData = useMemo(
+		() =>
+			Array.isArray(template.data)
+				? template.data
+				: template.data
+					? [template.data]
+					: [],
+		[template.data],
+	);
+
 	const handleRemove = (field: string) => {
-		template.fields_name = template.fields_name.filter(
-			(item) => item !== field,
-		);
-		updateTemplate({ ...template });
+		updateTemplate({
+			fields_name: template.fields_name.filter((item) => item !== field),
+		});
 	};
 
 	const handleAddField = (field: string) => {
-		template.fields_name.push(field);
-		updateTemplate({ ...template });
+		updateTemplate({
+			fields_name: [...template.fields_name, field],
+		});
 	};
 
 	const [value, setValue] = useState("");
 	
 	const handleKeyPress = ({ key }: React.KeyboardEvent) => {
 		if (key === "Enter" && value) {
-			template.data.push(value);
-			updateTemplate({ ...template });
+			updateTemplate({
+				data: [...new Set([...templateData, value])],
+			});
 			setValue("");
 		}
 	};
 	const handleAddData = () => {
 		if (value) {
-			template.data.push(value);
-			updateTemplate({ ...template });
+			updateTemplate({
+				data: [...new Set([...templateData, value])],
+			});
 			setValue("");
 		}
 	};
 	const handleRemoveItem = (value: string) => {
-		template.data = template.data.filter((item) => value !== item);
-		updateTemplate({ ...template });
+		updateTemplate({
+			data: templateData.filter((item) => value !== item),
+		});
 	};
 
 	useEffect(() => {
@@ -108,7 +128,7 @@ export const IncidentGenerate = ({
 
 	const handleExport = () => {
 		if (!data?.length) {
-			alert("Нет данных для скачивания");
+			notification.alert("Нет данных для скачивания");
 			return;
 		}
 
@@ -139,7 +159,7 @@ export const IncidentGenerate = ({
 									}
 								/>
 							</li>
-							{template.data.map((item) => (
+							{templateData.map((item) => (
 								<li className="flex justify-between items-start" key={item}>
 									{item}{" "}
 									<ButtonRemove
@@ -176,9 +196,19 @@ export const IncidentGenerate = ({
 							fontWeight: 'bolder'
 						}} />
 						<DataColumn<IAnalyticsIncidentItem> field='total_counter' header='Всего ошибок' sortable ellipsis noWrap />
-						{(template.fields_name || []).map((field) => <DataColumn<IAnalyticsIncidentItem> field={field} header={ef.findLabelByCode(field)} toggleable={() => {
-							handleRemove(field)
-						}} sortable ellipsis noWrap />)}
+						{(template.fields_name || []).map((field) => (
+							<DataColumn<IAnalyticsIncidentItem>
+								key={field}
+								field={field}
+								header={ef.findLabelByCode(field)}
+								toggleable={() => {
+									handleRemove(field)
+								}}
+								sortable
+								ellipsis
+								noWrap
+							/>
+						))}
 						<DataColumn<IAnalyticsIncidentItem> style={{
 							width: 40,
 						}} field='.' header={<HoverCard>

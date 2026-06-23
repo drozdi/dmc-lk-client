@@ -1,5 +1,6 @@
 import {
 	AnalyticsEmpty,
+	formatTimestampByStep,
 	useEnumsEvents,
 	useFetchAnalyticsEvents,
 	useFilterdateStep,
@@ -7,7 +8,6 @@ import {
 import { useStoreUserProfile } from "@/entites/auth";
 import { ChartSkeleton } from "@/shared/ui/skeleton";
 import { Stack } from "@mantine/core";
-import dayjs from "dayjs";
 import { memo, useEffect, useMemo } from "react";
 import { type MouseHandlerDataParam } from "recharts";
 import { EventsAnalytic } from "./ui/events-analytic";
@@ -74,19 +74,8 @@ export const AnalyticEvents = memo(function AnalyticEvents({
 				for (const production of data[event as AnalyticEvent]?.production ||
 					[]) {
 					for (const item of production.data) {
-						if (step === "s") {
-							if (dayjs(item.timestamp).format("ss") === date) {
-								ddata[date][event as AnalyticEvent] += item.count;
-							}
-						} else if (step === "m") {
-							if (dayjs(item.timestamp).format("mm") === date) {
-								ddata[date][event as AnalyticEvent] += item.count;
-							}
-						} else if (step === "h") {
-							if (dayjs(item.timestamp).format("HH") === date) {
-								ddata[date][event as AnalyticEvent] += item.count;
-							}
-						} else if (dayjs(item.timestamp).format("YYYY-MM-DD") === date) {
+						const itemDate = formatTimestampByStep(item.timestamp, step);
+						if (itemDate === date) {
 							ddata[date][event as AnalyticEvent] += item.count;
 						}
 					}

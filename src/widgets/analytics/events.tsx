@@ -5,6 +5,7 @@ import {
 	type AnalyticEventsProps,
 } from "@/features/analytics/widgets";
 import { Widget, type WidgetProps } from "@/shared/ui";
+import { notification } from "@/shared/notification/notification";
 import { downloadExcel } from "@/shared/utils/excel";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -67,7 +68,7 @@ export const WidgetAnalyticEvents = ({
 			menu={memu}
 			onDownload={() => {
 				if (!formatedData.current?.length) {
-					alert('Нет данных для скачивания')
+					notification.alert('Нет данных для скачивания')
 					return
 				}
 				const h: string[] = []

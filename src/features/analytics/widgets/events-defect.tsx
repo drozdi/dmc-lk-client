@@ -1,11 +1,11 @@
 import {
 	AnalyticsEmpty,
-	QueryShow,
 	useAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { LegendContentPieFactory, TooltipContentPie } from "@/shared/ui";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
 import { AspectRatio, Stack } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip, type LegendPayload, type PieSectorDataItem } from "recharts";
@@ -146,7 +146,12 @@ export const AnalyticEventsDefect = ({
 	event = "d",
 }: AnalyticEventsDefectProps) => {
 	const production_id = useStoreUserProfile((state) => state.productions);
-	const { data } = useAnalytics({ filterdate, step, event, production_id });
+	const { data, query, isLoading, isFetching } = useAnalytics({
+		filterdate,
+		step,
+		event,
+		production_id,
+	});
 
 	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
@@ -172,6 +177,7 @@ export const AnalyticEventsDefect = ({
 	}, [data, production_id]);
 
 	const isEmpty = useMemo(() => !ddata.length, [ddata]);
+	const showSkeleton = (isLoading || isFetching) && !data?.production?.length;
 	
 	const [selected, setSelected] = useState<string>();
 	const onLegendClick = (arg: LegendPayload) => {
@@ -181,8 +187,10 @@ export const AnalyticEventsDefect = ({
 
 	return (
 		<Stack h="100%">
-			{isEmpty ? (
-				<AnalyticsEmpty query={{ filterdate, step, event }} />
+			{showSkeleton ? (
+				<ChartSkeleton height="100%" mih={180} />
+			) : isEmpty ? (
+				<AnalyticsEmpty query={query} />
 			) : (
 				<AspectRatio ratio={16 / 9}>
 					<ResponsiveContainer>

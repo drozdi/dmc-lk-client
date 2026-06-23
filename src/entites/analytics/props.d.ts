@@ -5,7 +5,7 @@ type AnalyticEvent = "v" | "i" | "d" | "p";
 type PermittedActions = "=" | ">=" | "<=" | "!=" | "in" | "not_in" | "like";
 
 interface IAnalyticsIncidentItem {
-	total_counter: integer;
+	total_counter: number;
 	data: string;
 	timestamp: string;
 	id: string;
