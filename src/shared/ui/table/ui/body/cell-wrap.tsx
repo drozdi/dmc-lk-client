@@ -11,6 +11,7 @@ export function TableBodyCellWrap<T = object>({
 	onClick,
 	children,
 	level = 0,
+	className,
 }: TableBodyCellWrapProps<T>) {
 	const { groupKeys } = useTableDataContext<T>();
 
@@ -29,11 +30,23 @@ export function TableBodyCellWrap<T = object>({
 	}, [column, groupKeys, node]);
 
 	return (
-		<Table.Td onClick={onClick} style={style}>
+		<Table.Td
+			className={className}
+			onClick={onClick}
+			style={style}
+			w={column.isHoverSlot ? 0 : column.isSelecting ? 44 : undefined}
+			align={column.isSelecting ? 'center' : column.align}
+		>
 			{children ? (
-				<Group justify="flex-start" align="center" grow>
-					{children}
-				</Group>
+				column.isHoverSlot ? (
+					children
+				) : column.isSelecting ? (
+					children
+				) : (
+					<Group justify="flex-start" align="center" grow>
+						{children}
+					</Group>
+				)
 			) : null}
 		</Table.Td>
 	);

@@ -20,7 +20,7 @@ export function useDraggable<T = object>(
 	onDrop?: (e: React.DragEvent) => void;
 } {
 	const [hovered, setHovered] = useState(false);
-	if (!column.isDraggable || column.isGrouped || column.isGroup || !column.field) {
+	if (!column.isDraggable || column.isGrouped || column.isGroup || column.isActions || column.isHoverSlot || !column.field) {
 		return {
 			draggable: false,
 		};
@@ -71,6 +71,7 @@ export function TableHeaderCellWrap<T = object>({
 	maxCol,
 	maxRow,
 	children,
+	className,
 }: TableHeaderCellWrapProps<T>) {
 	const { getColumnWidth, groupKeys } = useTableDataContext<T>();
 	const rowspan = column.isColumns ? 1 : maxRow - column.parentLevel;
@@ -91,10 +92,11 @@ export function TableHeaderCellWrap<T = object>({
 
 	return (
 		<Table.Th
+			className={className}
 			pos="relative"
 			colSpan={column.colspan}
 			rowSpan={rowspan}
-			w={getColumnWidth(column)}
+			w={column.isHoverSlot ? 0 : column.isSelecting ? (getColumnWidth(column) ?? 44) : getColumnWidth(column)}
 			style={headerStyle}
 			role="columnheader"
 			{...useDraggable<T>(column)}

@@ -10,6 +10,8 @@ import { TableHeaderCellSorter } from './cell-sorter';
 import { TableHeaderCellToggler } from './cell-toggler';
 import { TableHeaderCellWrap } from './cell-wrap';
 import { TableHeaderCellGroup } from './group';
+import { TableHeaderCellHoverSlot } from './hover-slot-cell';
+import { TableHeaderCellActions } from './actions-cell';
 import { TableHeaderCellSelector } from './selector';
 
 export function TableHeaderCell<T = object>({
@@ -19,6 +21,12 @@ export function TableHeaderCell<T = object>({
 }: TableHeaderCellProps<T>) {
 	if (column.isSelecting) {
 		return <TableHeaderCellSelector column={column} maxRow={maxRow} maxCol={maxCol} />;
+	}
+	if (column.isActions) {
+		return <TableHeaderCellActions<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
+	}
+	if (column.isHoverSlot) {
+		return <TableHeaderCellHoverSlot<T> column={column} maxRow={maxRow} maxCol={maxCol} />;
 	}
 	if (column.isGroup || column.isGrouped) {
 		return <TableHeaderCellGroup<T> column={column} maxRow={maxRow} maxCol={maxCol} />;

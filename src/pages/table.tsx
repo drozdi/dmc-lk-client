@@ -1,9 +1,9 @@
 import { requestAnalyticsElastic } from '@/entites/analytics';
-import { DataColumn, TableData } from '@/shared/ui/table';
-import type { ColumnEntity } from '@/shared/ui/table/type';
-import { Stack, Tabs, Text, Title } from '@mantine/core';
-import { TextInput } from '@mantine/core';
-import { useState } from 'react';
+import { DataColumn, TableData, TableRowActionsPanel } from '@/shared/ui/table';
+import type { ColumnEntity, TableBulkAction, TableRowAction, TableRowActionsPanelProps } from '@/shared/ui/table/type';
+import { Badge, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
+import { useCallback, useMemo, useState } from 'react';
+import { TbPencil, TbTrash } from 'react-icons/tb';
 
 /** Демо: 3 уровня мульти-группировки (region → category → status). */
 interface MultiGroupRow {
@@ -152,6 +152,34 @@ const combinedData: CombinedRow[] = [
 	},
 ];
 
+interface ActionDemoRow {
+	id: number;
+	name: string;
+	role: string;
+	_actions?: unknown;
+}
+
+const actionDemoData: ActionDemoRow[] = [
+	{ id: 1, name: 'Анна К.', role: 'Менеджер' },
+	{ id: 2, name: 'Борис Л.', role: 'Разработчик' },
+	{ id: 3, name: 'Вера М.', role: 'Аналитик' },
+	{ id: 4, name: 'Глеб Н.', role: 'Дизайнер' },
+];
+
+function DemoRowActionsPanel<T extends ActionDemoRow>({
+	node,
+	actions,
+}: TableRowActionsPanelProps<T>) {
+	return (
+		<Group gap={6} wrap="nowrap">
+			<Badge variant="light" size="sm">
+				#{node.data.id}
+			</Badge>
+			<TableRowActionsPanel node={node} actions={actions} />
+		</Group>
+	);
+}
+
 interface SS {
 	position: number;
 	mass: number;
@@ -236,6 +264,63 @@ function editorCell(
 
 export function TablePage() {
 	const [data, setData] = useState<SS[]>(elements);
+	const [actionData, setActionData] = useState<ActionDemoRow[]>(actionDemoData);
+
+	const createRowActions = useCallback(
+		(
+			onEdit: (item: ActionDemoRow, index: ActionDemoRow['id'] | string | number) => void,
+		): TableRowAction<ActionDemoRow>[] => [
+			{
+				id: 'edit',
+				label: 'Редактировать',
+				icon: <TbPencil size={16} />,
+				onClick: (item, node) => onEdit(item, node.index),
+			},
+			{
+				id: 'delete',
+				label: 'Удалить',
+				icon: <TbTrash size={16} />,
+				color: 'red',
+				onClick: (_, node) => {
+					setActionData((rows) =>
+						rows.filter((_, index) => index !== Number(node.index)),
+					);
+				},
+			},
+		],
+		[],
+	);
+
+	const rowActions = useMemo(
+		() =>
+			createRowActions((item) => {
+				const next = window.prompt('Имя', item.name);
+				if (next == null) {
+					return;
+				}
+				setActionData((rows) =>
+					rows.map((row) => (row.id === item.id ? { ...row, name: next } : row)),
+				);
+			}),
+		[createRowActions],
+	);
+
+	const bulkActions = useMemo<TableBulkAction<ActionDemoRow>[]>(
+		() => [
+			{
+				id: 'delete-selected',
+				label: 'Удалить выбранные',
+				icon: <TbTrash size={16} />,
+				color: 'red',
+				onClick: ({ selectedIndexes }) => {
+					setActionData((rows) =>
+						rows.filter((_, index) => !selectedIndexes.includes(index)),
+					);
+				},
+			},
+		],
+		[],
+	);
 
 	return (
 		<Stack gap="lg" p="md">
@@ -247,6 +332,7 @@ export function TablePage() {
 					<Tabs.Tab value="group-grouped">group + grouped</Tabs.Tab>
 					<Tabs.Tab value="multi-sort">Мульти-сортировка</Tabs.Tab>
 					<Tabs.Tab value="edit">Редактирование + group</Tabs.Tab>
+					<Tabs.Tab value="row-actions">Действия со строкой</Tabs.Tab>
 					<Tabs.Tab value="fetch">Async fetch</Tabs.Tab>
 				</Tabs.List>
 
@@ -379,6 +465,89 @@ export function TablePage() {
 						<DataColumn<SS> resizable editor={editorCell} field="symbol" header="Symbol" />
 						<DataColumn<SS> resizable editor={editorCell} field="mass" header="Atomic mass" />
 					</TableData>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="row-actions" pt="md">
+					<Stack gap="xl">
+						<Stack gap="xs">
+							<Title order={4}>Hover-панель</Title>
+							<Text size="sm" c="dimmed">
+								Наведите на строку — справа появится панель. Добавляется нулевая
+								колонка-слот (без ширины) в заголовке и строке для выравнивания.{' '}
+								<code>bulkActions</code> — в заголовке колонки выделения.
+							</Text>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								rowActions={rowActions}
+								bulkActions={bulkActions}
+								rowActionsPanel={DemoRowActionsPanel}
+								rowActionsAt="end"
+								selectable="start"
+								storage="demo.row-actions-hover"
+								limit={50}
+							>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Колонка действий (inline)</Title>
+							<Text size="sm" c="dimmed">
+								<code>DataColumn actions</code> — отдельная колонка. Заголовок может быть
+								пустым — ячейка остаётся. При <code>selectable</code> и выделенных строках
+								в заголовке появляется панель <code>bulkActions</code>.
+							</Text>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								rowActions={rowActions}
+								bulkActions={bulkActions}
+								rowActionsOnHover={false}
+								selectable="start"
+								storage="demo.row-actions-column"
+								limit={50}
+							>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+								<DataColumn<ActionDemoRow>
+									field="_actions"
+									actions
+									actionsAt="end"
+									header=""
+									width={88}
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Колонка с меню</Title>
+							<Text size="sm" c="dimmed">
+								<code>actionsMenu</code> — одна кнопка «⋯». Массовые действия в заголовке
+								тоже открываются через меню, если колонка с <code>actionsMenu</code>.
+							</Text>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								rowActions={rowActions}
+								bulkActions={bulkActions}
+								rowActionsOnHover={false}
+								selectable="start"
+								storage="demo.row-actions-menu"
+								limit={50}
+							>
+								<DataColumn<ActionDemoRow>
+									field="_actions"
+									align="left"
+									actions
+									actionsMenu
+									actionsAt="start"
+									header=""
+									width={48}
+								/>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" sortable />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+					</Stack>
 				</Tabs.Panel>
 
 				<Tabs.Panel value="fetch" pt="md">

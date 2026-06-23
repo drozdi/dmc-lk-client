@@ -44,6 +44,42 @@ export interface TableNode<T = object> {
 	expandKey?: string;
 }
 
+export interface TableRowAction<T = object> {
+	id: string;
+	label: React.ReactNode;
+	icon?: React.ReactNode;
+	color?: string;
+	disabled?: boolean | ((node: TableNode<T>) => boolean);
+	hidden?: boolean | ((node: TableNode<T>) => boolean);
+	onClick: (item: T, node: TableNode<T>) => void;
+}
+
+export interface TableRowActionsPanelProps<T = object> {
+	node: TableNode<T>;
+	actions: TableRowAction<T>[];
+}
+
+export interface TableBulkActionsContext<T = object> {
+	items: T[];
+	nodes: TableNode<T>[];
+	selectedIndexes: TableNode<T>['index'][];
+}
+
+export interface TableBulkAction<T = object> {
+	id: string;
+	label: React.ReactNode;
+	icon?: React.ReactNode;
+	color?: string;
+	disabled?: boolean | ((context: TableBulkActionsContext<T>) => boolean);
+	hidden?: boolean | ((context: TableBulkActionsContext<T>) => boolean);
+	onClick: (context: TableBulkActionsContext<T>) => void;
+}
+
+export interface TableBulkActionsPanelProps<T = object> {
+	context: TableBulkActionsContext<T>;
+	actions: TableBulkAction<T>[];
+}
+
 export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 'data'> {
 	breakpoint?: string;
 	storage?: string | TableStorage;
@@ -94,6 +130,18 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	children?: React.ReactNode;
 	editMode?: 'row' | 'cell';
 	onRowEditComplete?: (item: T, index: TableNode<T>['index']) => void;
+	/** Доступные действия со строкой (редактирование, удаление и т.д.). */
+	rowActions?: TableRowAction<T>[];
+	/** Кастомный рендер панели действий (hover или колонка). По умолчанию — TableRowActionsPanel. */
+	rowActionsPanel?: React.FC<TableRowActionsPanelProps<T>>;
+	/** Показывать панель действий при наведении на строку. По умолчанию true, если есть rowActions и нет колонки actions. */
+	rowActionsOnHover?: boolean;
+	/** Позиция hover-панели относительно строки. */
+	rowActionsAt?: 'start' | 'end';
+	/** Массовые действия над выделенными строками (панель в заголовке колонки actions). */
+	bulkActions?: TableBulkAction<T>[];
+	/** Кастомный рендер панели массовых действий. По умолчанию — TableBulkActionsPanel. */
+	bulkActionsPanel?: React.FC<TableBulkActionsPanelProps<T>>;
 	layout?: React.FC<{
 		nodes: TableNode<T>[];
 		columns: ColumnEntity<T>[];
@@ -150,6 +198,16 @@ export interface DataColumnProps<T = object> {
 	grouped?: boolean;
 	/** Поле с массивом для group, если отличается от `{field}Items`. */
 	groupItemsField?: keyof T;
+	/**
+	 * Колонка действий со строкой. Использует rowActions из TableData.
+	 * actionsMenu — одна кнопка с выпадающим меню вместо inline-панели.
+	 */
+	actions?: boolean;
+	actionsMenu?: boolean;
+	/** Позиция колонки действий (по умолчанию rowActionsAt или 'end'). */
+	actionsAt?: 'start' | 'end';
+	/** Служебный флаг: виртуальная колонка для hover-панели (задаётся TableData). */
+	actionsHover?: boolean;
 	align?: 'left' | 'right' | 'center';
 	width?: number;
 }
@@ -170,5 +228,8 @@ export interface ColumnEntity<T = object> extends DataColumnProps<T> {
 	isToggleable: boolean;
 	isResizable: boolean;
 	isSelecting: boolean;
+	isActions: boolean;
+	/** Нулевая колонка-слот для hover-панели (без DataColumn actions). */
+	isHoverSlot: boolean;
 	colspan: number;
 }

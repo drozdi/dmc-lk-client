@@ -3,7 +3,7 @@ import type { ColumnEntity } from '../type';
 /** Поля колонок, участвующие в порядке / скрытии / ширине / сортировке. */
 export function getColumnFields<T>(columns: ColumnEntity<T>[]): (keyof T)[] {
 	return columns
-		.filter((column) => column.field && column.isField && !column.isSelecting)
+		.filter((column) => column.field && column.isField && !column.isSelecting && !column.isActions && !column.isHoverSlot)
 		.map((column) => column.field as keyof T);
 }
 

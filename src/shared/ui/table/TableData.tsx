@@ -17,6 +17,7 @@ import type {
 	ToggleExpandOptions,
 } from './type';
 import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePagination } from "./ui";
+import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, sortByRules } from './utils';
 import { canExpandGroupedNode, getNodeExpandKey, hasGroupNestedData } from './utils/group-by';
@@ -54,6 +55,33 @@ function genStorage(storageKey: string): TableStorage {
 		removeItem(key) {
 			localStorage.removeItem(keyStorage(key));
 		},
+	};
+}
+
+function createHoverSlotColumn<T>(at: 'start' | 'end'): ColumnEntity<T> {
+	return {
+		field: '__hover_slot__' as keyof T,
+		isHoverSlot: true,
+		isHeader: true,
+		isField: false,
+		isEmpty: true,
+		isSelecting: false,
+		isActions: false,
+		isDraggable: false,
+		isGroup: false,
+		isGrouped: false,
+		isSorted: false,
+		isColumns: false,
+		isToggleable: false,
+		isResizable: false,
+		size: 1,
+		level: 1,
+		parentLevel: 0,
+		columns: [],
+		colspan: 1,
+		actionsAt: at,
+		width: 0,
+		align: 'center',
 	};
 }
 
@@ -127,6 +155,12 @@ export function TableData<T = object>({
 	pagination: Pagination = TablePagination,
 	onRowEditComplete,
 	editMode,
+	rowActions: initialRowActions,
+	rowActionsPanel: initialRowActionsPanel = TableRowActionsPanel,
+	rowActionsOnHover: initialRowActionsOnHover,
+	rowActionsAt: initialRowActionsAt = 'end',
+	bulkActions: initialBulkActions,
+	bulkActionsPanel: initialBulkActionsPanel = TableBulkActionsPanel,
 	noDataText = 'No records',
 	level = 0,
 	...other
@@ -148,8 +182,10 @@ export function TableData<T = object>({
 		isEmpty: true,
 		isToggleable: false,
 		isResizable: false,
+		isActions: false,
+		isHoverSlot: false,
 		colspan: 1,
-		width: 50,
+		width: 44,
 		align: 'center',
 	};
 	const mounted = useMounted();
@@ -222,11 +258,13 @@ export function TableData<T = object>({
 				isGrouped: !!column.grouped,
 
 				isSelecting: false,
+				isActions: !!column.actions,
+				isHoverSlot: false,
 				isColumns: calculateIsColumns(column.children),
 				isResizable: !!column.resizable,
 				isHeader: !!column.header,
-				isField: !!column.field,
-				isEmpty: !column.field,
+				isField: !!column.field && !column.actions,
+				isEmpty: !column.field || !!column.actions,
 				isSorted: !!column.sortable,
 				isToggleable: !!column.toggleable,
 				colspan: calculateColspan(column.children) || column.size || 1,
@@ -236,6 +274,13 @@ export function TableData<T = object>({
 			col.columns = Children.toArray(column.children).map((child: any) => {
 				return calculateColumn(child.props, col.level);
 			});
+			if (col.isActions) {
+				col.field = (col.field || '__actions__') as keyof T;
+				col.isHeader = true;
+				col.actionsAt = col.actionsAt ?? initialRowActionsAt;
+				col.width = col.width ?? (col.actionsMenu ? 48 : 96);
+				col.align = col.align ?? 'center';
+			}
 			return col;
 		}
 
@@ -246,7 +291,19 @@ export function TableData<T = object>({
 		});
 
 		return ret;
-	}, [initialColumns, children, initialSelectable]);
+	}, [initialColumns, children, initialSelectable, initialRowActionsAt]);
+
+	const hasActionsColumn = useMemo(
+		() => columnsRaw.some((column) => column.isActions),
+		[columnsRaw],
+	);
+
+	const rowActionsOnHover = useMemo(
+		() =>
+			initialRowActionsOnHover ??
+			(!!initialRowActions?.length && !hasActionsColumn),
+		[initialRowActionsOnHover, initialRowActions, hasActionsColumn],
+	);
 
 	const columnFields = useMemo(() => getColumnFields(columnsRaw), [columnsRaw]);
 
@@ -341,6 +398,12 @@ export function TableData<T = object>({
 		(column: ColumnEntity<T>) => {
 			if (column.isGroup) {
 				return 72;
+			}
+			if (column.isSelecting) {
+				return columnWidths[column.field as keyof T] ?? column.width ?? 44;
+			}
+			if (column.isHoverSlot) {
+				return 0;
 			}
 			return columnWidths[column.field as keyof T] || undefined;
 		},
@@ -441,10 +504,26 @@ export function TableData<T = object>({
 
 	const columns = useMemo(() => {
 		const grouped = columnsRaw.filter(
-			(c) => (c.isGrouped || c.isGroup) && !c.isSelecting,
+			(c) => (c.isGrouped || c.isGroup) && !c.isSelecting && !c.isActions && !c.isHoverSlot,
 		);
 		const selected = columnsRaw.filter((c) => c.isSelecting);
-		const normal = columnsRaw.filter((c) => !c.isGrouped && !c.isGroup && !c.isSelecting);
+		const actionsStart = columnsRaw.filter(
+			(c) => c.isActions && (c.actionsAt ?? initialRowActionsAt) === 'start',
+		);
+		const actionsEnd = columnsRaw.filter(
+			(c) => c.isActions && (c.actionsAt ?? initialRowActionsAt) === 'end',
+		);
+		const hoverSlotStart =
+			rowActionsOnHover && !hasActionsColumn && initialRowActionsAt === 'start'
+				? [createHoverSlotColumn<T>('start')]
+				: [];
+		const hoverSlotEnd =
+			rowActionsOnHover && !hasActionsColumn && initialRowActionsAt === 'end'
+				? [createHoverSlotColumn<T>('end')]
+				: [];
+		const normal = columnsRaw.filter(
+			(c) => !c.isGrouped && !c.isGroup && !c.isSelecting && !c.isActions && !c.isHoverSlot,
+		);
 		if (columnOrder?.length) {
 			normal.sort(
 				(a, b) =>
@@ -452,13 +531,17 @@ export function TableData<T = object>({
 					columnOrder.indexOf(b.field as keyof T),
 			);
 		}
-		const columns = groupAt === 'start' ? [...grouped, ...normal] : [...normal, ...grouped];
-		return initialSelectable === 'start'
-			? [...selected, ...columns]
-			: initialSelectable === 'end'
-				? [...columns, ...selected]
-				: columns;
-	}, [columnsRaw, groupAt, initialSelectable, columnOrder]);
+		const dataColumns = groupAt === 'start' ? [...grouped, ...normal] : [...normal, ...grouped];
+		const result: ColumnEntity<T>[] = [];
+		if (initialSelectable === 'start') {
+			result.push(...selected);
+		}
+		result.push(...actionsStart, ...hoverSlotStart, ...dataColumns, ...hoverSlotEnd, ...actionsEnd);
+		if (initialSelectable === 'end') {
+			result.push(...selected);
+		}
+		return result;
+	}, [columnsRaw, groupAt, initialSelectable, columnOrder, initialRowActionsAt, rowActionsOnHover, hasActionsColumn]);
 
 	const visibleColumns = useMemo(() => {
 		if (!hiddenColumns.length) {
@@ -690,6 +773,9 @@ export function TableData<T = object>({
 					someSelected,
 					allSelected,
 
+					selectable: initialSelectable,
+					nodes,
+
 					columnWidths,
 					resizeColumn,
 					getColumnWidth,
@@ -725,6 +811,14 @@ export function TableData<T = object>({
 					expandables,
 					updateNode,
 					storage,
+
+					rowActions: initialRowActions,
+					rowActionsPanel: initialRowActionsPanel,
+					rowActionsOnHover,
+					rowActionsAt: initialRowActionsAt,
+					hasActionsColumn,
+					bulkActions: initialBulkActions,
+					bulkActionsPanel: initialBulkActionsPanel,
 				}),
 				[
 					selectedRows,
@@ -762,6 +856,15 @@ export function TableData<T = object>({
 					updateNode,
 					storage,
 					columnWidths,
+					initialRowActions,
+					initialRowActionsPanel,
+					rowActionsOnHover,
+					initialRowActionsAt,
+					hasActionsColumn,
+					initialBulkActions,
+					initialBulkActionsPanel,
+					initialSelectable,
+					nodes,
 				],
 			)}
 		>

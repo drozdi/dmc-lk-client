@@ -7,6 +7,10 @@ import type {
 	TableExpandablesState,
 	TableExpandsState,
 	TableNode,
+	TableRowAction,
+	TableRowActionsPanelProps,
+	TableBulkAction,
+	TableBulkActionsPanelProps,
 	TableSortState,
 	ToggleExpandOptions,
 } from "../type";
@@ -52,6 +56,8 @@ export interface TableDataContext<T = object> {
 	isRowSelected: (index: TableNode<T>['index']) => boolean;
 	someSelected: boolean;
 	allSelected: boolean;
+	selectable?: TableDataProps<T>['selectable'];
+	nodes: TableNode<T>[];
 
 	handleModeChange: (item: TableNode<T>, column: ColumnEntity<T>) => void;
 
@@ -62,6 +68,14 @@ export interface TableDataContext<T = object> {
 	clearModeChange: () => void;
 
 	storage: TableDataProps['storage'];
+
+	rowActions?: TableRowAction<T>[];
+	rowActionsPanel: React.FC<TableRowActionsPanelProps<T>>;
+	rowActionsOnHover: boolean;
+	rowActionsAt: NonNullable<TableDataProps['rowActionsAt']>;
+	hasActionsColumn: boolean;
+	bulkActions?: TableBulkAction<T>[];
+	bulkActionsPanel: React.FC<TableBulkActionsPanelProps<T>>;
 }
 
 const [Provider, useContext] = createSafeContext<TableDataContext<unknown>>(

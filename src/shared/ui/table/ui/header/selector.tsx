@@ -1,6 +1,8 @@
-import { Checkbox, Group } from '@mantine/core';
+import { Checkbox } from '@mantine/core';
 import { useTableDataContext } from '../../context';
 import type { TableHeaderCellWrapProps } from '../type';
+import classes from '../body/selector.module.css';
+import { TableHeaderBulkActions } from './bulk-actions';
 import { TableHeaderCellWrap } from './cell-wrap';
 
 export interface TableHeaderCellSelectorProps<T = object>
@@ -10,18 +12,26 @@ export function TableHeaderCellSelector<T = object>({
 	column,
 	maxRow,
 	maxCol,
-	...props
 }: TableHeaderCellSelectorProps<T>) {
 	const { allSelected, someSelected, selectAll } = useTableDataContext<T>();
+
 	return (
-		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol}>
-			<Group grow ta="center" justify="center">
+		<TableHeaderCellWrap<T>
+			column={column}
+			maxRow={maxRow}
+			maxCol={maxCol}
+			className={classes.selectHeader}
+		>
+			<div className={classes.selectHeaderInner}>
 				<Checkbox
 					checked={allSelected}
 					indeterminate={someSelected}
 					onChange={(e) => selectAll(e.currentTarget.checked)}
 				/>
-			</Group>
+				<div className={classes.selectBulkOverlay}>
+					<TableHeaderBulkActions target="select" />
+				</div>
+			</div>
 		</TableHeaderCellWrap>
 	);
 }

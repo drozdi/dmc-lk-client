@@ -4,6 +4,8 @@ import { TableBodyCellExpander } from './cell-expander';
 import { TableBodyCellSlot } from './cell-slot';
 import { TableBodyCellWrap } from './cell-wrap';
 import { TableBodyCellExpand } from './expand';
+import { TableBodyCellHoverSlot } from './hover-slot-cell';
+import { TableBodyCellActions } from './actions-cell';
 import { TableBodyCellSelector } from './selector';
 import { TableBodyExpander } from './expander';
 import { hasGroupNestedData } from '../../utils/group-by';
@@ -11,6 +13,12 @@ import { hasGroupNestedData } from '../../utils/group-by';
 export function TableBodyCell<T = object>({ node, column, level = 0 }: TableBodyCellProps<T>) {
 	if (column.isSelecting) {
 		return <TableBodyCellSelector<T> node={node} column={column} />;
+	}
+	if (column.isActions) {
+		return <TableBodyCellActions<T> node={node} column={column} />;
+	}
+	if (column.isHoverSlot) {
+		return <TableBodyCellHoverSlot<T> node={node} column={column} />;
 	}
 	if (column.isGroup && !column.isGrouped) {
 		return <TableBodyCellExpand<T> node={node} column={column} level={level} />;

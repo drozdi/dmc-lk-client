@@ -55,6 +55,7 @@ export interface TableHeaderCellWrapProps<T = object> extends TableHeaderCellBas
 	maxRow: number;
 	maxCol: number;
 	children?: React.ReactNode;
+	className?: string;
 }
 export interface TableHeaderCellProps<T = object> extends TableHeaderCellWrapProps<T> {}
 export interface TableHeaderCellGroupProps<T = object>
@@ -109,6 +110,7 @@ export interface TableBodyCellWrapProps<T = object> {
 	children?: React.ReactNode;
 	onClick?: () => void;
 	level?: number;
+	className?: string;
 }
 
 export interface TableBodyCellSlotProps<T = object> extends TableBodyCellBaseProps<T> {}

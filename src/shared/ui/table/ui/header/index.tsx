@@ -4,6 +4,9 @@ import { useTableDataContext } from '../../context/TableDataContext';
 import type { TableHeaderProps } from '../type';
 import { TableHeaderCell } from './cell';
 
+export * from './bulk-actions';
+export * from './hover-slot-cell';
+export * from './actions-cell';
 export * from './cell';
 export * from './cell-drager';
 export * from './cell-expander';
@@ -35,7 +38,14 @@ export function TableHeader<T = object>({ columns }: TableHeaderProps<T>) {
 							/>
 						));
 					}
-					if (column.isGrouped ||column.isGroup || column.isHeader || column.isSelecting) {
+					if (
+						column.isGrouped ||
+						column.isGroup ||
+						column.isHeader ||
+						column.isSelecting ||
+						column.isActions ||
+						column.isHoverSlot
+					) {
 						return (
 							<TableHeaderCell<T>
 								key={column.field as string}
