@@ -37,6 +37,21 @@ function createCompareFn<T>(
 	};
 }
 
+function sortNodesImmutable<T>(
+	nodes: TableNode<T>[],
+	fn: (a: TableNode<T>, b: TableNode<T>) => number,
+): TableNode<T>[] {
+	return [...nodes]
+		.sort(fn)
+		.map((node) => ({
+			...node,
+			nodes:
+				Array.isArray(node.nodes) && node.nodes.length
+					? sortNodesImmutable(node.nodes, fn)
+					: node.nodes,
+		}));
+}
+
 export function sortBy<T = object>(
 	nodes: TableNode<T>[],
 	key: keyof T,
@@ -52,12 +67,5 @@ export function sortByRules<T = object>(
 	if (!rules.length) {
 		return nodes;
 	}
-	const fn = createCompareFn(rules);
-	const result = [...nodes].sort(fn);
-	return result.map((node) => {
-		if (Array.isArray(node.nodes) && node.nodes.length) {
-			node.nodes = [...node.nodes].sort(fn);
-		}
-		return node;
-	});
+	return sortNodesImmutable(nodes, createCompareFn(rules));
 }

@@ -38,7 +38,7 @@ export function TableHeaderCell<T = object>({
 				? 'flex-start' // ✅ Исправлено: 'flex-start'
 				: column.align === 'center'
 					? 'center'
-					: 'space-between';
+					: 'flex-start';
 	return (
 		<TableHeaderCellWrap<T> column={column} maxRow={maxRow} maxCol={maxCol}>
 			<Group justify={justifyContent} align='center' wrap="nowrap" grow gap="0">

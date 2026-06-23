@@ -12,8 +12,7 @@ export function TableHeaderCellSlot<T = object>({ column }: TableHeaderCellSlotP
 				margin: 0,
 				maxWidth: '100%',
 				flex: 1,
-				textAlign: column.align || 'center',
-				...{}
+				textAlign: column.align || 'left',
 			}}
 			onMouseDown={(event) => {
 				event.preventDefault();

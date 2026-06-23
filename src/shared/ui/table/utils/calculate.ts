@@ -1,4 +1,5 @@
 import { Children } from 'react';
+import type { ColumnEntity } from '../type';
 
 type Child = React.ReactNode
 
@@ -16,3 +17,13 @@ export function calculateIsColumns(children?: Child): boolean {
 	}
 	return Children.count(children) > 0;
 };
+
+export function resolveColumnFlag<T>(
+	value: boolean | ((column: ColumnEntity<T>) => boolean | void) | undefined,
+	column: ColumnEntity<T>,
+): boolean {
+	if (typeof value === 'function') {
+		return value(column) !== false;
+	}
+	return !!value;
+}

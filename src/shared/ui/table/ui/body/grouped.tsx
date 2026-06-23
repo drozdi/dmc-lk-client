@@ -5,8 +5,7 @@ import type { TableBodyGroupedProps } from '../type';
 import { TableBodyRow } from './row';
 
 export function TableBodyGrouped<T = object>({ node, columns, level = 0 }: TableBodyGroupedProps<T>) {
-	const { isExpanded, groupKeys, multiGroup, props: tableProps, colspan, groupAt } =
-		useTableDataContext<T>();
+	const { isExpanded, groupKeys, multiGroup } = useTableDataContext<T>();
 
 	const parentLevel = node.groupLevel ?? 0;
 	const expandKey = getNodeExpandKey(node);
@@ -35,23 +34,19 @@ export function TableBodyGrouped<T = object>({ node, columns, level = 0 }: Table
 	}
 
 	const nestedLevel = level + 1;
-	const useNestedTable = multiGroup && groupKeys.length > 1;
 
-	const renderRows = () =>
-		childNodes.map((child) => (
-			<TableBodyRow<T>
-				key={getNodeExpandKey(child)}
-				node={child}
-				columns={columns}
-				level={nestedLevel}
-				group={group}
-				grouped={groupedColumn}
-			/>
-		));
-
-	if (!useNestedTable) {
-		return <>{renderRows()}</>;
-	}
-
-	return renderRows();
+	return (
+		<>
+			{childNodes.map((child) => (
+				<TableBodyRow<T>
+					key={getNodeExpandKey(child)}
+					node={child}
+					columns={columns}
+					level={nestedLevel}
+					group={group}
+					grouped={groupedColumn}
+				/>
+			))}
+		</>
+	);
 }

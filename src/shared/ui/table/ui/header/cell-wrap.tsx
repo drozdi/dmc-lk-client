@@ -3,9 +3,7 @@ import { useMemo, useState } from 'react';
 import { useTableDataContext } from '../../context/TableDataContext';
 import type { ColumnEntity } from '../../type';
 import { getGroupedColumnLevel, getGroupedColumnPadding } from '../../utils/group-by';
-import type {
-	TableHeaderCellWrapProps
-} from '../type';
+import type { TableHeaderCellWrapProps } from '../type';
 
 export function useDraggable<T = object>(
 	column: ColumnEntity<T>,
@@ -20,16 +18,23 @@ export function useDraggable<T = object>(
 	onDrop?: (e: React.DragEvent) => void;
 } {
 	const [hovered, setHovered] = useState(false);
-	if (!column.isDraggable || column.isGrouped || column.isGroup || column.isActions || column.isHoverSlot || !column.field) {
-		return {
-			draggable: false,
-		};
-	}
 	const { sortColumn, columnOrder } = useTableDataContext<T>();
-	return useMemo(
-		() => ({
+
+	const enabled =
+		!!column.isDraggable &&
+		!column.isGrouped &&
+		!column.isGroup &&
+		!column.isActions &&
+		!column.isHoverSlot &&
+		!!column.field;
+
+	return useMemo(() => {
+		if (!enabled) {
+			return { draggable: false as const };
+		}
+		return {
 			bg: hovered ? color : undefined,
-			draggable: true,
+			draggable: true as const,
 			onDragStart: (e: React.DragEvent) => {
 				e.dataTransfer.setData('text/plain', column.field as string);
 				e.dataTransfer.effectAllowed = 'move';
@@ -42,7 +47,7 @@ export function useDraggable<T = object>(
 				e.dataTransfer.dropEffect = 'move';
 				setHovered(true);
 			},
-			onDragLeave: (e: React.DragEvent) => {
+			onDragLeave: () => {
 				setHovered(false);
 			},
 			onDrop: (e: React.DragEvent) => {
@@ -51,19 +56,15 @@ export function useDraggable<T = object>(
 				if (draggedField === column.field) {
 					return;
 				}
-				if (sortColumn) {
-					const dragIndex = columnOrder.findIndex((c) => c === draggedField);
-					const dropIndex = columnOrder.findIndex((c) => c === column.field);
-
-					if (dragIndex !== -1 && dropIndex !== -1) {
-						sortColumn(dragIndex, dropIndex);
-					}
+				const dragIndex = columnOrder.findIndex((c) => c === draggedField);
+				const dropIndex = columnOrder.findIndex((c) => c === column.field);
+				if (dragIndex !== -1 && dropIndex !== -1) {
+					sortColumn(dragIndex, dropIndex);
 				}
 				setHovered(false);
-			},	
-		}),
-		[hovered, color, column, columnOrder, sortColumn],
-	);
+			},
+		};
+	}, [enabled, hovered, color, column, columnOrder, sortColumn]);
 }
 
 export function TableHeaderCellWrap<T = object>({
@@ -75,6 +76,7 @@ export function TableHeaderCellWrap<T = object>({
 }: TableHeaderCellWrapProps<T>) {
 	const { getColumnWidth, groupKeys } = useTableDataContext<T>();
 	const rowspan = column.isColumns ? 1 : maxRow - column.parentLevel;
+	const dragProps = useDraggable<T>(column);
 
 	const headerStyle = useMemo(() => {
 		const baseStyle =
@@ -99,7 +101,7 @@ export function TableHeaderCellWrap<T = object>({
 			w={column.isHoverSlot ? 0 : column.isSelecting ? (getColumnWidth(column) ?? 44) : getColumnWidth(column)}
 			style={headerStyle}
 			role="columnheader"
-			{...useDraggable<T>(column)}
+			{...dragProps}
 		>
 			{children}
 		</Table.Th>

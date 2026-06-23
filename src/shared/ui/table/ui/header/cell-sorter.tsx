@@ -30,6 +30,12 @@ export function TableHeaderCellSorter<T = object>({
 	const handleClick = (event: React.MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
+		if (
+			typeof column.sortable === 'function' &&
+			column.sortable(column) === false
+		) {
+			return;
+		}
 		if (column.field) {
 			changeSort(column.field as keyof T, { multi: event.shiftKey || multiSort });
 		}

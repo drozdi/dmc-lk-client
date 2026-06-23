@@ -14,14 +14,7 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 
 	const isExpand = isExpanded(getNodeExpandKey(node), 'group');
 	const nestedData = getGroupNestedData(node, column);
-
-	let isRendered = false;
-	
-	if (column.body) {
-		isRendered = true;
-	} else if (!hasGroupNestedData(node, column)) {
-		isRendered = true;
-	}
+	const isRendered = !!column.body;
 
 	const Tag = (column.body || TableData<T>) as React.FC<TableDataProps<T>>;
 

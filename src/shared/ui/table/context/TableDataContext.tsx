@@ -39,7 +39,7 @@ export interface TableDataContext<T = object> {
 	) => void;
 	expands: TableExpandsState;
 
-	columnWidths?: Record<keyof T, number>;
+	columnWidths?: Partial<Record<keyof T, number>>;
 	resizeColumn: (column: ColumnEntity<T>, width: number, nextWidth: number) => void;
 	getColumnWidth: (column: ColumnEntity<T>) => number | undefined;
 
@@ -67,7 +67,7 @@ export interface TableDataContext<T = object> {
 	editorMode: (item: TableNode<T>, column: ColumnEntity<T>) => boolean;
 	clearModeChange: () => void;
 
-	storage: TableDataProps['storage'];
+	storage?: import('../type').TableStorage;
 
 	rowActions?: TableRowAction<T>[];
 	rowActionsPanel: React.FC<TableRowActionsPanelProps<T>>;

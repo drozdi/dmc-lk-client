@@ -21,13 +21,13 @@ export function TableBodyCellWrap<T = object>({
 				? column.bodyStyle?.(column, node as TableNode<T>)
 				: column.bodyStyle || {};
 
-		const groupedLevel = getGroupedColumnLevel(column, groupKeys);
-		const paddingLeft = getGroupedColumnPadding<T>(column, level);
+		const groupedLevel = level || getGroupedColumnLevel(column, groupKeys);
+		const paddingLeft = getGroupedColumnPadding<T>(column, groupedLevel);
 		return {
 			...baseStyle,
 			...(paddingLeft ? { paddingLeft } : {}),
 		};
-	}, [column, groupKeys, node]);
+	}, [column, groupKeys, node, level]);
 
 	return (
 		<Table.Td

@@ -15,6 +15,8 @@ export function TablePagination<T = object>({
 
 	const pagination = usePagination({
 		total: total,
+		page: typeof page === 'number' ? page : undefined,
+		initialPage: typeof page === 'number' ? page : 1,
 		siblings: 1,
 		boundaries: 1,
 		onChange: onChangePage,
@@ -40,17 +42,17 @@ export function TablePagination<T = object>({
 				{(showed || showedSibling) && <Button size="compact-md" loading={loading} variant="default" onClick={handlePprevious} disabled={disabledPrevious}>
 					{previousLabel}
 				</Button>}
-				{showed && pagination.range.map((page, index) =>
-					page === 'dots' ? (
+				{showed && pagination.range.map((pageNum, index) =>
+					pageNum === 'dots' ? (
 						<span key={index}>...</span>
 					) : (
 						<ActionIcon 
 							loading={loading}
 							key={index}
-							onClick={() => pagination.setPage(page)}
-							variant={pagination.active === page ? 'filled' : 'default'}
+							onClick={() => pagination.setPage(pageNum)}
+							variant={pagination.active === pageNum ? 'filled' : 'default'}
 						>
-							{page}
+							{pageNum}
 						</ActionIcon>
 					)
 				)}
@@ -62,7 +64,15 @@ export function TablePagination<T = object>({
 				</ActionIcon>}
 			</Group>
 			<Box flex='0'>
-				<Select size="xs" w='4rem' loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={(value) => onChangeLimit?.(value as number)} />
+				<Select
+					size="xs"
+					w='4rem'
+					loading={loading}
+					value={String(limit)}
+					allowDeselect={false}
+					data={limits.map((n) => String(n))}
+					onChange={(value) => onChangeLimit?.(Number(value))}
+				/>
 			</Box>
 		</Group>
 	</Box>

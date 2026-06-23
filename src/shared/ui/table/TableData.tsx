@@ -19,7 +19,7 @@ import type {
 import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePagination } from "./ui";
 import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
-import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, sortByRules } from './utils';
+import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
 import { canExpandGroupedNode, getNodeExpandKey, hasGroupNestedData } from './utils/group-by';
 
 function genStorage(storageKey: string): TableStorage {
@@ -265,12 +265,14 @@ export function TableData<T = object>({
 				isHeader: !!column.header,
 				isField: !!column.field && !column.actions,
 				isEmpty: !column.field || !!column.actions,
-				isSorted: !!column.sortable,
-				isToggleable: !!column.toggleable,
+				isSorted: false,
+				isToggleable: false,
 				colspan: calculateColspan(column.children) || column.size || 1,
 				...column,
 				children: undefined,
 			};
+			col.isSorted = resolveColumnFlag(column.sortable, col);
+			col.isToggleable = resolveColumnFlag(column.toggleable, col);
 			col.columns = Children.toArray(column.children).map((child: any) => {
 				return calculateColumn(child.props, col.level);
 			});
@@ -635,15 +637,17 @@ export function TableData<T = object>({
 
 	const commitEdit = useCallback(
 		(index: TableNode<T>['index']) => {
-			// Берём актуальный элемент из состояния data (не из node.data!)
-			const idx = data.findIndex((_, i) => i.toString() === index.toString());
-			const item = data[idx];
-			if (item !== undefined) {
-				onRowEditComplete?.(item, index);
+			let editedItem: T | undefined;
+			setData((prevData) => {
+				editedItem = prevData.find((_, i) => i.toString() === index.toString());
+				return prevData;
+			});
+			if (editedItem !== undefined) {
+				onRowEditComplete?.(editedItem, index);
 			}
-			clearModeChange(); // выходим из режима редактирования
+			clearModeChange();
 		},
-		[data, clearModeChange, onRowEditComplete],
+		[clearModeChange, onRowEditComplete],
 	);
 
 	const fetch = useCallback(
