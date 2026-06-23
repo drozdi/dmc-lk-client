@@ -4,14 +4,20 @@ import type { TablePaginationProps } from './ui/type';
 /** Тип раскрытия строк: nested-таблица (group) или сгруппированные siblings (grouped). */
 export type ExpandKind = 'group' | 'grouped';
 
-export interface TableExpandsState<T = object> {
-	group: TableNode<T>['index'][];
-	grouped: TableNode<T>['index'][];
+export interface ToggleExpandOptions {
+	merge?: boolean;
+	remove?: boolean;
 }
 
-export interface TableExpandablesState<T = object> {
-	group: TableNode<T>['index'][];
-	grouped: TableNode<T>['index'][];
+export interface TableExpandsState {
+	group: string[];
+	grouped: string[];
+}
+
+export interface TableExpandablesState {
+	group: string[];
+	/** expandKey узлов, доступных для раскрытия на каждом уровне группировки. */
+	groupedByLevel: Partial<Record<number, string[]>>;
 }
 
 export interface SortRule<T = object> {
@@ -32,6 +38,10 @@ export interface TableNode<T = object> {
 	isParent: boolean;
 	isChildren: boolean;
 	nodes: TableNode<T>[];
+	/** Уровень в цепочке groupKeys (0 — верхний). */
+	groupLevel?: number;
+	/** Уникальный ключ для состояния раскрытия (не совпадает с index). */
+	expandKey?: string;
 }
 
 export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 'data'> {
@@ -73,9 +83,11 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	groupAt?: 'start' | 'end';
 	/** Явный список ключей группировки (порядок = уровни вложенности). */
 	groupKeys?: (keyof T)[];
+	/** Мульти-группировка: поэтапное раскрытие вложенных таблиц. По умолчанию true при groupKeys.length > 1. */
+	multiGroup?: boolean;
 	sortKey?: keyof T;
 	sortDesc?: boolean;
-	/** Мульти-сортировка: Shift+клик или повторный клик добавляет правило. */
+	/** Мульти-сортировка. По умолчанию true при groupKeys.length > 1. */
 	multiSort?: boolean;
 	sortRules?: SortRule<T>[];
 
@@ -129,13 +141,15 @@ export interface DataColumnProps<T = object> {
 	noWrap?: boolean;
 	draggable?: boolean;
 	/**
-	 * group — поле содержит вложенный массив строк (nested TableData при раскрытии).
-	 * grouped — строки таблицы объединяются по значению поля (groupBy), siblings в node.nodes.
-	 * Можно использовать одновременно на разных колонках: grouped сворачивает строки,
-	 * group раскрывает вложенную таблицу в поле записи.
+	 * group — вложенный массив строк (nested TableData при раскрытии).
+	 * grouped — строки объединяются по значению поля (groupBy), siblings в node.nodes.
+	 * На одной колонке: `field` — скаляр для grouped; вложенные строки — в `groupItemsField`
+	 * или по соглашению `{field}Items` (например department + departmentItems).
 	 */
 	group?: boolean;
 	grouped?: boolean;
+	/** Поле с массивом для group, если отличается от `{field}Items`. */
+	groupItemsField?: keyof T;
 	align?: 'left' | 'right' | 'center';
 	width?: number;
 }

@@ -7,7 +7,8 @@ import type {
 	TableExpandablesState,
 	TableExpandsState,
 	TableNode,
-	TableSortState
+	TableSortState,
+	ToggleExpandOptions,
 } from "../type";
 
 export interface TableDataContext<T = object> {
@@ -17,18 +18,22 @@ export interface TableDataContext<T = object> {
 	colspan: number;
 	rowspan: number;
 	editMode: TableDataProps<T>['editMode'];
-	multiSort: boolean;
 
 	changeSort: (field: keyof T, options?: { multi?: boolean }) => void;
 	sort: TableSortState<T>;
+	multiSort: boolean;
+	multiGroup: boolean;
+	groupKeys: (keyof T)[];
+	groupLevel: number;
 
-	expandables: TableExpandablesState<T>;
-	isExpanded: (index: TableNode<T>['index'], kind: ExpandKind) => boolean;
+	expandables: TableExpandablesState;
+	isExpanded: (expandKey: string, kind: ExpandKind) => boolean;
 	toggleExpand: (
-		index: TableNode<T>['index'] | TableNode<T>['index'][],
+		expandKey: string | string[],
 		kind: ExpandKind,
+		options?: ToggleExpandOptions,
 	) => void;
-	expands: TableExpandsState<T>;
+	expands: TableExpandsState;
 
 	columnWidths?: Record<keyof T, number>;
 	resizeColumn: (column: ColumnEntity<T>, width: number, nextWidth: number) => void;
@@ -47,7 +52,7 @@ export interface TableDataContext<T = object> {
 	isRowSelected: (index: TableNode<T>['index']) => boolean;
 	someSelected: boolean;
 	allSelected: boolean;
-	
+
 	handleModeChange: (item: TableNode<T>, column: ColumnEntity<T>) => void;
 
 	updateNode: (index: TableNode<T>['index'], field: keyof T, value: T[keyof T]) => void;

@@ -1,23 +1,25 @@
-import { Collapse, Table } from "@mantine/core";
+import { Collapse, Table } from '@mantine/core';
 import { useTableDataContext } from '../../context';
+import { getGroupNestedData, getNodeExpandKey, hasGroupNestedData } from '../../utils/group-by';
 import { TableData } from "../../TableData";
 import type { TableDataProps } from "../../type";
 import type { TableBodyGroupProps } from '../type';
 
 export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }: TableBodyGroupProps<T>) {
-	if (!column.isGroup || !node.data[column.field as keyof T]) {
+	if (!column.isGroup || !hasGroupNestedData(node, column)) {
 		return null;
 	}
 	const { props, isExpanded, colspan, groupAt, columnWidths, resizeColumn, columnOrder, onColumnOrder } =
 		useTableDataContext<T>();
 
-	const isExpand = isExpanded(node.index, 'group');
+	const isExpand = isExpanded(getNodeExpandKey(node), 'group');
+	const nestedData = getGroupNestedData(node, column);
 
 	let isRendered = false;
 	
 	if (column.body) {
 		isRendered = true;
-	} else if (!Array.isArray(node.data[column.field as keyof T])) {
+	} else if (!hasGroupNestedData(node, column)) {
 		isRendered = true;
 	}
 
@@ -35,7 +37,7 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 			<Table.Td p="0" colSpan={isRendered ? columns.length : colspan}>
 				<Collapse expanded={isExpand} p={isRendered ? 'xs' : '0'}>
 					<Tag
-						data={node.data[column.field as keyof T]}
+						data={nestedData}
 						columns={columns.filter((column) => !column.isGroup)}
 						columnWidths={columnWidths}
 						onColumnResize={resizeColumn}

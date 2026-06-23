@@ -1,30 +1,38 @@
-import { ActionIcon, Box } from "@mantine/core";
+import { ActionIcon } from "@mantine/core";
 import { TbCircleChevronLeft, TbCircleChevronRight } from 'react-icons/tb';
 import { useTableDataContext } from '../../context';
 import type { ExpandKind } from '../../type';
+import { getNodeExpandKey } from '../../utils/group-by';
 import type { TableBodyExpanderProps } from '../type';
 
 function resolveExpandKind<T>(column: TableBodyExpanderProps<T>['column']): ExpandKind {
-	if (column.isGroup) {
+	if (column.isGroup && !column.isGrouped) {
 		return 'group';
 	}
 	return 'grouped';
 }
 
-export function TableBodyExpander<T = object>({ node, column, onClick, ...props }: TableBodyExpanderProps<T>) {
+export function TableBodyExpander<T = object>({
+	node,
+	column,
+	kind: kindProp,
+	onClick,
+	...props
+}: TableBodyExpanderProps<T>) {
 	if (!column.isGroup && !column.isGrouped) {
 		return null;
 	}
 
 	const { isExpanded, toggleExpand, groupAt } = useTableDataContext<T>();
-	const kind = resolveExpandKind(column);
-	const isExpand = isExpanded(node.index, kind);
+	const kind = kindProp ?? resolveExpandKind(column);
+	const expandKey = getNodeExpandKey(node);
+	const isExpand = isExpanded(expandKey, kind);
 
 	const ariaLabel = isExpand ? 'Свернуть группу' : 'Развернуть группу';
 
 	return (
-		<Box ta="center">
 			<ActionIcon
+			flex={0}
 				variant="subtle"
 				role="button"
 				title={ariaLabel}
@@ -41,11 +49,10 @@ export function TableBodyExpander<T = object>({ node, column, onClick, ...props 
 						onClick(node.index);
 						return;
 					}
-					toggleExpand(node.index, kind);
+					toggleExpand(expandKey, kind);
 				}}
 			>
 				{groupAt === 'end' ? <TbCircleChevronLeft /> : <TbCircleChevronRight />}
 			</ActionIcon>
-		</Box>
 	);
 }

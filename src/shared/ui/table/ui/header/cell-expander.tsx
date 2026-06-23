@@ -8,24 +8,43 @@ import type { ExpandKind } from '../../type';
 import type { TableHeaderCellExpanderProps } from '../type';
 
 function resolveExpandKind<T>(column: TableHeaderCellExpanderProps<T>['column']): ExpandKind {
-	return column.isGroup ? 'group' : 'grouped';
+	if (column.isGroup && !column.isGrouped) {
+		return 'group';
+	}
+	return 'grouped';
 }
 
 export function TableHeaderCellExpander<T = object>({
 	column,
+	kind: kindProp,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { expands, toggleExpand, groupAt, expandables } = useTableDataContext<T>();
-	const kind = resolveExpandKind(column);
-	const kindExpandables = expandables[kind];
-	const kindExpands = expands[kind];
+	const { expands, toggleExpand, groupAt, expandables, groupKeys, groupLevel } =
+		useTableDataContext<T>();
+	const kind = kindProp ?? resolveExpandKind(column);
 
-	const isExpandable = kindExpandables.length > 0;
+	if (kind === 'grouped') {
+		if (!column.isGrouped) {
+			return null;
+		}
+		const columnLevel = groupKeys.indexOf(column.field as keyof T);
+		if (columnLevel === -1 || columnLevel !== groupLevel) {
+			return null;
+		}
+	} else if (!column.isGroup) {
+		return null;
+	}
+
+	const levelKeys =
+		kind === 'grouped' ? (expandables.groupedByLevel[groupLevel] ?? []) : expandables.group;
+
+	const isExpandable = levelKeys.length > 0;
 	if (!isExpandable) {
 		return null;
 	}
 
-	const isExpand = kindExpands.length === kindExpandables.length;
+	const expandedAtLevel = expands[kind].filter((key) => levelKeys.includes(key));
+	const isExpand = expandedAtLevel.length === levelKeys.length;
 	const ariaLabel = isExpand ? 'Свернуть все группы' : 'Развернуть все группы';
 	const rotateAngle = isExpand ? groupAt === 'end' ? '-90deg' : '90deg' : undefined;
 
@@ -41,7 +60,11 @@ export function TableHeaderCellExpander<T = object>({
 				rotate: rotateAngle,
 			}}
 			onClick={() => {
-				toggleExpand(isExpand ? [] : kindExpandables, kind);
+				if (isExpand) {
+					toggleExpand(levelKeys, kind, { remove: true });
+				} else {
+					toggleExpand(levelKeys, kind, { merge: true });
+				}
 			}}
 		>
 			{groupAt === 'end' ? <TbCircleChevronLeft /> : <TbCircleChevronRight />}

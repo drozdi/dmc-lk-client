@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Box } from '@mantine/core';
 import { useTableDataContext } from '../../context';
 import type { TableBodyCellSlotProps } from '../type';
 
@@ -6,19 +6,21 @@ export function TableBodyCellSlot<T = object>({
 	node,
 	column,
 }: TableBodyCellSlotProps<T>) {
-	if (!column.isGrouped && column.isGroup) {
+	const { handleModeChange, editMode } = useTableDataContext<T>();
+
+	if (column.isGroup && !column.isGrouped) {
 		return null;
 	}
-	const { handleModeChange, editMode } = useTableDataContext<T>();
+
 	const attrs: {
 		onDoubleClick?: () => void;
 		onClick?: () => void;
 		style?: React.CSSProperties;
 	} = {};
 	if (editMode === 'row') {
-		attrs['onDoubleClick'] = () => handleModeChange(node, column);
+		attrs.onDoubleClick = () => handleModeChange(node, column);
 	} else if (editMode === 'cell') {
-		attrs['onClick'] = () => handleModeChange(node, column);
+		attrs.onClick = () => handleModeChange(node, column);
 		attrs.style = {
 			cursor: 'pointer',
 		};

@@ -1,4 +1,4 @@
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Badge, Group } from '@mantine/core';
 import {
 	TbChevronDown,
 	TbChevronUp,
@@ -18,11 +18,14 @@ export function TableHeaderCellSorter<T = object>({
 
 	const ruleIndex = sort.rules.findIndex((rule) => rule.key === column.field);
 	const isSorted = ruleIndex !== -1;
-	const isDescending = isSorted ? sort.rules[ruleIndex].descending : sort.descending;
+	const isDescending = isSorted ? sort.rules[ruleIndex]!.descending : sort.descending;
+	const sortPriority = isSorted && sort.rules.length > 1 ? ruleIndex + 1 : null;
 
 	const ariaLabel = isSorted
-		? `Отсортировано ${isDescending ? 'по убыванию' : 'по возрастанию'}${multiSort && sort.rules.length > 1 ? ` (приоритет ${ruleIndex + 1})` : ''}`
-		: 'Нажмите для сортировки';
+		? `Отсортировано ${isDescending ? 'по убыванию' : 'по возрастанию'}${sortPriority ? ` (приоритет ${sortPriority})` : ''}`
+		: multiSort
+			? 'Нажмите для сортировки, Shift+клик — добавить поле'
+			: 'Нажмите для сортировки';
 
 	const handleClick = (event: React.MouseEvent) => {
 		event.preventDefault();
@@ -33,15 +36,22 @@ export function TableHeaderCellSorter<T = object>({
 	};
 
 	return (
-		<ActionIcon
-			{...props}
-			variant="subtle"
-			flex="0"
-			onClick={handleClick}
-			title={ariaLabel}
-			aria-label={ariaLabel}
-		>
-			{isSorted ? isDescending ? <TbChevronDown /> : <TbChevronUp /> : <TbSelector />}
-		</ActionIcon>
+		<Group gap={2} wrap="nowrap">
+			{sortPriority !== null && (
+				<Badge size="xs" variant="light" circle>
+					{sortPriority}
+				</Badge>
+			)}
+			<ActionIcon
+				{...props}
+				variant="subtle"
+				flex="0"
+				onClick={handleClick}
+				title={ariaLabel}
+				aria-label={ariaLabel}
+			>
+				{isSorted ? isDescending ? <TbChevronDown /> : <TbChevronUp /> : <TbSelector />}
+			</ActionIcon>
+		</Group>
 	);
 }

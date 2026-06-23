@@ -5,11 +5,21 @@ import { Children, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { Loading } from '../loading';
 import { TableDataProvider } from './context/TableDataContext';
 import { useColumnHidden, useColumnOrder, useColumnSort, useNodeSelect } from './hooks';
-import type { ColumnEntity, DataColumnProps, TableDataProps, TableNode, TableStorage } from './type';
+import type {
+	ColumnEntity,
+	DataColumnProps,
+	ExpandKind,
+	TableDataProps,
+	TableExpandablesState,
+	TableExpandsState,
+	TableNode,
+	TableStorage,
+	ToggleExpandOptions,
+} from './type';
 import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePagination } from "./ui";
 import { TableError } from './ui/TableError';
-import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByKeys, limitBy, purgeRemovedColumnStorage, sortByRules } from './utils';
-import type { ExpandKind, TableExpandablesState, TableExpandsState } from './type';
+import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, sortByRules } from './utils';
+import { canExpandGroupedNode, getNodeExpandKey, hasGroupNestedData } from './utils/group-by';
 
 function genStorage(storageKey: string): TableStorage {
 	const prefix = `${storageKey}.`;
@@ -80,8 +90,9 @@ export function TableData<T = object>({
 	groupKeys: initialGroupKeys,
 	sortKey,
 	sortDesc = false,
-	multiSort = false,
+	multiSort: initialMultiSort,
 	sortRules: initialSortRules,
+	multiGroup: initialMultiGroup,
 
 	////////
 
@@ -176,7 +187,7 @@ export function TableData<T = object>({
 
 	const [error, setError] = useState<React.ReactNode>(initialError);
 	const [isLoading, setLoading] = useState<boolean>(false);
-	const [expands, setExpands] = useState<TableExpandsState<T>>({
+	const [expands, setExpands] = useState<TableExpandsState>({
 		group: [],
 		grouped: [],
 	});
@@ -239,12 +250,24 @@ export function TableData<T = object>({
 
 	const columnFields = useMemo(() => getColumnFields(columnsRaw), [columnsRaw]);
 
+	const groupKeys = useMemo<(keyof T)[]>(() => {
+		if (initialGroupKeys?.length) {
+			return initialGroupKeys;
+		}
+		return columnsRaw
+			.filter((column) => column.isGrouped && column.field)
+			.map((column) => column.field as keyof T);
+	}, [initialGroupKeys, columnsRaw]);
+
+	const resolvedMultiSort = initialMultiSort ?? groupKeys.length > 1;
+	const resolvedMultiGroup = initialMultiGroup ?? groupKeys.length > 1;
+
 	const { sort, changeSort } = useColumnSort(
 		columnsRaw,
 		storage,
 		sortKey,
 		sortDesc,
-		multiSort,
+		resolvedMultiSort,
 		initialSortRules,
 	);
 	const { columnOrder, setColumnOrder, sortColumn } = useColumnOrder(
@@ -326,20 +349,30 @@ export function TableData<T = object>({
 
 	const toggleExpand = useCallback(
 		(
-			index: TableNode<T>['index'] | TableNode<T>['index'][],
+			expandKey: string | string[],
 			kind: ExpandKind,
+			options?: ToggleExpandOptions,
 		) => {
 			setExpands((prev) => {
-				const updateKind = (current: TableNode<T>['index'][]) => {
-					if (Array.isArray(index)) {
-						return index;
+				const updateKind = (current: string[]) => {
+					if (Array.isArray(expandKey)) {
+						if (options?.remove) {
+							return current.filter((key) => !expandKey.includes(key));
+						}
+						if (options?.merge) {
+							return [...new Set([...current, ...expandKey])];
+						}
+						return expandKey;
 					}
-					if (initialMultiple) {
-						return current.includes(index)
-							? current.filter((item) => item !== index)
-							: [...current, index];
+
+					const allowMultiple = initialMultiple || resolvedMultiGroup;
+
+					if (allowMultiple) {
+						return current.includes(expandKey)
+							? current.filter((key) => key !== expandKey)
+							: [...current, expandKey];
 					}
-					return current.includes(index) ? [] : [index];
+					return current.includes(expandKey) ? [] : [expandKey];
 				};
 
 				return {
@@ -348,11 +381,11 @@ export function TableData<T = object>({
 				};
 			});
 		},
-		[initialMultiple],
+		[initialMultiple, resolvedMultiGroup],
 	);
 
 	const isExpanded = useCallback(
-		(index: TableNode<T>['index'], kind: ExpandKind) => expands[kind].includes(index),
+		(expandKey: string, kind: ExpandKind) => expands[kind].includes(expandKey),
 		[expands],
 	);
 
@@ -433,15 +466,6 @@ export function TableData<T = object>({
 		}
 		return columns.filter((col) => !hiddenColumns.includes(col.field as keyof T));
 	}, [columns, hiddenColumns]);
-
-	const groupKeys = useMemo<(keyof T)[]>(() => {
-		if (initialGroupKeys?.length) {
-			return initialGroupKeys;
-		}
-		return columnsRaw
-			.filter((column) => column.isGrouped && column.field)
-			.map((column) => column.field as keyof T);
-	}, [initialGroupKeys, columnsRaw]);
 
 	const rowspan = useMemo(() => {
 		let max = 0;
@@ -571,7 +595,7 @@ export function TableData<T = object>({
 	const nodes: TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
 		let nextNodes: TableNode<T>[] = convertNodes(data);
 		if (groupKeys.length) {
-			nextNodes = groupByKeys<T>(nextNodes, groupKeys);
+			nextNodes = groupByFirstKey<T>(nextNodes, groupKeys);
 		}
 
 		if (!fetcher && limit > 0) {
@@ -591,26 +615,25 @@ export function TableData<T = object>({
 		setTotal(data.length);
 	}, [initialProps, data.length]);
 
-	const expandables = useMemo<TableExpandablesState<T>>(() => {
+	const expandables = useMemo<TableExpandablesState>(() => {
 		const groupColumn = columns.find((col) => col.isGroup);
-		const groupedColumn = columns.find((col) => col.isGrouped);
 
 		const group =
-			groupColumn?.field
+			groupColumn
 				? nodes
-						.filter((node) => {
-							const value = node.data[groupColumn.field as keyof T];
-							return Array.isArray(value) && value.length > 0;
-						})
-						.map((node) => node.index)
+						.filter((node) => hasGroupNestedData(node, groupColumn))
+						.map((node) => getNodeExpandKey(node))
 				: [];
 
-		const grouped = groupedColumn
-			? nodes.filter((node) => node.nodes?.length).map((node) => node.index)
-			: [];
+		const groupedByLevel: Partial<Record<number, string[]>> = {};
+		if (groupKeys.length) {
+			groupedByLevel[0] = nodes
+				.filter((node) => canExpandGroupedNode(node, groupKeys))
+				.map((node) => getNodeExpandKey(node));
+		}
 
-		return { group, grouped };
-	}, [nodes, columns]);
+		return { group, groupedByLevel };
+	}, [nodes, columns, groupKeys]);
 
 	const handlerNext = function () {
 		if (fetcher) {
@@ -681,7 +704,10 @@ export function TableData<T = object>({
 					props,
 					sort,
 					changeSort,
-					multiSort,
+					multiSort: resolvedMultiSort,
+					multiGroup: resolvedMultiGroup,
+					groupKeys,
+					groupLevel: 0,
 					breakpoint,
 					editorMode,
 					handleModeChange,
@@ -712,7 +738,9 @@ export function TableData<T = object>({
 					props,
 					sort,
 					changeSort,
-					multiSort,
+					resolvedMultiSort,
+					resolvedMultiGroup,
+					groupKeys,
 					breakpoint,
 					editorMode,
 					handleModeChange,

@@ -3,7 +3,7 @@ import type {
 	BoxProps,
 	TableProps as TableMantineProps,
 } from '@mantine/core';
-import type { ColumnEntity, TableNode } from '../type';
+import type { ColumnEntity, ExpandKind, TableNode } from '../type';
 
 export interface TableProps<T = object> extends Omit<TableMantineProps, 'children'> {
 	withHeader?: boolean;
@@ -44,7 +44,9 @@ export interface TableHeaderCellSlotProps<T = object> extends TableHeaderCellBas
 export interface TableHeaderCellActionProps<T = object>
 	extends TableHeaderCellBase<T>, ActionIconProps {}
 export interface TableHeaderCellBoxProps<T = object> extends TableHeaderCellBase<T>, BoxProps {}
-export type TableHeaderCellExpanderProps<T = object> = TableHeaderCellActionProps<T>;
+export type TableHeaderCellExpanderProps<T = object> = TableHeaderCellActionProps<T> & {
+	kind?: ExpandKind;
+};
 export type TableHeaderCellDragerProps<T = object> = TableHeaderCellActionProps<T>
 export type TableHeaderCellTogglerProps<T = object> = TableHeaderCellActionProps<T>
 export type TableHeaderCellSorterProps<T = object> = TableHeaderCellActionProps<T>;
@@ -97,6 +99,7 @@ export interface TableBodyCellBaseProps<T = object> {
 }
 
 export interface TableBodyExpanderProps<T = object> extends TableBodyCellBaseProps<T>, ActionIconProps {
+	kind?: ExpandKind;
 	onClick?: (index: TableNode<T>['index']) => void;
 }
 
