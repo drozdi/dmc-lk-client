@@ -1,13 +1,14 @@
 import {
+	AnalyticsEmpty,
 	QueryShow,
 	useEnumsEvents,
+	useFetchAnalyticsEvents,
 	useFilterdateStep,
-	useQueryAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
-import { Center, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { type MouseHandlerDataParam } from "recharts";
 import { EventsAnalytic } from "./ui/events-analytic";
 import { EventsBar } from "./ui/events-bar";
@@ -34,7 +35,7 @@ const initValue = Object.fromEntries(
 	Object.keys(ee.data).map((item) => [item, 0]),
 );
 
-export const AnalyticEvents = ({
+export const AnalyticEvents = memo(function AnalyticEvents({
 	filterdate,
 	step = "d",
 	events = ["v", "i", "d", "p"],
@@ -42,25 +43,23 @@ export const AnalyticEvents = ({
 	stop = "m",
 	percent = ["d"],
 	onClick,
-	onLoaded
-}: AnalyticEventsProps) => {
+	onLoaded,
+}: AnalyticEventsProps) {
 	const production_id = useStoreUserProfile((state) => state.productions);
 
-	const [query, setQuery] = useState<IRequestAnalytics>({
-		filterdate,
-		step,
-		production_id,
-	} as IRequestAnalytics);
-
-	const { fetch } = useQueryAnalytics(query);
-
-	const [data, setData] = useState<Record<AnalyticEvent, IResponseAnalytics>>();
+	const { data, query } = useFetchAnalyticsEvents(
+		{
+			filterdate,
+			step,
+			production_id,
+		},
+		events,
+	);
 
 	const labels = useFilterdateStep(query);
 
-	// Извлекаем, групируем данные
 	const ddata = useMemo(() => {
-		if (!data) {
+		if (!data || !Object.keys(data).length) {
 			return [];
 		}
 
@@ -85,10 +84,8 @@ export const AnalyticEvents = ({
 							if (dayjs(item.timestamp).format("HH") === date) {
 								ddata[date][event as AnalyticEvent] += item.count;
 							}
-						} else {
-							if (dayjs(item.timestamp).format("YYYY-MM-DD") === date) {
-								ddata[date][event as AnalyticEvent] += item.count;
-							}
+						} else if (dayjs(item.timestamp).format("YYYY-MM-DD") === date) {
+							ddata[date][event as AnalyticEvent] += item.count;
 						}
 					}
 				}
@@ -96,56 +93,24 @@ export const AnalyticEvents = ({
 		}
 
 		return Object.entries(ddata)
-			.map(([date, data]) => ({
-				...data,
+			.map(([date, row]) => ({
+				...row,
 				date,
 			}))
 			.map((item) => ({
 				...item,
-				total: events.reduce((acc, key) => acc + item[key] || 0, 0),
+				total: events.reduce((acc, key) => acc + (item[key] || 0), 0),
 			}));
-	}, [data, labels, production_id]);
+	}, [data, labels, step, events]);
 
 	const dddata = useMemo(() => {
 		return ddata.sort((a, b) => a.date.localeCompare(b.date));
 	}, [ddata]);
 
 	const isEmpty = useMemo(
-		() => dddata.every((item) => item.total < 1),
+		() => !dddata.length || dddata.every((item) => item.total < 1),
 		[dddata],
 	);
-
-	useEffect(() => {
-		let cancelled = false;
-
-		(async function () {
-			const results = await Promise.all(
-				events.map((event) => fetch({ ...query, event })),
-			);
-
-			if (cancelled) {
-				return;
-			}
-
-			setData(
-				Object.fromEntries(
-					events.map((event, index) => [event, results[index]]),
-				) as Record<AnalyticEvent, IResponseAnalytics>,
-			);
-		})();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [query, events]);
-
-	useEffect(() => {
-		setQuery({
-			filterdate,
-			step,
-			production_id,
-		} as IRequestAnalytics);
-	}, [filterdate, step, production_id]);
 
 	const handleClick = (arg: MouseHandlerDataParam, e: React.MouseEvent) => {
 		if (query.step === stop) {
@@ -169,10 +134,7 @@ export const AnalyticEvents = ({
 	return (
 		<Stack h="100%">
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
-					Данные не нашлись!<br />
-					За <QueryShow {...query} />
-				</Center>
+				<AnalyticsEmpty query={query} />
 			) : type === "table" ? (
 				<EventsTable
 					query={query as IRequestAnalytics}
@@ -212,4 +174,4 @@ export const AnalyticEvents = ({
 			)}
 		</Stack>
 	);
-};
+});

@@ -3,32 +3,37 @@ import {
 	useEnumsFields,
 	useQueryIncident
 } from "@/entites/analytics";
+import { IncidentEmpty } from "@/features/analytics/incident/ui/incident-empty";
+import {
+	exportIncidentDetailed,
+} from "@/features/analytics/incident/utils/export-excel";
 import { $setting } from "@/shared";
 import { useQueryLoading } from "@/shared/hooks";
 import { ButtonIcon, ButtonRemove, Loading } from "@/shared/ui";
+import { TableSkeleton } from "@/shared/ui/skeleton";
 import { DataColumn, TableData } from "@/shared/ui/table";
 import {
 	ActionIcon,
-	Center,
+	Button,
 	Group,
 	HoverCard,
 	Stack,
 	TextInput
 } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { TbPlus, TbReload, TbXboxX } from "react-icons/tb";
+import { TbDownload, TbPlus, TbReload, TbXboxX } from "react-icons/tb";
 
 interface IncidentGenerateProps {
 	filterdate: [DateValue, DateValue];
 	filter?: boolean;
 	fields?: string[];
+	initialDataFilters?: string[];
 }
 
 export const IncidentGenerate = ({
 	filterdate,
-	filter,
+	filter = false,
 	fields = [
 		"taskid",
 		"name_production",
@@ -37,6 +42,7 @@ export const IncidentGenerate = ({
 		"device_name",
 		"node_name",
 	],
+	initialDataFilters = [],
 }: IncidentGenerateProps) => {
 	const [template, updateTemplate] = $setting.useSetState<
 		Required<IRequestAnalyticsIncident>
@@ -49,7 +55,7 @@ export const IncidentGenerate = ({
 	const ef = useEnumsFields();
 	const qi = useQueryIncident(template)
 	const isLoading = useQueryLoading(qi, ef);
-	const { data, fetch } = qi;
+	const { data } = qi;
 
 	const handleRemove = (field: string) => {
 		template.fields_name = template.fields_name.filter(
@@ -91,44 +97,81 @@ export const IncidentGenerate = ({
 	}, [filterdate]);
 
 	useEffect(() => {
-		fetch(template)
-	}, [template])
+		if (!initialDataFilters.length) {
+			return;
+		}
+
+		updateTemplate({
+			data: [...new Set(initialDataFilters)],
+		});
+	}, [initialDataFilters]);
+
+	const handleExport = () => {
+		if (!data?.length) {
+			alert("Нет данных для скачивания");
+			return;
+		}
+
+		exportIncidentDetailed(
+			data,
+			template.fields_name,
+			ef.findLabelByCode,
+			filterdate,
+		);
+	};
 
 	return (
 		<Stack gap="xs">
-			{filter && (
-				<Group gap="xs" justify="space-between">
-					<ul className="list-none flex-1">
-						<li>
-							<TextInput
-								placeholder="Ошибка"
-								value={value}
-								onChange={({ target }) => setValue(target.value)}
-								onKeyPress={handleKeyPress}
-								rightSection={
-									<ActionIcon onClick={handleAddData}>
-										<TbPlus />
-									</ActionIcon>
-								}
-							/>
-						</li>
-						{template.data.map((item) => (
-							<li className="flex justify-between items-start" key={item}>
-								{item}{" "}
-								<ButtonRemove
-									onClick={() => handleRemoveItem(item)}
-									title="Удалить ошибку"
-								>
-									<TbXboxX />
-								</ButtonRemove>
+			<Group justify="space-between">
+				{filter ? (
+					<Group gap="xs" justify="space-between" flex={1}>
+						<ul className="list-none flex-1">
+							<li>
+								<TextInput
+									placeholder="Фильтр по тексту ошибки"
+									value={value}
+									onChange={({ target }) => setValue(target.value)}
+									onKeyPress={handleKeyPress}
+									rightSection={
+										<ActionIcon onClick={handleAddData}>
+											<TbPlus />
+										</ActionIcon>
+									}
+								/>
 							</li>
-						))}
-					</ul>
-				</Group>
-			)}
-			<Loading active={isLoading} keepMounted>
+							{template.data.map((item) => (
+								<li className="flex justify-between items-start" key={item}>
+									{item}{" "}
+									<ButtonRemove
+										onClick={() => handleRemoveItem(item)}
+										title="Удалить ошибку"
+									>
+										<TbXboxX />
+									</ButtonRemove>
+								</li>
+							))}
+						</ul>
+					</Group>
+				) : (
+					<div />
+				)}
+				<Button
+					variant="light"
+					leftSection={<TbDownload size={16} />}
+					onClick={handleExport}
+					disabled={!data?.length}
+					loading={isLoading}
+				>
+					Скачать Excel
+				</Button>
+			</Group>
+			<Loading
+				active={isLoading}
+				keepMounted
+				skeleton={<TableSkeleton rows={8} mih={320} />}
+			>
 				{data?.length ? (
-					<TableData<IAnalyticsIncidentItem> data={data} withPagination={false}>
+					<TableData<IAnalyticsIncidentItem> data={data} limit={30}>
 						<DataColumn<IAnalyticsIncidentItem> field='data' header='Ошибка' sortable ellipsis	noWrap style={{
 							fontWeight: 'bolder'
 						}} />
@@ -162,11 +205,7 @@ export const IncidentGenerate = ({
 						</HoverCard>} body={() => <></>} />
 					</TableData>
 				) : (
-					<Center w="100%" h="10rem" fz="h1" c="dimmed">
-						Данные отсутствуют за период{" "}
-						{dayjs(filterdate[0]).format($setting.get("formatDate"))} -{" "}
-						{dayjs(filterdate[1]).format($setting.get("formatDate"))}
-					</Center>
+					<IncidentEmpty filterdate={filterdate} />
 				)}
 			</Loading>
 		</Stack>

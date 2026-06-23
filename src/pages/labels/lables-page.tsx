@@ -108,7 +108,7 @@ export function LabelsPage() {
 	const [production_id, setProduction_id] = $setting.useState('labels.group.production_id', 0)
 	return (
 		<Paper>
-			<Template.Title>Групировка этикеток</Template.Title>
+			<Template.Title>Группировка этикеток</Template.Title>
 			<Group justify="space-between">
 				<Group>
 					<Text>

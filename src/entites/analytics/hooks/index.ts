@@ -6,6 +6,7 @@ export * from "./use-enums-events";
 export * from "./use-enums-fields";
 export * from "./use-enums-single-action";
 export * from "./use-enums-step";
+export * from "./use-fetch-analytics-events";
 export * from "./use-filterdate-step";
 export * from "./use-query-analytics";
 export * from "./use-query-analytics-fields";

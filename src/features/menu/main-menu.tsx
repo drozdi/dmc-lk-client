@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
 		path: "/analytics/incident",
 	},
 	{
-		label: "Групировка этикеток",
+		label: "Группировка этикеток",
 		icon: <TbMenu />,
 		path: "/labels",
 	},

@@ -74,7 +74,7 @@ FactoryWidget.register({
 					value: "analytic",
 				},
 				{
-					label: "Столбцами (Совмещеный)",
+					label: "Столбцами (совмещённые)",
 					value: "stack",
 				},
 			],

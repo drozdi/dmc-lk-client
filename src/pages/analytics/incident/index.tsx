@@ -12,7 +12,7 @@ import { DualCalendarRange } from "@/shared/ui";
 import { Button, Group, Paper, Tabs } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export function AnalyticsIncidentPage() {
@@ -20,11 +20,17 @@ export function AnalyticsIncidentPage() {
 
 	const fromDay = dayjs(searchParams.get("from") || dayjs().day(dayjs().day() - 7));
 	const toDay = dayjs(searchParams.get("to") || fromDay.day(fromDay.day() + 7));
+	const initialDataFilters = useMemo(
+		() => searchParams.getAll("data").filter(Boolean),
+		[searchParams],
+	);
+	const defaultTab = searchParams.get("tab") === "generate" ? "generate" : "detail";
 
 	const [filterdate, setFilterdate] = $setting.useState<[DateValue, DateValue]>(
 		"incident.filterdate",
 		[fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")],
 	);
+	const [activeTab, setActiveTab] = useState(defaultTab);
 
 	const handleChange = (filterdate: [DateValue, DateValue]) => {
 		if (filterdate[0] && filterdate[1]) {
@@ -37,6 +43,10 @@ export function AnalyticsIncidentPage() {
 			setFilterdate([fromDay.format("YYYY-MM-DD"), toDay.format("YYYY-MM-DD")]);
 		}
 	}, []);
+
+	useEffect(() => {
+		setActiveTab(defaultTab);
+	}, [defaultTab]);
 
 	const ef = useEnumsFields();
 	const ed = useEnumsDetails();
@@ -81,7 +91,7 @@ export function AnalyticsIncidentPage() {
 				</Group>
 				<DualCalendarRange value={filterdate} onChange={handleChange} />
 			</Group>
-			<Tabs defaultValue={searchParams.get("tab") === 'generate'? 'generate': "detail"} mt="xs">
+			<Tabs value={activeTab} onChange={(value) => value && setActiveTab(value)} mt="xs">
 				<Tabs.List>
 					<Tabs.Tab value="detail">Кратко</Tabs.Tab>
 					<Tabs.Tab value="generate">Детально</Tabs.Tab>
@@ -90,7 +100,10 @@ export function AnalyticsIncidentPage() {
 					<IncidentDetail filterdate={filterdate} />
 				</Tabs.Panel>
 				<Tabs.Panel value="generate">
-					<IncidentGenerate filterdate={filterdate} />
+					<IncidentGenerate
+						filterdate={filterdate}
+						initialDataFilters={initialDataFilters}
+					/>
 				</Tabs.Panel>
 			</Tabs>
 		</Paper>

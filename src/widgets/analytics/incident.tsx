@@ -1,11 +1,17 @@
-import { QueryShow, useStoreIncident } from "@/entites/analytics";
-import { useStoreUserProfile } from "@/entites/auth";
-import { AnalyticIncident, type AnalyticIncidentProps } from '@/features/analytics/widgets';
+import { QueryShow } from "@/entites/analytics";
+import { exportIncidentChart } from "@/features/analytics/incident/utils/export-excel";
+import { buildIncidentReportUrl } from "@/features/analytics/incident/utils/incident-navigation";
+import {
+	AnalyticIncident,
+	type AnalyticIncidentProps,
+	type AnalyticIncidentSlice,
+} from '@/features/analytics/widgets';
 import {
 	Widget,
 	type WidgetProps
 } from "@/shared/ui";
-import { useEffect, useState } from "react";
+import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export interface WidgetAnalyticsIncidentProps extends WidgetProps, AnalyticIncidentProps {}
@@ -14,28 +20,45 @@ export const WidgetAnalyticIncident = ({
 	filterdate,
 	...props
 }: WidgetAnalyticsIncidentProps) => {
-	//return "";
-	const isLoading = useStoreIncident(state => state.isLoading);
-	const productions = useStoreUserProfile((state) => state.productions);
-	
-	const [query, setQuery] = useState<Required<IRequestAnalyticsIncident>>({
-		filterdate: filterdate || [null, null],
-		data: [],
-		fields_name: [],
-	});
+	const navigate = useNavigate();
+	const chartData = useRef<AnalyticIncidentSlice[]>([]);
 
-	useEffect(() => {
-		setQuery((v) => ({ ...v, filterdate }));
-	}, [filterdate]);
+	const handleSliceClick = (slice: AnalyticIncidentSlice) => {
+		navigate(
+			buildIncidentReportUrl({
+				filterdate: filterdate || [null, null],
+				data: slice.name,
+				tab: "generate",
+			}),
+		);
+	};
 
 	return (
 		<Widget
-			loading={isLoading}
 			{...props}
+			loading={false}
 			title='Инциденты'
-			subTitle={<>За <QueryShow {...query} /></>}
+			subTitle={
+				<>
+					За <QueryShow filterdate={filterdate || [null, null]} />
+				</>
+			}
+			onDownload={() => {
+				if (!chartData.current.length) {
+					alert("Нет данных для скачивания");
+					return;
+				}
+
+				exportIncidentChart(chartData.current, filterdate || [null, null]);
+			}}
 		>
-			<AnalyticIncident filterdate={query.filterdate} />
+			<AnalyticIncident
+				filterdate={filterdate}
+				onSliceClick={handleSliceClick}
+				onLoaded={(data) => {
+					chartData.current = data;
+				}}
+			/>
 		</Widget>
 	);
 };

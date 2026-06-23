@@ -1,4 +1,4 @@
-import { useQueryAnalytics } from "@/entites/analytics";
+import { useQueryAnalytics, AnalyticsEmpty } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { labelName } from "@/shared/utils";
@@ -115,9 +115,7 @@ export const AnalyticType = ({
 			</Group>
 			<AspectRatio ratio={16 / 9}>
 				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed">
-						Данные ненашлись!
-					</Center>
+					<AnalyticsEmpty query={query} />
 				) : (
 					<TypeBar data={ddata} bars={labels} />
 				)}

@@ -1,8 +1,8 @@
-import { QueryShow, useAnalytics, useFilterdateStep } from "@/entites/analytics";
+import { AnalyticsEmpty, useAnalytics, useFilterdateStep } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
 import { labelName } from "@/shared/utils";
-import { Center, Checkbox, Group, Tooltip as MantineTooltip, Stack } from "@mantine/core";
+import { Checkbox, Group, Stack, Tooltip as MantineTooltip } from "@mantine/core";
 import dayjs from "dayjs";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { LabelsBar } from "./ui/labels-bar";
@@ -141,10 +141,7 @@ export const AnalyticLabels = memo(
 					</MantineTooltip>
 				</Group>
 				{isEmpty ? (
-					<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
-						Данные ненашлись!<br />
-						За <QueryShow {...query} />
-					</Center>
+					<AnalyticsEmpty query={query} />
 				) : type === "table" ? (
 					<LabelsTable query={query} data={formatData} bars={bars} />
 				) : (

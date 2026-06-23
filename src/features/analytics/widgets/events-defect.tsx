@@ -1,11 +1,12 @@
 import {
+	AnalyticsEmpty,
 	QueryShow,
 	useAnalytics
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
 import { LegendContentPieFactory, TooltipContentPie } from "@/shared/ui";
-import { AspectRatio, Center, Stack } from "@mantine/core";
+import { AspectRatio, Stack } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { Legend, Pie, PieChart, ResponsiveContainer, Sector, Tooltip, type LegendPayload, type PieSectorDataItem } from "recharts";
 
@@ -181,10 +182,7 @@ export const AnalyticEventsDefect = ({
 	return (
 		<Stack h="100%">
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed" ta='center'>
-					Данные ненашлись!<br />
-					За <QueryShow filterdate={filterdate} step={step} event={event} />
-				</Center>
+				<AnalyticsEmpty query={{ filterdate, step, event }} />
 			) : (
 				<AspectRatio ratio={16 / 9}>
 					<ResponsiveContainer>

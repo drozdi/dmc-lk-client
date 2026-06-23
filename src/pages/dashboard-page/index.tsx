@@ -10,12 +10,18 @@ import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
 import { ModalForm } from "@/features/dashboard/modal";
 import { Template } from "@/layout";
 import { $setting } from "@/shared";
+import { ChartSkeleton } from "@/shared/ui/skeleton";
+import {
+	isAnalyticsWidgetsLoaded,
+	loadAnalyticsWidgets,
+} from "@/widgets/analytics/load";
 import { Group, Paper } from "@mantine/core";
 import dayjs from "dayjs";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const DashboardPage = () => {
 	const storeDashboard = useStoreDashboardSecond();
+	const [widgetsReady, setWidgetsReady] = useState(isAnalyticsWidgetsLoaded);
 	const [query, setQuery] = $setting.useState<
 		Omit<IRequestAnalytics, "step" | "event">
 	>("dashboard-main", {
@@ -26,6 +32,18 @@ export const DashboardPage = () => {
 			dayjs().format("YYYY-MM-DD"),
 		],
 	});
+
+	useEffect(() => {
+		loadAnalyticsWidgets().then(() => setWidgetsReady(true));
+	}, []);
+
+	if (!widgetsReady) {
+		return (
+			<Paper p="md">
+				<ChartSkeleton height={240} mih="50vh" />
+			</Paper>
+		);
+	}
 	
 	return (
 		<Paper>
@@ -40,7 +58,7 @@ export const DashboardPage = () => {
 								...v,
 								filterdate,
 							}));
-							storeDashboard.setValue("filterdate", filterdate);
+							storeDashboard.setValue('filterdate', filterdate);
 						}, [])}
 					/>
 				</Template.Header>
@@ -59,8 +77,8 @@ export const DashboardPage = () => {
 						<DashBoardWidget
 							widget="analytic-events"
 							type="bar"
-							events={["v", "d", "i"]}
-							filterdate="$filterdate"
+							events={['v', 'd', 'i']}
+							filterdate={query.filterdate}
 							allowChangeType={true}
 						/>
 					</div>
@@ -79,7 +97,7 @@ export const DashboardPage = () => {
 							filterdate={query.filterdate}
 							allowChangeType={true}
 						/>
-					</div>		
+					</div>
 					<div
 						key="analytic-event-defect"
 						data-grid={{
@@ -92,7 +110,7 @@ export const DashboardPage = () => {
 						<DashBoardWidget
 							widget="analytic-event-defect"
 							type="analytic"
-							filterdate="$filterdate"
+							filterdate={query.filterdate}
 						/>
 					</div>
 					<div
@@ -106,8 +124,8 @@ export const DashboardPage = () => {
 					>
 						<DashBoardWidget
 							widget="analytic-pie"
-							events={["v", "d", "p"]}
-							filterdate="$filterdate"
+							events={['v', 'd', 'p']}
+							filterdate={query.filterdate}
 							percent={true}
 							step="mon"
 						/>
@@ -123,7 +141,7 @@ export const DashboardPage = () => {
 					>
 						<DashBoardWidget
 							widget="analytic-type"
-							filterdate="$filterdate"
+							filterdate={query.filterdate}
 							step="mon"
 						/>
 					</div>
@@ -138,10 +156,10 @@ export const DashboardPage = () => {
 					>
 						<DashBoardWidget
 							widget="analytic-incident"
-							filterdate="$filterdate"
+							filterdate={query.filterdate}
 						/>
 					</div>
-					
+
 					{/* <div
 						key="analytics-count"
 						data-grid={{
@@ -176,7 +194,6 @@ export const DashboardPage = () => {
 					</Group>
 				</Template.Footer>
 			</DashboardProvider>
-			
 		</Paper>
 	);
 };

@@ -2,7 +2,6 @@ import {
 	ActionIcon,
 	Card,
 	Group,
-	LoadingOverlay,
 	Menu,
 	Modal,
 	ScrollArea,
@@ -13,6 +12,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { TbArrowsMaximize, TbArrowsMinimize, TbDots, TbFileDownload } from "react-icons/tb";
 import { ButtonIcon } from '../button';
+import { ChartSkeleton } from "../skeleton";
 import { Text } from "../text";
 import { Title } from "../title";
 import { ProviderWidget, useWidget } from "./context";
@@ -39,6 +39,7 @@ export interface WidgetProps extends CardProps {
 	onDownload?: () => void;
 	error?: React.ReactNode | IError;
 	wraped?: boolean;
+	loadingSkeleton?: React.ReactNode;
 }
 
 function WidgetMenu({ options = [] }: WidgetMenuProps) {
@@ -74,6 +75,7 @@ export function Widget({
 	menu = [],
 	wraped = true,
 	onDownload,
+	loadingSkeleton = <ChartSkeleton height="100%" mih={180} />,
 	...otherProps
 }: WidgetProps) {
 	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
@@ -107,7 +109,7 @@ export function Widget({
 						</Title>
 						{(expanded || menu?.length || onDownload) && (
 							<Group mr="-xs" gap="0">
-								{onDownload && <ButtonIcon tooltip="Скаачать" variant="subtle" onClick={onDownload}>
+								{onDownload && <ButtonIcon tooltip="Скачать" variant="subtle" onClick={onDownload}>
 									<TbFileDownload />
 								</ButtonIcon>}
 								{menu?.length && <WidgetMenu options={menu} />}
@@ -134,8 +136,7 @@ export function Widget({
 					type="always"
 				>
 					<Text c="red">{error?.message || error}</Text>
-					{keepMounted || isExpanded ? preview : null}
-					<LoadingOverlay visible={loading} zIndex={1000} />
+					{loading ? loadingSkeleton : keepMounted || isExpanded ? preview : null}
 				</Card.Section>
 				<Modal
 					opened={isExpanded}

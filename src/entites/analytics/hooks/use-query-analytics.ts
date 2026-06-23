@@ -5,6 +5,7 @@ import {
 	ANALYTICS_QUERY_GC_TIME,
 	ANALYTICS_QUERY_STALE_TIME,
 } from "../constants";
+import { isAnalyticsQueryReady } from "../utils/analytics-query";
 
 // Типы (предположительно определены глобально или импортированы)
 // type IRequestAnalytics = ...
@@ -61,7 +62,6 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
    */
   const fetch = useCallback(
     async (query: Partial<IRequestAnalytics> = {}): Promise<IResponseAnalytics | undefined> => {
-      // Слияние параметров с особым правилом для filterdate
       const mergedParams = {
         ...baseParams,
         ...query,
@@ -70,6 +70,10 @@ export function useQueryAnalytics(baseParams: Partial<IRequestAnalytics> = {}) {
           baseParams.filterdate?.[1] ?? query.filterdate?.[1] ?? "",
         ],
       } as IRequestAnalytics;
+
+      if (!isAnalyticsQueryReady(mergedParams)) {
+        return DEFAULT_DATA;
+      }
 
       setActiveParams(mergedParams);
 

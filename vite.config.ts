@@ -24,6 +24,13 @@ export default defineConfig(({ mode }) => {
 		build: {
 			target: "esnext",
 			outDir: "build",
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						recharts: ["recharts"],
+					},
+				},
+			},
 		},
 		optimizeDeps: {
 			include: ["axios"],

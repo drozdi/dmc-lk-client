@@ -1,6 +1,7 @@
 import { useEnumsFields, useQueryIncident } from "@/entites/analytics";
 import { useQueryLoading } from "@/shared/hooks";
 import { Loading } from "@/shared/ui";
+import { TableSkeleton } from "@/shared/ui/skeleton";
 import { Button, Group, Table } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { TbX } from "react-icons/tb";
@@ -24,8 +25,8 @@ export function IncidentDetailItem(props: IRequestAnalyticsIncident) {
 			"place_id",
 		]),
 	});
-	const qi = useQueryIncident(query)
-	const { data, fetch, error } = qi
+	const qi = useQueryIncident(query);
+	const { data } = qi;
 	const isLoading = useQueryLoading(qi, ef);
 
 	useEffect(() => {
@@ -47,12 +48,8 @@ export function IncidentDetailItem(props: IRequestAnalyticsIncident) {
 				"place_id",
 			]),
 		}));
-	}, [props])
+	}, [props]);
 
-	useEffect(() => {
-		fetch(query)
-	}, [query])
-	
 	const [{ name_production, production_id }, setProduction] = useState<{
 		name_production: IProduction["production_name"];
 		production_id: IProduction["production_id"];
@@ -102,7 +99,11 @@ export function IncidentDetailItem(props: IRequestAnalyticsIncident) {
 	};
 
 	return (
-		<Loading keepMounted active={isLoading}>
+		<Loading
+			keepMounted
+			active={isLoading}
+			skeleton={<TableSkeleton rows={4} mih={120} />}
+		>
 			<Group justify="center">
 				{production_id && (
 					<Button

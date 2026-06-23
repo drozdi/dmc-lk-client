@@ -42,7 +42,7 @@ export const WidgetAnalyticEvents = ({
 		return ret.concat(Object.entries({
 			line: 'Линии',
 			bar: 'Столбцы',
-			stack: 'Столбцы (Совмещеные)',
+			stack: 'Столбцы (совмещённые)',
 			table: 'Таблица',
 			analytic: 'Аналитика',
 		}).map(([value, label]) => ({

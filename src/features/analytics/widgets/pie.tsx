@@ -1,12 +1,12 @@
 import {
-	corectQuery,
+	AnalyticsEmpty,
 	useEnumsEvents,
-	useQueryAnalytics,
+	useFetchAnalyticsEvents,
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { LegendContentPie, TooltipContentPie } from "@/shared/ui";
-import { AspectRatio, Center } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { AspectRatio } from "@mantine/core";
+import { memo, useMemo } from "react";
 import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const ee = useEnumsEvents();
@@ -17,30 +17,21 @@ export interface AnalyticPieProps {
 	percent?: boolean;
 }
 
-export const AnalyticPie = ({
+export const AnalyticPie = memo(function AnalyticPie({
 	filterdate,
 	events = ["v", "d", "i"],
-	percent
-}: AnalyticPieProps) => {
+	percent,
+}: AnalyticPieProps) {
 	const productions = useStoreUserProfile((state) => state.productions);
-	
-	const [query, setQuery] = useState<IRequestAnalytics>(
-		corectQuery({
+
+	const { data, query } = useFetchAnalyticsEvents(
+		{
 			filterdate,
 			production_id: productions,
-		} as IRequestAnalytics),
+		},
+		events,
 	);
 
-	const { fetch } = useQueryAnalytics(query);
-
-	const [data, setData] = useState<{
-		v?: IResponseAnalytics;
-		i?: IResponseAnalytics;
-		d?: IResponseAnalytics;
-		p?: IResponseAnalytics;
-	}>({});
-
-	// Извлекаем, групируем данные
 	const ddata = useMemo<
 		Array<{
 			event: AnalyticEvent;
@@ -64,12 +55,11 @@ export const AnalyticPie = ({
 				color: string;
 			}
 		>;
-		if (data) {
-			for (const event in res) {
-				res[event as AnalyticEvent].value = Number(
-					data[event as AnalyticEvent]?.sum_company || 0,
-				);
-			}
+
+		for (const event in res) {
+			res[event as AnalyticEvent].value = Number(
+				data[event as AnalyticEvent]?.sum_company || 0,
+			);
 		}
 
 		return Object.entries(res).map(([name, { value, color }]) => ({
@@ -78,50 +68,25 @@ export const AnalyticPie = ({
 			value,
 			fill: color,
 		}));
-	}, [data, events, productions]);
+	}, [data, events]);
 
-	const isEmpty = useMemo(
-		() => !ddata.reduce((acc, { value }) => acc && value > 0, true),
+	const total = useMemo(
+		() => ddata.reduce((acc, item) => acc + item.value, 0),
 		[ddata],
 	);
 
-	useEffect(() => {
-		let cancelled = false;
+	const isEmpty = useMemo(
+		() => !ddata.some(({ value }) => value > 0),
+		[ddata],
+	);
 
-		(async function () {
-			const results = await Promise.all(
-				events.map((event) => fetch({ ...query, event })),
-			);
-
-			if (cancelled) {
-				return;
-			}
-
-			setData(
-				Object.fromEntries(events.map((event, index) => [event, results[index]])),
-			);
-		})();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [query, events]);
-
-
-	const total = useMemo(() => ddata.reduce((acc, item) => acc + item.value, 0), [ddata])
-
-	useEffect(() => {
-		setQuery((v) => ({ ...v, filterdate }));
-	}, [filterdate]);
-	
-	const formatter = (value: number) => percent? Math.round(value / total *100) + '%': value
+	const formatter = (value: number) =>
+		percent ? `${Math.round((value / total) * 100)}%` : value;
 
 	return (
 		<AspectRatio ratio={16 / 9} h="100%">
 			{isEmpty ? (
-				<Center w="100%" h="100%" fz="h1" c="dimmed">
-					Данные ненашлись!
-				</Center>
+				<AnalyticsEmpty query={query} />
 			) : (
 				<ResponsiveContainer>
 					<PieChart>
@@ -140,4 +105,4 @@ export const AnalyticPie = ({
 			)}
 		</AspectRatio>
 	);
-};
+});

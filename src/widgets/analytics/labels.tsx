@@ -61,7 +61,7 @@ export const WidgetAnalyticLabels = memo(
 			} else if (event === "i") {
 				return "Инциденты при печати";
 			} else if (event === "v") {
-				return "Проверенно этикеток";
+				return "Проверено этикеток";
 			}
 			return "Напечатано этикеток";
 		}, [title, event]);

@@ -5,6 +5,7 @@ import {
 	type AnalyticItogSetProps,
 } from "@/features/analytics/widgets/itog-set";
 import { Widget, type WidgetProps } from "@/shared/ui";
+import { StatSkeleton } from "@/shared/ui/skeleton";
 import { memo, useEffect, useMemo } from "react";
 
 export interface WidgetAnalyticItogSetProps
@@ -37,7 +38,7 @@ export const WidgetAnalyticItogSet = memo(
 			} else if (event === "i") {
 				return "Инциденты при печати";
 			} else if (event === "v") {
-				return "Проверенно";
+				return "Проверено";
 			}
 			return type === "sum" ? "Расход этикеток" : type === "min" ? "Минимальный расход этикеток" : type === "max" ? "Максимальный расход этикеток" : 'Средний расход этикеток';
 		}, [title, type, event]);
@@ -53,6 +54,7 @@ export const WidgetAnalyticItogSet = memo(
 			<Widget
 				error={error}
 				loading={isLoading}
+				loadingSkeleton={<StatSkeleton />}
 				{...props}
 				expanded={false}
 				title={computedTitle}

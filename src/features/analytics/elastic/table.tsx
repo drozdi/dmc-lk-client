@@ -43,8 +43,6 @@ export const AnalyticsElasticTable = ({
 	const isPrev = selectIsPrev(storeElastic);
 	const limit = storeElastic.getLimit();
 
-	console.log(data)
-
 	const update = () => storeElastic.save({ ...template });
 
 	const columns = useMemo(

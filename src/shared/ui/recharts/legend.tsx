@@ -28,6 +28,7 @@ export function LegendContentPieFactory(name?: string) {
 				bd="1px solid var(--mantine-color-default-border)"
 				p="xs"
 				gap="0"
+				maw={256}
 			>
 				{(payload || []).map((entry, index) => {
 					const { value, color, payload } = entry
