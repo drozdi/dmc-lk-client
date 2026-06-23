@@ -1,5 +1,5 @@
 import { useTableDataContext } from "../context";
-import { type TablePaginationProps } from "../ui";
+import { type TablePaginationProps } from "../ui/type";
 
 export function usePagination<T = object>(): TablePaginationProps<T> {
 	const ctx = useTableDataContext<T>();

@@ -1,4 +1,4 @@
-import { type TableNode } from '../TableData';
+import { type TableNode } from '../type';
 
 export function groupBy<T = object>(nodes: TableNode<T>[], key: keyof T | undefined): TableNode<T>[] {
 	if (!key) {

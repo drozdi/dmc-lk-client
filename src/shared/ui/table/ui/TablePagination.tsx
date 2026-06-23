@@ -1,23 +1,8 @@
-import { ActionIcon, Box, Button, Group, Select, type BoxProps } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Select } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { TbChevronsLeft, TbChevronsRight } from "react-icons/tb";
-
-export interface TablePaginationProps<T = object> extends BoxProps {
-	page: string | number;
-	total: number;
-	limit?: number;
-	limits?: number[];
-	nextLabel?: React.ReactNode;
-	previousLabel?: React.ReactNode;
-	loading?: boolean;
-	activePprevious?: boolean;
-	activeNext?: boolean;
-	onNext?: () => void;
-	onPprevious?: () => void;
-	onChangeLimit?: (limit: number) => void;
-	onChangePage?: (page: number) => void;
-}
+import type { TablePaginationProps } from './type';
 
 export function TablePagination<T = object>({ 
 	page, limit, limits = [15, 30, 50, 75, 100], total,
@@ -77,7 +62,7 @@ export function TablePagination<T = object>({
 				</ActionIcon>}
 			</Group>
 			<Box flex='0'>
-				<Select size="xs" w='4rem' loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={onChangeLimit} />
+				<Select size="xs" w='4rem' loading={loading} defaultValue={limit} allowDeselect={false} data={limits} onChange={(value) => onChangeLimit?.(value as number)} />
 			</Box>
 		</Group>
 	</Box>

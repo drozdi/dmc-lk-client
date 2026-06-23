@@ -1,4 +1,4 @@
-import { type TableNode } from '../TableData';
+import { type TableNode } from '../type';
 
 export function convertNodes<T = object>(items: T[]): TableNode<T>[] {
 	return Object.entries(items).map(([index, item]) => ({

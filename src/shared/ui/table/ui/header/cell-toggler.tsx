@@ -1,0 +1,47 @@
+import { ActionIcon } from '@mantine/core';
+import { useCallback } from 'react';
+import {
+	TbX
+} from 'react-icons/tb';
+import { useTableDataContext } from '../../context/TableDataContext';
+import type { TableHeaderCellTogglerProps } from '../type';
+
+export function TableHeaderCellToggler<T = object>({
+	column,
+	...props
+}: TableHeaderCellTogglerProps<T>) {
+	if (!column.isToggleable || !column.field) {
+		return null;
+	}
+	const { toggleColumn, hiddenColumns } = useTableDataContext<T>();
+	const isHidden = hiddenColumns.includes(column.field as keyof T);
+
+	const handleClick = useCallback(
+		(event: React.MouseEvent<HTMLButtonElement>) => {
+			event.preventDefault();
+			event.stopPropagation();
+			if (
+				typeof column.toggleable === 'function' &&
+				false !== column.toggleable(column)
+			) {
+				return
+			}
+			toggleColumn(column);
+		},
+		[column],
+	);
+
+	return (
+		<ActionIcon
+			variant="subtle"
+			size="xs"
+			role="img"
+			aria-label={isHidden ? 'Show column' : 'Hide column'}
+			title={isHidden ? 'Показать колонку' : 'Скрыть колонку'}
+			{...props}
+			onClick={handleClick}
+		>
+			<TbX />
+		</ActionIcon>
+	);
+}

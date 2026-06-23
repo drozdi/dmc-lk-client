@@ -1,4 +1,4 @@
-import { type TableNode } from '../TableData';
+import { type TableNode } from '../type';
 
 export function sortBy<T = object>(nodes: TableNode<T>[], key: keyof T, descending = false): TableNode<T>[] {
 	let result = [...nodes];
