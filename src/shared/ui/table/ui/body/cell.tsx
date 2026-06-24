@@ -37,7 +37,12 @@ function GroupedGroupCellContent<T>({
 	);
 }
 
-export function TableBodyCell<T = object>({ node, column, level = 0 }: TableBodyCellProps<T>) {
+export function TableBodyCell<T = object>({
+	node,
+	column,
+	columns,
+	columnIndex,
+}: TableBodyCellProps<T>) {
 	if (column.isSelecting) {
 		return <TableBodyCellSelector<T> node={node} column={column} />;
 	}
@@ -48,20 +53,33 @@ export function TableBodyCell<T = object>({ node, column, level = 0 }: TableBody
 		return <TableBodyCellHoverSlot<T> node={node} column={column} />;
 	}
 	if (column.isGroup && !column.isGrouped) {
-		return <TableBodyCellExpand<T> node={node} column={column} level={level} />;
+		return (
+			<TableBodyCellExpand<T>
+				node={node}
+				column={column}
+				columns={columns}
+				columnIndex={columnIndex}
+			/>
+		);
 	}
 	const { updateNode, commitEdit, groupAt, editorMode } = useTableDataContext<T>();
 
 	if (column.isGroup && column.isGrouped) {
 		return (
-			<TableBodyCellWrap<T> level={level} column={column} node={node} plain>
+			<TableBodyCellWrap<T>
+				column={column}
+				columns={columns}
+				columnIndex={columnIndex}
+				node={node}
+				plain
+			>
 				<GroupedGroupCellContent<T> node={node} column={column} />
 			</TableBodyCellWrap>
 		);
 	}
 
 	return (
-		<TableBodyCellWrap<T> level={level} column={column} node={node}>
+		<TableBodyCellWrap<T> column={column} columns={columns} columnIndex={columnIndex} node={node}>
 			{groupAt === 'start' && <TableBodyCellExpander<T> node={node} column={column} />}
 			{(editorMode(node, column) &&
 				column.editor?.(

@@ -107,6 +107,8 @@ export interface TableBodyExpanderProps<T = object> extends TableBodyCellBasePro
 export interface TableBodyCellWrapProps<T = object> {
 	node: TableNode<T>;
 	column: ColumnEntity<T>;
+	columns?: ColumnEntity<T>[];
+	columnIndex?: number;
 	children?: React.ReactNode;
 	onClick?: () => void;
 	level?: number;
@@ -118,10 +120,14 @@ export interface TableBodyCellWrapProps<T = object> {
 export interface TableBodyCellSlotProps<T = object> extends TableBodyCellBaseProps<T> {}
 
 export interface TableBodyCellProps<T = object> extends TableBodyCellBaseProps<T> {
+	columns?: ColumnEntity<T>[];
+	columnIndex?: number;
 	level?: number;
 }
 
 export interface TableBodyCellExpandProps<T = object> extends TableBodyCellBaseProps<T> {
+	columns?: ColumnEntity<T>[];
+	columnIndex?: number;
 	level?: number;
 }
 

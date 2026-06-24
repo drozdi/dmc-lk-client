@@ -917,7 +917,6 @@ export function TablePage() {
 					</Stack>
 					<TableData<MultiGroupRow>
 						data={multiGroupData}
-						groupKeys={['region', 'category', 'status']}
 						storage="demo.multi-group"
 						limit={50}
 					>

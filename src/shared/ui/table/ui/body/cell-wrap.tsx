@@ -2,19 +2,25 @@ import { Group, Table } from "@mantine/core";
 import { useMemo } from 'react';
 import { useTableDataContext } from '../../context';
 import type { TableNode } from '../../type';
-import { getGroupedColumnLevel, getGroupedColumnPadding } from '../../utils/group-by';
+import {
+	getGroupedCellPaddingForRow,
+	getGroupedColumnLevel,
+	getGroupedColumnPadding,
+	resolveRowGroupLevel,
+} from '../../utils/group-by';
 import type { TableBodyCellWrapProps } from '../type';
 
 export function TableBodyCellWrap<T = object>({
 	node,
 	column,
+	columns,
+	columnIndex,
 	onClick,
 	children,
-	level = 0,
 	className,
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
-	const { groupKeys } = useTableDataContext<T>();
+	const { groupKeys, groupLevel: tableNestLevel } = useTableDataContext<T>();
 
 	const style = useMemo(() => {
 		const baseStyle =
@@ -22,13 +28,25 @@ export function TableBodyCellWrap<T = object>({
 				? column.bodyStyle?.(column, node as TableNode<T>)
 				: column.bodyStyle || {};
 
-		const groupedLevel = level || getGroupedColumnLevel(column, groupKeys);
-		const paddingLeft = getGroupedColumnPadding<T>(column, groupedLevel);
+		const rowGroupLevel = resolveRowGroupLevel(node, groupKeys, columns ?? [], tableNestLevel);
+		const paddingLeft =
+			columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0
+				? getGroupedCellPaddingForRow(
+						node,
+						column,
+						columnIndex,
+						columns,
+						groupKeys,
+						rowGroupLevel,
+						tableNestLevel,
+					)
+				: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+
 		return {
 			...baseStyle,
 			...(paddingLeft ? { paddingLeft } : {}),
 		};
-	}, [column, groupKeys, node, level]);
+	}, [column, columns, columnIndex, groupKeys, node, tableNestLevel]);
 
 	return (
 		<Table.Td

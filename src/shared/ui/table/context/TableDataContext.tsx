@@ -29,6 +29,7 @@ export interface TableDataContext<T = object> {
 	multiSort: boolean;
 	multiGroup: boolean;
 	groupKeys: (keyof T)[];
+	/** Уровень вложенности TableData (0 — корневая таблица). */
 	groupLevel: number;
 	groupLayout: TableGroupLayout;
 	/** Поле group-only колонки — expand-all в заголовке только здесь. */

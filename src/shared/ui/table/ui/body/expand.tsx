@@ -4,12 +4,20 @@ import type { TableBodyCellExpandProps } from '../type';
 import { TableBodyCellWrap } from './cell-wrap';
 import { TableBodyExpander } from './expander';
 
-export function TableBodyCellExpand<T = object>({ node, column, level = 0 }: TableBodyCellExpandProps<T>) {
+export function TableBodyCellExpand<T = object>({
+	node,
+	column,
+	columns,
+	columnIndex,
+}: TableBodyCellExpandProps<T>) {
 	if (!hasGroupNestedData(node, column)) {
 		return (
 			<TableBodyCellWrap<T>
 				node={node}
+
 				column={column}
+				columns={columns}
+				columnIndex={columnIndex}
 				className={classes.expanderCell}
 			/>
 		);
@@ -18,7 +26,8 @@ export function TableBodyCellExpand<T = object>({ node, column, level = 0 }: Tab
 		<TableBodyCellWrap<T>
 			node={node}
 			column={column}
-			level={level}
+			columns={columns}
+			columnIndex={columnIndex}
 			className={classes.expanderCell}
 		>
 			<div className={classes.expanderHeaderInner}>
