@@ -8,6 +8,7 @@ import {
 	getGroupedColumnLevel,
 	getGroupedColumnPadding,
 	resolveRowGroupLevel,
+	toGroupedPaddingStyle,
 } from '../../utils/group-by';
 import type { TableBodyCellWrapProps } from '../type';
 
@@ -21,18 +22,18 @@ export function TableBodyCellWrap<T = object>({
 	className,
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
-	const { groupKeys, groupLevel: tableNestLevel, groupLayout } = useTableDataContext<T>();
+	const { groupKeys, groupLevel: tableNestLevel, groupLayout, groupAt } = useTableDataContext<T>();
 
-	const style = useMemo(() => {
+	const { tdStyle, groupedContentStyle } = useMemo(() => {
 		const baseStyle =
 			typeof column.bodyStyle === 'function'
 				? column.bodyStyle?.(column, node as TableNode<T>)
 				: column.bodyStyle || {};
 
-		let paddingLeft: string | undefined;
+		let groupedPadding: string | undefined;
 		if (appliesGroupedCellPadding(groupLayout, tableNestLevel)) {
 			const rowGroupLevel = resolveRowGroupLevel(node, groupKeys, columns ?? [], tableNestLevel);
-			paddingLeft =
+			groupedPadding =
 				columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0
 					? getGroupedCellPaddingForRow(
 							node,
@@ -47,32 +48,58 @@ export function TableBodyCellWrap<T = object>({
 		}
 
 		return {
-			...baseStyle,
-			...(paddingLeft ? { paddingLeft } : {}),
+			tdStyle: baseStyle,
+			groupedContentStyle: toGroupedPaddingStyle(groupedPadding),
 		};
-	}, [column, columns, columnIndex, groupKeys, groupLayout, node, tableNestLevel]);
+	}, [column, columns, columnIndex, groupAt, groupKeys, groupLayout, node, tableNestLevel]);
+
+	const hasGroupedContentStyle = Object.keys(groupedContentStyle).length > 0;
+
+	const content = useMemo(() => {
+		if (!children) {
+			return null;
+		}
+		if (column.isHoverSlot || column.isSelecting) {
+			return children;
+		}
+		if (plain) {
+			if (!hasGroupedContentStyle) {
+				return children;
+			}
+			return (
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						width: '100%',
+						...groupedContentStyle,
+					}}
+				>
+					{children}
+				</div>
+			);
+		}
+		return (
+			<Group
+				justify="flex-start"
+				align="center"
+				grow
+				style={hasGroupedContentStyle ? { width: '100%', ...groupedContentStyle } : undefined}
+			>
+				{children}
+			</Group>
+		);
+	}, [children, column.isHoverSlot, column.isSelecting, groupedContentStyle, hasGroupedContentStyle, plain]);
 
 	return (
 		<Table.Td
 			className={className}
 			onClick={onClick}
-			style={style}
+			style={tdStyle}
 			w={column.isHoverSlot ? 0 : column.isSelecting ? 44 : undefined}
 			align={column.isSelecting ? 'center' : column.align}
 		>
-			{children ? (
-				column.isHoverSlot ? (
-					children
-				) : column.isSelecting ? (
-					children
-				) : plain ? (
-					children
-				) : (
-					<Group justify="flex-start" align="center" grow>
-						{children}
-					</Group>
-				)
-			) : null}
+			{content}
 		</Table.Td>
 	);
 }

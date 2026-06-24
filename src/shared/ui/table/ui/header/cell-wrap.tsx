@@ -2,7 +2,6 @@ import { Table } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { useTableDataContext } from '../../context/TableDataContext';
 import type { ColumnEntity } from '../../type';
-import { getGroupedHeaderPadding } from '../../utils/group-by';
 import type { TableHeaderCellWrapProps } from '../type';
 
 export function useDraggable<T = object>(
@@ -74,22 +73,15 @@ export function TableHeaderCellWrap<T = object>({
 	children,
 	className,
 }: TableHeaderCellWrapProps<T>) {
-	const { getColumnWidth, groupKeys } = useTableDataContext<T>();
+	const { getColumnWidth } = useTableDataContext<T>();
 	const rowspan = column.isColumns ? 1 : maxRow - column.parentLevel;
 	const dragProps = useDraggable<T>(column);
 
 	const headerStyle = useMemo(() => {
-		const baseStyle =
-			typeof column.headerStyle === 'function'
-				? column.headerStyle(column)
-				: column.headerStyle || {};
-		const paddingLeft = getGroupedHeaderPadding(column, groupKeys);
-
-		return {
-			...baseStyle,
-			...(paddingLeft ? { paddingLeft } : {}),
-		};
-	}, [column, groupKeys]);
+		return typeof column.headerStyle === 'function'
+			? column.headerStyle(column)
+			: column.headerStyle || {};
+	}, [column]);
 
 	return (
 		<Table.Th

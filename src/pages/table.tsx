@@ -218,9 +218,9 @@ interface SS {
 }
 
 const elements: SS[] = [
-	{
-		position: 6,
-		mass: 12.011,
+		{
+			position: 6,
+			mass: 12.011,
 		symbol: 'C',
 		name: 'Carbon',
 		grouped: '1',
@@ -292,28 +292,28 @@ const elementsS: SSS[] = [
 		symbol: 'C',
 		name: 'Carbon',
 		grouped: '1',
-		group: [
-			{
-				position: 8,
-				mass: 12.011,
+			group: [
+				{
+					position: 8,
+					mass: 12.011,
 				symbol: 'C',
 				name: 'Carbon',
-			},
-			{
-				position: 7,
-				mass: 14.007,
+				},
+				{
+					position: 7,
+					mass: 14.007,
 				symbol: 'N',
 				name: 'Nitrogen',
-			},
-			{
-				position: 39,
-				mass: 88.906,
+				},
+				{
+					position: 39,
+					mass: 88.906,
 				symbol: 'Y',
 				name: 'Yttrium',
-			},
-			{
-				position: 56,
-				mass: 137.33,
+				},
+				{
+					position: 56,
+					mass: 137.33,
 				symbol: 'Ba',
 				name: 'Barium',
 			},
@@ -348,37 +348,116 @@ const elementsS: SSS[] = [
 		// 		],
 		// 	};
 		// },
-	},
-	{
-		position: 7,
-		mass: 14.007,
+		},
+		{
+			position: 7,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-		group: [
-			{
-				position: 6,
-				mass: 12.011,
+			group: [
+				{
+					position: 6,
+					mass: 12.011,
 				symbol: 'C',
 				name: 'Carbon',
-			},
-			{
-				position: 7,
-				mass: 14.007,
+				},
+				{
+					position: 7,
+					mass: 14.007,
 				symbol: 'N',
 				name: 'Nitrogen',
-			},
-			{
-				position: 39,
-				mass: 88.906,
+				},
+				{
+					position: 39,
+					mass: 88.906,
 				symbol: 'Y',
 				name: 'Yttrium',
-			},
-			{
-				position: 56,
-				mass: 137.33,
+				},
+				{
+					position: 56,
+					mass: 137.33,
 				symbol: 'Ba',
 				name: 'Barium',
+				},
+			],
+		},
+		{
+			position: 39,
+			mass: 88.906,
+		symbol: 'Y',
+		name: 'Yttrium',
+		grouped: '3',
+		group: [
+		{
+			position: 56,
+			mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '1',
+		},
+		{
+			position: 58,
+			mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '2',
+		},
+		{
+			position: 6,
+			mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+				grouped: '3',
+		},
+		{
+			position: 7,
+			mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '1',
+		},
+		{
+			position: 39,
+			mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+				grouped: '2',
+		},
+		{
+			position: 56,
+			mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '3',
+		},
+		{
+			position: 58,
+			mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '1',
+		},
+		{
+			position: 6,
+			mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+				grouped: '2',
+		},
+		{
+			position: 7,
+			mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '3',
+		},
+		{
+			position: 39,
+			mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+				grouped: '1',
 			},
 		],
 	},
@@ -389,405 +468,326 @@ const elementsS: SSS[] = [
 		name: 'Yttrium',
 		grouped: '3',
 		group: [
-			{
-				position: 56,
-				mass: 137.33,
-				symbol: 'Ba',
-				name: 'Barium',
-				grouped: '1',
-			},
-			{
-				position: 58,
-				mass: 140.12,
-				symbol: 'Ce',
-				name: 'Cerium',
-				grouped: '2',
-			},
-			{
-				position: 6,
-				mass: 12.011,
-				symbol: 'C',
-				name: 'Carbon',
-				grouped: '3',
-			},
-			{
-				position: 7,
-				mass: 14.007,
-				symbol: 'N',
-				name: 'Nitrogen',
-				grouped: '1',
-			},
-			{
-				position: 39,
-				mass: 88.906,
-				symbol: 'Y',
-				name: 'Yttrium',
-				grouped: '2',
-			},
-			{
-				position: 56,
-				mass: 137.33,
-				symbol: 'Ba',
-				name: 'Barium',
-				grouped: '3',
-			},
-			{
-				position: 58,
-				mass: 140.12,
-				symbol: 'Ce',
-				name: 'Cerium',
-				grouped: '1',
-			},
-			{
-				position: 6,
-				mass: 12.011,
-				symbol: 'C',
-				name: 'Carbon',
-				grouped: '2',
-			},
-			{
-				position: 7,
-				mass: 14.007,
-				symbol: 'N',
-				name: 'Nitrogen',
-				grouped: '3',
-			},
-			{
-				position: 39,
-				mass: 88.906,
-				symbol: 'Y',
-				name: 'Yttrium',
-				grouped: '1',
-			},
-		],
-	},
-	{
-		position: 39,
-		mass: 88.906,
-		symbol: 'Y',
-		name: 'Yttrium',
-		grouped: '3',
-		group: [
-			{
-				position: 56,
-				mass: 137.33,
+		{
+			position: 56,
+			mass: 137.33,
 				symbol: 'Ba',
 				name: 'Barium',
 				grouped: '2',
-			},
-			{
-				position: 58,
-				mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 				symbol: 'Ce',
 				name: 'Cerium',
 				grouped: '3',
-			},
-			{
-				position: 6,
-				mass: 12.011,
+		},
+		{
+			position: 6,
+			mass: 12.011,
 				symbol: 'C',
 				name: 'Carbon',
 				grouped: '1',
-			},
-			{
-				position: 100,
-				mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 				symbol: 'N',
 				name: 'Nitrogen',
 				grouped: '2',
-			},
-			{
-				position: 39,
-				mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 				symbol: 'Y',
 				name: 'Yttrium',
 				grouped: '3',
-			},
-			{
-				position: 56,
-				mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 				symbol: 'Ba',
 				name: 'Barium',
 				grouped: '1',
-			},
-			{
-				position: 58,
-				mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 				symbol: 'Ce',
 				name: 'Cerium',
 				grouped: '2',
-			},
-			{
-				position: 100,
-				mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 				symbol: 'N',
 				name: 'Nitrogen',
 				grouped: '2',
 			},
 		],
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
+		},
+		{
+			position: 100,
+			mass: 14.007,
 		symbol: 'N',
 		name: 'Nitrogen',
 		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
+		},
+		{
+			position: 39,
+			mass: 88.906,
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
+		},
+		{
+			position: 56,
+			mass: 137.33,
 		symbol: 'Ba',
 		name: 'Barium',
 		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
+		},
+		{
+			position: 58,
+			mass: 140.12,
 		symbol: 'Ce',
 		name: 'Cerium',
 		grouped: '2',
@@ -807,11 +807,11 @@ function editorCell(
 			defaultValue={String(item[field] ?? '')}
 			onChange={({ target }) => onChange(target.value as SS[keyof SS])}
 			onKeyDown={({ key }) => {
-				if (key === 'Enter') {
+					if (key === 'Enter') {
 					onSave();
-				}
-			}}
-		/>
+					}
+				}}
+				/>
 	);
 }
 
@@ -832,11 +832,11 @@ function cellQtyEditor(
 				onChange(value as CellEditRow[keyof CellEditRow]);
 			}}
 			onKeyDown={({ key }) => {
-				if (key === 'Enter') {
+					if (key === 'Enter') {
 					onSave();
-				}
-			}}
-		/>
+					}
+				}}
+				/>
 	);
 }
 
@@ -954,50 +954,95 @@ export function TablePage() {
 							field="mass"
 							header="Atomic mass"
 						/>
-					</TableData>
+	</TableData>
 				</Tabs.Panel>
 
 				<Tabs.Panel value="multi-grouped" pt="md">
-					<Stack gap="xs" mb="md">
-						<Title order={4}>3 уровня: region → category → status</Title>
-						<Text size="sm" c="dimmed">
-							Раскрывайте строки поэтапно: каждый уровень — вложенная
-							таблица со следующим ключом группировки. Expander — в колонке
-							текущего уровня.
-						</Text>
+					<Stack gap="xs" mb="xl">
+						<Stack gap="xs" mb="md">
+							<Title order={4}>3 уровня: region → category → status</Title>
+							<Text size="sm" c="dimmed">
+								Раскрывайте строки поэтапно: каждый уровень — вложенная
+								таблица со следующим ключом группировки. Expander — в
+								колонке текущего уровня.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData}
+								storage="demo.multi-group"
+								limit={50}
+							>
+								<DataColumn<MultiGroupRow>
+									field="region"
+									grouped
+									header="Регион"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="category"
+									grouped
+									header="Категория"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="status"
+									grouped
+									header="Статус"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+									sortable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									sortable
+									align="right"
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs" mb="md">
+							<Title order={4}>3 уровня: region → category → status <br />
+							с опцией groupAt="end"</Title>
+							<Text size="sm" c="dimmed">
+								Раскрывайте строки поэтапно: каждый уровень — вложенная
+								таблица со следующим ключом группировки. Expander — в
+								колонке текущего уровня.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData}
+								storage="demo.multi-group"
+								limit={50}
+								groupAt="end"
+							>
+								<DataColumn<MultiGroupRow>
+									field="region"
+									grouped
+									header="Регион"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="category"
+									grouped
+									header="Категория"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="status"
+									grouped
+									header="Статус"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+									sortable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									sortable
+									align="right"
+								/>
+							</TableData>
+						</Stack>
 					</Stack>
-					<TableData<MultiGroupRow>
-						data={multiGroupData}
-						storage="demo.multi-group"
-						limit={50}
-					>
-						<DataColumn<MultiGroupRow>
-							field="region"
-							grouped
-							header="Регион"
-						/>
-						<DataColumn<MultiGroupRow>
-							field="category"
-							grouped
-							header="Категория"
-						/>
-						<DataColumn<MultiGroupRow>
-							field="status"
-							grouped
-							header="Статус"
-						/>
-						<DataColumn<MultiGroupRow>
-							field="name"
-							header="Название"
-							sortable
-						/>
-						<DataColumn<MultiGroupRow>
-							field="amount"
-							header="Сумма"
-							sortable
-							align="right"
-						/>
-					</TableData>
 				</Tabs.Panel>
 
 				<Tabs.Panel value="group-grouped" pt="md">
@@ -1042,10 +1087,10 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>group + grouped — разные колонки</Title>
 							<Text size="sm" c="dimmed">
-								Режим <code>groupLayout: group-first</code> (авто): сначала
-								раскрытие по group-колонке, внутри — grouped (склад, зона),
-								если колонки указаны. Group-колонки первые при{' '}
-								<code>groupAt="start"</code>.
+								Режим <code>groupLayout: group-first</code> (авто):
+								сначала раскрытие по group-колонке, внутри — grouped
+								(склад, зона), если колонки указаны. Group-колонки первые
+								при <code>groupAt="start"</code>.
 							</Text>
 							<TableData<CombinedRow>
 								data={combinedData}
@@ -1183,8 +1228,8 @@ export function TablePage() {
 							<Text size="sm" c="dimmed">
 								Наведите на строку — справа появится панель. Добавляется
 								нулевая колонка-слот (без ширины) в заголовке и строке для
-								выравнивания. При выделении строк{' '}
-								<code>bulkActions</code> появляются в слоте заголовка.
+								выравнивания. При выделении строк <code>bulkActions</code>{' '}
+								появляются в слоте заголовка.
 							</Text>
 							<TableData<ActionDemoRow>
 								data={actionData}
@@ -1309,7 +1354,9 @@ export function TablePage() {
 									header="Сумма"
 									align="right"
 									body={(item) => (
-										<Text fw={600}>{item.amount.toLocaleString('ru-RU')} ₽</Text>
+										<Text fw={600}>
+											{item.amount.toLocaleString('ru-RU')} ₽
+										</Text>
 									)}
 								/>
 							</TableData>
@@ -1490,8 +1537,7 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>groupAt: end</Title>
 							<Text size="sm" c="dimmed">
-								Expander группировки справа —{' '}
-								<code>groupAt="end"</code>.
+								Expander группировки справа — <code>groupAt="end"</code>.
 							</Text>
 							<TableData<MultiGroupRow>
 								data={multiGroupData.slice(0, 10)}
@@ -1556,7 +1602,9 @@ export function TablePage() {
 								</Button>
 								<Button
 									size="xs"
-									variant={statesDemo === 'loading' ? 'filled' : 'light'}
+									variant={
+										statesDemo === 'loading' ? 'filled' : 'light'
+									}
 									onClick={() => setStatesDemo('loading')}
 								>
 									loading
@@ -1582,8 +1630,14 @@ export function TablePage() {
 								withPagination={false}
 								storage="demo.examples-states"
 							>
-								<DataColumn<MultiGroupRow> field="name" header="Название" />
-								<DataColumn<MultiGroupRow> field="amount" header="Сумма" />
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+								/>
 							</TableData>
 						</Stack>
 
@@ -1591,8 +1645,8 @@ export function TablePage() {
 							<Title order={4}>Breakpoint — карточки</Title>
 							<Text size="sm" c="dimmed">
 								<code>breakpoint</code> — на узком экране таблица
-								переключается в <code>layout</code> (по умолчанию карточки).
-								Сожмите окно или откройте на мобильном.
+								переключается в <code>layout</code> (по умолчанию
+								карточки). Сожмите окно или откройте на мобильном.
 							</Text>
 							<TableData<UnifiedRow>
 								data={unifiedData}
@@ -1623,30 +1677,30 @@ export function TablePage() {
 						<Title order={4}>Cursor pagination (fetcher)</Title>
 					</Stack>
 					<TableData<IAnalyticsElasticItem>
-						page=''
+						page=""
 						data={async (input) => {
 							const limit = input?.limit ?? 100;
 							const page = input?.page ?? '';
-							const res = await requestAnalyticsElastic({
-								company: {
+		const res = await requestAnalyticsElastic({
+			company: {
 									select_field: [
 										'inn_company',
 										'place_name',
 										'device_name',
 										'event_name',
 									],
-									list_where: [],
-									date_limit: {
+				list_where: [],
+				date_limit: {
 										date_from: '2026-01-20',
 										date_to: '2026-05-15',
-									},
-								},
-								paginate: {
-									id_record: page as string,
+				},
+			},
+			paginate: {
+				id_record: page as string,
 									limit_page: limit,
 								},
 							});
-							return {
+		return {
 								data: res.data as IAnalyticsElasticItem[],
 								next: res.last_id_record ?? '',
 							};
@@ -1672,7 +1726,7 @@ export function TablePage() {
 							field="event_name"
 							header="Название события"
 						/>
-					</TableData>
+	</TableData>
 				</Tabs.Panel>
 			</Tabs>
 		</Stack>

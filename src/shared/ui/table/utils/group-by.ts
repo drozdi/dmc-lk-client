@@ -144,6 +144,16 @@ export function getGroupedPaddingBySteps(steps: number): string | undefined {
 	return `calc(${step} * ${steps} + ${base})`;
 }
 
+/** Отступ grouped-ячейки — всегда paddingLeft (диагональ; для end зеркалируется steps). */
+export function toGroupedPaddingStyle(
+	padding: string | undefined,
+): { paddingLeft?: string } {
+	if (!padding) {
+		return {};
+	}
+	return { paddingLeft: padding };
+}
+
 /**
  * Глубина вложенности строки (1-based): groupLevel + 1 или max для листьев.
  * По «боковой диагонали»: steps = nestingDepth − groupedLevel.
@@ -164,6 +174,32 @@ export function resolveNestingDepth<T>(
 
 export function resolveGroupedPaddingSteps(nestingDepth: number, groupedLevel: number): number {
 	return nestingDepth - groupedLevel;
+}
+
+/** Порядок grouped-колонок: start — по groupKeys; end — с конца (reverse). */
+export function orderGroupedColumns<T>(
+	groupedColumns: ColumnEntity<T>[],
+	groupKeys: (keyof T)[],
+	groupAt?: 'start' | 'end',
+): ColumnEntity<T>[] {
+	if (groupedColumns.length <= 1) {
+		return groupedColumns;
+	}
+	const sorted = [...groupedColumns].sort((a, b) => {
+		const indexA = groupKeys.indexOf(a.field as keyof T);
+		const indexB = groupKeys.indexOf(b.field as keyof T);
+		if (indexA < 0 && indexB < 0) {
+			return 0;
+		}
+		if (indexA < 0) {
+			return 1;
+		}
+		if (indexB < 0) {
+			return -1;
+		}
+		return indexA - indexB;
+	});
+	return isGroupAtStart(groupAt) ? sorted : [...sorted].reverse();
 }
 
 /** Отступ grouped-колонки в заголовке (max nesting). */
@@ -387,6 +423,7 @@ const isSpecialColumn = <T>(column: ColumnEntity<T>) =>
 export function buildDataColumns<T>(
 	columnsRaw: ColumnEntity<T>[],
 	groupAt?: 'start' | 'end',
+	groupKeys?: (keyof T)[],
 ): {
 	groupColumns: ColumnEntity<T>[];
 	groupedColumns: ColumnEntity<T>[];
@@ -408,9 +445,13 @@ export function buildDataColumns<T>(
 		(column) => !column.isGroup && !column.isGrouped && !isSpecialColumn(column),
 	);
 
+	const groupedKeys =
+		groupKeys ?? groupedOnly.map((column) => column.field as keyof T);
+	const orderedGrouped = orderGroupedColumns(groupedOnly, groupedKeys, groupAt);
+
 	const dataColumns = isGroupAtStart(groupAt)
-		? [...groupColumns, ...groupedOnly, ...normalColumns]
-		: [...normalColumns, ...groupedOnly, ...groupColumns];
+		? [...groupColumns, ...orderedGrouped, ...normalColumns]
+		: [...normalColumns, ...orderedGrouped, ...groupColumns];
 
 	const groupColumnField =
 		(groupOnly[0]?.field as keyof T | undefined) ??
@@ -418,7 +459,7 @@ export function buildDataColumns<T>(
 
 	return {
 		groupColumns,
-		groupedColumns: groupedOnly,
+		groupedColumns: orderedGrouped,
 		normalColumns,
 		dataColumns,
 		groupColumnField,

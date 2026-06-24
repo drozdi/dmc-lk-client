@@ -526,7 +526,7 @@ export function TableData<T = object>({
 	}, [columnFieldsKey, columnFields, storage, initialColumnWidth]);
 
 	const columns = useMemo(() => {
-		const { dataColumns: orderedData, normalColumns } = buildDataColumns(columnsRaw, groupAt);
+		const { dataColumns: orderedData, normalColumns } = buildDataColumns(columnsRaw, groupAt, groupKeys);
 		const normal = [...normalColumns];
 		if (columnOrderIndex) {
 			normal.sort((a, b) =>
@@ -575,7 +575,7 @@ export function TableData<T = object>({
 			result.push(...selected);
 		}
 		return result;
-	}, [columnsRaw, groupAt, initialSelectable, columnOrderIndex, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
+	}, [columnsRaw, groupAt, groupKeys, initialSelectable, columnOrderIndex, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
 
 	const groupColumnField = useMemo(() => {
 		const groupOnly = columns.find((c) => c.isGroup && !c.isGrouped);
