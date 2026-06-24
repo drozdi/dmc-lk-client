@@ -267,7 +267,7 @@ export function getNestedTableColumns<T>(columns: ColumnEntity<T>[]): ColumnEnti
 
 /**
  * Колонки вложенной grouped-таблицы (режим grouped-first):
- * без group-only колонки и без уже раскрытого уровня grouped.
+ * без group-only колонки; grouped с level >= parentGroupLevel (текущий уровень включается).
  */
 export function getGroupedNestedColumns<T>(
 	columns: ColumnEntity<T>[],
@@ -286,7 +286,7 @@ export function getGroupedNestedColumns<T>(
 		}
 		if (column.isGrouped && column.field) {
 			const level = groupKeys.indexOf(column.field as keyof T);
-			return level > parentGroupLevel;
+			return level >= parentGroupLevel;
 		}
 		return true;
 	});
