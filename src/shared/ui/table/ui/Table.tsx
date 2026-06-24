@@ -14,21 +14,13 @@ export function Table<T = object>({
 	level = 0,
 	...props
 }: TableProps<T>) {
-	const { getColumnWidth } = useTableDataContext<T>();
 	const isToggleable = useMemo(
 		() => columns.some((column) => column.isToggleable),
 		[columns],
 	);
+
 	return (
 		<TableMantine layout="fixed" {...props}>
-			{/* <colgroup>
-				{visibleColumns.map((col) => (
-					<col
-						key={col.field as string}
-						style={{ width: getColumnWidth(col) }}
-					/>
-				))}
-			</colgroup> */}
 			{withHeader && (
 				<HoverCard disabled={!isToggleable} position="top">
 					<HoverCard.Target>

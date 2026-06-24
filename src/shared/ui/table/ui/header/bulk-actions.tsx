@@ -31,13 +31,16 @@ export function useTableHeaderBulkActions(target: TableHeaderBulkActionsTarget) 
 		[bulkContext, bulkActions],
 	);
 
-	const canShow =
+	const isConfigured =
 		!!selectable &&
-		selectedRows.length > 0 &&
+		!!bulkActions?.length &&
 		visibleBulkActions.length > 0 &&
 		(target === 'actions' ? hasActionsColumn : !hasActionsColumn);
 
+	const canShow = isConfigured && selectedRows.length > 0;
+
 	return {
+		isConfigured,
 		canShow,
 		bulkContext,
 		visibleBulkActions,

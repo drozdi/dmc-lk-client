@@ -13,7 +13,9 @@ export function TableHeaderCellSelector<T = object>({
 	maxRow,
 	maxCol,
 }: TableHeaderCellSelectorProps<T>) {
-	const { allSelected, someSelected, selectAll } = useTableDataContext<T>();
+	const { allSelected, someSelected, selectAll, rowActionsOnHover, hasActionsColumn } =
+		useTableDataContext<T>();
+	const showBulkInSelect = !(rowActionsOnHover && !hasActionsColumn);
 
 	return (
 		<TableHeaderCellWrap<T>
@@ -28,9 +30,7 @@ export function TableHeaderCellSelector<T = object>({
 					indeterminate={someSelected}
 					onChange={(e) => selectAll(e.currentTarget.checked)}
 				/>
-				<div className={classes.selectBulkOverlay}>
-					<TableHeaderBulkActions target="select" />
-				</div>
+				{showBulkInSelect ? <TableHeaderBulkActions target="select" /> : null}
 			</div>
 		</TableHeaderCellWrap>
 	);

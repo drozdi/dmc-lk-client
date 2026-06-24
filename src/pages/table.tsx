@@ -1132,8 +1132,8 @@ export function TablePage() {
 							<Text size="sm" c="dimmed">
 								Наведите на строку — справа появится панель. Добавляется
 								нулевая колонка-слот (без ширины) в заголовке и строке для
-								выравнивания. <code>bulkActions</code> — в заголовке
-								колонки выделения.
+								выравнивания. При выделении строк{' '}
+								<code>bulkActions</code> появляются в слоте заголовка.
 							</Text>
 							<TableData<ActionDemoRow>
 								data={actionData}

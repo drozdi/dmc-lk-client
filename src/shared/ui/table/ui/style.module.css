@@ -33,15 +33,20 @@ th:last-child .resize {
 	text-align: center;
 }
 
-.selectCellInner,
 .selectHeaderInner,
+.selectCellInner,
 .expanderHeaderInner,
 .expanderCellInner {
 	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	gap: 4px;
 	min-height: 100%;
+}
+
+.selectHeaderInner {
+	flex-wrap: nowrap;
 }
 
 .expanderHeaderInnerLabeled {
@@ -60,10 +65,15 @@ th:last-child .resize {
 	inset-inline-start: 100%;
 	display: flex;
 	align-items: center;
-	padding-inline-start: 4px;
-	z-index: 2;
+	padding-inline: 4px var(--table-horizontal-spacing, 0.5rem);
+	background: linear-gradient(
+		to right,
+		var(--mantine-color-body) 60%,
+		color-mix(in srgb, var(--mantine-color-body) 80%, transparent)
+	);
+	z-index: 10;
+	white-space: nowrap;
 }
-
 
 .rowWithActions {
 	position: relative;
@@ -113,6 +123,12 @@ th:last-child .resize {
 
 .hoverSlotOverlay[data-position='end'] {
 	inset-inline-end: 0;
+}
+
+.hoverSlotHeader .hoverSlotOverlay[data-visible] {
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 10;
 }
 
 .rowWithActions:hover .hoverSlotOverlay,
