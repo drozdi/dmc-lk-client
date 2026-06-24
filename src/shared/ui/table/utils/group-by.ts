@@ -144,7 +144,7 @@ export function getGroupedPaddingBySteps(steps: number): string | undefined {
 	return `calc(${step} * ${steps} + ${base})`;
 }
 
-/** Отступ grouped-ячейки — всегда paddingLeft (диагональ; для end зеркалируется steps). */
+/** Отступ grouped-ячейки — paddingLeft (диагональ). */
 export function toGroupedPaddingStyle(
 	padding: string | undefined,
 ): { paddingLeft?: string } {
@@ -156,7 +156,7 @@ export function toGroupedPaddingStyle(
 
 /**
  * Глубина вложенности строки (1-based): groupLevel + 1 или max для листьев.
- * По «боковой диагонали»: steps = nestingDepth − groupedLevel.
+ * steps = nestingDepth − groupedLevel.
  */
 export function resolveNestingDepth<T>(
 	node: Pick<TableNode, 'groupLevel'>,
@@ -323,7 +323,7 @@ export function getGroupedShiftTargetIndex<T>(
 }
 
 /**
- * Отступ ячейки строки в режиме grouped (боковая диагональ):
+ * Отступ ячейки строки в режиме grouped:
  * steps = nestingDepth − groupedLevel; последняя grouped-колонка и expander — без отступа.
  */
 export function getGroupedCellPaddingForRow<T>(
