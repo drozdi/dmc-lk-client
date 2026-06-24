@@ -1,5 +1,5 @@
 import { Checkbox } from '@mantine/core';
-import { useTableDataContext } from '../../context';
+import { useTableSelectionContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableBodyCellBaseProps } from '../type';
 import { TableBodyCellWrap } from './cell-wrap';
@@ -10,7 +10,7 @@ export function TableBodyCellSelector<T = object>({
 	node,
 	column,
 }: TableBodyCellSelectorProps<T>) {
-	const { isRowSelected, toggleRow } = useTableDataContext<T>();
+	const { isRowSelected, toggleRow } = useTableSelectionContext<T>();
 
 	return (
 		<TableBodyCellWrap<T> node={node} column={column} className={classes.selectCell}>

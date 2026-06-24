@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ColumnEntity, SortRule, TableSortState, TableStorage } from '../type';
 import { getColumnFields } from '../utils/column-fields';
 
@@ -38,6 +38,12 @@ export function useColumnSort<T>(
 	const fields = getColumnFields(columns);
 	const fieldsKey = fields.join('|');
 	const prevFieldsKeyRef = useRef(fieldsKey);
+	const controlledRulesKey = useMemo(
+		() =>
+			controlledRules?.map((rule) => `${String(rule.key)}:${rule.descending ? 1 : 0}`).join('|') ??
+			'',
+		[controlledRules],
+	);
 
 	const [internalSort, setInternalSort] = useState<TableSortState<T>>(() => {
 		const stored = loadStoredSort<T>(storage);
@@ -50,9 +56,14 @@ export function useColumnSort<T>(
 		return toSortState([]);
 	});
 
-	const sort = controlledRules
-		? toSortState(syncRules(controlledRules, fields))
-		: internalSort;
+	const controlledSort = useMemo(() => {
+		if (!controlledRules) {
+			return null;
+		}
+		return toSortState(syncRules(controlledRules, fields));
+	}, [controlledRules, controlledRulesKey, fieldsKey, fields]);
+
+	const sort = controlledSort ?? internalSort;
 
 	useEffect(() => {
 		if (prevFieldsKeyRef.current === fieldsKey) {

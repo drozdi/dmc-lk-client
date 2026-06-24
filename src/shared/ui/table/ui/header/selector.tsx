@@ -1,5 +1,5 @@
 import { Checkbox } from '@mantine/core';
-import { useTableDataContext } from '../../context';
+import { useTableDataContext, useTableSelectionContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableHeaderCellWrapProps } from '../type';
 import { TableHeaderBulkActions } from './bulk-actions';
@@ -13,8 +13,8 @@ export function TableHeaderCellSelector<T = object>({
 	maxRow,
 	maxCol,
 }: TableHeaderCellSelectorProps<T>) {
-	const { allSelected, someSelected, selectAll, rowActionsOnHover, hasActionsColumn } =
-		useTableDataContext<T>();
+	const { allSelected, someSelected, selectAll } = useTableSelectionContext<T>();
+	const { rowActionsOnHover, hasActionsColumn } = useTableDataContext<T>();
 	const showBulkInSelect = !(rowActionsOnHover && !hasActionsColumn);
 
 	return (

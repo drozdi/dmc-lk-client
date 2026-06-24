@@ -1,6 +1,7 @@
 import { ActionIcon } from '@mantine/core';
 import { TbCircleChevronLeft, TbCircleChevronRight } from 'react-icons/tb';
 import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableExpandContext } from '../../context/TableExpandContext';
 import type { TableHeaderCellExpanderProps } from '../type';
 
 /** Один expander в заголовке unified-колонки (group + grouped): только kind group. */
@@ -8,8 +9,8 @@ export function TableHeaderCellUnifiedExpander<T = object>({
 	column,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { expands, toggleExpand, groupAt, expandables, groupKeys } =
-		useTableDataContext<T>();
+	const { groupAt, groupKeys } = useTableDataContext<T>();
+	const { expands, toggleExpand, expandables } = useTableExpandContext();
 
 	if (!column.isGroup || !column.isGrouped) {
 		return null;

@@ -1,6 +1,5 @@
 import { HoverCard, Table as TableMantine } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext } from '../context';
 import { TableBody } from './body';
 import { TableHeader } from './header';
 import { TableHeaderToggling } from './TableHeaderToggling';

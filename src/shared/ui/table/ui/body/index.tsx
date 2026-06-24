@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTableDataContext } from '../../context';
 import { getGroupedColumnForLevel } from '../../utils/group-by';
 import type { TableBodyProps } from '../type';
@@ -15,8 +16,11 @@ export * from './row';
 
 export function TableBody<T = object>({ nodes, columns, level }: TableBodyProps<T>) {
 	const { groupKeys } = useTableDataContext<T>();
-	const group = columns.find((col) => col.isGroup);
-	const grouped = getGroupedColumnForLevel(columns, groupKeys, 0);
+	const group = useMemo(() => columns.find((col) => col.isGroup), [columns]);
+	const grouped = useMemo(
+		() => getGroupedColumnForLevel(columns, groupKeys, 0),
+		[columns, groupKeys],
+	);
 
 	return (
 		<>

@@ -1,6 +1,6 @@
 import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { useTableDataContext, useTableExpandContext } from '../../context';
 import {
 	getGroupedColumnForLevel,
 	getGroupedNestedColumns,
@@ -18,7 +18,8 @@ function TableBodyGroupedInline<T = object>({
 	columns,
 	level = 0,
 }: TableBodyGroupedProps<T>) {
-	const { isExpanded, groupKeys, multiGroup } = useTableDataContext<T>();
+	const { groupKeys, multiGroup } = useTableDataContext<T>();
+	const { isExpanded } = useTableExpandContext();
 
 	const parentLevel = node.groupLevel ?? 0;
 	const expandKey = getNodeExpandKey(node);
@@ -68,7 +69,8 @@ function TableBodyGroupedNested<T = object>({
 	column: groupedColumn,
 	level = 0,
 }: TableBodyGroupedProps<T>) {
-	const { props, isExpanded, groupAt, groupKeys } = useTableDataContext<T>();
+	const { props, groupAt, groupKeys } = useTableDataContext<T>();
+	const { isExpanded } = useTableExpandContext();
 
 	const parentLevel = node.groupLevel ?? 0;
 	const expandKey = getNodeExpandKey(node);

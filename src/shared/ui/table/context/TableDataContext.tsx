@@ -2,10 +2,7 @@ import { type TableProps } from '@mantine/core';
 import { createSafeContext } from "../../../internal/utils/create-safe-context";
 import type {
 	ColumnEntity,
-	ExpandKind,
 	TableDataProps,
-	TableExpandablesState,
-	TableExpandsState,
 	TableGroupLayout,
 	TableNode,
 	TableRowAction,
@@ -13,7 +10,6 @@ import type {
 	TableBulkAction,
 	TableBulkActionsPanelProps,
 	TableSortState,
-	ToggleExpandOptions,
 } from "../type";
 
 export interface TableDataContext<T = object> {
@@ -36,15 +32,6 @@ export interface TableDataContext<T = object> {
 	groupColumnField?: keyof T;
 	isGroupStart: boolean;
 
-	expandables: TableExpandablesState;
-	isExpanded: (expandKey: string, kind: ExpandKind) => boolean;
-	toggleExpand: (
-		expandKey: string | string[],
-		kind: ExpandKind,
-		options?: ToggleExpandOptions,
-	) => void;
-	expands: TableExpandsState;
-
 	columnWidths?: Partial<Record<keyof T, number>>;
 	resizeColumn: (column: ColumnEntity<T>, width: number, nextWidth: number) => void;
 	getColumnWidth: (column: ColumnEntity<T>) => number | undefined;
@@ -56,12 +43,6 @@ export interface TableDataContext<T = object> {
 	hiddenColumns: (keyof T)[];
 	toggleColumn: (column: ColumnEntity<T>, hidden?: boolean) => void;
 
-	selectedRows: TableNode<T>['index'][];
-	toggleRow: (index: TableNode<T>['index']) => void;
-	selectAll: (selected: boolean) => void;
-	isRowSelected: (index: TableNode<T>['index']) => boolean;
-	someSelected: boolean;
-	allSelected: boolean;
 	selectable?: TableDataProps<T>['selectable'];
 	nodes: TableNode<T>[];
 

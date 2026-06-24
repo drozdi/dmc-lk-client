@@ -4,6 +4,8 @@ import { useMounted } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loading } from '../loading';
 import { TableDataProvider } from './context/TableDataContext';
+import { TableExpandProvider } from './context/TableExpandContext';
+import { TableSelectionProvider } from './context/TableSelectionContext';
 import { useColumnHidden, useColumnOrder, useColumnSort, useNodeSelect } from './hooks';
 import type {
 	ColumnEntity,
@@ -20,6 +22,7 @@ import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePaginat
 import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
+import { buildColumnOrderIndex, compareByColumnOrder } from './utils/column-order-index';
 import {
 	appliesTopLevelGrouping,
 	buildDataColumns,
@@ -63,6 +66,32 @@ function genStorage(storageKey: string): TableStorage {
 		removeItem(key) {
 			localStorage.removeItem(keyStorage(key));
 		},
+	};
+}
+
+function createSelectColumn<T>(): ColumnEntity<T> {
+	return {
+		field: '__select__' as keyof T,
+		isSelecting: true,
+		size: 1,
+		level: 0,
+		parentLevel: 0,
+		columns: [],
+		isDraggable: false,
+		isGroup: false,
+		isGrouped: false,
+		isSorted: false,
+		isColumns: false,
+		isHeader: false,
+		isField: false,
+		isEmpty: true,
+		isToggleable: false,
+		isResizable: false,
+		isActions: false,
+		isHoverSlot: false,
+		colspan: 1,
+		width: 44,
+		align: 'center',
 	};
 }
 
@@ -174,29 +203,7 @@ export function TableData<T = object>({
 	level = 0,
 	...other
 }: TableDataProps<T>) {
-	const selectColumn: ColumnEntity<T> = {
-		field: '__select__' as keyof T,
-		isSelecting: true,
-		size: 1,
-		level: 0,
-		parentLevel: 0,
-		columns: [],
-		isDraggable: false,
-		isGroup: false,
-		isGrouped: false,
-		isSorted: false,
-		isColumns: false,
-		isHeader: false,
-		isField: false,
-		isEmpty: true,
-		isToggleable: false,
-		isResizable: false,
-		isActions: false,
-		isHoverSlot: false,
-		colspan: 1,
-		width: 44,
-		align: 'center',
-	};
+	const selectColumn = useMemo(() => createSelectColumn<T>(), []);
 	const mounted = useMounted();
 	const matchesBreakpoint = useBreakpoint(initialBreakpoint ?? 'xs');
 	const breakpoint = !!initialBreakpoint && matchesBreakpoint;
@@ -344,6 +351,10 @@ export function TableData<T = object>({
 		initialColumnOrder,
 		onInitialColumnOrder,
 	);
+	const columnOrderIndex = useMemo(
+		() => (columnOrder.length ? buildColumnOrderIndex(columnOrder) : null),
+		[columnOrder],
+	);
 	const { hiddenColumns, toggleColumn } = useColumnHidden(
 		columnsRaw,
 		storage,
@@ -384,8 +395,8 @@ export function TableData<T = object>({
 					[column.field as keyof T]: width,
 				};
 				if (nextWidth !== undefined && column.field) {
-					const idx = columnOrder.indexOf(column.field as keyof T);
-					const nextField = columnOrder[idx + 1];
+					const idx = columnOrderIndex?.get(column.field as keyof T);
+					const nextField = idx !== undefined ? columnOrder[idx + 1] : undefined;
 					if (nextField) {
 						next[nextField] = nextWidth;
 					}
@@ -393,17 +404,18 @@ export function TableData<T = object>({
 				if (storage && !initialColumnWidth) {
 					storage.setItem(`columns.${String(column.field)}.width`, width);
 					if (nextWidth !== undefined) {
-						const idx = columnOrder.indexOf(column.field as keyof T);
-						const nextField = columnOrder[idx + 1];
-						if (nextField)
+						const idx = columnOrderIndex?.get(column.field as keyof T);
+						const nextField = idx !== undefined ? columnOrder[idx + 1] : undefined;
+						if (nextField) {
 							storage.setItem(`columns.${String(nextField)}.width`, nextWidth);
+						}
 					}
 				}
 				return next;
 			});
 			onInitialColumnResize?.(column, width, nextWidth);
 		},
-		[columnOrder, storage, initialColumnWidth, onInitialColumnResize],
+		[columnOrderIndex, storage, initialColumnWidth, onInitialColumnResize],
 	);
 	const getColumnWidth = useCallback(
 		(column: ColumnEntity<T>) => {
@@ -516,11 +528,13 @@ export function TableData<T = object>({
 	const columns = useMemo(() => {
 		const { dataColumns: orderedData, normalColumns } = buildDataColumns(columnsRaw, groupAt);
 		const normal = [...normalColumns];
-		if (columnOrder?.length) {
-			normal.sort(
-				(a, b) =>
-					columnOrder.indexOf(a.field as keyof T) -
-					columnOrder.indexOf(b.field as keyof T),
+		if (columnOrderIndex) {
+			normal.sort((a, b) =>
+				compareByColumnOrder(
+					a.field as keyof T,
+					b.field as keyof T,
+					columnOrderIndex,
+				),
 			);
 		}
 		const groupPart = orderedData.filter((c) => c.isGroup || c.isGrouped);
@@ -561,7 +575,7 @@ export function TableData<T = object>({
 			result.push(...selected);
 		}
 		return result;
-	}, [columnsRaw, groupAt, initialSelectable, columnOrder, initialRowActionsAt, rowActionsOnHover, hasActionsColumn]);
+	}, [columnsRaw, groupAt, initialSelectable, columnOrderIndex, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
 
 	const groupColumnField = useMemo(() => {
 		const groupOnly = columns.find((c) => c.isGroup && !c.isGrouped);
@@ -818,119 +832,131 @@ export function TableData<T = object>({
 	const { selectedRows, toggleRow, selectAll, isRowSelected, someSelected, allSelected } =
 		useNodeSelect(nodes, storage, initialSelectedRows, onInitialSelectedRowsChange);
 
+	const selectionContextValue = useMemo(
+		() => ({
+			selectedRows,
+			toggleRow,
+			selectAll,
+			isRowSelected,
+			someSelected,
+			allSelected,
+			selectable: initialSelectable,
+		}),
+		[
+			selectedRows,
+			toggleRow,
+			selectAll,
+			isRowSelected,
+			someSelected,
+			allSelected,
+			initialSelectable,
+		],
+	);
+
+	const expandContextValue = useMemo(
+		() => ({
+			expands,
+			isExpanded,
+			toggleExpand,
+			expandables,
+		}),
+		[expands, isExpanded, toggleExpand, expandables],
+	);
+
+	const tableContextValue = useMemo(
+		() => ({
+			selectable: initialSelectable,
+			nodes,
+
+			columnWidths,
+			resizeColumn,
+			getColumnWidth,
+
+			columnOrder,
+			onColumnOrder: setColumnOrder,
+			sortColumn,
+
+			hiddenColumns,
+			toggleColumn,
+
+			props,
+			sort,
+			changeSort,
+			multiSort: resolvedMultiSort,
+			multiGroup: resolvedMultiGroup,
+			groupKeys,
+			groupLevel: level,
+			groupLayout,
+			groupColumnField,
+			isGroupStart,
+			breakpoint,
+			editorMode,
+			handleModeChange,
+			clearModeChange,
+			commitEdit,
+			groupAt,
+			colspan,
+			rowspan,
+
+			editMode,
+
+			updateNode,
+			storage,
+
+			rowActions: initialRowActions,
+			rowActionsPanel: initialRowActionsPanel,
+			rowActionsOnHover,
+			rowActionsAt: initialRowActionsAt,
+			hasActionsColumn,
+			bulkActions: initialBulkActions,
+			bulkActionsPanel: initialBulkActionsPanel,
+		}),
+		[
+			hiddenColumns,
+			toggleColumn,
+			props,
+			sort,
+			changeSort,
+			resolvedMultiSort,
+			resolvedMultiGroup,
+			groupKeys,
+			level,
+			groupLayout,
+			groupColumnField,
+			isGroupStart,
+			breakpoint,
+			editorMode,
+			handleModeChange,
+			clearModeChange,
+			commitEdit,
+			groupAt,
+			colspan,
+			rowspan,
+			resizeColumn,
+			getColumnWidth,
+			editMode,
+			sortColumn,
+			setColumnOrder,
+			columnOrder,
+			updateNode,
+			storage,
+			columnWidths,
+			initialRowActions,
+			initialRowActionsPanel,
+			rowActionsOnHover,
+			initialRowActionsAt,
+			hasActionsColumn,
+			initialBulkActions,
+			initialBulkActionsPanel,
+			initialSelectable,
+			nodes,
+		],
+	);
+
 	return (
-		<TableDataProvider
-			value={useMemo(
-				() => ({
-					selectedRows,
-					toggleRow,
-					selectAll,
-					isRowSelected,
-					someSelected,
-					allSelected,
-
-					selectable: initialSelectable,
-					nodes,
-
-					columnWidths,
-					resizeColumn,
-					getColumnWidth,
-
-					columnOrder,
-					onColumnOrder: setColumnOrder,
-					sortColumn,
-
-					hiddenColumns,
-					toggleColumn,
-
-					props,
-					sort,
-					changeSort,
-					multiSort: resolvedMultiSort,
-					multiGroup: resolvedMultiGroup,
-					groupKeys,
-					groupLevel: level,
-					groupLayout,
-					groupColumnField,
-					isGroupStart,
-					breakpoint,
-					editorMode,
-					handleModeChange,
-					clearModeChange,
-					commitEdit,
-					expands,
-					isExpanded,
-					toggleExpand,
-					groupAt,
-					colspan,
-					rowspan,
-
-					editMode,
-
-					expandables,
-					updateNode,
-					storage,
-
-					rowActions: initialRowActions,
-					rowActionsPanel: initialRowActionsPanel,
-					rowActionsOnHover,
-					rowActionsAt: initialRowActionsAt,
-					hasActionsColumn,
-					bulkActions: initialBulkActions,
-					bulkActionsPanel: initialBulkActionsPanel,
-				}),
-				[
-					selectedRows,
-					toggleRow,
-					selectAll,
-					isRowSelected,
-					someSelected,
-					allSelected,
-					hiddenColumns,
-					toggleColumn,
-					props,
-					sort,
-					changeSort,
-					resolvedMultiSort,
-					resolvedMultiGroup,
-					groupKeys,
-					level,
-					groupLayout,
-					groupColumnField,
-					isGroupStart,
-					breakpoint,
-					editorMode,
-					handleModeChange,
-					clearModeChange,
-					commitEdit,
-					expands,
-					isExpanded,
-					toggleExpand,
-					groupAt,
-					colspan,
-					rowspan,
-					resizeColumn,
-					getColumnWidth,
-					editMode,
-					sortColumn,
-					setColumnOrder,
-					columnOrder,
-					expandables,
-					updateNode,
-					storage,
-					columnWidths,
-					initialRowActions,
-					initialRowActionsPanel,
-					rowActionsOnHover,
-					initialRowActionsAt,
-					hasActionsColumn,
-					initialBulkActions,
-					initialBulkActionsPanel,
-					initialSelectable,
-					nodes,
-				],
-			)}
-		>
+		<TableSelectionProvider value={selectionContextValue}>
+			<TableExpandProvider value={expandContextValue}>
+				<TableDataProvider value={tableContextValue}>
 			<Stack mih={minHeight} gap="md">
 				<Loading active={loading} keepMounted mih={minHeight}>
 					{error && <TableError>{error}</TableError>}
@@ -958,7 +984,9 @@ export function TableData<T = object>({
 					/>
 				)}
 			</Stack>
-		</TableDataProvider>
+				</TableDataProvider>
+			</TableExpandProvider>
+		</TableSelectionProvider>
 	);
 };
 

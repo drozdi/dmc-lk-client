@@ -3,6 +3,7 @@ import {
 	TbCircleChevronLeft,
 	TbCircleChevronRight
 } from 'react-icons/tb';
+import { useTableExpandContext } from '../../context/TableExpandContext';
 import { useTableDataContext } from '../../context/TableDataContext';
 import type { ExpandKind } from '../../type';
 import type { TableHeaderCellExpanderProps } from '../type';
@@ -19,8 +20,8 @@ export function TableHeaderCellExpander<T = object>({
 	kind: kindProp,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { expands, toggleExpand, groupAt, expandables, groupKeys, groupColumnField } =
-		useTableDataContext<T>();
+	const { groupAt, groupKeys, groupColumnField } = useTableDataContext<T>();
+	const { expands, toggleExpand, expandables } = useTableExpandContext();
 	const kind = kindProp ?? resolveExpandKind(column);
 
 	if (kind === 'grouped') {

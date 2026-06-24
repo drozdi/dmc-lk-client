@@ -1,6 +1,6 @@
 import { ActionIcon } from "@mantine/core";
 import { TbCircleChevronLeft, TbCircleChevronRight } from 'react-icons/tb';
-import { useTableDataContext } from '../../context';
+import { useTableDataContext, useTableExpandContext } from '../../context';
 import type { ExpandKind } from '../../type';
 import { getNodeExpandKey } from '../../utils/group-by';
 import type { TableBodyExpanderProps } from '../type';
@@ -23,7 +23,8 @@ export function TableBodyExpander<T = object>({
 		return null;
 	}
 
-	const { isExpanded, toggleExpand, groupAt } = useTableDataContext<T>();
+	const { groupAt } = useTableDataContext<T>();
+	const { isExpanded, toggleExpand } = useTableExpandContext();
 	const kind = kindProp ?? resolveExpandKind(column);
 	const expandKey = getNodeExpandKey(node);
 	const isExpand = isExpanded(expandKey, kind);

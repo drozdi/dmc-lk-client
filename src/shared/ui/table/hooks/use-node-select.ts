@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useDebouncedCallback } from '@mantine/hooks';
+import { useCallback, useMemo, useState } from 'react';
 import type { TableNode, TableStorage } from '../type';
 
 export function useNodeSelect<T = object>(
@@ -18,6 +19,13 @@ export function useNodeSelect<T = object>(
 
 	const selectedRows = initialSelectedRows ?? internalSelectedRows;
 
+	const persistSelectedRows = useDebouncedCallback(
+		(rows: TableNode<T>['index'][]) => {
+			storage?.setItem('nodes.selected', rows);
+		},
+		300,
+	);
+
 	const setSelectedRows = useCallback(
 		(
 			newSelected:
@@ -36,17 +44,19 @@ export function useNodeSelect<T = object>(
 			setInternalSelectedRows((prev) => {
 				const resolved =
 					typeof newSelected === 'function' ? newSelected(prev) : newSelected;
-				storage?.setItem('nodes.selected', resolved);
+				persistSelectedRows(resolved);
 				onInitialSelectedRowsChange?.(resolved);
 				return resolved;
 			});
 		},
-		[initialSelectedRows, onInitialSelectedRowsChange, storage],
+		[initialSelectedRows, onInitialSelectedRowsChange, persistSelectedRows],
 	);
 
+	const selectedSet = useMemo(() => new Set(selectedRows), [selectedRows]);
+
 	const isRowSelected = useCallback(
-		(index: TableNode<T>['index']) => selectedRows?.includes(index),
-		[selectedRows],
+		(index: TableNode<T>['index']) => selectedSet.has(index),
+		[selectedSet],
 	);
 
 	const toggleRow = useCallback(
@@ -70,8 +80,15 @@ export function useNodeSelect<T = object>(
 		[nodes, setSelectedRows],
 	);
 
-	const someSelected = !!(selectedRows?.length && selectedRows.length < nodes.length);
-	const allSelected = nodes.length > 0 && selectedRows?.length === nodes.length;
+	const someSelected = useMemo(
+		() => !!(selectedRows.length && selectedRows.length < nodes.length),
+		[selectedRows.length, nodes.length],
+	);
+
+	const allSelected = useMemo(
+		() => nodes.length > 0 && selectedRows.length === nodes.length,
+		[selectedRows.length, nodes.length],
+	);
 
 	return {
 		selectedRows,
