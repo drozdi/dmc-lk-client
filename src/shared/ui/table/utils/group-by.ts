@@ -134,22 +134,63 @@ export function getGroupedColumnLevel<T>(
 	return groupKeys.indexOf(column.field as keyof T);
 }
 
-/** Единый дополнительный отступ для grouped-ячеек: base + step. */
-export function getGroupedRowPadding(): string {
-	const base = 'var(--table-horizontal-spacing, 0.5rem)';
-	const step = 'var(--mantine-spacing-md)';
-	return `calc(${step} + ${base})`;
-}
-
-/** Отступ по уровню в цепочке groupKeys. */
-export function getGroupedPaddingByLevel(columnLevel: number): string | undefined {
-	if (columnLevel < 0) {
+/** Отступ: base + step × steps (1 — одинарный, 2 — двойной, …). */
+export function getGroupedPaddingBySteps(steps: number): string | undefined {
+	if (steps <= 0) {
 		return undefined;
 	}
-	return getGroupedRowPadding();
+	const base = 'var(--table-horizontal-spacing, 0.5rem)';
+	const step = 'var(--mantine-spacing-md)';
+	return `calc(${step} * ${steps} + ${base})`;
 }
 
-/** Отступ grouped-колонки. */
+/**
+ * Глубина вложенности строки (1-based): groupLevel + 1 или max для листьев.
+ * По «боковой диагонали»: steps = nestingDepth − groupedLevel.
+ */
+export function resolveNestingDepth<T>(
+	node: Pick<TableNode, 'groupLevel'>,
+	columns: ColumnEntity<T>[],
+): number {
+	const groupedCount = countGroupedDataColumns(columns);
+	if (groupedCount === 0) {
+		return 0;
+	}
+	if (node.groupLevel !== undefined) {
+		return node.groupLevel + 1;
+	}
+	return groupedCount;
+}
+
+export function resolveGroupedPaddingSteps(nestingDepth: number, groupedLevel: number): number {
+	return nestingDepth - groupedLevel;
+}
+
+/** Отступ grouped-колонки в заголовке (max nesting). */
+export function getGroupedHeaderPadding<T>(
+	column: ColumnEntity<T>,
+	groupKeys: (keyof T)[],
+	columns?: ColumnEntity<T>[],
+): string | undefined {
+	if (!canGroupedColumnHavePadding(column, groupKeys, columns)) {
+		return undefined;
+	}
+	const groupedLevel = columns
+		? resolveGroupedColumnLevel(column, columns, groupKeys)
+		: getGroupedColumnLevel(column, groupKeys);
+	if (groupedLevel < 0) {
+		return undefined;
+	}
+	const groupedCount = columns ? countGroupedDataColumns(columns) : groupKeys.length;
+	return getGroupedPaddingBySteps(resolveGroupedPaddingSteps(groupedCount, groupedLevel));
+}
+
+/** @deprecated используйте getGroupedPaddingBySteps */
+export function getGroupedRowPadding(): string {
+	return getGroupedPaddingBySteps(1)!;
+}
+
+/** Отступ grouped-колонки (fallback без контекста строки). */
 export function getGroupedColumnPadding<T = object>(
 	column: ColumnEntity<T>,
 	columnLevel: number,
@@ -157,7 +198,7 @@ export function getGroupedColumnPadding<T = object>(
 	if (columnLevel < 0 || !column.isGrouped) {
 		return undefined;
 	}
-	return getGroupedRowPadding();
+	return getGroupedPaddingBySteps(1);
 }
 
 export function resolveRowGroupLevel<T>(
@@ -246,9 +287,8 @@ export function getGroupedShiftTargetIndex<T>(
 }
 
 /**
- * Отступ ячейки строки в режиме grouped:
- * только grouped-колонки с level <= rowGroupLevel; единый отступ base + step.
- * Ячейка с кнопкой раскрытия не смещается.
+ * Отступ ячейки строки в режиме grouped (боковая диагональ):
+ * steps = nestingDepth − groupedLevel; последняя grouped-колонка и expander — без отступа.
  */
 export function getGroupedCellPaddingForRow<T>(
 	node: TableNode<T>,
@@ -280,7 +320,9 @@ export function getGroupedCellPaddingForRow<T>(
 		return undefined;
 	}
 
-	return getGroupedRowPadding();
+	const nestingDepth = resolveNestingDepth(node, columns);
+	const steps = resolveGroupedPaddingSteps(nestingDepth, groupedLevel);
+	return getGroupedPaddingBySteps(steps);
 }
 
 export function getGroupedColumnForLevel<T>(
@@ -320,6 +362,14 @@ export function appliesTopLevelGrouping(
 	groupKeysLength: number,
 ): boolean {
 	return groupKeysLength > 0 && groupLayout !== 'group-first';
+}
+
+/** Отступы grouped: на верхнем уровне group-first нет, внутри вложенной таблицы — да. */
+export function appliesGroupedCellPadding(
+	groupLayout: TableGroupLayout,
+	tableNestLevel: number,
+): boolean {
+	return groupLayout !== 'group-first' || tableNestLevel > 0;
 }
 
 /** groupAt по умолчанию — start. */

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useTableDataContext } from '../../context';
 import type { TableNode } from '../../type';
 import {
+	appliesGroupedCellPadding,
 	getGroupedCellPaddingForRow,
 	getGroupedColumnLevel,
 	getGroupedColumnPadding,
@@ -20,7 +21,7 @@ export function TableBodyCellWrap<T = object>({
 	className,
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
-	const { groupKeys, groupLevel: tableNestLevel } = useTableDataContext<T>();
+	const { groupKeys, groupLevel: tableNestLevel, groupLayout } = useTableDataContext<T>();
 
 	const style = useMemo(() => {
 		const baseStyle =
@@ -28,25 +29,28 @@ export function TableBodyCellWrap<T = object>({
 				? column.bodyStyle?.(column, node as TableNode<T>)
 				: column.bodyStyle || {};
 
-		const rowGroupLevel = resolveRowGroupLevel(node, groupKeys, columns ?? [], tableNestLevel);
-		const paddingLeft =
-			columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0
-				? getGroupedCellPaddingForRow(
-						node,
-						column,
-						columnIndex,
-						columns,
-						groupKeys,
-						rowGroupLevel,
-						tableNestLevel,
-					)
-				: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+		let paddingLeft: string | undefined;
+		if (appliesGroupedCellPadding(groupLayout, tableNestLevel)) {
+			const rowGroupLevel = resolveRowGroupLevel(node, groupKeys, columns ?? [], tableNestLevel);
+			paddingLeft =
+				columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0
+					? getGroupedCellPaddingForRow(
+							node,
+							column,
+							columnIndex,
+							columns,
+							groupKeys,
+							rowGroupLevel,
+							tableNestLevel,
+						)
+					: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+		}
 
 		return {
 			...baseStyle,
 			...(paddingLeft ? { paddingLeft } : {}),
 		};
-	}, [column, columns, columnIndex, groupKeys, node, tableNestLevel]);
+	}, [column, columns, columnIndex, groupKeys, groupLayout, node, tableNestLevel]);
 
 	return (
 		<Table.Td
