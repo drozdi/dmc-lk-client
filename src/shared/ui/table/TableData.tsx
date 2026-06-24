@@ -725,7 +725,7 @@ export function TableData<T = object>({
 		}
 
 		if (!fetcher && limit > 0) {
-			nextNodes = limitBy(nextNodes, limit, page);
+			nextNodes = limitBy(nextNodes, limit, page as number);
 		}
 		if (sort.rules.length) {
 			nextNodes = sortByRules(nextNodes, sort.rules);
