@@ -1,7 +1,7 @@
 import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData, TableRowActionsPanel } from '@/shared/ui/table';
 import type { ColumnEntity, TableBulkAction, TableRowAction, TableRowActionsPanelProps } from '@/shared/ui/table/type';
-import { Badge, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
+import { Badge, Button, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { TbPencil, TbTrash } from 'react-icons/tb';
 
@@ -171,6 +171,28 @@ const actionDemoData: ActionDemoRow[] = [
 	{ id: 3, name: 'Вера М.', role: 'Аналитик' },
 	{ id: 4, name: 'Глеб Н.', role: 'Дизайнер' },
 ];
+
+interface CellEditRow {
+	name: string;
+	qty: number;
+}
+
+const cellEditSeed: CellEditRow[] = [
+	{ name: 'Болт M8', qty: 120 },
+	{ name: 'Гайка M8', qty: 340 },
+	{ name: 'Шайба 8', qty: 500 },
+	{ name: 'Винт M6', qty: 80 },
+	{ name: 'Гвоздь 50', qty: 200 },
+	{ name: 'Саморез 4×40', qty: 150 },
+	{ name: 'Дюбель 6', qty: 90 },
+	{ name: 'Хомут', qty: 45 },
+];
+
+const statusBadgeColor: Record<MultiGroupRow['status'], string> = {
+	active: 'green',
+	draft: 'yellow',
+	archived: 'gray',
+};
 
 function DemoRowActionsPanel<T extends ActionDemoRow>({
 	node,
@@ -793,9 +815,37 @@ function editorCell(
 	);
 }
 
+function cellQtyEditor(
+	item: CellEditRow,
+	column: ColumnEntity<CellEditRow>,
+	onChange: (value: CellEditRow[keyof CellEditRow]) => void,
+	onSave: () => void,
+) {
+	const field = column.field as keyof CellEditRow;
+	return (
+		<TextInput
+			type={field === 'qty' ? 'number' : 'text'}
+			defaultValue={String(item[field] ?? '')}
+			onChange={({ target }) => {
+				const value =
+					field === 'qty' ? Number(target.value) : target.value;
+				onChange(value as CellEditRow[keyof CellEditRow]);
+			}}
+			onKeyDown={({ key }) => {
+				if (key === 'Enter') {
+					onSave();
+				}
+			}}
+		/>
+	);
+}
+
 export function TablePage() {
 	const [data, setData] = useState<SS[]>(elements);
 	const [actionData, setActionData] = useState<ActionDemoRow[]>(actionDemoData);
+	const [cellEditData, setCellEditData] = useState<CellEditRow[]>(cellEditSeed);
+	const [controlledSelected, setControlledSelected] = useState<ActionDemoRow['id'][]>([]);
+	const [statesDemo, setStatesDemo] = useState<'empty' | 'loading' | 'error'>('empty');
 
 	const createRowActions = useCallback(
 		(
@@ -865,6 +915,7 @@ export function TablePage() {
 					<Tabs.Tab value="multi-sort">Мульти-сортировка</Tabs.Tab>
 					<Tabs.Tab value="edit">Редактирование + group</Tabs.Tab>
 					<Tabs.Tab value="row-actions">Действия со строкой</Tabs.Tab>
+					<Tabs.Tab value="examples">Примеры API</Tabs.Tab>
 					<Tabs.Tab value="fetch">Async fetch</Tabs.Tab>
 				</Tabs.List>
 
@@ -1218,6 +1269,350 @@ export function TablePage() {
 									sortable
 								/>
 								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+					</Stack>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="examples" pt="md">
+					<Stack gap="xl">
+						<Stack gap="xs">
+							<Title order={4}>Кастомный body</Title>
+							<Text size="sm" c="dimmed">
+								<code>DataColumn body</code> — произвольный рендер ячейки.
+								Подходит для бейджей, ссылок, иконок.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData.slice(0, 8)}
+								storage="demo.examples-custom-body"
+								limit={20}
+							>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+									sortable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="status"
+									header="Статус"
+									body={(item) => (
+										<Badge
+											color={statusBadgeColor[item.status]}
+											variant="light"
+										>
+											{item.status}
+										</Badge>
+									)}
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									align="right"
+									body={(item) => (
+										<Text fw={600}>{item.amount.toLocaleString('ru-RU')} ₽</Text>
+									)}
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Колонки: resize, drag, toggle</Title>
+							<Text size="sm" c="dimmed">
+								<code>resizable</code>, <code>draggable</code>,{' '}
+								<code>toggleable</code> — ширина, порядок и видимость
+								колонок (наведите на заголовок для toggler). Состояние в{' '}
+								<code>storage</code>.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData}
+								storage="demo.examples-columns"
+								limit={15}
+							>
+								<DataColumn<MultiGroupRow>
+									field="region"
+									header="Регион"
+									sortable
+									resizable
+									draggable
+									toggleable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="category"
+									header="Категория"
+									sortable
+									resizable
+									draggable
+									toggleable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+									sortable
+									resizable
+									draggable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									sortable
+									resizable
+									draggable
+									toggleable
+									align="right"
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Controlled selection</Title>
+							<Text size="sm" c="dimmed">
+								<code>selectedRows</code> +{' '}
+								<code>onSelectedRowsChange</code> — выделение под
+								контролем родителя.
+							</Text>
+							<Text size="sm">
+								Выбрано индексов:{' '}
+								{controlledSelected.length
+									? controlledSelected.join(', ')
+									: '—'}
+							</Text>
+							<Group gap="xs">
+								<Button
+									size="xs"
+									variant="light"
+									onClick={() => setControlledSelected([])}
+								>
+									Сбросить
+								</Button>
+								<Button
+									size="xs"
+									variant="light"
+									onClick={() =>
+										setControlledSelected(actionData.map((_, i) => i))
+									}
+								>
+									Выбрать все
+								</Button>
+							</Group>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								selectable="start"
+								selectedRows={controlledSelected}
+								onSelectedRowsChange={setControlledSelected}
+								storage="demo.examples-controlled-select"
+								limit={20}
+							>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Выделение справа</Title>
+							<Text size="sm" c="dimmed">
+								<code>selectable="end"</code> — колонка checkbox в конце
+								строки.
+							</Text>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								selectable="end"
+								bulkActions={bulkActions}
+								storage="demo.examples-select-end"
+								limit={20}
+							>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>editMode: cell</Title>
+							<Text size="sm" c="dimmed">
+								Клик по ячейке с <code>editor</code> — режим
+								редактирования одной ячейки. Enter — сохранить.
+							</Text>
+							<TableData<CellEditRow>
+								data={cellEditData}
+								editMode="cell"
+								storage="demo.examples-cell-edit"
+								onRowEditComplete={(item, index) =>
+									setCellEditData((rows) =>
+										rows.map((row, i) => (i === index ? item : row)),
+									)
+								}
+							>
+								<DataColumn<CellEditRow>
+									field="name"
+									header="Наименование"
+									editor={cellQtyEditor}
+								/>
+								<DataColumn<CellEditRow>
+									field="qty"
+									header="Кол-во"
+									align="right"
+									editor={cellQtyEditor}
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Локальная пагинация</Title>
+							<Text size="sm" c="dimmed">
+								<code>limit</code>, <code>limits</code>,{' '}
+								<code>withPagination</code> — постраничный вывод без
+								fetcher.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData}
+								limit={5}
+								limits={[5, 10, 20]}
+								storage="demo.examples-pagination"
+							>
+								<DataColumn<MultiGroupRow>
+									field="region"
+									header="Регион"
+									sortable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+									sortable
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									align="right"
+									sortable
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>groupAt: end</Title>
+							<Text size="sm" c="dimmed">
+								Expander группировки справа —{' '}
+								<code>groupAt="end"</code>.
+							</Text>
+							<TableData<MultiGroupRow>
+								data={multiGroupData.slice(0, 10)}
+								groupAt="end"
+								storage="demo.examples-group-at-end"
+								limit={20}
+							>
+								<DataColumn<MultiGroupRow>
+									field="region"
+									grouped
+									header="Регион"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="category"
+									grouped
+									header="Категория"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="name"
+									header="Название"
+								/>
+								<DataColumn<MultiGroupRow>
+									field="amount"
+									header="Сумма"
+									align="right"
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Hover-панель слева</Title>
+							<Text size="sm" c="dimmed">
+								<code>rowActionsAt="start"</code> — панель действий при
+								наведении слева от строки.
+							</Text>
+							<TableData<ActionDemoRow>
+								data={actionData}
+								rowActions={rowActions}
+								rowActionsAt="start"
+								storage="demo.examples-hover-start"
+								limit={20}
+							>
+								<DataColumn<ActionDemoRow> field="name" header="Имя" />
+								<DataColumn<ActionDemoRow> field="role" header="Роль" />
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Состояния: empty, loading, error</Title>
+							<Text size="sm" c="dimmed">
+								<code>noDataText</code>, <code>loading</code>,{' '}
+								<code>error</code> — отображение пустого списка и
+								состояний загрузки.
+							</Text>
+							<Group gap="xs">
+								<Button
+									size="xs"
+									variant={statesDemo === 'empty' ? 'filled' : 'light'}
+									onClick={() => setStatesDemo('empty')}
+								>
+									empty
+								</Button>
+								<Button
+									size="xs"
+									variant={statesDemo === 'loading' ? 'filled' : 'light'}
+									onClick={() => setStatesDemo('loading')}
+								>
+									loading
+								</Button>
+								<Button
+									size="xs"
+									variant={statesDemo === 'error' ? 'filled' : 'light'}
+									color="red"
+									onClick={() => setStatesDemo('error')}
+								>
+									error
+								</Button>
+							</Group>
+							<TableData<MultiGroupRow>
+								data={[]}
+								loading={statesDemo === 'loading'}
+								error={
+									statesDemo === 'error'
+										? 'Не удалось загрузить данные'
+										: undefined
+								}
+								noDataText="Нет записей для отображения"
+								withPagination={false}
+								storage="demo.examples-states"
+							>
+								<DataColumn<MultiGroupRow> field="name" header="Название" />
+								<DataColumn<MultiGroupRow> field="amount" header="Сумма" />
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
+							<Title order={4}>Breakpoint — карточки</Title>
+							<Text size="sm" c="dimmed">
+								<code>breakpoint</code> — на узком экране таблица
+								переключается в <code>layout</code> (по умолчанию карточки).
+								Сожмите окно или откройте на мобильном.
+							</Text>
+							<TableData<UnifiedRow>
+								data={unifiedData}
+								breakpoint="md"
+								storage="demo.examples-breakpoint"
+								limit={20}
+							>
+								<DataColumn<UnifiedRow>
+									field="department"
+									header="Отдел"
+								/>
+								<DataColumn<UnifiedRow>
+									field="employee"
+									header="Сотрудник"
+								/>
+								<DataColumn<UnifiedRow>
+									field="salary"
+									header="Зарплата"
+									align="right"
+								/>
 							</TableData>
 						</Stack>
 					</Stack>
