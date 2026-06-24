@@ -1,3 +1,4 @@
+import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData, TableRowActionsPanel } from '@/shared/ui/table';
 import type { ColumnEntity, TableBulkAction, TableRowAction, TableRowActionsPanelProps } from '@/shared/ui/table/type';
 import { Badge, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
@@ -34,70 +35,41 @@ const multiGroupData: MultiGroupRow[] = [
 	{ region: 'Америка', category: 'Мебель', status: 'archived', name: 'Тумба', amount: 90 },
 ];
 
-/** Демо: group + grouped на одной колонке (department + departmentItems). */
+/** Демо: group + grouped на одной колонке — flat-данные, без отдельного массива. */
 interface UnifiedRow {
 	department: string;
-	departmentItems: UnifiedNested[];
 	employee: string;
-	salary: number;
-}
-
-interface UnifiedNested {
-	department: string;
-	departmentItems: [];
-	employee: string;
+	role: string;
 	salary: number;
 }
 
 const unifiedData: UnifiedRow[] = [
-	{
-		department: 'Разработка',
-		employee: 'Иванов',
-		salary: 120000,
-		departmentItems: [
-			{ department: '', employee: 'Петров', salary: 95000, departmentItems: [] },
-			{ department: '', employee: 'Сидоров', salary: 88000, departmentItems: [] },
-		],
-	},
-	{
-		department: 'Разработка',
-		employee: 'Козлов',
-		salary: 110000,
-		departmentItems: [],
-	},
-	{
-		department: 'Маркетинг',
-		employee: 'Новикова',
-		salary: 75000,
-		departmentItems: [
-			{ department: '', employee: 'Орлова', salary: 62000, departmentItems: [] },
-		],
-	},
-	{
-		department: 'Маркетинг',
-		employee: 'Волков',
-		salary: 80000,
-		departmentItems: [],
-	},
-	{
-		department: 'Продажи',
-		employee: 'Морозов',
-		salary: 90000,
-		departmentItems: [
-			{ department: '', employee: 'Лебедев', salary: 70000, departmentItems: [] },
-			{ department: '', employee: 'Соколов', salary: 68000, departmentItems: [] },
-		],
-	},
+	{ department: 'Разработка', employee: 'Иванов А.', role: 'Team Lead', salary: 185000 },
+	{ department: 'Разработка', employee: 'Петров Б.', role: 'Middle', salary: 145000 },
+	{ department: 'Разработка', employee: 'Сидоров В.', role: 'Junior', salary: 98000 },
+	{ department: 'Разработка', employee: 'Козлов Г.', role: 'Senior', salary: 172000 },
+	{ department: 'Маркетинг', employee: 'Новикова Е.', role: 'Head', salary: 156000 },
+	{ department: 'Маркетинг', employee: 'Орлова Ж.', role: 'SMM', salary: 92000 },
+	{ department: 'Маркетинг', employee: 'Волков И.', role: 'Analyst', salary: 118000 },
+	{ department: 'Продажи', employee: 'Морозов К.', role: 'Head', salary: 164000 },
+	{ department: 'Продажи', employee: 'Лебедев Л.', role: 'Manager', salary: 112000 },
+	{ department: 'Продажи', employee: 'Соколов М.', role: 'Manager', salary: 108000 },
 ];
 
-/** Демо: grouped (склад → зона) + group (вложенные позиции в поле items). */
+/** Демо: grouped (склад → зона) + group (комплектация в items). */
+interface CombinedNested {
+	product: string;
+	sku: string;
+	qty: number;
+}
+
 interface CombinedRow {
 	warehouse: string;
 	zone: string;
 	product: string;
 	sku: string;
-	amount: number;
-	items: CombinedRow[];
+	qty: number;
+	items: CombinedNested[];
 }
 
 const combinedData: CombinedRow[] = [
@@ -106,10 +78,10 @@ const combinedData: CombinedRow[] = [
 		zone: 'Z-1',
 		product: 'Ноутбук Pro',
 		sku: 'NB-PRO',
-		amount: 890,
+		qty: 12,
 		items: [
-			{ warehouse: '', zone: '', product: 'RAM 16GB', sku: 'RAM-16', amount: 80, items: [] },
-			{ warehouse: '', zone: '', product: 'SSD 512GB', sku: 'SSD-512', amount: 120, items: [] },
+			{ product: 'RAM 16GB', sku: 'RAM-16', qty: 12 },
+			{ product: 'SSD 512GB', sku: 'SSD-512', qty: 12 },
 		],
 	},
 	{
@@ -117,17 +89,23 @@ const combinedData: CombinedRow[] = [
 		zone: 'Z-1',
 		product: 'Монитор 27"',
 		sku: 'MON-27',
-		amount: 320,
-		items: [
-			{ warehouse: '', zone: '', product: 'Кабель HDMI', sku: 'HDMI-2', amount: 15, items: [] },
-		],
+		qty: 8,
+		items: [{ product: 'Кабель HDMI', sku: 'HDMI-2', qty: 8 }],
 	},
 	{
 		warehouse: 'Склад A',
 		zone: 'Z-2',
 		product: 'Клавиатура',
 		sku: 'KB-01',
-		amount: 45,
+		qty: 24,
+		items: [],
+	},
+	{
+		warehouse: 'Склад A',
+		zone: 'Z-2',
+		product: 'Мышь',
+		sku: 'MS-01',
+		qty: 30,
 		items: [],
 	},
 	{
@@ -135,10 +113,10 @@ const combinedData: CombinedRow[] = [
 		zone: 'Z-1',
 		product: 'Стул офисный',
 		sku: 'CHR-01',
-		amount: 65,
+		qty: 15,
 		items: [
-			{ warehouse: '', zone: '', product: 'Подлокотники', sku: 'ARM-01', amount: 20, items: [] },
-			{ warehouse: '', zone: '', product: 'Крестовина', sku: 'BASE-01', amount: 25, items: [] },
+			{ product: 'Подлокотники', sku: 'ARM-01', qty: 15 },
+			{ product: 'Крестовина', sku: 'BASE-01', qty: 15 },
 		],
 	},
 	{
@@ -146,7 +124,7 @@ const combinedData: CombinedRow[] = [
 		zone: 'Z-2',
 		product: 'Стол письменный',
 		sku: 'DSK-01',
-		amount: 150,
+		qty: 6,
 		items: [],
 	},
 ];
@@ -248,9 +226,9 @@ interface SSS {
 	name: string;
 	grouped?: string;
 	group?:
-		| SS[]
+		| SSS[]
 		| ((input?: { limit: number; page: string | number }) => Promise<{
-				data: SS[];
+				data: SSS[];
 				next: string | number;
 				total?: number;
 				pages?: number;
@@ -263,62 +241,62 @@ const elementsS: SSS[] = [
 		symbol: 'C',
 		name: 'Carbon',
 		grouped: '1',
-		// group: [
-		// 	{
-		// 		position: 8,
-		// 		mass: 12.011,
-		// 		symbol: "C",
-		// 		name: "Carbon",
-		// 	},
-		// 	{
-		// 		position: 7,
-		// 		mass: 14.007,
-		// 		symbol: "N",
-		// 		name: "Nitrogen",
-		// 	},
-		// 	{
-		// 		position: 39,
-		// 		mass: 88.906,
-		// 		symbol: "Y",
-		// 		name: "Yttrium",
-		// 	},
-		// 	{
-		// 		position: 56,
-		// 		mass: 137.33,
-		// 		symbol: "Ba",
-		// 		name: "Barium",
-		// 	},
-		// ],
-		group: async () => {
-			return {
-				data: [
-					{
-						position: 8,
-						mass: 12.011,
-						symbol: 'C',
-						name: 'Carbon',
-					},
-					{
-						position: 7,
-						mass: 14.007,
-						symbol: 'N',
-						name: 'Nitrogen',
-					},
-					{
-						position: 39,
-						mass: 88.906,
-						symbol: 'Y',
-						name: 'Yttrium',
-					},
-					{
-						position: 56,
-						mass: 137.33,
-						symbol: 'Ba',
-						name: 'Barium',
-					},
-				],
-			};
-		},
+		group: [
+			{
+				position: 8,
+				mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+			},
+			{
+				position: 7,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+			},
+			{
+				position: 39,
+				mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+			},
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+			},
+		],
+		// group: async () => {
+		// 	return {
+		// 		data: [
+		// 			{
+		// 				position: 8,
+		// 				mass: 12.011,
+		// 				symbol: 'C',
+		// 				name: 'Carbon',
+		// 			},
+		// 			{
+		// 				position: 7,
+		// 				mass: 14.007,
+		// 				symbol: 'N',
+		// 				name: 'Nitrogen',
+		// 			},
+		// 			{
+		// 				position: 39,
+		// 				mass: 88.906,
+		// 				symbol: 'Y',
+		// 				name: 'Yttrium',
+		// 			},
+		// 			{
+		// 				position: 56,
+		// 				mass: 137.33,
+		// 				symbol: 'Ba',
+		// 				name: 'Barium',
+		// 			},
+		// 		],
+		// 	};
+		// },
 	},
 	{
 		position: 7,
@@ -359,104 +337,78 @@ const elementsS: SSS[] = [
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
-		symbol: 'Ba',
-		name: 'Barium',
-		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
-		symbol: 'Ce',
-		name: 'Cerium',
-		grouped: '2',
-	},
-	{
-		position: 6,
-		mass: 12.011,
-		symbol: 'C',
-		name: 'Carbon',
-		grouped: '3',
-	},
-	{
-		position: 7,
-		mass: 14.007,
-		symbol: 'N',
-		name: 'Nitrogen',
-		grouped: '1',
-	},
-	{
-		position: 39,
-		mass: 88.906,
-		symbol: 'Y',
-		name: 'Yttrium',
-		grouped: '2',
-	},
-	{
-		position: 56,
-		mass: 137.33,
-		symbol: 'Ba',
-		name: 'Barium',
-		grouped: '3',
-	},
-	{
-		position: 58,
-		mass: 140.12,
-		symbol: 'Ce',
-		name: 'Cerium',
-		grouped: '1',
-	},
-	{
-		position: 6,
-		mass: 12.011,
-		symbol: 'C',
-		name: 'Carbon',
-		grouped: '2',
-	},
-	{
-		position: 7,
-		mass: 14.007,
-		symbol: 'N',
-		name: 'Nitrogen',
-		grouped: '3',
-	},
-	{
-		position: 39,
-		mass: 88.906,
-		symbol: 'Y',
-		name: 'Yttrium',
-		grouped: '1',
-	},
-	{
-		position: 56,
-		mass: 137.33,
-		symbol: 'Ba',
-		name: 'Barium',
-		grouped: '2',
-	},
-	{
-		position: 58,
-		mass: 140.12,
-		symbol: 'Ce',
-		name: 'Cerium',
-		grouped: '3',
-	},
-	{
-		position: 6,
-		mass: 12.011,
-		symbol: 'C',
-		name: 'Carbon',
-		grouped: '1',
-	},
-	{
-		position: 100,
-		mass: 14.007,
-		symbol: 'N',
-		name: 'Nitrogen',
-		grouped: '2',
+		group: [
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '1',
+			},
+			{
+				position: 58,
+				mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '2',
+			},
+			{
+				position: 6,
+				mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+				grouped: '3',
+			},
+			{
+				position: 7,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '1',
+			},
+			{
+				position: 39,
+				mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+				grouped: '2',
+			},
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '3',
+			},
+			{
+				position: 58,
+				mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '1',
+			},
+			{
+				position: 6,
+				mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+				grouped: '2',
+			},
+			{
+				position: 7,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '3',
+			},
+			{
+				position: 39,
+				mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+				grouped: '1',
+			},
+		],
 	},
 	{
 		position: 39,
@@ -464,34 +416,64 @@ const elementsS: SSS[] = [
 		symbol: 'Y',
 		name: 'Yttrium',
 		grouped: '3',
-	},
-	{
-		position: 56,
-		mass: 137.33,
-		symbol: 'Ba',
-		name: 'Barium',
-		grouped: '1',
-	},
-	{
-		position: 58,
-		mass: 140.12,
-		symbol: 'Ce',
-		name: 'Cerium',
-		grouped: '2',
-	},
-	{
-		position: 100,
-		mass: 14.007,
-		symbol: 'N',
-		name: 'Nitrogen',
-		grouped: '2',
-	},
-	{
-		position: 39,
-		mass: 88.906,
-		symbol: 'Y',
-		name: 'Yttrium',
-		grouped: '3',
+		group: [
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '2',
+			},
+			{
+				position: 58,
+				mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '3',
+			},
+			{
+				position: 6,
+				mass: 12.011,
+				symbol: 'C',
+				name: 'Carbon',
+				grouped: '1',
+			},
+			{
+				position: 100,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '2',
+			},
+			{
+				position: 39,
+				mass: 88.906,
+				symbol: 'Y',
+				name: 'Yttrium',
+				grouped: '3',
+			},
+			{
+				position: 56,
+				mass: 137.33,
+				symbol: 'Ba',
+				name: 'Barium',
+				grouped: '1',
+			},
+			{
+				position: 58,
+				mass: 140.12,
+				symbol: 'Ce',
+				name: 'Cerium',
+				grouped: '2',
+			},
+			{
+				position: 100,
+				mass: 14.007,
+				symbol: 'N',
+				name: 'Nitrogen',
+				grouped: '2',
+			},
+		],
 	},
 	{
 		position: 56,
@@ -846,9 +828,10 @@ export function TablePage() {
 		<Stack gap="lg" p="md">
 			<Title order={2}>TableData — демо</Title>
 
-			<Tabs defaultValue="multi-group" keepMounted={false}>
+			<Tabs defaultValue="group" keepMounted={false}>
 				<Tabs.List>
-					<Tabs.Tab value="multi-group">Мульти-группировка</Tabs.Tab>
+					<Tabs.Tab value="group">Группа</Tabs.Tab>
+					<Tabs.Tab value="multi-grouped">Мульти-группировка</Tabs.Tab>
 					<Tabs.Tab value="group-grouped">group + grouped</Tabs.Tab>
 					<Tabs.Tab value="multi-sort">Мульти-сортировка</Tabs.Tab>
 					<Tabs.Tab value="edit">Редактирование + group</Tabs.Tab>
@@ -856,7 +839,45 @@ export function TablePage() {
 					<Tabs.Tab value="fetch">Async fetch</Tabs.Tab>
 				</Tabs.List>
 
-				<Tabs.Panel value="multi-group" pt="md">
+				<Tabs.Panel value="group" pt="md">
+					<Stack gap="xs" mb="md">
+						<Title order={4}>Группа</Title>
+						<Text size="sm" c="dimmed">
+							Раскрывайте строки
+						</Text>
+					</Stack>
+					<TableData<SSS> data={elementsS} storage="demo.group" limit={50}>
+						<DataColumn<SSS> group field="group" />
+						<DataColumn<SSS>
+							resizable
+							draggable
+							field="position"
+							header="Element position"
+						/>
+						<DataColumn<SSS>
+							draggable
+							resizable
+							field="name"
+							header="Element name"
+						/>
+						<DataColumn<SSS>
+							draggable
+							resizable
+							toggleable
+							field="symbol"
+							header="Symbol"
+						/>
+						<DataColumn<SSS>
+							draggable
+							resizable
+							toggleable
+							field="mass"
+							header="Atomic mass"
+						/>
+					</TableData>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="multi-grouped" pt="md">
 					<Stack gap="xs" mb="md">
 						<Title order={4}>3 уровня: region → category → status</Title>
 						<Text size="sm" c="dimmed">
@@ -903,18 +924,56 @@ export function TablePage() {
 				<Tabs.Panel value="group-grouped" pt="md">
 					<Stack gap="xl">
 						<Stack gap="xs">
+							<Title order={4}>group + grouped — одна колонка</Title>
+							<Text size="sm" c="dimmed">
+								Колонка <code>department</code> — <b>grouped</b> (строки с
+								одинаковым отделом) и <b>group</b> (раскрытие списка
+								сотрудников). Данные — обычный flat-массив, без{' '}
+								<code>departmentItems</code>: grouped собирает siblings в{' '}
+								<code>node.nodes</code>, group показывает их во вложенной
+								таблице без заголовков.
+							</Text>
+							<TableData<UnifiedRow>
+								data={unifiedData}
+								groupAt="start"
+								storage="demo.group-grouped-unified-v3"
+								limit={50}
+							>
+								<DataColumn<UnifiedRow>
+									field="department"
+									group
+									grouped
+									header="Отдел"
+								/>
+								<DataColumn<UnifiedRow>
+									field="employee"
+									header="Сотрудник"
+									sortable
+								/>
+								<DataColumn<UnifiedRow> field="role" header="Должность" />
+								<DataColumn<UnifiedRow>
+									field="salary"
+									header="Зарплата"
+									sortable
+									align="right"
+								/>
+							</TableData>
+						</Stack>
+
+						<Stack gap="xs">
 							<Title order={4}>group + grouped — разные колонки</Title>
 							<Text size="sm" c="dimmed">
-								<b>grouped</b> — строки сворачиваются по складу и зоне
-								(поэтапное раскрытие). <b>group</b> — колонка
-								«Комплектация» раскрывает вложенную таблицу из массива{' '}
-								<code>items</code>.
+								<b>grouped</b> — склад и зона (inline по{' '}
+								<code>groupKeys</code>). <b>group</b> — колонка
+								«Комплектация»: в шапке и ячейке только кнопка раскрытия,
+								данные — во вложенной таблице из <code>items</code> (без
+								заголовков).
 							</Text>
 							<TableData<CombinedRow>
 								data={combinedData}
 								groupKeys={['warehouse', 'zone']}
 								groupAt="start"
-								storage="demo.group-grouped"
+								storage="demo.group-grouped-v3"
 								limit={50}
 							>
 								<DataColumn<CombinedRow>
@@ -939,46 +998,8 @@ export function TablePage() {
 								/>
 								<DataColumn<CombinedRow> field="sku" header="SKU" />
 								<DataColumn<CombinedRow>
-									field="amount"
-									header="Сумма"
-									sortable
-									align="right"
-								/>
-							</TableData>
-						</Stack>
-
-						<Stack gap="xs">
-							<Title order={4}>group + grouped — одна колонка</Title>
-							<Text size="sm" c="dimmed">
-								Колонка <code>department</code> одновременно{' '}
-								<b>grouped</b> (сворачивает строки по отделу) и{' '}
-								<b>group</b> (раскрывает сотрудников из{' '}
-								<code>departmentItems</code>). Скалярное значение — в{' '}
-								<code>department</code>, вложенный массив — по соглашению{' '}
-								<code>{'{field}Items'}</code> или через{' '}
-								<code>groupItemsField</code>.
-							</Text>
-							<TableData<UnifiedRow>
-								data={unifiedData}
-								groupKeys={['department']}
-								groupAt="start"
-								storage="demo.group-grouped-unified"
-								limit={50}
-							>
-								<DataColumn<UnifiedRow>
-									field="department"
-									group
-									grouped
-									header="Отдел"
-								/>
-								<DataColumn<UnifiedRow>
-									field="employee"
-									header="Сотрудник"
-									sortable
-								/>
-								<DataColumn<UnifiedRow>
-									field="salary"
-									header="Зарплата"
+									field="qty"
+									header="Кол-во"
 									sortable
 									align="right"
 								/>
@@ -1180,88 +1201,55 @@ export function TablePage() {
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Cursor pagination (fetcher)</Title>
 					</Stack>
-					<TableData<SSS>
-						data={elementsS}
+					<TableData<IAnalyticsElasticItem>
+						page=''
+						data={async (input) => {
+							const limit = input?.limit ?? 100;
+							const page = input?.page ?? '';
+							const res = await requestAnalyticsElastic({
+								company: {
+									select_field: [
+										'inn_company',
+										'place_name',
+										'device_name',
+										'event_name',
+									],
+									list_where: [],
+									date_limit: {
+										date_from: '2026-01-20',
+										date_to: '2026-05-15',
+									},
+								},
+								paginate: {
+									id_record: page as string,
+									limit_page: limit,
+								},
+							});
+							return {
+								data: res.data as IAnalyticsElasticItem[],
+								next: res.last_id_record ?? '',
+							};
+						}}
 					>
-						<DataColumn<SS>
-							sortable
-							draggable
-							resizable
-							editor={(item, column, onChange, onSave) => (
-								<TextInput
-									defaultValue={
-										item[column.field as keyof SS] as string
-									}
-									onChange={({ target }) => onChange(target.value)}
-									onKeyPress={({ key }) => {
-										if (key === 'Enter') {
-											onSave();
-										}
-									}}
-								/>
-							)}
-							field="position"
-							header="Element position"
+						<DataColumn<IAnalyticsElasticItem>
+							field="id"
+							header="ID record"
 						/>
-						<DataColumn<SS>
-							sortable
-							draggable
-							resizable
-							editor={(item, column, onChange, onSave) => (
-								<TextInput
-									defaultValue={
-										item[column.field as keyof SS] as string
-									}
-									onChange={({ target }) => onChange(target.value)}
-									onKeyPress={({ key }) => {
-										if (key === 'Enter') {
-											onSave();
-										}
-									}}
-								/>
-							)}
-							field="name"
-							header="Element name"
+						<DataColumn<IAnalyticsElasticItem>
+							field="inn_company"
+							header="ИНН компании"
 						/>
-						<DataColumn<SS>
-							draggable
-							resizable
-							toggleable
-							editor={(item, column, onChange, onSave) => (
-								<TextInput
-									defaultValue={
-										item[column.field as keyof SS] as string
-									}
-									onChange={({ target }) => onChange(target.value)}
-									onKeyPress={({ key }) => {
-										if (key === 'Enter') {
-											onSave();
-										}
-									}}
-								/>
-							)}
-							field="symbol"
-							header="Symbol"
+						<DataColumn<IAnalyticsElasticItem>
+							field="place_name"
+							header="Название места"
 						/>
-						<DataColumn<SS>
-							draggable
-							resizable
-							toggleable
-							editor={(item, column, onChange, onSave) => (
-								<TextInput
-									defaultValue={
-										item[column.field as keyof SS] as string
-									}
-									onChange={({ target }) => onChange(target.value)}
-									onKeyPress={({ key }) => {
-										if (key === 'Enter') {
-											onSave();
-										}
-									}}
-								/>
-							)}
-							field="mass"
-							header="Atomic mass"
+						<DataColumn<IAnalyticsElasticItem>
+							field="device_name"
+							header="Название устройства"
+						/>
+						<DataColumn<IAnalyticsElasticItem>
+							field="event_name"
+							header="Название события"
 						/>
 					</TableData>
 				</Tabs.Panel>

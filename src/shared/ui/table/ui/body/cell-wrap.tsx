@@ -12,6 +12,7 @@ export function TableBodyCellWrap<T = object>({
 	children,
 	level = 0,
 	className,
+	plain = false,
 }: TableBodyCellWrapProps<T>) {
 	const { groupKeys } = useTableDataContext<T>();
 
@@ -41,6 +42,8 @@ export function TableBodyCellWrap<T = object>({
 				column.isHoverSlot ? (
 					children
 				) : column.isSelecting ? (
+					children
+				) : plain ? (
 					children
 				) : (
 					<Group justify="flex-start" align="center" grow>

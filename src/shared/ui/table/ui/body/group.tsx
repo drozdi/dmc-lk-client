@@ -1,16 +1,23 @@
 import { Collapse, Table } from '@mantine/core';
+import { useMemo } from 'react';
 import { useTableDataContext } from '../../context';
-import { getGroupNestedData, getNodeExpandKey, hasGroupNestedData } from '../../utils/group-by';
-import { TableData } from "../../TableData";
-import type { TableDataProps } from "../../type";
+import {
+	getGroupNestedData,
+	getNestedTableColumns,
+	getNodeExpandKey,
+	hasGroupNestedData,
+} from '../../utils/group-by';
+import { TableData } from '../../TableData';
+import type { TableDataProps } from '../../type';
 import type { TableBodyGroupProps } from '../type';
 
 export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }: TableBodyGroupProps<T>) {
+	const { props, isExpanded, colspan, groupAt } = useTableDataContext<T>();
+	const nestedColumns = useMemo(() => getNestedTableColumns(columns), [columns]);
+
 	if (!column.isGroup || !hasGroupNestedData(node, column)) {
 		return null;
 	}
-	const { props, isExpanded, colspan, groupAt, columnWidths, resizeColumn, columnOrder, onColumnOrder } =
-		useTableDataContext<T>();
 
 	const isExpand = isExpanded(getNodeExpandKey(node), 'group');
 	const nestedData = getGroupNestedData(node, column);
@@ -25,26 +32,23 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 			}}
 		>
 			{!isRendered && groupAt === 'start' && (
-				<Table.Td colSpan={columns.length - colspan} p="0"></Table.Td>
+				<Table.Td colSpan={columns.length - colspan} p="0" />
 			)}
 			<Table.Td p="0" colSpan={isRendered ? columns.length : colspan}>
 				<Collapse expanded={isExpand} p={isRendered ? 'xs' : '0'}>
 					<Tag
 						data={nestedData}
-						columns={columns.filter((column) => !column.isGroup)}
-						columnWidths={columnWidths}
-						onColumnResize={resizeColumn}
-						columnOrder={columnOrder}
-						onColumnOrder={onColumnOrder}
+						columns={nestedColumns}
+						groupKeys={[]}
 						level={level}
-						withHeader={isRendered}
+						withHeader={false}
 						withPagination={false}
 						{...props}
 					/>
 				</Collapse>
 			</Table.Td>
 			{!isRendered && groupAt === 'end' && (
-				<Table.Td colSpan={columns.length - colspan} p="0"></Table.Td>
+				<Table.Td colSpan={columns.length - colspan} p="0" />
 			)}
 		</Table.Tr>
 	);

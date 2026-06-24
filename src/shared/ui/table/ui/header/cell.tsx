@@ -3,6 +3,7 @@ import type {
 	TableHeaderCellProps
 } from '../type';
 
+import { TableHeaderCellActions } from './actions-cell';
 import { TableHeaderCellDrager } from './cell-drager';
 import { TableHeaderCellResizer } from './cell-resizer';
 import { TableHeaderCellSlot } from './cell-slot';
@@ -11,7 +12,6 @@ import { TableHeaderCellToggler } from './cell-toggler';
 import { TableHeaderCellWrap } from './cell-wrap';
 import { TableHeaderCellGroup } from './group';
 import { TableHeaderCellHoverSlot } from './hover-slot-cell';
-import { TableHeaderCellActions } from './actions-cell';
 import { TableHeaderCellSelector } from './selector';
 
 export function TableHeaderCell<T = object>({

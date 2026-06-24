@@ -213,7 +213,7 @@ export function TableData<T = object>({
 		[other],
 	);
 	const [limit, setLimit] = useState(initialLimit);
-	const [page, setPage] = useState<number>(initialPage);
+	const [page, setPage] = useState<number | string | undefined>(initialPage);
 	const [next, setNext] = useState<string | number>('');
 	const [history, setHistory] = useState<(string | number)[]>([]);
 
@@ -398,8 +398,8 @@ export function TableData<T = object>({
 	);
 	const getColumnWidth = useCallback(
 		(column: ColumnEntity<T>) => {
-			if (column.isGroup) {
-				return 72;
+			if (column.isGroup && !column.isGrouped) {
+				return columnWidths[column.field as keyof T] ?? column.width ?? 44;
 			}
 			if (column.isSelecting) {
 				return columnWidths[column.field as keyof T] ?? column.width ?? 44;
@@ -893,7 +893,7 @@ export function TableData<T = object>({
 						limits={initialLimits}
 						onChangePage={setPage}
 						onChangeLimit={(val) => {
-							setPage(1);
+							setPage(initialPage);
 							setLimit(val);
 						}}
 					/>

@@ -1,7 +1,7 @@
 import { Checkbox } from '@mantine/core';
 import { useTableDataContext } from '../../context';
+import classes from '../style.module.css';
 import type { TableHeaderCellWrapProps } from '../type';
-import classes from '../body/selector.module.css';
 import { TableHeaderBulkActions } from './bulk-actions';
 import { TableHeaderCellWrap } from './cell-wrap';
 

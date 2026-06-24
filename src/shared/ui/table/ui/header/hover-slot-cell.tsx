@@ -1,6 +1,6 @@
+import classes from '../style.module.css';
 import type { TableHeaderCellWrapProps } from '../type';
 import { TableHeaderCellWrap } from './cell-wrap';
-import classes from '../body/row-actions.module.css';
 
 export function TableHeaderCellHoverSlot<T = object>({
 	column,
@@ -16,3 +16,4 @@ export function TableHeaderCellHoverSlot<T = object>({
 		/>
 	);
 }
+

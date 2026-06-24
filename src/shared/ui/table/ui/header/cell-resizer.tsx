@@ -1,10 +1,10 @@
 import { Box } from '@mantine/core';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTableDataContext } from '../../context/TableDataContext';
+import classes from '../style.module.css';
 import type {
 	TableHeaderCellResizerProps
 } from '../type';
-import classes from './style.module.css';
 
 const MIN_COLUMN_WIDTH = 50;
 

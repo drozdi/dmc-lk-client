@@ -1,8 +1,8 @@
 import { Checkbox } from '@mantine/core';
 import { useTableDataContext } from '../../context';
+import classes from '../style.module.css';
 import type { TableBodyCellBaseProps } from '../type';
 import { TableBodyCellWrap } from './cell-wrap';
-import classes from './selector.module.css';
 
 export interface TableBodyCellSelectorProps<T = object> extends TableBodyCellBaseProps<T> {}
 

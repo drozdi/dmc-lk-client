@@ -1,14 +1,41 @@
 import { useTableDataContext } from '../../context';
+import classes from '../style.module.css';
 import type { TableBodyCellProps } from '../type';
+import { TableBodyCellActions } from './actions-cell';
 import { TableBodyCellExpander } from './cell-expander';
 import { TableBodyCellSlot } from './cell-slot';
 import { TableBodyCellWrap } from './cell-wrap';
 import { TableBodyCellExpand } from './expand';
 import { TableBodyCellHoverSlot } from './hover-slot-cell';
-import { TableBodyCellActions } from './actions-cell';
 import { TableBodyCellSelector } from './selector';
-import { TableBodyExpander } from './expander';
-import { hasGroupNestedData } from '../../utils/group-by';
+import { TableBodyUnifiedExpander } from './unified-expander';
+
+function GroupedGroupCellContent<T>({
+	node,
+	column,
+}: {
+	node: TableBodyCellProps<T>['node'];
+	column: TableBodyCellProps<T>['column'];
+}) {
+	const { updateNode, commitEdit, groupAt, editorMode } = useTableDataContext<T>();
+
+	const slot =
+		(editorMode(node, column) &&
+			column.editor?.(
+				node.data,
+				column,
+				(value) => updateNode(node.index, column.field as keyof T, value as T[keyof T]),
+				() => commitEdit(node.index),
+			)) || <TableBodyCellSlot<T> node={node} column={column} />;
+
+	return (
+		<div className={classes['expanderHeaderInnerLabeled']}>
+			{groupAt === 'start' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
+			{slot}
+			{groupAt === 'end' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
+		</div>
+	);
+}
 
 export function TableBodyCell<T = object>({ node, column, level = 0 }: TableBodyCellProps<T>) {
 	if (column.isSelecting) {
@@ -26,28 +53,9 @@ export function TableBodyCell<T = object>({ node, column, level = 0 }: TableBody
 	const { updateNode, commitEdit, groupAt, editorMode } = useTableDataContext<T>();
 
 	if (column.isGroup && column.isGrouped) {
-		const hasNested = hasGroupNestedData(node, column);
 		return (
-			<TableBodyCellWrap<T> level={level} column={column} node={node}>
-				{groupAt === 'start' && (
-					<>
-						<TableBodyCellExpander<T> node={node} column={column} />
-						{hasNested && <TableBodyExpander<T> kind="group" node={node} column={column} />}
-					</>
-				)}
-				{(editorMode(node, column) &&
-					column.editor?.(
-						node.data,
-						column,
-						(value) => updateNode(node.index, column.field as keyof T, value as T[keyof T]),
-						() => commitEdit(node.index),
-					)) || <TableBodyCellSlot<T> node={node} column={column} />}
-				{groupAt === 'end' && (
-					<>
-						<TableBodyCellExpander<T> node={node} column={column} />
-						{hasNested && <TableBodyExpander<T> kind="group" node={node} column={column} />}
-					</>
-				)}
+			<TableBodyCellWrap<T> level={level} column={column} node={node} plain>
+				<GroupedGroupCellContent<T> node={node} column={column} />
 			</TableBodyCellWrap>
 		);
 	}

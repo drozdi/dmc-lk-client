@@ -19,3 +19,127 @@ th:hover .resize {
 th:last-child .resize {
 	display: none;
 }
+
+.selectHeader,
+.selectCell,
+.expanderHeader,
+.expanderCell {
+	min-width: var(--table-select-column-width, 2.75rem);
+	white-space: nowrap;
+	vertical-align: middle;
+	position: relative;
+	overflow: visible;
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.selectCellInner,
+.selectHeaderInner,
+.expanderHeaderInner,
+.expanderCellInner {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100%;
+}
+
+.expanderHeaderInnerLabeled {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--mantine-spacing-xs);
+	width: 100%;
+	min-height: 100%;
+}
+
+.selectBulkOverlay {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 100%;
+	display: flex;
+	align-items: center;
+	padding-inline-start: 4px;
+	z-index: 2;
+}
+
+
+.rowWithActions {
+	position: relative;
+}
+
+.hoverSlotHeader,
+.hoverSlotCell {
+	width: 0 !important;
+	min-width: 0 !important;
+	max-width: 0 !important;
+	padding: 0 !important;
+	border-inline: none !important;
+	overflow: visible;
+	vertical-align: middle;
+}
+
+.hoverSlotCell {
+	position: relative;
+}
+
+.hoverSlotOverlay {
+	position: absolute;
+	inset-block: 0;
+	display: flex;
+	align-items: center;
+	padding-inline: var(--table-horizontal-spacing, 0.5rem);
+	background: linear-gradient(
+		to left,
+		var(--mantine-color-body) 60%,
+		color-mix(in srgb, var(--mantine-color-body) 80%, transparent)
+	);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 150ms ease;
+	z-index: 2;
+	white-space: nowrap;
+}
+
+.hoverSlotOverlay[data-position='start'] {
+	inset-inline-start: 0;
+	background: linear-gradient(
+		to right,
+		var(--mantine-color-body) 60%,
+		color-mix(in srgb, var(--mantine-color-body) 80%, transparent)
+	);
+}
+
+.hoverSlotOverlay[data-position='end'] {
+	inset-inline-end: 0;
+}
+
+.rowWithActions:hover .hoverSlotOverlay,
+.hoverSlotOverlay:focus-within,
+.hoverSlotOverlay:has(:hover) {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.resize {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -4px;
+	width: 8px;
+	cursor: col-resize;
+	background-color: transparent;
+	z-index: 100;
+	opacity: 0;
+	transition: all 0.2s ease;
+}
+
+th:hover .resize {
+	opacity: 1;
+	background-color: var(--mantine-color-gray-4)
+}
+
+th:last-child .resize {
+	display: none;
+}

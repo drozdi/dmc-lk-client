@@ -88,7 +88,7 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 
 	limits?: number[];
 	limit?: number;
-	page?: number;
+	page?: number | string;
 
 	columnOrder?: (keyof T)[];
 	onColumnOrder?: (columnOrder: (keyof T)[]) => void;
@@ -189,15 +189,13 @@ export interface DataColumnProps<T = object> {
 	noWrap?: boolean;
 	draggable?: boolean;
 	/**
-	 * group — вложенный массив строк (nested TableData при раскрытии).
-	 * grouped — строки объединяются по значению поля (groupBy), siblings в node.nodes.
-	 * На одной колонке: `field` — скаляр для grouped; вложенные строки — в `groupItemsField`
-	 * или по соглашению `{field}Items` (например department + departmentItems).
+	 * group — вложенный массив строк в том же field (nested TableData при раскрытии).
+	 * grouped — строки объединяются по значению field (groupBy), siblings в node.nodes.
+	 * На одной колонке (group + grouped): grouped формирует node.nodes, group
+	 * показывает их во вложенной таблице без отдельного поля массива.
 	 */
 	group?: boolean;
 	grouped?: boolean;
-	/** Поле с массивом для group, если отличается от `{field}Items`. */
-	groupItemsField?: keyof T;
 	/**
 	 * Колонка действий со строкой. Использует rowActions из TableData.
 	 * actionsMenu — одна кнопка с выпадающим меню вместо inline-панели.

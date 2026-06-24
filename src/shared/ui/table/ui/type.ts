@@ -111,6 +111,8 @@ export interface TableBodyCellWrapProps<T = object> {
 	onClick?: () => void;
 	level?: number;
 	className?: string;
+	/** Без обёртки Group — для комбинированной group+grouped ячейки с собственным layout. */
+	plain?: boolean;
 }
 
 export interface TableBodyCellSlotProps<T = object> extends TableBodyCellBaseProps<T> {}

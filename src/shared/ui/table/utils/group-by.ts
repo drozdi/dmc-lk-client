@@ -131,22 +131,26 @@ export function getGroupedColumnForLevel<T>(
 	return columns.find((column) => column.isGrouped && column.field === key);
 }
 
+/** Колонка одновременно group + grouped: список берётся из node.nodes, не из отдельного поля. */
+export function isUnifiedGroupColumn<T>(
+	column: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped'> | undefined,
+): boolean {
+	return !!column?.isGroup && !!column?.isGrouped;
+}
+
 export function getGroupItemsField<T>(
-	column: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped' | 'field' | 'groupItemsField'>,
+	column: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped' | 'field'>,
 ): keyof T | undefined {
-	if (!column.isGroup || !column.field) {
+	if (!column.isGroup || !column.field || column.isGrouped) {
 		return undefined;
 	}
-	if (column.groupItemsField) {
-		return column.groupItemsField;
-	}
-	if (!column.isGrouped) {
-		return column.field as keyof T;
-	}
-	return `${String(column.field)}Items` as keyof T;
+	return column.field as keyof T;
 }
 
 export function getGroupNestedData<T>(node: TableNode<T>, column: ColumnEntity<T>): T[] {
+	if (isUnifiedGroupColumn(column)) {
+		return (node.nodes ?? []).map((child) => child.data);
+	}
 	const itemsField = getGroupItemsField(column);
 	if (!itemsField) {
 		return [];
@@ -156,5 +160,21 @@ export function getGroupNestedData<T>(node: TableNode<T>, column: ColumnEntity<T
 }
 
 export function hasGroupNestedData<T>(node: TableNode<T>, column: ColumnEntity<T>): boolean {
+	if (isUnifiedGroupColumn(column)) {
+		return (node.nodes?.length ?? 0) > 0;
+	}
 	return getGroupNestedData(node, column).length > 0;
+}
+
+/** Колонки вложенной таблицы group: без group/grouped-колонок и без повторной группировки. */
+export function getNestedTableColumns<T>(columns: ColumnEntity<T>[]): ColumnEntity<T>[] {
+	return columns
+		.filter((column) => !column.isGroup && !column.isGrouped)
+		.map((column) => ({
+			...column,
+			group: undefined,
+			grouped: undefined,
+			isGroup: false,
+			isGrouped: false,
+		}));
 }
