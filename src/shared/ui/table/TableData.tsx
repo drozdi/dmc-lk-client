@@ -20,7 +20,15 @@ import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePaginat
 import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
-import { canExpandGroupedNode, getNodeExpandKey, hasGroupNestedData } from './utils/group-by';
+import {
+	appliesTopLevelGrouping,
+	buildDataColumns,
+	canExpandGroupedNode,
+	getNodeExpandKey,
+	hasGroupNestedData,
+	isGroupAtStart,
+	resolveGroupLayout,
+} from './utils/group-by';
 
 function genStorage(storageKey: string): TableStorage {
 	const prefix = `${storageKey}.`;
@@ -121,6 +129,7 @@ export function TableData<T = object>({
 	multiSort: initialMultiSort,
 	sortRules: initialSortRules,
 	multiGroup: initialMultiGroup,
+	groupLayout: initialGroupLayout,
 
 	////////
 
@@ -505,9 +514,28 @@ export function TableData<T = object>({
 	}, [columnFieldsKey, columnFields, storage, initialColumnWidth]);
 
 	const columns = useMemo(() => {
-		const grouped = columnsRaw.filter(
-			(c) => (c.isGrouped || c.isGroup) && !c.isSelecting && !c.isActions && !c.isHoverSlot,
-		);
+		const { dataColumns: orderedData, normalColumns } = buildDataColumns(columnsRaw, groupAt);
+		const normal = [...normalColumns];
+		if (columnOrder?.length) {
+			normal.sort(
+				(a, b) =>
+					columnOrder.indexOf(a.field as keyof T) -
+					columnOrder.indexOf(b.field as keyof T),
+			);
+		}
+		const groupPart = orderedData.filter((c) => c.isGroup || c.isGrouped);
+		const dataColumns = isGroupAtStart(groupAt)
+			? [
+					...groupPart.filter((c) => c.isGroup),
+					...groupPart.filter((c) => c.isGrouped && !c.isGroup),
+					...normal,
+				]
+			: [
+					...normal,
+					...groupPart.filter((c) => c.isGrouped && !c.isGroup),
+					...groupPart.filter((c) => c.isGroup),
+				];
+
 		const selected = columnsRaw.filter((c) => c.isSelecting);
 		const actionsStart = columnsRaw.filter(
 			(c) => c.isActions && (c.actionsAt ?? initialRowActionsAt) === 'start',
@@ -523,17 +551,7 @@ export function TableData<T = object>({
 			rowActionsOnHover && !hasActionsColumn && initialRowActionsAt === 'end'
 				? [createHoverSlotColumn<T>('end')]
 				: [];
-		const normal = columnsRaw.filter(
-			(c) => !c.isGrouped && !c.isGroup && !c.isSelecting && !c.isActions && !c.isHoverSlot,
-		);
-		if (columnOrder?.length) {
-			normal.sort(
-				(a, b) =>
-					columnOrder.indexOf(a.field as keyof T) -
-					columnOrder.indexOf(b.field as keyof T),
-			);
-		}
-		const dataColumns = groupAt === 'start' ? [...grouped, ...normal] : [...normal, ...grouped];
+
 		const result: ColumnEntity<T>[] = [];
 		if (initialSelectable === 'start') {
 			result.push(...selected);
@@ -544,6 +562,17 @@ export function TableData<T = object>({
 		}
 		return result;
 	}, [columnsRaw, groupAt, initialSelectable, columnOrder, initialRowActionsAt, rowActionsOnHover, hasActionsColumn]);
+
+	const groupColumnField = useMemo(() => {
+		const groupOnly = columns.find((c) => c.isGroup && !c.isGrouped);
+		if (groupOnly?.field) {
+			return groupOnly.field as keyof T;
+		}
+		const unified = columns.find((c) => c.isGroup && c.isGrouped);
+		return unified?.field as keyof T | undefined;
+	}, [columns]);
+
+	const isGroupStart = isGroupAtStart(groupAt);
 
 	const visibleColumns = useMemo(() => {
 		if (!hiddenColumns.length) {
@@ -570,6 +599,16 @@ export function TableData<T = object>({
 				return sum + (column.isGroup ? 0 : column.colspan);
 			}, 0) || 1,
 		[columns],
+	);
+
+	const groupColumnEntity = useMemo(
+		() => columns.find((col) => col.isGroup),
+		[columns],
+	);
+
+	const groupLayout = useMemo(
+		() => initialGroupLayout ?? resolveGroupLayout(groupColumnEntity),
+		[initialGroupLayout, groupColumnEntity],
 	);
 
 	const handleModeChange = useCallback(
@@ -681,7 +720,7 @@ export function TableData<T = object>({
 
 	const nodes: TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
 		let nextNodes: TableNode<T>[] = convertNodes(data);
-		if (groupKeys.length) {
+		if (appliesTopLevelGrouping(groupLayout, groupKeys.length)) {
 			nextNodes = groupByFirstKey<T>(nextNodes, groupKeys);
 		}
 
@@ -692,7 +731,7 @@ export function TableData<T = object>({
 			nextNodes = sortByRules(nextNodes, sort.rules);
 		}
 		return nextNodes;
-	}, [data, sort.rules, groupKeys, limit, page, fetcher]);
+	}, [data, sort.rules, groupKeys, groupLayout, limit, page, fetcher]);
 
 	useEffect(() => {
 		if (initialProps !== undefined) {
@@ -703,24 +742,37 @@ export function TableData<T = object>({
 	}, [initialProps, data.length]);
 
 	const expandables = useMemo<TableExpandablesState>(() => {
-		const groupColumn = columns.find((col) => col.isGroup);
-
 		const group =
-			groupColumn
+			groupColumnEntity
 				? nodes
-						.filter((node) => hasGroupNestedData(node, groupColumn))
+						.filter((node) => hasGroupNestedData(node, groupColumnEntity))
 						.map((node) => getNodeExpandKey(node))
 				: [];
 
 		const groupedByLevel: Partial<Record<number, string[]>> = {};
-		if (groupKeys.length) {
-			groupedByLevel[0] = nodes
-				.filter((node) => canExpandGroupedNode(node, groupKeys))
-				.map((node) => getNodeExpandKey(node));
+		for (let level = 0; level < groupKeys.length; level++) {
+			const keys: string[] = [];
+			const collect = (list: TableNode<T>[]) => {
+				for (const node of list) {
+					if (
+						(node.groupLevel ?? 0) === level &&
+						canExpandGroupedNode(node, groupKeys)
+					) {
+						keys.push(getNodeExpandKey(node));
+					}
+					if (node.nodes?.length) {
+						collect(node.nodes);
+					}
+				}
+			};
+			collect(nodes);
+			if (keys.length) {
+				groupedByLevel[level] = keys;
+			}
 		}
 
 		return { group, groupedByLevel };
-	}, [nodes, columns, groupKeys]);
+	}, [nodes, groupColumnEntity, groupKeys]);
 
 	const handlerNext = function () {
 		if (fetcher) {
@@ -798,6 +850,9 @@ export function TableData<T = object>({
 					multiGroup: resolvedMultiGroup,
 					groupKeys,
 					groupLevel: 0,
+					groupLayout,
+					groupColumnField,
+					isGroupStart,
 					breakpoint,
 					editorMode,
 					handleModeChange,
@@ -839,6 +894,9 @@ export function TableData<T = object>({
 					resolvedMultiSort,
 					resolvedMultiGroup,
 					groupKeys,
+					groupLayout,
+					groupColumnField,
+					isGroupStart,
 					breakpoint,
 					editorMode,
 					handleModeChange,

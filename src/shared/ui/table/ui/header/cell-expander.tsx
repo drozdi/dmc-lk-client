@@ -19,24 +19,34 @@ export function TableHeaderCellExpander<T = object>({
 	kind: kindProp,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { expands, toggleExpand, groupAt, expandables, groupKeys, groupLevel } =
+	const { expands, toggleExpand, groupAt, expandables, groupKeys, groupColumnField } =
 		useTableDataContext<T>();
 	const kind = kindProp ?? resolveExpandKind(column);
 
 	if (kind === 'grouped') {
-		if (!column.isGrouped) {
+		if (!column.isGrouped || column.isGroup) {
 			return null;
 		}
 		const columnLevel = groupKeys.indexOf(column.field as keyof T);
-		if (columnLevel === -1 || columnLevel !== groupLevel) {
+		if (columnLevel === -1) {
 			return null;
 		}
-	} else if (!column.isGroup) {
-		return null;
+	} else {
+		if (!column.isGroup || column.isGrouped) {
+			return null;
+		}
+		if (groupColumnField && column.field !== groupColumnField) {
+			return null;
+		}
 	}
 
+	const columnLevel =
+		kind === 'grouped' ? groupKeys.indexOf(column.field as keyof T) : -1;
+
 	const levelKeys =
-		kind === 'grouped' ? (expandables.groupedByLevel[groupLevel] ?? []) : expandables.group;
+		kind === 'grouped'
+			? (expandables.groupedByLevel[columnLevel] ?? [])
+			: expandables.group;
 
 	const isExpandable = levelKeys.length > 0;
 	if (!isExpandable) {

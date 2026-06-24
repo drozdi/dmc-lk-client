@@ -4,6 +4,14 @@ import type { TablePaginationProps } from './ui/type';
 /** Тип раскрытия строк: nested-таблица (group) или сгруппированные siblings (grouped). */
 export type ExpandKind = 'group' | 'grouped';
 
+/**
+ * unified — group + grouped на одной колонке (список из node.nodes).
+ * grouped-first — сначала grouped на текущем уровне, group — вложенная таблица.
+ * group-first — сначала group; внутри вложенной таблицы grouped (если колонки указаны).
+ * default — только grouped, inline-раскрытие строк.
+ */
+export type TableGroupLayout = 'unified' | 'grouped-first' | 'group-first' | 'default';
+
 export interface ToggleExpandOptions {
 	merge?: boolean;
 	remove?: boolean;
@@ -121,6 +129,8 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	groupKeys?: (keyof T)[];
 	/** Мульти-группировка: поэтапное раскрытие вложенных таблиц. По умолчанию true при groupKeys.length > 1. */
 	multiGroup?: boolean;
+	/** Режим group/grouped. По умолчанию определяется по колонкам (см. TableGroupLayout). */
+	groupLayout?: TableGroupLayout;
 	sortKey?: keyof T;
 	sortDesc?: boolean;
 	/** Мульти-сортировка. По умолчанию true при groupKeys.length > 1. */

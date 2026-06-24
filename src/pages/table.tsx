@@ -58,17 +58,14 @@ const unifiedData: UnifiedRow[] = [
 
 /** Демо: grouped (склад → зона) + group (комплектация в items). */
 interface CombinedNested {
+	warehouse?: string;
+	zone?: string;
 	product: string;
 	sku: string;
 	qty: number;
 }
 
-interface CombinedRow {
-	warehouse: string;
-	zone: string;
-	product: string;
-	sku: string;
-	qty: number;
+interface CombinedRow extends CombinedNested {
 	items: CombinedNested[];
 }
 
@@ -80,8 +77,20 @@ const combinedData: CombinedRow[] = [
 		sku: 'NB-PRO',
 		qty: 12,
 		items: [
-			{ product: 'RAM 16GB', sku: 'RAM-16', qty: 12 },
-			{ product: 'SSD 512GB', sku: 'SSD-512', qty: 12 },
+			{
+				warehouse: 'Склад AA',
+				zone: 'Z-1',
+				product: 'RAM 16GB',
+				sku: 'RAM-16',
+				qty: 12,
+			},
+			{
+				warehouse: 'Склад AA',
+				zone: 'Z-1',
+				product: 'SSD 512GB',
+				sku: 'SSD-512',
+				qty: 12,
+			},
 		],
 	},
 	{
@@ -90,7 +99,15 @@ const combinedData: CombinedRow[] = [
 		product: 'Монитор 27"',
 		sku: 'MON-27',
 		qty: 8,
-		items: [{ product: 'Кабель HDMI', sku: 'HDMI-2', qty: 8 }],
+		items: [
+			{
+				warehouse: 'Склад AA',
+				zone: 'Z-1',
+				product: 'Кабель HDMI',
+				sku: 'HDMI-2',
+				qty: 8,
+			},
+		],
 	},
 	{
 		warehouse: 'Склад A',
@@ -115,8 +132,20 @@ const combinedData: CombinedRow[] = [
 		sku: 'CHR-01',
 		qty: 15,
 		items: [
-			{ product: 'Подлокотники', sku: 'ARM-01', qty: 15 },
-			{ product: 'Крестовина', sku: 'BASE-01', qty: 15 },
+			{
+				warehouse: 'Склад AA',
+				zone: 'Z-1',
+				product: 'Подлокотники',
+				sku: 'ARM-01',
+				qty: 15,
+			},
+			{
+				warehouse: 'Склад AA',
+				zone: 'Z-1',
+				product: 'Крестовина',
+				sku: 'BASE-01',
+				qty: 15,
+			},
 		],
 	},
 	{
@@ -963,17 +992,15 @@ export function TablePage() {
 						<Stack gap="xs">
 							<Title order={4}>group + grouped — разные колонки</Title>
 							<Text size="sm" c="dimmed">
-								<b>grouped</b> — склад и зона (inline по{' '}
-								<code>groupKeys</code>). <b>group</b> — колонка
-								«Комплектация»: в шапке и ячейке только кнопка раскрытия,
-								данные — во вложенной таблице из <code>items</code> (без
-								заголовков).
+								Режим <code>groupLayout: group-first</code> (авто): сначала
+								раскрытие по group-колонке, внутри — grouped (склад, зона),
+								если колонки указаны. Group-колонки первые при{' '}
+								<code>groupAt="start"</code>.
 							</Text>
 							<TableData<CombinedRow>
 								data={combinedData}
-								groupKeys={['warehouse', 'zone']}
 								groupAt="start"
-								storage="demo.group-grouped-v3"
+								storage="demo.group-grouped-v4"
 								limit={50}
 							>
 								<DataColumn<CombinedRow>

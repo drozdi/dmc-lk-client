@@ -1,6 +1,5 @@
 import { Table } from "@mantine/core";
 import { useTableDataContext } from '../../context';
-import { isUnifiedGroupColumn } from '../../utils/group-by';
 import classes from '../style.module.css';
 import type { TableBodyRowProps } from '../type';
 import { TableBodyCell } from "./cell";
@@ -8,10 +7,13 @@ import { TableBodyGroup } from "./group";
 import { TableBodyGrouped } from "./grouped";
 
 export function TableBodyRow<T = object>({ node, columns, level = 0, group, grouped }: TableBodyRowProps<T>) {
-	const { rowActionsOnHover, hasActionsColumn } = useTableDataContext<T>();
-	const unifiedGroup = isUnifiedGroupColumn(group);
+	const { rowActionsOnHover, hasActionsColumn, groupLayout } = useTableDataContext<T>();
 	const showGrouped =
-		!unifiedGroup && grouped && node.isParent && (node.nodes?.length ?? 0) > 0;
+		groupLayout !== 'unified' &&
+		groupLayout !== 'group-first' &&
+		grouped &&
+		node.isParent &&
+		(node.nodes?.length ?? 0) > 0;
 	const hoverSlotRow = rowActionsOnHover && !hasActionsColumn;
 
 	return <>

@@ -8,15 +8,14 @@ export function TableHeaderCellUnifiedExpander<T = object>({
 	column,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { expands, toggleExpand, groupAt, expandables, groupKeys, groupLevel } =
+	const { expands, toggleExpand, groupAt, expandables, groupKeys } =
 		useTableDataContext<T>();
 
 	if (!column.isGroup || !column.isGrouped) {
 		return null;
 	}
 
-	const columnLevel = groupKeys.indexOf(column.field as keyof T);
-	if (columnLevel === -1 || columnLevel !== groupLevel) {
+	if (groupKeys.indexOf(column.field as keyof T) === -1) {
 		return null;
 	}
 

@@ -1,4 +1,4 @@
-import type { ColumnEntity, TableNode } from '../type';
+import type { ColumnEntity, TableGroupLayout, TableNode } from '../type';
 
 export function buildExpandKey(
 	parentKey: string | undefined,
@@ -138,6 +138,79 @@ export function isUnifiedGroupColumn<T>(
 	return !!column?.isGroup && !!column?.isGrouped;
 }
 
+export function resolveGroupLayout<T>(
+	groupColumn: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped'> | undefined,
+): TableGroupLayout {
+	if (!groupColumn?.isGroup) {
+		return 'default';
+	}
+	if (isUnifiedGroupColumn(groupColumn)) {
+		return 'unified';
+	}
+	return 'group-first';
+}
+
+/** Grouped groupBy на текущем уровне (не внутри group-first вложенной таблицы). */
+export function appliesTopLevelGrouping(
+	groupLayout: TableGroupLayout,
+	groupKeysLength: number,
+): boolean {
+	return groupKeysLength > 0 && groupLayout !== 'group-first';
+}
+
+/** groupAt по умолчанию — start. */
+export function isGroupAtStart(groupAt?: 'start' | 'end'): boolean {
+	return groupAt !== 'end';
+}
+
+const isSpecialColumn = <T>(column: ColumnEntity<T>) =>
+	column.isSelecting || column.isActions || column.isHoverSlot;
+
+/**
+ * Порядок data-колонок: group → grouped → normal (start) или наоборот (end).
+ * group-only всегда ближе к краю, чем grouped-only.
+ */
+export function buildDataColumns<T>(
+	columnsRaw: ColumnEntity<T>[],
+	groupAt?: 'start' | 'end',
+): {
+	groupColumns: ColumnEntity<T>[];
+	groupedColumns: ColumnEntity<T>[];
+	normalColumns: ColumnEntity<T>[];
+	dataColumns: ColumnEntity<T>[];
+	groupColumnField?: keyof T;
+} {
+	const groupOnly = columnsRaw.filter(
+		(column) => column.isGroup && !column.isGrouped && !isSpecialColumn(column),
+	);
+	const groupedOnly = columnsRaw.filter(
+		(column) => column.isGrouped && !column.isGroup && !isSpecialColumn(column),
+	);
+	const unified = columnsRaw.filter(
+		(column) => column.isGroup && column.isGrouped && !isSpecialColumn(column),
+	);
+	const groupColumns = [...groupOnly, ...unified];
+	const normalColumns = columnsRaw.filter(
+		(column) => !column.isGroup && !column.isGrouped && !isSpecialColumn(column),
+	);
+
+	const dataColumns = isGroupAtStart(groupAt)
+		? [...groupColumns, ...groupedOnly, ...normalColumns]
+		: [...normalColumns, ...groupedOnly, ...groupColumns];
+
+	const groupColumnField =
+		(groupOnly[0]?.field as keyof T | undefined) ??
+		(unified[0]?.field as keyof T | undefined);
+
+	return {
+		groupColumns,
+		groupedColumns: groupedOnly,
+		normalColumns,
+		dataColumns,
+		groupColumnField,
+	};
+}
+
 export function getGroupItemsField<T>(
 	column: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped' | 'field'>,
 ): keyof T | undefined {
@@ -166,6 +239,19 @@ export function hasGroupNestedData<T>(node: TableNode<T>, column: ColumnEntity<T
 	return getGroupNestedData(node, column).length > 0;
 }
 
+/** Колонки вложенной group-first таблицы: без group-only, grouped сохраняются. */
+export function getGroupNestedColumns<T>(columns: ColumnEntity<T>[]): ColumnEntity<T>[] {
+	return columns.filter((column) => {
+		if (isSpecialColumn(column)) {
+			return true;
+		}
+		if (column.isGroup && !column.isGrouped) {
+			return false;
+		}
+		return true;
+	});
+}
+
 /** Колонки вложенной таблицы group: без group/grouped-колонок и без повторной группировки. */
 export function getNestedTableColumns<T>(columns: ColumnEntity<T>[]): ColumnEntity<T>[] {
 	return columns
@@ -177,4 +263,65 @@ export function getNestedTableColumns<T>(columns: ColumnEntity<T>[]): ColumnEnti
 			isGroup: false,
 			isGrouped: false,
 		}));
+}
+
+/**
+ * Колонки вложенной grouped-таблицы (режим grouped-first):
+ * без group-only колонки и без уже раскрытого уровня grouped.
+ */
+export function getGroupedNestedColumns<T>(
+	columns: ColumnEntity<T>[],
+	parentGroupLevel: number,
+	groupKeys: (keyof T)[],
+): ColumnEntity<T>[] {
+	return columns.filter((column) => {
+		if (column.isHoverSlot || column.isSelecting || column.isActions) {
+			return true;
+		}
+		if (isUnifiedGroupColumn(column)) {
+			return false;
+		}
+		if (column.isGroup && !column.isGrouped) {
+			return false;
+		}
+		if (column.isGrouped && column.field) {
+			const level = groupKeys.indexOf(column.field as keyof T);
+			return level > parentGroupLevel;
+		}
+		return true;
+	});
+}
+
+/** Разметка строки вложенной таблицы (padding + colSpan). */
+export function getNestedExpandLayout<T>(
+	columns: ColumnEntity<T>[],
+	expandColumn: ColumnEntity<T>,
+	groupAt: 'start' | 'end' = 'start',
+): { padStart: number; padEnd: number; nestedColspan: number } {
+	const expandIndex = columns.findIndex((column) => column.field === expandColumn.field);
+	if (expandIndex < 0) {
+		return { padStart: 0, padEnd: 0, nestedColspan: columns.length };
+	}
+
+	// group / unified: вложенная таблица начинается после колонки с кнопкой
+	// grouped-only: вложенная таблица начинается с колонки grouped (включая её)
+	const padStart =
+		groupAt === 'end'
+			? 0
+			: expandColumn.isGroup
+				? expandIndex + 1
+				: expandIndex;
+
+	const padEnd =
+		groupAt === 'end'
+			? expandColumn.isGroup
+				? columns.length - expandIndex - 1
+				: columns.length - expandIndex
+			: 0;
+
+	return {
+		padStart,
+		padEnd,
+		nestedColspan: columns.length - padStart - padEnd,
+	};
 }

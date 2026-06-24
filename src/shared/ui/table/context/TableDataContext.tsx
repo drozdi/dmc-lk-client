@@ -6,6 +6,7 @@ import type {
 	TableDataProps,
 	TableExpandablesState,
 	TableExpandsState,
+	TableGroupLayout,
 	TableNode,
 	TableRowAction,
 	TableRowActionsPanelProps,
@@ -29,6 +30,10 @@ export interface TableDataContext<T = object> {
 	multiGroup: boolean;
 	groupKeys: (keyof T)[];
 	groupLevel: number;
+	groupLayout: TableGroupLayout;
+	/** Поле group-only колонки — expand-all в заголовке только здесь. */
+	groupColumnField?: keyof T;
+	isGroupStart: boolean;
 
 	expandables: TableExpandablesState;
 	isExpanded: (expandKey: string, kind: ExpandKind) => boolean;

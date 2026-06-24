@@ -13,10 +13,13 @@ export function TableHeaderCellGroup<T = object>({
 	maxCol,
 	...props
 }: TableHeaderCellGroupProps<T>) {
-	const { groupAt } = useTableDataContext<T>();
+	const { groupAt, groupColumnField } = useTableDataContext<T>();
 	const isGroupOnly = column.isGroup && !column.isGrouped;
+	const isGroupedOnly = column.isGrouped && !column.isGroup;
 	const isUnified = column.isGroup && column.isGrouped;
-	/** group-колонка: только кнопка, без текста заголовка */
+	const isPrimaryGroupColumn =
+		isGroupOnly &&
+		(!groupColumnField || column.field === groupColumnField);
 	const showHeaderLabel = !!column.header && !isGroupOnly;
 	const innerClass = showHeaderLabel
 		? classes['expanderHeaderInnerLabeled']
@@ -24,16 +27,11 @@ export function TableHeaderCellGroup<T = object>({
 
 	const expanders = isUnified ? (
 		<TableHeaderCellUnifiedExpander<T> column={column} flex="0" {...props} />
-	) : (
-		<>
-			{column.isGrouped && (
-				<TableHeaderCellExpander<T> kind="grouped" column={column} flex="0" {...props} />
-			)}
-			{column.isGroup && (
-				<TableHeaderCellExpander<T> kind="group" column={column} flex="0" {...props} />
-			)}
-		</>
-	);
+	) : isPrimaryGroupColumn ? (
+		<TableHeaderCellExpander<T> kind="group" column={column} flex="0" {...props} />
+	) : isGroupedOnly ? (
+		<TableHeaderCellExpander<T> kind="grouped" column={column} flex="0" {...props} />
+	) : null;
 
 	return (
 		<TableHeaderCellWrap<T>
@@ -43,13 +41,13 @@ export function TableHeaderCellGroup<T = object>({
 			className={isGroupOnly ? classes['expanderHeader'] : undefined}
 		>
 			<div className={innerClass}>
-				{groupAt === 'start' && (
+				{groupAt === 'start' && expanders && (
 					<Group gap={4} wrap="nowrap" flex="0">
 						{expanders}
 					</Group>
 				)}
 				{showHeaderLabel && <TableHeaderCellSlot<T> column={column} />}
-				{groupAt === 'end' && (
+				{groupAt === 'end' && expanders && (
 					<Group gap={4} wrap="nowrap" flex="0">
 						{expanders}
 					</Group>

@@ -1,10 +1,23 @@
+import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
 import { useTableDataContext } from '../../context';
-import { getGroupedColumnForLevel, getNodeExpandKey, groupChildrenForExpand } from '../../utils/group-by';
+import {
+	getGroupedColumnForLevel,
+	getGroupedNestedColumns,
+	getNestedExpandLayout,
+	getNodeExpandKey,
+	groupChildrenForExpand,
+} from '../../utils/group-by';
+import { TableData } from '../../TableData';
+import type { TableDataProps } from '../../type';
 import type { TableBodyGroupedProps } from '../type';
 import { TableBodyRow } from './row';
 
-export function TableBodyGrouped<T = object>({ node, columns, level = 0 }: TableBodyGroupedProps<T>) {
+function TableBodyGroupedInline<T = object>({
+	node,
+	columns,
+	level = 0,
+}: TableBodyGroupedProps<T>) {
 	const { isExpanded, groupKeys, multiGroup } = useTableDataContext<T>();
 
 	const parentLevel = node.groupLevel ?? 0;
@@ -33,8 +46,6 @@ export function TableBodyGrouped<T = object>({ node, columns, level = 0 }: Table
 		return null;
 	}
 
-	const nestedLevel = level + 1;
-
 	return (
 		<>
 			{childNodes.map((child) => (
@@ -42,11 +53,90 @@ export function TableBodyGrouped<T = object>({ node, columns, level = 0 }: Table
 					key={getNodeExpandKey(child)}
 					node={child}
 					columns={columns}
-					level={nestedLevel}
+					level={level + 1}
 					group={group}
 					grouped={groupedColumn}
 				/>
 			))}
 		</>
 	);
+}
+
+function TableBodyGroupedNested<T = object>({
+	node,
+	columns,
+	column: groupedColumn,
+	level = 0,
+}: TableBodyGroupedProps<T>) {
+	const { props, isExpanded, groupAt, groupKeys } = useTableDataContext<T>();
+
+	const parentLevel = node.groupLevel ?? 0;
+	const expandKey = getNodeExpandKey(node);
+	const isExpand = isExpanded(expandKey, 'grouped');
+	const hasChildren = node.isParent && (node.nodes?.length ?? 0) > 0;
+
+	const nestedColumns = useMemo(
+		() => getGroupedNestedColumns(columns, parentLevel, groupKeys),
+		[columns, parentLevel, groupKeys],
+	);
+
+	const nestedGroupKeys = useMemo(
+		() => groupKeys.slice(parentLevel + 1),
+		[groupKeys, parentLevel],
+	);
+
+	const nestedData = useMemo(
+		() => (node.nodes ?? []).map((child) => child.data),
+		[node.nodes],
+	);
+
+	const layout = useMemo(
+		() => getNestedExpandLayout(columns, groupedColumn, groupAt),
+		[columns, groupedColumn, groupAt],
+	);
+
+	if (!hasChildren || !isExpand) {
+		return null;
+	}
+
+	const Tag = TableData as React.FC<TableDataProps<T>>;
+
+	return (
+		<Table.Tr>
+			{groupAt === 'start' && layout.padStart > 0 && (
+				<Table.Td colSpan={layout.padStart} p="0" aria-hidden />
+			)}
+			<Table.Td p="0" colSpan={layout.nestedColspan}>
+				<Collapse expanded={isExpand} p="0">
+					<Tag
+						{...props}
+						data={nestedData}
+						columns={nestedColumns}
+						groupKeys={nestedGroupKeys}
+						groupAt={groupAt}
+						groupLayout="grouped-first"
+						level={level}
+						withHeader={false}
+						withPagination={false}
+					/>
+				</Collapse>
+			</Table.Td>
+			{groupAt === 'end' && layout.padEnd > 0 && (
+				<Table.Td colSpan={layout.padEnd} p="0" />
+			)}
+		</Table.Tr>
+	);
+}
+
+export function TableBodyGrouped<T = object>(props: TableBodyGroupedProps<T>) {
+	const { groupLayout } = useTableDataContext<T>();
+
+	if (groupLayout === 'grouped-first') {
+		if (!props.column) {
+			return null;
+		}
+		return <TableBodyGroupedNested<T> {...props} />;
+	}
+
+	return <TableBodyGroupedInline<T> {...props} />;
 }
