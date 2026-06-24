@@ -1463,7 +1463,6 @@ export function TablePage() {
 							<TableData<ActionDemoRow>
 								data={actionData}
 								selectable="end"
-								bulkActions={bulkActions}
 								storage="demo.examples-select-end"
 								limit={20}
 							>
