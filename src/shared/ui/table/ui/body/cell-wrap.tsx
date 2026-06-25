@@ -7,6 +7,7 @@ import {
 	getGroupedCellPaddingForRow,
 	getGroupedColumnLevel,
 	getGroupedColumnPadding,
+	isUnifiedGroupColumn,
 	resolveRowGroupLevel,
 	toGroupedPaddingStyle,
 } from '../../utils/group-by';
@@ -44,7 +45,9 @@ export function TableBodyCellWrap<T = object>({
 							rowGroupLevel,
 							tableNestLevel,
 						)
-					: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+					: isUnifiedGroupColumn(column)
+						? undefined
+						: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
 		}
 
 		return {

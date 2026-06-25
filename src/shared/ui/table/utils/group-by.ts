@@ -113,8 +113,29 @@ export function isGroupedExpanderCell<T = object>(
 	return true;
 }
 
+/** Ячейка с expander (grouped или unified group+grouped) — без отступа. */
+export function hasGroupedCellExpander<T = object>(
+	node: TableNode<T>,
+	column: ColumnEntity<T>,
+	groupKeys: (keyof T)[],
+): boolean {
+	if (isUnifiedGroupColumn(column)) {
+		return canExpandGroupedNode(node, groupKeys);
+	}
+	return isGroupedExpanderCell(node, column, groupKeys);
+}
+
 function countGroupedDataColumns<T>(columns: ColumnEntity<T>[]): number {
 	return columns.filter((column) => column.isGrouped && !column.isGroup && column.field).length;
+}
+
+/** Уровни grouped: grouped-only колонки или groupKeys (режим unified-only). */
+function resolveGroupedColumnsCount<T>(
+	columns: ColumnEntity<T>[],
+	groupKeys: (keyof T)[],
+): number {
+	const dataColumns = countGroupedDataColumns(columns);
+	return dataColumns > 0 ? dataColumns : groupKeys.length;
 }
 
 export function isGroupedTableRow<T>(
@@ -161,8 +182,9 @@ export function toGroupedPaddingStyle(
 export function resolveNestingDepth<T>(
 	node: Pick<TableNode, 'groupLevel'>,
 	columns: ColumnEntity<T>[],
+	groupKeys: (keyof T)[] = [],
 ): number {
-	const groupedCount = countGroupedDataColumns(columns);
+	const groupedCount = resolveGroupedColumnsCount(columns, groupKeys);
 	if (groupedCount === 0) {
 		return 0;
 	}
@@ -243,7 +265,7 @@ export function resolveRowGroupLevel<T>(
 	columns: ColumnEntity<T>[],
 	tableNestLevel = 0,
 ): number {
-	const groupedCount = countGroupedDataColumns(columns);
+	const groupedCount = resolveGroupedColumnsCount(columns, groupKeys);
 	if (groupedCount === 0 || !isGroupedTableRow(node, tableNestLevel)) {
 		return -1;
 	}
@@ -338,13 +360,16 @@ export function getGroupedCellPaddingForRow<T>(
 	if (rowGroupLevel < 0) {
 		return undefined;
 	}
-	if (isGroupedExpanderCell(node, column, groupKeys)) {
+	if (hasGroupedCellExpander(node, column, groupKeys)) {
 		return undefined;
 	}
 	if (column.isSelecting || column.isActions || column.isHoverSlot) {
 		return undefined;
 	}
 	if (column.isGroup && !column.isGrouped) {
+		return undefined;
+	}
+	if (isUnifiedGroupColumn(column)) {
 		return undefined;
 	}
 
@@ -356,7 +381,7 @@ export function getGroupedCellPaddingForRow<T>(
 		return undefined;
 	}
 
-	const nestingDepth = resolveNestingDepth(node, columns);
+	const nestingDepth = resolveNestingDepth(node, columns, groupKeys);
 	const steps = resolveGroupedPaddingSteps(nestingDepth, groupedLevel);
 	return getGroupedPaddingBySteps(steps);
 }
