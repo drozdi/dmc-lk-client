@@ -1,4 +1,4 @@
-import { useTableDataContext } from '../../context';
+import { useTableDataContext, useTableGroupingContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableBodyCellProps } from '../type';
 import { TableBodyCellActions } from './actions-cell';
@@ -17,7 +17,8 @@ function GroupedGroupCellContent<T>({
 	node: TableBodyCellProps<T>['node'];
 	column: TableBodyCellProps<T>['column'];
 }) {
-	const { updateNode, commitEdit, groupAt, editorMode } = useTableDataContext<T>();
+	const { updateNode, commitEdit, editorMode } = useTableDataContext<T>();
+	const { groupAt } = useTableGroupingContext<T>();
 
 	const slot =
 		(editorMode(node, column) &&
@@ -62,7 +63,8 @@ export function TableBodyCell<T = object>({
 			/>
 		);
 	}
-	const { updateNode, commitEdit, groupAt, editorMode } = useTableDataContext<T>();
+	const { updateNode, commitEdit, editorMode } = useTableDataContext<T>();
+	const { groupAt } = useTableGroupingContext<T>();
 
 	if (column.isGroup && column.isGrouped) {
 		return (

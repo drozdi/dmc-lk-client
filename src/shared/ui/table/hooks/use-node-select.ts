@@ -62,11 +62,13 @@ export function useNodeSelect<T = object>(
 	const toggleRow = useCallback(
 		(index: TableNode<T>['index']) => {
 			setSelectedRows((prev) => {
-				const idx = prev.indexOf(index);
-				if (idx === -1) {
-					return [...prev, index];
+				const next = new Set(prev);
+				if (next.has(index)) {
+					next.delete(index);
+				} else {
+					next.add(index);
 				}
-				return prev.filter((i) => i !== index);
+				return [...next];
 			});
 		},
 		[setSelectedRows],

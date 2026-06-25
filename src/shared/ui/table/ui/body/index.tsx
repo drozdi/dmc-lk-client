@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { memo, useMemo } from 'react';
+import { useTableGroupingContext } from '../../context';
 import { getGroupedColumnForLevel } from '../../utils/group-by';
 import type { TableBodyProps } from '../type';
 import { TableBodyRow } from './row';
@@ -14,8 +14,12 @@ export * from './group';
 export * from './grouped';
 export * from './row';
 
-export function TableBody<T = object>({ nodes, columns, level }: TableBodyProps<T>) {
-	const { groupKeys } = useTableDataContext<T>();
+export const TableBody = memo(function TableBody<T = object>({
+	nodes,
+	columns,
+	level,
+}: TableBodyProps<T>) {
+	const { groupKeys } = useTableGroupingContext<T>();
 	const group = useMemo(() => columns.find((col) => col.isGroup), [columns]);
 	const grouped = useMemo(
 		() => getGroupedColumnForLevel(columns, groupKeys, 0),
@@ -38,4 +42,4 @@ export function TableBody<T = object>({ nodes, columns, level }: TableBodyProps<
 			})}
 		</>
 	);
-}
+}) as <T = object>(props: TableBodyProps<T>) => React.ReactNode;

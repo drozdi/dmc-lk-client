@@ -4,7 +4,9 @@ import { useMounted } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loading } from '../loading';
 import { TableDataProvider } from './context/TableDataContext';
+import { TableColumnSizingProvider } from './context/TableColumnSizingContext';
 import { TableExpandProvider } from './context/TableExpandContext';
+import { TableGroupingProvider } from './context/TableGroupingContext';
 import { TableSelectionProvider } from './context/TableSelectionContext';
 import { useColumnHidden, useColumnOrder, useColumnSort, useNodeSelect } from './hooks';
 import type {
@@ -471,9 +473,17 @@ export function TableData<T = object>({
 		[initialMultiple, resolvedMultiGroup],
 	);
 
-	const isExpanded = useCallback(
-		(expandKey: string, kind: ExpandKind) => expands[kind].includes(expandKey),
+	const expandedSets = useMemo(
+		() => ({
+			group: new Set(expands.group),
+			grouped: new Set(expands.grouped),
+		}),
 		[expands],
+	);
+
+	const isExpanded = useCallback(
+		(expandKey: string, kind: ExpandKind) => expandedSets[kind].has(expandKey),
+		[expandedSets],
 	);
 
 	const render = useCallback<
@@ -857,21 +867,48 @@ export function TableData<T = object>({
 	const expandContextValue = useMemo(
 		() => ({
 			expands,
+			expandedSets,
 			isExpanded,
 			toggleExpand,
 			expandables,
 		}),
-		[expands, isExpanded, toggleExpand, expandables],
+		[expands, expandedSets, isExpanded, toggleExpand, expandables],
+	);
+
+	const groupingContextValue = useMemo(
+		() => ({
+			groupAt,
+			groupKeys,
+			groupLayout,
+			groupLevel: level,
+			isGroupStart,
+			groupColumnField,
+			multiGroup: resolvedMultiGroup,
+		}),
+		[
+			groupAt,
+			groupKeys,
+			groupLayout,
+			level,
+			isGroupStart,
+			groupColumnField,
+			resolvedMultiGroup,
+		],
+	);
+
+	const columnSizingContextValue = useMemo(
+		() => ({
+			columnWidths,
+			resizeColumn,
+			getColumnWidth,
+		}),
+		[columnWidths, resizeColumn, getColumnWidth],
 	);
 
 	const tableContextValue = useMemo(
 		() => ({
 			selectable: initialSelectable,
 			nodes,
-
-			columnWidths,
-			resizeColumn,
-			getColumnWidth,
 
 			columnOrder,
 			onColumnOrder: setColumnOrder,
@@ -884,18 +921,11 @@ export function TableData<T = object>({
 			sort,
 			changeSort,
 			multiSort: resolvedMultiSort,
-			multiGroup: resolvedMultiGroup,
-			groupKeys,
-			groupLevel: level,
-			groupLayout,
-			groupColumnField,
-			isGroupStart,
 			breakpoint,
 			editorMode,
 			handleModeChange,
 			clearModeChange,
 			commitEdit,
-			groupAt,
 			colspan,
 			rowspan,
 
@@ -919,29 +949,19 @@ export function TableData<T = object>({
 			sort,
 			changeSort,
 			resolvedMultiSort,
-			resolvedMultiGroup,
-			groupKeys,
-			level,
-			groupLayout,
-			groupColumnField,
-			isGroupStart,
 			breakpoint,
 			editorMode,
 			handleModeChange,
 			clearModeChange,
 			commitEdit,
-			groupAt,
 			colspan,
 			rowspan,
-			resizeColumn,
-			getColumnWidth,
 			editMode,
 			sortColumn,
 			setColumnOrder,
 			columnOrder,
 			updateNode,
 			storage,
-			columnWidths,
 			initialRowActions,
 			initialRowActionsPanel,
 			rowActionsOnHover,
@@ -957,7 +977,9 @@ export function TableData<T = object>({
 	return (
 		<TableSelectionProvider value={selectionContextValue}>
 			<TableExpandProvider value={expandContextValue}>
-				<TableDataProvider value={tableContextValue}>
+				<TableGroupingProvider value={groupingContextValue}>
+					<TableColumnSizingProvider value={columnSizingContextValue}>
+						<TableDataProvider value={tableContextValue}>
 			<Stack mih={minHeight} gap="md">
 				<Loading active={loading} keepMounted mih={minHeight}>
 					{error && <TableError>{error}</TableError>}
@@ -985,7 +1007,9 @@ export function TableData<T = object>({
 					/>
 				)}
 			</Stack>
-				</TableDataProvider>
+						</TableDataProvider>
+					</TableColumnSizingProvider>
+				</TableGroupingProvider>
 			</TableExpandProvider>
 		</TableSelectionProvider>
 	);

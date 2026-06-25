@@ -1,21 +1,19 @@
 import { type TableProps } from '@mantine/core';
-import { createSafeContext } from "../../../internal/utils/create-safe-context";
+import { createSafeContext } from '../../../internal/utils/create-safe-context';
 import type {
 	ColumnEntity,
+	TableBulkAction,
+	TableBulkActionsPanelProps,
 	TableDataProps,
-	TableGroupLayout,
 	TableNode,
 	TableRowAction,
 	TableRowActionsPanelProps,
-	TableBulkAction,
-	TableBulkActionsPanelProps,
 	TableSortState,
-} from "../type";
+} from '../type';
 
 export interface TableDataContext<T = object> {
 	breakpoint: boolean;
 	props: TableProps;
-	groupAt: TableDataProps['groupAt'];
 	colspan: number;
 	rowspan: number;
 	editMode: TableDataProps<T>['editMode'];
@@ -23,18 +21,6 @@ export interface TableDataContext<T = object> {
 	changeSort: (field: keyof T, options?: { multi?: boolean }) => void;
 	sort: TableSortState<T>;
 	multiSort: boolean;
-	multiGroup: boolean;
-	groupKeys: (keyof T)[];
-	/** Уровень вложенности TableData (0 — корневая таблица). */
-	groupLevel: number;
-	groupLayout: TableGroupLayout;
-	/** Поле group-only колонки — expand-all в заголовке только здесь. */
-	groupColumnField?: keyof T;
-	isGroupStart: boolean;
-
-	columnWidths?: Partial<Record<keyof T, number>>;
-	resizeColumn: (column: ColumnEntity<T>, width: number, nextWidth: number) => void;
-	getColumnWidth: (column: ColumnEntity<T>) => number | undefined;
 
 	sortColumn: (dragIndex: number, dropIndex: number) => void;
 	columnOrder: (keyof T)[];
@@ -66,13 +52,19 @@ export interface TableDataContext<T = object> {
 }
 
 const [Provider, useContext] = createSafeContext<TableDataContext<unknown>>(
-	"TableData component was not found in the tree"
+	'TableData component was not found in the tree',
 );
 
-export function TableDataProvider<T = object>({ children, value }: { value: TableDataContext<T>; children: React.ReactNode }): React.ReactNode {
-	return <Provider value={value as TableDataContext<unknown>}>{children}</Provider>
+export function TableDataProvider<T = object>({
+	children,
+	value,
+}: {
+	value: TableDataContext<T>;
+	children: React.ReactNode;
+}): React.ReactNode {
+	return <Provider value={value as TableDataContext<unknown>}>{children}</Provider>;
 }
 
 export function useTableDataContext<T = object>(): TableDataContext<T> {
-	return useContext() as TableDataContext<T>
+	return useContext() as TableDataContext<T>;
 }

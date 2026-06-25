@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core';
 import { useCallback, useEffect, useRef } from 'react';
-import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableColumnSizingContext } from '../../context';
 import classes from '../style.module.css';
 import type {
 	TableHeaderCellResizerProps
@@ -12,10 +12,7 @@ export function TableHeaderCellResizer<T = object>({
 	column,
 	...props
 }: TableHeaderCellResizerProps<T>) {
-	if (!column.isResizable) {
-		return null;
-	}
-	const { resizeColumn } = useTableDataContext<T>();
+	const { resizeColumn } = useTableColumnSizingContext<T>();
 
 	const columnRef = useRef<HTMLDivElement>(null);
 	const dragStateRef = useRef<{
@@ -132,6 +129,10 @@ export function TableHeaderCellResizer<T = object>({
 			window.removeEventListener('blur', handleMouseUp);
 		};
 	}, [handleMouseMove, handleMouseUp]);
+
+	if (!column.isResizable) {
+		return null;
+	}
 
 	return (
 		<Box

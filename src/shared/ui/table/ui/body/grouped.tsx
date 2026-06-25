@@ -1,6 +1,6 @@
 import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext, useTableExpandContext } from '../../context';
+import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
 import {
 	alignNestedColumnsFromExpander,
 	getGroupedColumnForLevel,
@@ -19,7 +19,7 @@ function TableBodyGroupedInline<T = object>({
 	columns,
 	level = 0,
 }: TableBodyGroupedProps<T>) {
-	const { groupKeys, multiGroup } = useTableDataContext<T>();
+	const { groupKeys, multiGroup } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 
 	const parentLevel = node.groupLevel ?? 0;
@@ -70,7 +70,8 @@ function TableBodyGroupedNested<T = object>({
 	column: _groupedColumn,
 	level = 0,
 }: TableBodyGroupedProps<T>) {
-	const { props, groupAt, groupKeys } = useTableDataContext<T>();
+	const { props } = useTableDataContext<T>();
+	const { groupAt, groupKeys } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 
 	const parentLevel = node.groupLevel ?? 0;
@@ -138,7 +139,7 @@ function TableBodyGroupedNested<T = object>({
 }
 
 export function TableBodyGrouped<T = object>(props: TableBodyGroupedProps<T>) {
-	const { groupLayout } = useTableDataContext<T>();
+	const { groupLayout } = useTableGroupingContext<T>();
 
 	if (groupLayout === 'grouped-first') {
 		if (!props.column) {

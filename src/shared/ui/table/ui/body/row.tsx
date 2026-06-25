@@ -1,6 +1,6 @@
 import { Table } from "@mantine/core";
-import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { memo, useMemo } from 'react';
+import { useTableDataContext, useTableGroupingContext } from '../../context';
 import { getGroupedColumnForLevel } from '../../utils/group-by';
 import classes from '../style.module.css';
 import type { TableBodyRowProps } from '../type';
@@ -8,8 +8,15 @@ import { TableBodyCell } from "./cell";
 import { TableBodyGroup } from "./group";
 import { TableBodyGrouped } from "./grouped";
 
-export function TableBodyRow<T = object>({ node, columns, level = 0, group, grouped }: TableBodyRowProps<T>) {
-	const { rowActionsOnHover, hasActionsColumn, groupLayout, groupKeys } = useTableDataContext<T>();
+export const TableBodyRow = memo(function TableBodyRow<T = object>({
+	node,
+	columns,
+	level = 0,
+	group,
+	grouped,
+}: TableBodyRowProps<T>) {
+	const { rowActionsOnHover, hasActionsColumn } = useTableDataContext<T>();
+	const { groupLayout, groupKeys } = useTableGroupingContext<T>();
 	const showGrouped =
 		groupLayout !== 'unified' &&
 		groupLayout !== 'group-first' &&
@@ -42,4 +49,4 @@ export function TableBodyRow<T = object>({ node, columns, level = 0, group, grou
 		)}
 		{group && <TableBodyGroup node={node} columns={columns} column={group} level={nestedLevel} />}
 	</>
-}
+}) as <T = object>(props: TableBodyRowProps<T>) => React.ReactNode;

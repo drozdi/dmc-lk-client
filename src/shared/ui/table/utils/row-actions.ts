@@ -51,7 +51,8 @@ export function buildBulkActionsContext<T>(
 	nodes: TableNode<T>[],
 	selectedIndexes: TableNode<T>['index'][],
 ): TableBulkActionsContext<T> {
-	const selectedNodes = nodes.filter((node) => selectedIndexes.includes(node.index));
+	const selectedSet = new Set(selectedIndexes);
+	const selectedNodes = nodes.filter((node) => selectedSet.has(node.index));
 	return {
 		items: selectedNodes.map((node) => node.data),
 		nodes: selectedNodes,

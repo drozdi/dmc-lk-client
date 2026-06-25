@@ -1,8 +1,14 @@
 import { createSafeContext } from '../../../internal/utils/create-safe-context';
 import type { ExpandKind, TableExpandablesState, TableExpandsState, ToggleExpandOptions } from '../type';
 
+export interface TableExpandedSets {
+	group: Set<string>;
+	grouped: Set<string>;
+}
+
 export interface TableExpandContext {
 	expands: TableExpandsState;
+	expandedSets: TableExpandedSets;
 	isExpanded: (expandKey: string, kind: ExpandKind) => boolean;
 	toggleExpand: (
 		expandKey: string | string[],

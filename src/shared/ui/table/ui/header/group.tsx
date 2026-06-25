@@ -1,5 +1,5 @@
 import { Group } from '@mantine/core';
-import { useTableDataContext } from '../../context';
+import { useTableGroupingContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableHeaderCellGroupProps } from '../type';
 import { TableHeaderCellExpander } from './cell-expander';
@@ -13,7 +13,7 @@ export function TableHeaderCellGroup<T = object>({
 	maxCol,
 	...props
 }: TableHeaderCellGroupProps<T>) {
-	const { groupAt, groupColumnField } = useTableDataContext<T>();
+	const { groupAt, groupColumnField } = useTableGroupingContext<T>();
 	const isGroupOnly = column.isGroup && !column.isGrouped;
 	const isGroupedOnly = column.isGrouped && !column.isGroup;
 	const isUnified = column.isGroup && column.isGrouped;

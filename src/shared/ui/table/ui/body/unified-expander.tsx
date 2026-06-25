@@ -1,6 +1,6 @@
 import { ActionIcon } from '@mantine/core';
 import { TbCircleChevronLeft, TbCircleChevronRight } from 'react-icons/tb';
-import { useTableDataContext, useTableExpandContext } from '../../context';
+import { useTableGroupingContext, useTableExpandContext } from '../../context';
 import {
 	canExpandGroupedNode,
 	getNodeExpandKey,
@@ -15,7 +15,7 @@ export function TableBodyUnifiedExpander<T = object>({
 	column,
 	...props
 }: TableBodyExpanderProps<T>) {
-	const { groupAt, groupKeys } = useTableDataContext<T>();
+	const { groupAt, groupKeys } = useTableGroupingContext<T>();
 	const { isExpanded, toggleExpand } = useTableExpandContext();
 
 	const isUnified = isUnifiedGroupColumn(column);

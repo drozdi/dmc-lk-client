@@ -3,8 +3,7 @@ import {
 	TbCircleChevronLeft,
 	TbCircleChevronRight
 } from 'react-icons/tb';
-import { useTableExpandContext } from '../../context/TableExpandContext';
-import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableExpandContext, useTableGroupingContext } from '../../context';
 import type { ExpandKind } from '../../type';
 import type { TableHeaderCellExpanderProps } from '../type';
 
@@ -20,8 +19,8 @@ export function TableHeaderCellExpander<T = object>({
 	kind: kindProp,
 	...props
 }: TableHeaderCellExpanderProps<T>) {
-	const { groupAt, groupKeys, groupColumnField } = useTableDataContext<T>();
-	const { expands, toggleExpand, expandables } = useTableExpandContext();
+	const { groupAt, groupKeys, groupColumnField } = useTableGroupingContext<T>();
+	const { expandedSets, toggleExpand, expandables } = useTableExpandContext();
 	const kind = kindProp ?? resolveExpandKind(column);
 
 	if (kind === 'grouped') {
@@ -54,8 +53,12 @@ export function TableHeaderCellExpander<T = object>({
 		return null;
 	}
 
-	const expandedAtLevel = expands[kind].filter((key) => levelKeys.includes(key));
-	const isExpand = expandedAtLevel.length === levelKeys.length;
+	const levelKeysSet = new Set(levelKeys);
+	const expandedCount = levelKeys.reduce(
+		(count, key) => count + (expandedSets[kind].has(key) ? 1 : 0),
+		0,
+	);
+	const isExpand = expandedCount === levelKeysSet.size;
 	const ariaLabel = isExpand ? 'Свернуть все группы' : 'Развернуть все группы';
 	const rotateAngle = isExpand ? groupAt === 'end' ? '-90deg' : '90deg' : undefined;
 

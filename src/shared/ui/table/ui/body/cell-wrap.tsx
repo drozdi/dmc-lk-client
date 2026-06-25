@@ -1,6 +1,6 @@
 import { Group, Table } from "@mantine/core";
-import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { memo, useMemo } from 'react';
+import { useTableGroupingContext } from '../../context';
 import type { TableNode } from '../../type';
 import {
 	appliesGroupedCellPadding,
@@ -13,7 +13,7 @@ import {
 } from '../../utils/group-by';
 import type { TableBodyCellWrapProps } from '../type';
 
-export function TableBodyCellWrap<T = object>({
+export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 	node,
 	column,
 	columns,
@@ -23,7 +23,7 @@ export function TableBodyCellWrap<T = object>({
 	className,
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
-	const { groupKeys, groupLevel: tableNestLevel, groupLayout, groupAt } = useTableDataContext<T>();
+	const { groupKeys, groupLevel: tableNestLevel, groupLayout } = useTableGroupingContext<T>();
 
 	const { tdStyle, groupedContentStyle } = useMemo(() => {
 		const baseStyle =
@@ -54,7 +54,7 @@ export function TableBodyCellWrap<T = object>({
 			tdStyle: baseStyle,
 			groupedContentStyle: toGroupedPaddingStyle(groupedPadding),
 		};
-	}, [column, columns, columnIndex, groupAt, groupKeys, groupLayout, node, tableNestLevel]);
+	}, [column, columns, columnIndex, groupKeys, groupLayout, node, tableNestLevel]);
 
 	const hasGroupedContentStyle = Object.keys(groupedContentStyle).length > 0;
 
@@ -105,4 +105,4 @@ export function TableBodyCellWrap<T = object>({
 			{content}
 		</Table.Td>
 	);
-}
+}) as <T = object>(props: TableBodyCellWrapProps<T>) => React.ReactNode;

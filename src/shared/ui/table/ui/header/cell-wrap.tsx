@@ -1,6 +1,6 @@
 import { Table } from '@mantine/core';
 import { useMemo, useState } from 'react';
-import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableDataContext, useTableColumnSizingContext } from '../../context';
 import type { ColumnEntity } from '../../type';
 import type { TableHeaderCellWrapProps } from '../type';
 
@@ -73,7 +73,7 @@ export function TableHeaderCellWrap<T = object>({
 	children,
 	className,
 }: TableHeaderCellWrapProps<T>) {
-	const { getColumnWidth } = useTableDataContext<T>();
+	const { getColumnWidth } = useTableColumnSizingContext<T>();
 	const rowspan = column.isColumns ? 1 : maxRow - column.parentLevel;
 	const dragProps = useDraggable<T>(column);
 

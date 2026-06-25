@@ -1,6 +1,6 @@
 import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext, useTableExpandContext } from '../../context';
+import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
 import {
 	getGroupNestedColumns,
 	getGroupNestedData,
@@ -21,7 +21,8 @@ function resolveNestedGroupLayout(groupKeysLength: number): TableGroupLayout {
 }
 
 export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }: TableBodyGroupProps<T>) {
-	const { props, colspan, groupAt, groupLayout, groupKeys } = useTableDataContext<T>();
+	const { props, colspan } = useTableDataContext<T>();
+	const { groupAt, groupLayout, groupKeys } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 	const isGroupFirst = groupLayout === 'group-first';
 
