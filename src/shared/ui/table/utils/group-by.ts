@@ -114,7 +114,7 @@ export function isGroupedExpanderCell<T = object>(
 	return true;
 }
 
-/** Ячейка с expander (grouped или unified group+grouped) — без отступа. */
+/** Ячейка с expander (grouped или unified group+grouped). */
 export function hasGroupedCellExpander<T = object>(
 	node: TableNode<T>,
 	column: ColumnEntity<T>,
@@ -197,6 +197,21 @@ export function resolveNestingDepth<T>(
 
 export function resolveGroupedPaddingSteps(nestingDepth: number, groupedLevel: number): number {
 	return nestingDepth - groupedLevel;
+}
+
+/**
+ * Шаги отступа grouped-ячейки: expander — L, вложенные строки — rowGroupLevel+1
+ * (одинаково во всех grouped-колонках до текущего уровня включительно).
+ */
+export function resolveGroupedCellPaddingSteps(
+	groupedLevel: number,
+	isExpanderCell: boolean,
+	rowGroupLevel: number,
+): number {
+	if (isExpanderCell) {
+		return groupedLevel;
+	}
+	return rowGroupLevel + 1;
 }
 
 /** Порядок grouped-колонок: start — по groupKeys; end — с конца (reverse). */
@@ -351,21 +366,18 @@ export function getGroupedShiftTargetIndex<T>(
 
 /**
  * Отступ ячейки строки в режиме grouped:
- * steps = nestingDepth − groupedLevel; последняя grouped-колонка и expander — без отступа.
+ * expander — L шагов; вложенные — rowGroupLevel+1 во всех колонках до уровня включительно.
  */
 export function getGroupedCellPaddingForRow<T>(
 	node: TableNode<T>,
 	column: ColumnEntity<T>,
 	_columnIndex: number,
-	columns: ColumnEntity<T>[],
+	_columns: ColumnEntity<T>[],
 	groupKeys: (keyof T)[],
 	rowGroupLevel: number,
 	_tableNestLevel = 0,
 ): string | undefined {
 	if (rowGroupLevel < 0) {
-		return undefined;
-	}
-	if (hasGroupedCellExpander(node, column, groupKeys)) {
 		return undefined;
 	}
 	if (column.isSelecting || column.isActions || column.isHoverSlot) {
@@ -378,16 +390,13 @@ export function getGroupedCellPaddingForRow<T>(
 		return undefined;
 	}
 
-	const groupedLevel = resolveGroupedColumnLevel(column, columns, groupKeys);
+	const groupedLevel = getGroupedColumnLevel(column, groupKeys);
 	if (groupedLevel < 0 || groupedLevel > rowGroupLevel) {
 		return undefined;
 	}
-	if (!canGroupedColumnHavePadding(column, groupKeys, columns)) {
-		return undefined;
-	}
 
-	const nestingDepth = resolveNestingDepth(node, columns, groupKeys);
-	const steps = resolveGroupedPaddingSteps(nestingDepth, groupedLevel);
+	const isExpander = hasGroupedCellExpander(node, column, groupKeys);
+	const steps = resolveGroupedCellPaddingSteps(groupedLevel, isExpander, rowGroupLevel);
 	return getGroupedPaddingBySteps(steps);
 }
 
