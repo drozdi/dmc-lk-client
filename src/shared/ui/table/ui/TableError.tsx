@@ -6,6 +6,9 @@ export interface TableErrorProps {
 }
 
 export function TableError({ children }: TableErrorProps) {
+	if (!children) {
+		return null;
+	}
 	return (
 		<Center w="100%" h="100%" p="lg">
 			<Stack align="center">

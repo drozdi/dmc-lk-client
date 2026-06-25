@@ -3,8 +3,8 @@ import { Card, Group, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useMounted } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loading } from '../loading';
-import { TableDataProvider } from './context/TableDataContext';
 import { TableColumnSizingProvider } from './context/TableColumnSizingContext';
+import { TableDataProvider } from './context/TableDataContext';
 import { TableExpandProvider } from './context/TableExpandContext';
 import { TableGroupingProvider } from './context/TableGroupingContext';
 import { TableSelectionProvider } from './context/TableSelectionContext';
@@ -150,7 +150,7 @@ export function TableData<T = object>({
 	data: initialData,
 	total: initialProps,
 	loading: initialLoading,
-	error: initialError = '',
+	error: initialError,
 	withHeader = true,
 	withPagination = true,
 	groupAt = 'start',
@@ -240,7 +240,7 @@ export function TableData<T = object>({
 	const [total, setTotal] = useState<number>(initialProps || data?.length);
 	const [totalPage, setTotalPage] = useState(Math.ceil(total / limit));
 
-	const [error, setError] = useState<React.ReactNode>(initialError);
+	const [fetchError, setFetchError] = useState<React.ReactNode>(undefined);
 	const [isLoading, setLoading] = useState<boolean>(false);
 	const [expands, setExpands] = useState<TableExpandsState>({
 		group: [],
@@ -259,6 +259,8 @@ export function TableData<T = object>({
 		() => initialLoading || isLoading,
 		[initialLoading, isLoading],
 	);
+
+	const error = initialError ?? fetchError;
 
 	const columnsRaw = useMemo<ColumnEntity<T>[]>(() => {
 		if (initialColumns?.length) {
@@ -724,6 +726,7 @@ export function TableData<T = object>({
 				.then(({ data, next, total, pages }) => {
 					setData(data);
 					setNext(next);
+					setFetchError(undefined);
 					if (total) {
 						setTotal(total);
 					}
@@ -734,7 +737,7 @@ export function TableData<T = object>({
 					saveHistory && setHistory((v) => [...v, page]);
 				})
 				.catch((error: IError) => {
-					setError(
+					setFetchError(
 						error.response?.data?.detail || error?.message || 'Ошибка загрузки данных!',
 					);
 					setLoading(false);
@@ -995,7 +998,7 @@ export function TableData<T = object>({
 						onPprevious={fetcher ? handlerPprevious : undefined}
 						activePprevious={history?.length > 1}
 						activeNext={!!next}
-						page={page}
+						page={page as number}
 						total={totalPage}
 						limit={limit}
 						limits={initialLimits}
