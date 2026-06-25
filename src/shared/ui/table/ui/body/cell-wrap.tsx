@@ -23,7 +23,7 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 	className,
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
-	const { groupKeys, groupLevel: tableNestLevel, groupLayout } = useTableGroupingContext<T>();
+	const { groupKeys, groupLevel: tableNestLevel, groupLayout, groupAt } = useTableGroupingContext<T>();
 
 	const { tdStyle, groupedContentStyle } = useMemo(() => {
 		const baseStyle =
@@ -44,6 +44,7 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 							groupKeys,
 							rowGroupLevel,
 							tableNestLevel,
+							groupAt,
 						)
 					: isUnifiedGroupColumn(column)
 						? undefined
@@ -54,7 +55,7 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 			tdStyle: baseStyle,
 			groupedContentStyle: toGroupedPaddingStyle(groupedPadding),
 		};
-	}, [column, columns, columnIndex, groupKeys, groupLayout, node, tableNestLevel]);
+	}, [column, columns, columnIndex, groupAt, groupKeys, groupLayout, node, tableNestLevel]);
 
 	const hasGroupedContentStyle = Object.keys(groupedContentStyle).length > 0;
 

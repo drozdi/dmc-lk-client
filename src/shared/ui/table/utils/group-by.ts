@@ -200,16 +200,18 @@ export function resolveGroupedPaddingSteps(nestingDepth: number, groupedLevel: n
 }
 
 /**
- * Шаги отступа grouped-ячейки: expander — L, вложенные строки — rowGroupLevel+1
- * (одинаково во всех grouped-колонках до текущего уровня включительно).
+ * Шаги отступа grouped-ячейки.
+ * end: expander — L; вложенные — rowGroupLevel+1.
+ * start: expander — 0; вложенные — rowGroupLevel+1.
  */
 export function resolveGroupedCellPaddingSteps(
 	groupedLevel: number,
 	isExpanderCell: boolean,
 	rowGroupLevel: number,
+	groupAt?: 'start' | 'end',
 ): number {
 	if (isExpanderCell) {
-		return groupedLevel;
+		return isGroupAtStart(groupAt) ? 0 : groupedLevel;
 	}
 	return rowGroupLevel + 1;
 }
@@ -365,8 +367,8 @@ export function getGroupedShiftTargetIndex<T>(
 }
 
 /**
- * Отступ ячейки строки в режиме grouped:
- * expander — L шагов; вложенные — rowGroupLevel+1 во всех колонках до уровня включительно.
+ * Отступ ячейки строки в режиме grouped.
+ * start: expander без отступа; end: expander — L шагов; вложенные — rowGroupLevel+1.
  */
 export function getGroupedCellPaddingForRow<T>(
 	node: TableNode<T>,
@@ -376,6 +378,7 @@ export function getGroupedCellPaddingForRow<T>(
 	groupKeys: (keyof T)[],
 	rowGroupLevel: number,
 	_tableNestLevel = 0,
+	groupAt?: 'start' | 'end',
 ): string | undefined {
 	if (rowGroupLevel < 0) {
 		return undefined;
@@ -396,7 +399,7 @@ export function getGroupedCellPaddingForRow<T>(
 	}
 
 	const isExpander = hasGroupedCellExpander(node, column, groupKeys);
-	const steps = resolveGroupedCellPaddingSteps(groupedLevel, isExpander, rowGroupLevel);
+	const steps = resolveGroupedCellPaddingSteps(groupedLevel, isExpander, rowGroupLevel, groupAt);
 	return getGroupedPaddingBySteps(steps);
 }
 
