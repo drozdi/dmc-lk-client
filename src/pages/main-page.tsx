@@ -144,9 +144,9 @@ export const MainPage = () => {
 					<div
 						key="labels.current.balance"
 						data-grid={{
-							x: 10,
+							x: 9,
 							y: 0,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
@@ -155,46 +155,96 @@ export const MainPage = () => {
 					<div
 						key="labels.current.balance.reb"
 						data-grid={{
-							x: 10,
+							x: 9,
 							y: 2,
-							w: 2,
+							w: 3,
 							h: 2,
 						}}
 					>
 						<DashBoardWidget widget="labels-current-balance" type="reb" />
 					</div>
 					<div
-						key="itog.summary"
+						key="itog.sum"
 						data-grid={{
-							x: 10,
+							x: 9,
 							y: 4,
-							w: 2,
-							h: 8,
+							w: 3,
+							h: 2,
 						}}
 					>
-						<Widget
-							title="Сводка"
-							subTitle={
-								<>
-									За{" "}
-									<QueryShow
-										filterdate={query.filterdate}
-										step={query.step}
-										event="p"
-									/>
-								</>
-							}
-							expanded={false}
-						>
-							<AnalyticItogSummary filterdate={query.filterdate} />
-						</Widget>
+						<DashBoardWidget
+							widget="analytic-itog-set"
+							filterdate={query.filterdate}
+							type="sum"
+						/>
+					</div>
+					<div
+						key="itog.avg"
+						data-grid={{
+							x: 9,
+							y: 6,
+							w: 3,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-itog-set"
+							filterdate={query.filterdate}
+							type="avg"
+						/>
+					</div>
+					<div
+						key="itog.min"
+						data-grid={{
+							x: 9,
+							y: 8,
+							w: 3,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-itog-set"
+							filterdate={query.filterdate}
+							type="min"
+						/>
+					</div>
+					<div
+						key="itog.max"
+						data-grid={{
+							x: 9,
+							y: 10,
+							w: 3,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-itog-set"
+							filterdate={query.filterdate}
+							type="max"
+						/>
+					</div>
+					<div
+						key="itog.d.max"
+						data-grid={{
+							x: 9,
+							y: 12,
+							w: 3,
+							h: 2,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-itog-set"
+							filterdate={query.filterdate}
+							event="d"
+							type="max"
+						/>
 					</div>
 					<div
 						key="itog.analytics"
 						data-grid={{
 							x: 0,
-							y: Infinity,
-							w: 10,
+							y: 0,
+							w: 9,
 							h: 10,
 						}}
 					>
@@ -247,11 +297,37 @@ export const MainPage = () => {
 						</Widget>
 					</div>
 					<div
+						key="itog.summary"
+						data-grid={{
+							x: 0,
+							y: 10,
+							w: 9,
+							h: 4,
+						}}
+					>
+						<Widget
+							title="Сводка"
+							subTitle={
+								<>
+									За{" "}
+									<QueryShow
+										filterdate={query.filterdate}
+										step={query.step}
+										event="p"
+									/>
+								</>
+							}
+							expanded={false}
+						>
+							<AnalyticItogSummary filterdate={query.filterdate} />
+						</Widget>
+					</div>
+					<div
 						key="analytic.labels"
 						data-grid={{
 							x: 0,
 							y: Infinity,
-							w: 12,
+							w: 6,
 							h: 6,
 						}}
 					>
@@ -259,6 +335,21 @@ export const MainPage = () => {
 							widget="analytic-labels"
 							type="default"
 							allowChangeType
+							filterdate={query.filterdate}
+						/>
+					</div>
+					<div
+						key="analytic.labels.stack"
+						data-grid={{
+							x: 6,
+							y: Infinity,
+							w: 6,
+							h: 6,
+						}}
+					>
+						<DashBoardWidget
+							widget="analytic-labels"
+							type="stack"
 							filterdate={query.filterdate}
 						/>
 					</div>
