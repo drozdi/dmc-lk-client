@@ -907,9 +907,10 @@ export function TablePage() {
 		<Stack gap="lg" p="md">
 			<Title order={2}>TableData — демо</Title>
 
-			<Tabs defaultValue="group" keepMounted={false}>
+			<Tabs defaultValue="group-columns" keepMounted={false}>
 				<Tabs.List>
-					<Tabs.Tab value="group">Группа</Tabs.Tab>
+					<Tabs.Tab value="group-columns">Группировка колонок</Tabs.Tab>
+					<Tabs.Tab value="group-rows">Группа строк</Tabs.Tab>
 					<Tabs.Tab value="multi-grouped">Мульти-группировка</Tabs.Tab>
 					<Tabs.Tab value="group-grouped">group + grouped</Tabs.Tab>
 					<Tabs.Tab value="multi-sort">Мульти-сортировка</Tabs.Tab>
@@ -919,7 +920,40 @@ export function TablePage() {
 					<Tabs.Tab value="fetch">Async fetch</Tabs.Tab>
 				</Tabs.List>
 
-				<Tabs.Panel value="group" pt="md">
+				<Tabs.Panel value="group-columns" pt="md">
+					<Stack gap="xs" mb="md">
+						<Title order={4}>Групировка колонок</Title>
+					</Stack>
+					<TableData<SSS> data={elementsS} storage="demo.group" limit={50}>
+						
+						<DataColumn<SSS> header='Group'>
+							<DataColumn<SSS> group field="group" />
+							<DataColumn<SSS>
+								draggable
+								field="position"
+								header="Element position"
+							/>
+							<DataColumn<SSS>
+								draggable
+								field="name"
+								header="Element name"
+							/>
+						</DataColumn>
+						
+						<DataColumn<SSS>
+							draggable
+							field="symbol"
+							header="Symbol"
+						/>
+						<DataColumn<SSS>
+							draggable
+							field="mass"
+							header="Atomic mass"
+						/>
+					</TableData>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="group-rows" pt="md">
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Группа</Title>
 						<Text size="sm" c="dimmed">

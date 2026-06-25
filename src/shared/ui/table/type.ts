@@ -242,4 +242,6 @@ export interface ColumnEntity<T = object> extends DataColumnProps<T> {
 	/** Нулевая колонка-слот для hover-панели (без DataColumn actions). */
 	isHoverSlot: boolean;
 	colspan: number;
+	/** Ключ группы колонок (заголовок isColumns); undefined — корневой уровень. */
+	columnGroupKey?: string;
 }

@@ -2,13 +2,14 @@ import { ActionIcon } from '@mantine/core';
 import {
 	TbGripVertical
 } from 'react-icons/tb';
+import { isColumnOrderReorderable } from '../../utils/column-fields';
 import type { TableHeaderCellDragerProps } from '../type';
 
 export function TableHeaderCellDrager<T = object>({
 	column,
 	...props
 }: TableHeaderCellDragerProps<T>) {
-	if (!column.isDraggable || column.isGrouped || column.isGroup) {
+	if (!column.isDraggable || !isColumnOrderReorderable(column)) {
 		return null;
 	}
 	return (

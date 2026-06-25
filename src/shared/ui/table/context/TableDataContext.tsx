@@ -22,7 +22,7 @@ export interface TableDataContext<T = object> {
 	sort: TableSortState<T>;
 	multiSort: boolean;
 
-	sortColumn: (dragIndex: number, dropIndex: number) => void;
+	sortColumn: (dragField: keyof T, dropField: keyof T) => void;
 	columnOrder: (keyof T)[];
 	onColumnOrder: (columnOrder: (keyof T)[]) => void;
 

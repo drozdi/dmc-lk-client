@@ -1,6 +1,7 @@
 import { Table } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { useTableDataContext, useTableColumnSizingContext } from '../../context';
+import { isColumnGroupHeader, isColumnOrderReorderable } from '../../utils/column-fields';
 import type { ColumnEntity } from '../../type';
 import type { TableHeaderCellWrapProps } from '../type';
 
@@ -17,12 +18,11 @@ export function useDraggable<T = object>(
 	onDrop?: (e: React.DragEvent) => void;
 } {
 	const [hovered, setHovered] = useState(false);
-	const { sortColumn, columnOrder } = useTableDataContext<T>();
+	const { sortColumn } = useTableDataContext<T>();
 
 	const enabled =
 		!!column.isDraggable &&
-		!column.isGrouped &&
-		!column.isGroup &&
+		isColumnOrderReorderable(column) &&
 		!column.isActions &&
 		!column.isHoverSlot &&
 		!!column.field;
@@ -51,19 +51,16 @@ export function useDraggable<T = object>(
 			},
 			onDrop: (e: React.DragEvent) => {
 				e.preventDefault();
-				const draggedField = e.dataTransfer.getData('text/plain');
-				if (draggedField === column.field) {
+				const draggedField = e.dataTransfer.getData('text/plain') as keyof T;
+				if (!draggedField || draggedField === column.field) {
+					setHovered(false);
 					return;
 				}
-				const dragIndex = columnOrder.findIndex((c) => c === draggedField);
-				const dropIndex = columnOrder.findIndex((c) => c === column.field);
-				if (dragIndex !== -1 && dropIndex !== -1) {
-					sortColumn(dragIndex, dropIndex);
-				}
+				sortColumn(draggedField, column.field as keyof T);
 				setHovered(false);
 			},
 		};
-	}, [enabled, hovered, color, column, columnOrder, sortColumn]);
+	}, [enabled, hovered, color, column, sortColumn]);
 }
 
 export function TableHeaderCellWrap<T = object>({
@@ -92,7 +89,7 @@ export function TableHeaderCellWrap<T = object>({
 			w={column.isHoverSlot ? 0 : column.isSelecting ? (getColumnWidth(column) ?? 44) : getColumnWidth(column)}
 			style={headerStyle}
 			role="columnheader"
-			{...dragProps}
+			{...(isColumnGroupHeader(column) ? {} : dragProps)}
 		>
 			{children}
 		</Table.Th>

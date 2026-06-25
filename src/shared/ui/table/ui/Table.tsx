@@ -1,5 +1,6 @@
 import { HoverCard, Table as TableMantine } from '@mantine/core';
 import { useMemo } from 'react';
+import { flattenBodyColumns } from '../utils/column-fields';
 import { TableBody } from './body';
 import { TableHeader } from './header';
 import { TableHeaderToggling } from './TableHeaderToggling';
@@ -18,6 +19,11 @@ export function Table<T = object>({
 		[columns],
 	);
 
+	const bodyColumns = useMemo(
+		() => flattenBodyColumns(visibleColumns),
+		[visibleColumns],
+	);
+
 	return (
 		<TableMantine layout="fixed" {...props}>
 			{withHeader && (
@@ -33,7 +39,7 @@ export function Table<T = object>({
 				</HoverCard>
 			)}
 			<TableMantine.Tbody>
-				<TableBody<T> nodes={nodes} columns={visibleColumns} level={level} />
+				<TableBody<T> nodes={nodes} columns={bodyColumns} level={level} />
 			</TableMantine.Tbody>
 		</TableMantine>
 	);

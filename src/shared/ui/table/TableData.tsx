@@ -24,7 +24,8 @@ import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePaginat
 import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
-import { buildColumnOrderIndex, compareByColumnOrder } from './utils/column-order-index';
+import { buildColumnOrderIndex } from './utils/column-order-index';
+import { getHeaderCellKey, orderColumnsTree } from './utils/column-fields';
 import {
 	appliesTopLevelGrouping,
 	buildDataColumns,
@@ -267,7 +268,11 @@ export function TableData<T = object>({
 			return initialColumns;
 		}
 
-		function calculateColumn(column: DataColumnProps<T>, level = 0): ColumnEntity<T> {
+		function calculateColumn(
+			column: DataColumnProps<T>,
+			level = 0,
+			parentGroupKey?: string,
+		): ColumnEntity<T> {
 			const col: ColumnEntity<T> = {
 				size: 1,
 				level: level + 1,
@@ -292,10 +297,13 @@ export function TableData<T = object>({
 				...column,
 				children: undefined,
 			};
+			col.columnGroupKey = parentGroupKey;
 			col.isSorted = resolveColumnFlag(column.sortable, col);
 			col.isToggleable = resolveColumnFlag(column.toggleable, col);
+			const childGroupKey =
+				col.isColumns && col.isHeader ? getHeaderCellKey(col) : parentGroupKey;
 			col.columns = Children.toArray(column.children).map((child: any) => {
-				return calculateColumn(child.props, col.level);
+				return calculateColumn(child.props, col.level, childGroupKey);
 			});
 			if (col.isActions) {
 				col.field = (col.field || '__actions__') as keyof T;
@@ -538,18 +546,18 @@ export function TableData<T = object>({
 		prevColumnFieldsKeyRef.current = columnFieldsKey;
 	}, [columnFieldsKey, columnFields, storage, initialColumnWidth]);
 
+	const orderedColumnsRaw = useMemo(
+		() => orderColumnsTree(columnsRaw, columnOrderIndex),
+		[columnsRaw, columnOrderIndex],
+	);
+
 	const columns = useMemo(() => {
-		const { dataColumns: orderedData, normalColumns } = buildDataColumns(columnsRaw, groupAt, groupKeys);
+		const { dataColumns: orderedData, normalColumns } = buildDataColumns(
+			orderedColumnsRaw,
+			groupAt,
+			groupKeys,
+		);
 		const normal = [...normalColumns];
-		if (columnOrderIndex) {
-			normal.sort((a, b) =>
-				compareByColumnOrder(
-					a.field as keyof T,
-					b.field as keyof T,
-					columnOrderIndex,
-				),
-			);
-		}
 		const groupPart = orderedData.filter((c) => c.isGroup || c.isGrouped);
 		const dataColumns = isGroupAtStart(groupAt)
 			? [
@@ -588,7 +596,7 @@ export function TableData<T = object>({
 			result.push(...selected);
 		}
 		return result;
-	}, [columnsRaw, groupAt, groupKeys, initialSelectable, columnOrderIndex, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
+	}, [orderedColumnsRaw, groupAt, groupKeys, initialSelectable, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
 
 	const groupColumnField = useMemo(() => {
 		const groupOnly = columns.find((c) => c.isGroup && !c.isGrouped);
