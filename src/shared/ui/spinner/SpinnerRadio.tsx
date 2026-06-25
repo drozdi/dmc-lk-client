@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerRadioProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function SpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
+function SpinnerRadioRoot({ size = '1em', color }: SpinnerRadioProps) {
 	return (
 		<SpinnerBase size={size} color={color} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid' fill='currentColor'>
 			<g transform='scale(0.55)'>
@@ -48,3 +49,5 @@ export function SpinnerRadio({ size = '1em', color }: SpinnerRadioProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerRadio = memo(SpinnerRadioRoot)

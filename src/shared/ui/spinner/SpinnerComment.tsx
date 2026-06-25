@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerCommentProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function SpinnerComment({ size = '1em', color }: SpinnerCommentProps) {
+function SpinnerCommentRoot({ size = '1em', color }: SpinnerCommentProps) {
 	return (
 		<SpinnerBase color={color} size={size} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'>
 			<rect x='0' y='0' width='100' height='100' fill='none'></rect>
@@ -48,3 +49,5 @@ export function SpinnerComment({ size = '1em', color }: SpinnerCommentProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerComment = memo(SpinnerCommentRoot)

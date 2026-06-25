@@ -1,7 +1,7 @@
 import { Divider, Group, Popover, Stack, Text, TextInput } from "@mantine/core";
 import { Calendar, type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import React, { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 const formatDate = (date: DateValue): string => {
 	return date ? dayjs(date).format("LL") : "";
@@ -69,7 +69,7 @@ export interface DualCalendarRangeProps {
 	[key: string]: any;
 }
 
-export function DualCalendarRange({
+function DualCalendarRangeRoot({
 	defaultValue = [null, null],
 	value = [null, null],
 	onChange,
@@ -137,6 +137,25 @@ export function DualCalendarRange({
 		[startDate, endDate, updateRange],
 	);
 
+	const startDateLabel = useMemo(() => formatDate(startDate), [startDate]);
+	const endDateLabel = useMemo(() => formatDate(endDate), [endDate]);
+
+	const leftDayProps = useCallback(
+		(date: DateValue) => ({
+			onClick: () => handleLeftCalendarClick(date),
+			style: getDayStyle(date, startDate, endDate),
+		}),
+		[handleLeftCalendarClick, startDate, endDate],
+	);
+
+	const rightDayProps = useCallback(
+		(date: DateValue) => ({
+			onClick: () => handleRightCalendarClick(date),
+			style: getDayStyle(date, startDate, endDate),
+		}),
+		[handleRightCalendarClick, startDate, endDate],
+	);
+
 	return (
 		<Popover>
 			<Popover.Target>
@@ -144,14 +163,14 @@ export function DualCalendarRange({
 					<Group justify="center" gap="0" {...props}>
 						<TextInput
 							label="От"
-							value={formatDate(startDate)}
+							value={startDateLabel}
 							variant="сontained"
 							readOnly
 							radius="0"
 						/>
 						<TextInput
 							label="До"
-							value={formatDate(endDate)}
+							value={endDateLabel}
 							variant="сontained"
 							radius="0"
 							readOnly
@@ -164,21 +183,17 @@ export function DualCalendarRange({
 				<Group>
 					<Calendar
 						defaultDate={startDate || undefined}
-						getDayProps={(date) => ({
-							onClick: () => handleLeftCalendarClick(date),
-							style: getDayStyle(date, startDate, endDate),
-						})}
+						getDayProps={leftDayProps}
 					/>
 					<Divider orientation="vertical" mx="xs" />
 					<Calendar
 						defaultDate={endDate || undefined}
-						getDayProps={(date) => ({
-							onClick: () => handleRightCalendarClick(date),
-							style: getDayStyle(date, startDate, endDate),
-						})}
+						getDayProps={rightDayProps}
 					/>
 				</Group>
 			</Popover.Dropdown>
 		</Popover>
 	);
 }
+
+export const DualCalendarRange = memo(DualCalendarRangeRoot);

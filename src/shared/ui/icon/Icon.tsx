@@ -1,4 +1,4 @@
-import { createElement as h } from 'react'
+import { createElement as h, memo } from 'react'
 import * as MdIcons from 'react-icons/md'
 import { camelize, capitalize, cls } from '../../utils'
 
@@ -20,7 +20,7 @@ const getIcon = (name: string) => {
 	return MdIcons?.[capitalize(camelize(name))] || ''
 }
 
-export function Icon({ children, className, color, size, title, as = 'i', ...props }: IconProps) {
+function IconRoot({ children, className, color, size, title, as = 'i', ...props }: IconProps) {
 	if (!children) {
 		return ''
 	}
@@ -36,7 +36,7 @@ export function Icon({ children, className, color, size, title, as = 'i', ...pro
 		name = 'md-close'
 	}
 
-	const Icon = getIcon(name)
+	const IconComponent = getIcon(name)
 	return h(
 		as,
 		{
@@ -45,6 +45,8 @@ export function Icon({ children, className, color, size, title, as = 'i', ...pro
 			role: 'presentation',
 			'aria-hidden': 'true',
 		},
-		Icon && <Icon size={size} title={title} />
+		IconComponent && <IconComponent size={size} title={title} />
 	)
 }
+
+export const Icon = memo(IconRoot)

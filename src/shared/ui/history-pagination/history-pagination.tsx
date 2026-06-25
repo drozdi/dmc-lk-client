@@ -1,19 +1,25 @@
-import { $setting } from "@/shared";
 import { Select } from "@mantine/core";
+import { memo, useCallback } from "react";
+import { $setting } from "@/shared";
 
 interface HistoryPaginationProps {
 	limit: number;
 	onLimit?: (limit: number) => void;
 }
 
-export function HistoryPagination({ limit, onLimit }: HistoryPaginationProps) {
+function HistoryPaginationRoot({ limit, onLimit }: HistoryPaginationProps) {
+	const handleChange = useCallback(
+		(value: string | null) => onLimit?.(Number(value)),
+		[onLimit],
+	);
+
 	return (
-		<>
-			<Select
-				data={$setting.get("limits")}
-				value={String(limit)}
-				onChange={(value) => onLimit?.(Number(value))}
-			/>
-		</>
+		<Select
+			data={$setting.get("limits")}
+			value={String(limit)}
+			onChange={handleChange}
+		/>
 	);
 }
+
+export const HistoryPagination = memo(HistoryPaginationRoot);

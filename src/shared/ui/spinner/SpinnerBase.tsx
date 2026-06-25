@@ -1,4 +1,5 @@
 import { cls } from '../../utils'
+import { memo } from 'react'
 import classes from './style.module.css'
 
 export interface SpinnerBaseProps {
@@ -13,7 +14,7 @@ export interface SpinnerBaseProps {
 	stroke?: string
 }
 
-export function SpinnerBase({
+function SpinnerBaseRoot({
 	children,
 	className,
 	size = '1em',
@@ -34,3 +35,5 @@ export function SpinnerBase({
 		</svg>
 	)
 }
+
+export const SpinnerBase = memo(SpinnerBaseRoot)

@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { memo, useMemo } from "react";
 import { TbArrowsMaximize, TbArrowsMinimize, TbDots, TbFileDownload } from "react-icons/tb";
 import { ButtonIcon } from '../button';
 import { ChartSkeleton } from "../skeleton";
@@ -42,7 +43,9 @@ export interface WidgetProps extends CardProps {
 	loadingSkeleton?: React.ReactNode;
 }
 
-function WidgetMenu({ options = [] }: WidgetMenuProps) {
+const DEFAULT_LOADING_SKELETON = <ChartSkeleton height="100%" mih={180} />;
+
+const WidgetMenu = memo(function WidgetMenu({ options = [] }: WidgetMenuProps) {
 	if (!options?.length) {
 		return null;
 	}
@@ -60,14 +63,14 @@ function WidgetMenu({ options = [] }: WidgetMenuProps) {
 			</Menu.Dropdown>
 		</Menu>
 	);
-}
+});
 
-export function Widget({
+function WidgetRoot({
 	title,
 	subTitle,
 	loading = false,
 	children,
-	preview = children,
+	preview,
 	keepMounted = true,
 	component = ScrollArea,
 	expanded = true,
@@ -75,14 +78,26 @@ export function Widget({
 	menu = [],
 	wraped = true,
 	onDownload,
-	loadingSkeleton = <ChartSkeleton height="100%" mih={180} />,
+	loadingSkeleton = DEFAULT_LOADING_SKELETON,
 	...otherProps
 }: WidgetProps) {
-	const [isExpanded, { open, close, toggle }] = useDisclosure(false);
+	const [isExpanded, { close, toggle }] = useDisclosure(false);
 	const ctx = useWidget();
-	return ctx || !wraped ? (
-		children
-	) : (
+	const cardStyle = useMemo(
+		() => ({
+			position: "relative" as const,
+			overflow: "hidden" as const,
+			...otherProps?.style,
+		}),
+		[otherProps?.style],
+	);
+	const previewContent = preview ?? children;
+
+	if (ctx || !wraped) {
+		return children;
+	}
+
+	return (
 		<ProviderWidget isExpanded={isExpanded}>
 			<Card
 				shadow="xl"
@@ -91,11 +106,7 @@ export function Widget({
 				h="100%"
 				withBorder
 				{...otherProps}
-				style={{
-					position: "relative",
-					overflow: "hidden",
-					...otherProps?.style,
-				}}
+				style={cardStyle}
 			>
 				<Card.Section
 					inheritPadding
@@ -112,7 +123,7 @@ export function Widget({
 								{onDownload && <ButtonIcon tooltip="Скачать" variant="subtle" onClick={onDownload}>
 									<TbFileDownload />
 								</ButtonIcon>}
-								{menu?.length && <WidgetMenu options={menu} />}
+								{menu?.length ? <WidgetMenu options={menu} /> : null}
 								{expanded && (
 									<ButtonIcon tooltip={isExpanded ? "Свернуть" : "Развернуть"} variant="subtle" onClick={toggle}>
 										{isExpanded ? <TbArrowsMinimize /> : <TbArrowsMaximize />}
@@ -136,7 +147,7 @@ export function Widget({
 					type="always"
 				>
 					<Text c="red">{error?.message || error}</Text>
-					{loading ? loadingSkeleton : keepMounted || isExpanded ? preview : null}
+					{loading ? loadingSkeleton : keepMounted || isExpanded ? previewContent : null}
 				</Card.Section>
 				<Modal
 					opened={isExpanded}
@@ -152,3 +163,5 @@ export function Widget({
 		</ProviderWidget>
 	);
 }
+
+export const Widget = memo(WidgetRoot);

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerGridProps {
@@ -5,7 +6,7 @@ interface SpinnerGridProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
+function SpinnerGridRoot({ size = '1em', color }: SpinnerGridProps) {
 	return (
 		<SpinnerBase color={color} size={size} viewBox='0 0 105 105' fill='currentColor'>
 			<circle cx='12.5' cy='12.5' r='12.5'>
@@ -101,3 +102,5 @@ export function SpinnerGrid({ size = '1em', color }: SpinnerGridProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerGrid = memo(SpinnerGridRoot)

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerOvalProps {
@@ -5,7 +6,7 @@ interface SpinnerOvalProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
+function SpinnerOvalRoot({ size = '1em', color }: SpinnerOvalProps) {
 	return (
 		<SpinnerBase size={size} color={color} viewBox='0 0 38 38' stroke='currentColor'>
 			<g transform='translate(1 1)' strokeWidth='2' fill='none' fillRule='evenodd'>
@@ -24,3 +25,5 @@ export function SpinnerOval({ size = '1em', color }: SpinnerOvalProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerOval = memo(SpinnerOvalRoot)

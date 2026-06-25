@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerCubeProps {
@@ -5,7 +6,7 @@ interface SpinnerCubeProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerCube({ size = '1em', color }: SpinnerCubeProps) {
+function SpinnerCubeRoot({ size = '1em', color }: SpinnerCubeProps) {
 	return (
 		<SpinnerBase color={color} size={size} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'>
 			<rect x='0' y='0' width='100' height='100' fill='none'></rect>
@@ -76,3 +77,5 @@ export function SpinnerCube({ size = '1em', color }: SpinnerCubeProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerCube = memo(SpinnerCubeRoot)

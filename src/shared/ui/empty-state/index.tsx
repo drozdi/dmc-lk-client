@@ -1,4 +1,5 @@
 import { Center, Stack, Text, ThemeIcon, type StackProps } from "@mantine/core";
+import { memo } from "react";
 import { TbChartBarOff } from "react-icons/tb";
 
 export interface EmptyStateProps extends StackProps {
@@ -7,14 +8,16 @@ export interface EmptyStateProps extends StackProps {
 	icon?: React.ReactNode;
 }
 
-export function EmptyState({
+const DEFAULT_ICON = (
+	<ThemeIcon size={48} radius="xl" variant="light" color="gray">
+		<TbChartBarOff size={24} />
+	</ThemeIcon>
+);
+
+function EmptyStateRoot({
 	title,
 	description,
-	icon = (
-		<ThemeIcon size={48} radius="xl" variant="light" color="gray">
-			<TbChartBarOff size={24} />
-		</ThemeIcon>
-	),
+	icon = DEFAULT_ICON,
 	...props
 }: EmptyStateProps) {
 	return (
@@ -33,3 +36,5 @@ export function EmptyState({
 		</Center>
 	);
 }
+
+export const EmptyState = memo(EmptyStateRoot);

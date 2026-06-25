@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerIosProps {
@@ -5,7 +6,7 @@ interface SpinnerIosProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerIos({ size = '1em', color }: SpinnerIosProps) {
+function SpinnerIosRoot({ size = '1em', color }: SpinnerIosProps) {
 	return (
 		<SpinnerBase size={size} color={color} viewBox='0 0 64 64' fill='currentColor' stroke='currentColor'>
 			<g strokeWidth='4' strokeLinecap='round'>
@@ -109,3 +110,5 @@ export function SpinnerIos({ size = '1em', color }: SpinnerIosProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerIos = memo(SpinnerIosRoot)

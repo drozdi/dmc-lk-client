@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 export interface WidgetContext {
 	isExpanded: boolean;
@@ -12,9 +12,11 @@ export function useWidget(): WidgetContext | undefined {
 
 export function ProviderWidget({
 	children,
-	...props
+	isExpanded,
 }: WidgetContext & {
 	children: React.ReactNode;
 }) {
-	return <Context.Provider value={props}>{children}</Context.Provider>;
+	const value = useMemo(() => ({ isExpanded }), [isExpanded]);
+
+	return <Context.Provider value={value}>{children}</Context.Provider>;
 }

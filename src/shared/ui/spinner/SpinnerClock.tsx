@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerClockProps {
@@ -5,7 +6,7 @@ interface SpinnerClockProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerClock({ size = '1em', color }: SpinnerClockProps) {
+function SpinnerClockRoot({ size = '1em', color }: SpinnerClockProps) {
 	return (
 		<SpinnerBase
 			size={size}
@@ -56,3 +57,5 @@ export function SpinnerClock({ size = '1em', color }: SpinnerClockProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerClock = memo(SpinnerClockRoot)

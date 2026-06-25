@@ -1,6 +1,7 @@
 import { Center, Skeleton, Stack, type StackProps } from "@mantine/core";
+import { memo } from "react";
 
-export function ChartSkeleton({
+function ChartSkeletonRoot({
 	height = 180,
 	...props
 }: StackProps & { height?: number | string }) {
@@ -16,7 +17,7 @@ export function ChartSkeleton({
 	);
 }
 
-export function TableSkeleton({
+function TableSkeletonRoot({
 	rows = 6,
 	...props
 }: StackProps & { rows?: number }) {
@@ -30,7 +31,7 @@ export function TableSkeleton({
 	);
 }
 
-export function ListSkeleton({
+function ListSkeletonRoot({
 	items = 5,
 	...props
 }: StackProps & { items?: number }) {
@@ -43,7 +44,7 @@ export function ListSkeleton({
 	);
 }
 
-export function StatSkeleton(props: StackProps) {
+function StatSkeletonRoot(props: StackProps) {
 	return (
 		<Center h="100%" mih={120} {...props}>
 			<Stack align="center" gap="sm" w="100%" p="md">
@@ -54,3 +55,8 @@ export function StatSkeleton(props: StackProps) {
 		</Center>
 	);
 }
+
+export const ChartSkeleton = memo(ChartSkeletonRoot);
+export const TableSkeleton = memo(TableSkeletonRoot);
+export const ListSkeleton = memo(ListSkeletonRoot);
+export const StatSkeleton = memo(StatSkeletonRoot);

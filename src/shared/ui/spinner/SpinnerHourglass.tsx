@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerHourglassProps {
@@ -5,7 +6,7 @@ interface SpinnerHourglassProps {
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
 
-export function SpinnerHourglass({ size = '1em', color }: SpinnerHourglassProps) {
+function SpinnerHourglassRoot({ size = '1em', color }: SpinnerHourglassProps) {
 	return (
 		<SpinnerBase size={size} color={color} viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'>
 			<g>
@@ -84,3 +85,5 @@ export function SpinnerHourglass({ size = '1em', color }: SpinnerHourglassProps)
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerHourglass = memo(SpinnerHourglassRoot)

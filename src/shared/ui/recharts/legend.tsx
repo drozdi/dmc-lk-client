@@ -5,23 +5,23 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { type DefaultLegendContentProps, type LegendPayload } from "recharts";
 
 export function LegendContentPieFactory(name?: string) {
-	return (props: DefaultLegendContentProps) => {
+	const LegendContentPieRoot = memo(function LegendContentPieRoot(props: DefaultLegendContentProps) {
 		const { payload, formatter = (value: any, entry: LegendPayload, index: number) => NumberFormatter({
 			value
 		}), onClick } = props;
 		const [hover, setHover] = useState('')
-		const handleMouseEnter = useCallback((name: string) => {
+		const handleMouseEnter = useCallback((entryName: string) => {
 			if (onClick) {
-				setHover(name)
+				setHover(entryName)
 			}
 		}, [onClick])
 		const handleMouseLeave = useCallback(() => {
 			setHover('')
-		}, [onClick])
+		}, [])
 		return (
 			<Stack
 				bg="var(--mantine-color-body)"
@@ -31,10 +31,10 @@ export function LegendContentPieFactory(name?: string) {
 				maw={256}
 			>
 				{(payload || []).map((entry, index) => {
-					const { value, color, payload } = entry
+					const { value, color, payload: itemPayload } = entry
 					return <Group key={value} onClick={(e) => onClick?.(entry, index, e)} style={{
 						borderBottom: value === name || hover === value? "2px dashed var(--mantine-color-default-border)": "",
-					}} onMouseLeave={handleMouseLeave} onMouseEnter={() => handleMouseEnter(value)}>
+					}} onMouseLeave={handleMouseLeave} onMouseEnter={() => handleMouseEnter(value as string)}>
 						<ColorSwatch color={color as string} size={12} />
 						<Text
 							flex="1"
@@ -46,12 +46,14 @@ export function LegendContentPieFactory(name?: string) {
 						>
 							{value}
 						</Text>
-						{formatter(payload?.value, entry, index)}
+						{formatter(itemPayload?.value, entry, index)}
 					</Group>
 				})}
 			</Stack>
 		);
-	}
+	});
+
+	return LegendContentPieRoot;
 }
 
 export const LegendContentPie = LegendContentPieFactory()

@@ -9,7 +9,7 @@ import {
 	Stack,
 	type BoxProps,
 } from "@mantine/core";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { TbArrowsMaximize, TbArrowsMinimize } from "react-icons/tb";
 
 export interface ExpandablePanelProps extends BoxProps {
@@ -20,7 +20,7 @@ export interface ExpandablePanelProps extends BoxProps {
 	component?: any;
 }
 
-export function ExpandablePanel({
+function ExpandablePanelRoot({
 	title,
 	loading = false,
 	children,
@@ -28,13 +28,15 @@ export function ExpandablePanel({
 	component,
 	...otherProps
 }: ExpandablePanelProps) {
-	// Управляем состоянием компонента
 	const [isExpanded, setIsExpanded] = useState(false);
 
-	// Обработчик переключения состояния
-	const toggleExpanded = () => {
-		setIsExpanded((v) => !v);
-	};
+	const toggleExpanded = useCallback(() => {
+		setIsExpanded((value) => !value);
+	}, []);
+
+	const closeExpanded = useCallback(() => {
+		setIsExpanded(false);
+	}, []);
 
 	return (
 		<Paper
@@ -68,7 +70,6 @@ export function ExpandablePanel({
 					{isExpanded ? "Свернуть" : "Развернуть"}
 				</Button>
 			</Group>
-			{/* Содержимое компонента */}
 			{(keepMounted || isExpanded) && (
 				<Box
 					component={component}
@@ -79,7 +80,7 @@ export function ExpandablePanel({
 					<LoadingOverlay visible={loading} zIndex={1000} />
 					<Modal
 						opened={isExpanded}
-						onClose={() => setIsExpanded(false)}
+						onClose={closeExpanded}
 						title={title}
 						size="100vw"
 						scrollAreaComponent={ScrollArea.Autosize}
@@ -92,3 +93,5 @@ export function ExpandablePanel({
 		</Paper>
 	);
 }
+
+export const ExpandablePanel = memo(ExpandablePanelRoot);

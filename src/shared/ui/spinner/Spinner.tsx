@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 import classes from './style.module.css'
 
@@ -6,7 +7,8 @@ interface SpinnerProps {
 	thickness?: number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function Spinner({ size = '1em', thickness = 5, color }: SpinnerProps) {
+
+function SpinnerRoot({ size = '1em', thickness = 5, color }: SpinnerProps) {
 	return (
 		<SpinnerBase className={classes.spinner_mat} size={size} color={color} viewBox='25 25 50 50'>
 			<circle
@@ -22,3 +24,5 @@ export function Spinner({ size = '1em', thickness = 5, color }: SpinnerProps) {
 		</SpinnerBase>
 	)
 }
+
+export const Spinner = memo(SpinnerRoot)

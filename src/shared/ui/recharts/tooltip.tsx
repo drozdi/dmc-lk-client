@@ -1,8 +1,9 @@
 import { Box, ColorSwatch, Group, NumberFormatter, Text } from "@mantine/core";
+import { memo } from "react";
 import { type TooltipContentProps } from "recharts";
 
-export function TooltipContentPie(props: TooltipContentProps) {
-	const { payload, separator, formatter = (value) => NumberFormatter({
+function TooltipContentPieRoot(props: TooltipContentProps) {
+	const { payload, formatter = (value) => NumberFormatter({
 		value
 	}) } = props;
 
@@ -10,7 +11,7 @@ export function TooltipContentPie(props: TooltipContentProps) {
 		return null;
 	}
 
-	const { color, name, value, nameKey, dataKey } = payload[0];
+	const { color, name, value } = payload[0];
 
 	return (
 		<Group
@@ -26,8 +27,9 @@ export function TooltipContentPie(props: TooltipContentProps) {
 		</Group>
 	);
 }
-export function TooltipContentBar(props: TooltipContentProps) {
-	const { active, payload, separator, label, labelFormatter } = props;
+
+function TooltipContentBarRoot(props: TooltipContentProps) {
+	const { active, payload, label, labelFormatter } = props;
 	if (active && payload && payload.length) {
 		return (
 			<Box
@@ -44,7 +46,7 @@ export function TooltipContentBar(props: TooltipContentProps) {
 					/>
 				</Group>
 
-				{payload.map(({ color, name, value, hide, payload }) => (
+				{payload.map(({ color, name, value, hide, payload: itemPayload }) => (
 					<Group
 						key={name}
 						justify="space-between"
@@ -53,7 +55,7 @@ export function TooltipContentBar(props: TooltipContentProps) {
 						}}
 					>
 						<ColorSwatch
-							color={color || payload.color || (payload.fill as string)}
+							color={color || itemPayload.color || (itemPayload.fill as string)}
 							size={12}
 						/>
 						<Text flex="1">{name}</Text>
@@ -65,3 +67,6 @@ export function TooltipContentBar(props: TooltipContentProps) {
 	}
 	return null;
 }
+
+export const TooltipContentPie = memo(TooltipContentPieRoot);
+export const TooltipContentBar = memo(TooltipContentBarRoot);

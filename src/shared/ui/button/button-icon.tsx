@@ -1,11 +1,12 @@
 import { ActionIcon, type ActionIconProps, Tooltip } from "@mantine/core";
+import { memo } from "react";
 
 export interface ButtonIconProps extends ActionIconProps {
 	tooltip?: string;
 	onClick?: () => void;
 }
 
-export function ButtonIcon({ children, tooltip, ...props }: ButtonIconProps) {
+function ButtonIconRoot({ children, tooltip, ...props }: ButtonIconProps) {
 	return (
 		<Tooltip disabled={!tooltip} label={tooltip}>
 			<ActionIcon {...props}>
@@ -14,3 +15,5 @@ export function ButtonIcon({ children, tooltip, ...props }: ButtonIconProps) {
 		</Tooltip>
 	);
 }
+
+export const ButtonIcon = memo(ButtonIconRoot);

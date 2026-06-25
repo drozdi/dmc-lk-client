@@ -6,7 +6,10 @@ export type LoadingProps<T extends BoxProps> = T & {
 	keepMounted?: boolean;
 	component?: React.FC<T>;
 	skeleton?: React.ReactNode;
-}
+};
+
+const OVERLAY_PROPS = { radius: "sm", blur: 2 } as const;
+const LOADER_PROPS = { color: "pink", type: "bars" } as const;
 
 export function Loading<T extends BoxProps>({
 	children,
@@ -33,8 +36,8 @@ export function Loading<T extends BoxProps>({
 			{(keepMounted || !active) && children}
 			<LoadingOverlay
 				visible={active}
-				overlayProps={{ radius: "sm", blur: 2 }}
-				loaderProps={{ color: "pink", type: "bars" }}
+				overlayProps={OVERLAY_PROPS}
+				loaderProps={LOADER_PROPS}
 			/>
 		</Component>
 	);

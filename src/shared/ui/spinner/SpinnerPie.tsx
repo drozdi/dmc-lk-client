@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { SpinnerBase } from './SpinnerBase'
 
 interface SpinnerPieProps {
 	size?: string | number
 	color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger'
 }
-export function SpinnerPie({ size = '1em', color }: SpinnerPieProps) {
+function SpinnerPieRoot({ size = '1em', color }: SpinnerPieProps) {
 	return (
 		<SpinnerBase size={size} color={color} viewBox='0 0 100 100' fill='currentColor' preserveAspectRatio='xMidYMid'>
 			<path d='M0 50A50 50 0 0 1 50 0L50 50L0 50' fill='currentColor' opacity='0.5'>
@@ -50,3 +51,5 @@ export function SpinnerPie({ size = '1em', color }: SpinnerPieProps) {
 		</SpinnerBase>
 	)
 }
+
+export const SpinnerPie = memo(SpinnerPieRoot)
