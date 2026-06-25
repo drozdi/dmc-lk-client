@@ -1,7 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useQueries } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { requestAnalytics } from "../api/analytics";
 import {
-	fetchAnalyticsEvents,
+	ANALYTICS_QUERY_GC_TIME,
+	ANALYTICS_QUERY_STALE_TIME,
+} from "../constants";
+import {
+	getAnalyticsQueryKey,
 	isAnalyticsBaseQueryReady,
 } from "../utils/analytics-query";
 import { corectQuery } from "../utils/query";
@@ -10,62 +15,48 @@ export function useFetchAnalyticsEvents(
 	baseQuery: Partial<IRequestAnalytics>,
 	events: AnalyticEvent[],
 ) {
-	const queryClient = useQueryClient();
-	const [query, setQuery] = useState<IRequestAnalytics>(() =>
-		corectQuery(baseQuery as IRequestAnalytics),
+	const query = useMemo(
+		() => corectQuery(baseQuery as IRequestAnalytics),
+		[
+			baseQuery.filterdate?.[0],
+			baseQuery.filterdate?.[1],
+			baseQuery.step,
+			baseQuery.production_id,
+			baseQuery.event,
+		],
 	);
-	const [data, setData] = useState<
-		Partial<Record<AnalyticEvent, IResponseAnalytics>>
-	>({});
-	const [isLoading, setIsLoading] = useState(false);
 
-	const eventsKey = useMemo(() => events.join(","), [events]);
+	const enabled = isAnalyticsBaseQueryReady(query) && events.length > 0;
 
-	useEffect(() => {
-		setQuery((current) =>
-			corectQuery({
-				...current,
-				...baseQuery,
-			} as IRequestAnalytics),
-		);
-	}, [
-		baseQuery.filterdate?.[0],
-		baseQuery.filterdate?.[1],
-		baseQuery.step,
-		baseQuery.production_id,
-		baseQuery.event,
-	]);
+	const results = useQueries({
+		queries: events.map((event) => ({
+			queryKey: getAnalyticsQueryKey({ ...query, event }),
+			queryFn: async () =>
+				requestAnalytics({ ...query, event }).then((res) => res.data),
+			enabled,
+			staleTime: ANALYTICS_QUERY_STALE_TIME,
+			gcTime: ANALYTICS_QUERY_GC_TIME,
+		})),
+	});
 
-	useEffect(() => {
-		if (!isAnalyticsBaseQueryReady(query) || !events.length) {
-			return;
-		}
+	const data = useMemo(() => {
+		const merged: Partial<Record<AnalyticEvent, IResponseAnalytics>> = {};
+		events.forEach((event, index) => {
+			if (results[index]?.data) {
+				merged[event] = results[index].data;
+			}
+		});
+		return merged;
+	}, [events, results]);
 
-		let cancelled = false;
-		setIsLoading(true);
-
-		fetchAnalyticsEvents(queryClient, query, events)
-			.then((result) => {
-				if (!cancelled) {
-					setData(result);
-				}
-			})
-			.finally(() => {
-				if (!cancelled) {
-					setIsLoading(false);
-				}
-			});
-
-		return () => {
-			cancelled = true;
-		};
-	}, [query, eventsKey, queryClient, events]);
+	const isLoading = results.some((result) => result.isLoading);
+	const isFetching = results.some((result) => result.isFetching);
 
 	return {
 		data,
 		isLoading,
-		isFetching: isLoading,
+		isFetching,
 		query,
-		setQuery,
+		setQuery: () => {},
 	};
 }

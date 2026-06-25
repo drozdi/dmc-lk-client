@@ -68,11 +68,16 @@ interface ICountLabelHistoryItem {
 
 interface IStoreCountLabel extends IStore {
 	history: ICountLabelHistoryItem[];
+	historyHasMore: boolean;
+	historyPage: number;
+	historyFilterdate: string[];
 	count: {
 		distributed: ICountLabelItem[];
 		not_distributed: ICountLabelItem[];
 	};
-	loadHistory(reloading?: boolean): Promise<void>;
+	load(reloading?: boolean): Promise<void>;
+	loadHistory(reloading?: boolean, filterdate?: string[]): Promise<void>;
+	loadMoreHistory(): Promise<void>;
 	loadCount(reloading?: boolean): Promise<void>;
 	addCount(
 		param: IRequestCountLabelAdd,

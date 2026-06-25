@@ -13,6 +13,9 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 	isLoading: false,
 	error: "",
 	history: [],
+	historyHasMore: false,
+	historyPage: 0,
+	historyFilterdate: [],
 	count: {
 		distributed: [],
 		not_distributed: [],
@@ -21,9 +24,11 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		await get().loadHistory(reloading);
 		await get().loadCount(reloading);
 	},
-	async loadHistory(reloading = false) {
-		let loaded = !!get().history.length
-		
+	async loadHistory(reloading = false, filterdate: string[] = []) {
+		const sameFilters =
+			JSON.stringify(get().historyFilterdate) === JSON.stringify(filterdate);
+		let loaded = !!get().history.length && sameFilters;
+
 		if (reloading) {
 			loaded = false;
 		}
@@ -40,28 +45,64 @@ export const useStoreCountLabel = create<IStoreCountLabel>((set, get) => ({
 		const params = {
 			size: 100,
 			number: 0,
-			filterdate: [],
+			filterdate,
 		};
 		try {
-			let history: ICountLabelHistoryItem[] = [];
-			let res;
-
-			do {
-				res = await queryClient.fetchQuery({
-					queryKey: ["labels-history", params],
-					queryFn: async () => {
-						return await requestLabelsHistory(params);
-					},
-					staleTime: 0,
-					gcTime: 0,
-				});
-				history = [...history, ...res.data.response];
-				params.number++;
-			} while (history.length % params.size === 0 && res.data.response.length);
+			const res = await queryClient.fetchQuery({
+				queryKey: ["labels-history", params],
+				queryFn: async () => {
+					return await requestLabelsHistory(params);
+				},
+				staleTime: 0,
+				gcTime: 0,
+			});
+			const history = res.data.response;
 			set({
 				isLoading: false,
 				history,
+				historyHasMore: history.length === params.size,
+				historyPage: 0,
+				historyFilterdate: filterdate,
 			});
+		} catch (e: IError) {
+			console.error(e);
+			const error =
+				e?.response?.data?.detail || e?.message || e || "Неизвестная ошибка";
+			set({
+				isLoading: false,
+				error,
+			});
+		}
+	},
+	async loadMoreHistory() {
+		if (!get().historyHasMore || get().isLoading) {
+			return;
+		}
+
+		set({ isLoading: true, error: "" });
+
+		const params = {
+			size: 100,
+			number: get().historyPage + 1,
+			filterdate: get().historyFilterdate,
+		};
+
+		try {
+			const res = await queryClient.fetchQuery({
+				queryKey: ["labels-history", params],
+				queryFn: async () => {
+					return await requestLabelsHistory(params);
+				},
+				staleTime: 0,
+				gcTime: 0,
+			});
+			const page = res.data.response;
+			set((state) => ({
+				isLoading: false,
+				history: [...state.history, ...page],
+				historyHasMore: page.length === params.size,
+				historyPage: params.number,
+			}));
 		} catch (e: IError) {
 			console.error(e);
 			const error =

@@ -1,10 +1,10 @@
-import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
+import { eventsDataSelect, stepDataSelect } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import { WidgetAnalyticsCount } from "./count";
 import { WidgetLabelsCurrentBalance } from "./current-balance";
 
-const es = useEnumsStep();
-const ee = useEnumsEvents();
+const es = { dataSelect: stepDataSelect };
+const ee = { dataSelect: eventsDataSelect };
 
 FactoryWidget.register({
 	type: "labels-current-balance",

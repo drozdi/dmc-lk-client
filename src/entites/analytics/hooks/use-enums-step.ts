@@ -1,21 +1,18 @@
-import { type ComboboxItem } from "@mantine/core";
 import { mapStep } from "../constants";
+import {
+	stepDataSelect,
+	stepFindByCode,
+	stepFindLabelByCode,
+} from "../constants/enums-data";
 
-const findByCode = (code: string) => mapStep[code];
-const findLabelByCode = (code: string) => findByCode(code) || code;
-const dataSelect: ComboboxItem[] = Object.entries(mapStep || {}).map(
-	([value, label]) => ({
-		value,
-		label,
-	}),
-);
+export { stepDataSelect, stepFindByCode, stepFindLabelByCode };
 
 export function useEnumsStep() {
 	return {
 		isLoading: false,
 		data: mapStep,
-		dataSelect,
-		findByCode,
-		findLabelByCode,
+		dataSelect: stepDataSelect,
+		findByCode: stepFindByCode,
+		findLabelByCode: stepFindLabelByCode,
 	};
 }

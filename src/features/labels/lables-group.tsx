@@ -62,7 +62,7 @@ export const LabelsGroup = ({production_id = 0, ...props}: LabelsGroupProps) => 
 	
 	const handleDeleteFormat = (format: ILabel["add_label_format"]) => {
 		modals.openConfirmModal({
-			title: `Вы уверены? Что хотитее удалить "${format}"`,
+			title: `Вы уверены? Что хотите удалить "${format}"`,
 			labels: { confirm: "Удалить", cancel: "Нет" },
 			onConfirm: async () => {
 				if (

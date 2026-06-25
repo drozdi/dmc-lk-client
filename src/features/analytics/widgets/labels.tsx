@@ -6,11 +6,12 @@ import {
 } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { $setting } from "@/shared";
-import { labelName } from "@/shared/utils";
 import { ChartSkeleton } from "@/shared/ui/skeleton";
-import { Checkbox, Group, Stack, Tooltip as MantineTooltip } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import dayjs from "dayjs";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo } from "react";
+import { useLabelFormatName } from "../hooks/use-label-format-name";
+import { LabelGapToggle } from "../ui/label-gap-toggle";
 import { LabelsBar } from "./ui/labels-bar";
 import { LabelsTable } from "./ui/labels-table";
 
@@ -22,6 +23,29 @@ export interface AnalyticLabelsProps {
 	onLoaded?: (data: any) => void;
 }
 
+function buildLabelsDataIndex(
+	data: IResponseAnalytics | undefined,
+	step: SliceStep,
+	formatName: (name: string) => string,
+): Map<string, Map<string, number>> {
+	const index = new Map<string, Map<string, number>>();
+
+	for (const prod of data?.production || []) {
+		for (const item of prod.data) {
+			if (item.data.length > 15) {
+				continue;
+			}
+			const itemDate = formatTimestampByStep(item.timestamp, step);
+			const label = formatName(item.data);
+			const dateMap = index.get(itemDate) ?? new Map<string, number>();
+			dateMap.set(label, (dateMap.get(label) ?? 0) + item.count);
+			index.set(itemDate, dateMap);
+		}
+	}
+
+	return index;
+}
+
 export const AnalyticLabels = memo(
 	({
 		filterdate,
@@ -30,7 +54,7 @@ export const AnalyticLabels = memo(
 		type = "default",
 		onLoaded,
 	}: AnalyticLabelsProps) => {
-		const production_id = useStoreUserProfile((state) => state.productions)
+		const production_id = useStoreUserProfile((state) => state.productions);
 
 		const { data, query, isLoading, isFetching } = useAnalytics({
 			filterdate,
@@ -39,67 +63,41 @@ export const AnalyticLabels = memo(
 			production_id,
 		});
 
-		const [filterGap, setFilterGap] = useState<boolean>(true);
-
-		const formatName = useCallback<(v: string) => string>(
-			(name: string): string => {
-				name = (name || "").toUpperCase().replace(/\.[^A-Z^a-z]*/g, "");
-				return filterGap ? labelName(name) : name;
-			},
-			[filterGap],
-		);
+		const { filterGap, setFilterGap, formatName } = useLabelFormatName(true);
 
 		const labels = useFilterdateStep(query);
 		const hasData = !!data?.production?.length;
 
-		const ddata = useMemo<
-			Array<{
-				date: string;
-				total: number;
-				[key: string]: string | number;
-			}>
-		>(() => {
-			const ddata: Record<string, Record<string, number>> = {};
-			for (const date of labels) {
-				ddata[date] = ddata[date] || {
-					total: 0,
-				};
-				for (const prod of data.production) {
-					for (const item of prod.data) {
-						if (item.data.length > 15) {
-							continue;
-						}
-						const itemDate = formatTimestampByStep(
-							item.timestamp,
-							query.step,
-						);
-						if (!labels.includes(itemDate)) {
-							continue;
-						}
+		const ddata = useMemo(() => {
+			const index = buildLabelsDataIndex(data, query.step, formatName);
 
-						const label = formatName(item.data);
-						ddata[itemDate] = ddata[itemDate] || {
-							total: 0,
-						};
-						ddata[itemDate][label] = (ddata[itemDate][label] || 0) + item.count;
+			return labels
+				.map((date) => {
+					const dateMap = index.get(date);
+					const row: Record<string, string | number> = { date, total: 0 };
+					if (dateMap) {
+						for (const [label, count] of dateMap) {
+							row[label] = count;
+							row.total = (row.total as number) + count;
+						}
 					}
-				}
-			}
-			return Object.entries(ddata)
-				.sort((a, b) => a[0].localeCompare(b[0]))
-				.map(([date, v]) => ({
-					...v,
-					date,
-					total: Object.values(v).reduce((a, b) => a + b, 0),
-				}));
+					return row as {
+						date: string;
+						total: number;
+						[key: string]: string | number;
+					};
+				})
+				.sort((a, b) => a.date.localeCompare(b.date));
 		}, [data, labels, query.step, formatName]);
 
 		const bars = useMemo(() => {
-			const bars = [];
+			const barSet = new Set<string>();
 			for (const { date, total, ...item } of ddata) {
-				bars.push(...Object.keys(item));
+				for (const key of Object.keys(item)) {
+					barSet.add(key);
+				}
 			}
-			return [...new Set(bars)];
+			return [...barSet];
 		}, [ddata]);
 
 		const isEmpty = useMemo(() => !ddata.length, [ddata]);
@@ -119,22 +117,14 @@ export const AnalyticLabels = memo(
 		}, [ddata, query.step]);
 
 		useEffect(() => {
-			onLoaded?.(formatData)
-		}, [onLoaded, formatData])
+			onLoaded?.(formatData);
+		}, [onLoaded, formatData]);
 
 		const showSkeleton = (isLoading || isFetching) && !hasData;
 
 		return (
 			<Stack h="100%">
-				<Group gap="0" justify="flex-end">
-					<MantineTooltip label='Учитывать зазор между этикетками'>
-						<Checkbox
-							onChange={(e) => setFilterGap(e.target.checked)}
-							checked={filterGap}
-							label="Группировать по Gap"
-						/>
-					</MantineTooltip>
-				</Group>
+				<LabelGapToggle checked={filterGap} onChange={setFilterGap} />
 				{showSkeleton ? (
 					<ChartSkeleton height="100%" mih={180} />
 				) : isEmpty ? (

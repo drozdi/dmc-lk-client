@@ -1,25 +1,21 @@
-import { type ComboboxItem } from "@mantine/core";
 import { mapEvents } from "../constants";
+import {
+	eventsDataSelect,
+	eventsFindByCode,
+	eventsFindColorByCode,
+	eventsFindLabelByCode,
+} from "../constants/enums-data";
 
-const findByCode = (code: AnalyticEvent) => mapEvents[code];
-const findLabelByCode = (code: AnalyticEvent) =>
-	findByCode(code)?.label || code;
-const findColorByCode = (code: AnalyticEvent) => findByCode(code)?.color || "";
-const dataSelect: ComboboxItem[] = Object.entries(mapEvents || {}).map(
-	([value, { label }]) => ({
-		value,
-		label,
-	}),
-);
+export { eventsDataSelect, eventsFindByCode, eventsFindColorByCode, eventsFindLabelByCode };
 
 export function useEnumsEvents() {
 	return {
 		isLoading: false,
 		data: mapEvents,
 		keys: Object.keys(mapEvents),
-		dataSelect,
-		findByCode,
-		findLabelByCode,
-		findColorByCode,
+		dataSelect: eventsDataSelect,
+		findByCode: eventsFindByCode,
+		findLabelByCode: eventsFindLabelByCode,
+		findColorByCode: eventsFindColorByCode,
 	};
 }

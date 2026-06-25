@@ -1,12 +1,12 @@
-import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
+import { eventsDataSelect, stepDataSelect } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import "@/widgets/analytics";
 import { WidgetCount } from "@/widgets/count-widget";
 import "@/widgets/labels";
 import { TestWidget } from "@/widgets/test";
 
-const es = useEnumsStep();
-const ee = useEnumsEvents();
+const es = { dataSelect: stepDataSelect };
+const ee = { dataSelect: eventsDataSelect };
 
 FactoryWidget.register({
 	type: "count",

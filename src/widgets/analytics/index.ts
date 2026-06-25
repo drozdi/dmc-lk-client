@@ -1,4 +1,4 @@
-import { useEnumsEvents, useEnumsStep } from "@/entites/analytics";
+import { eventsDataSelect, stepDataSelect } from "@/entites/analytics";
 import { FactoryWidget } from "@/entites/dashboard/utils/factory-widget";
 import { WidgetAnalyticEvents } from "./events";
 import { WidgetAnalyticEventsDefect } from "./events-defect";
@@ -8,8 +8,8 @@ import { WidgetAnalyticLabels } from "./labels";
 import { WidgetAnalyticPie } from "./pie";
 import { WidgetAnalyticType } from "./type";
 
-const es = useEnumsStep();
-const ee = useEnumsEvents();
+const es = { dataSelect: stepDataSelect };
+const ee = { dataSelect: eventsDataSelect };
 
 FactoryWidget.register({
 	type: "analytic-events",

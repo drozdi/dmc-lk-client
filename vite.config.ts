@@ -28,6 +28,16 @@ export default defineConfig(({ mode }) => {
 				output: {
 					manualChunks: {
 						recharts: ["recharts"],
+						mantine: [
+							"@mantine/core",
+							"@mantine/hooks",
+							"@mantine/dates",
+							"@mantine/form",
+							"@mantine/modals",
+							"@mantine/notifications",
+						],
+						xlsx: ["xlsx"],
+						"react-table": ["@tanstack/react-table"],
 					},
 				},
 			},

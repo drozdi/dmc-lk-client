@@ -1,10 +1,11 @@
 import { AnalyticsEmpty, useAnalytics } from "@/entites/analytics";
 import { useStoreUserProfile } from "@/entites/auth";
 import { randomColorLabel } from "@/entites/labels";
-import { labelName } from "@/shared/utils";
 import { ChartSkeleton } from "@/shared/ui/skeleton";
-import { AspectRatio, Checkbox, Group, Stack, Tooltip } from "@mantine/core";
-import { useCallback, useMemo, useState } from "react";
+import { AspectRatio, Stack } from "@mantine/core";
+import { useMemo } from "react";
+import { useLabelFormatName } from "../hooks/use-label-format-name";
+import { LabelGapToggle } from "../ui/label-gap-toggle";
 import { TypeBar } from "./ui/type-bar";
 
 export interface AnalyticTypeProps {
@@ -27,15 +28,7 @@ export const AnalyticType = ({
 		production_id: productions,
 	});
 
-	const [filterGap, setFilterGap] = useState<boolean>(true);
-
-	const formatName = useCallback<(v: string) => string>(
-		(name: string) => {
-			name = (name || "").toUpperCase().replace(/\.[^A-Z^a-z]*/g, "");
-			return filterGap ? labelName(name) : name;
-		},
-		[filterGap],
-	);
+	const { filterGap, setFilterGap, formatName } = useLabelFormatName(true);
 
 	const labels = useMemo<string[]>(() => {
 		let res: string[] = [];
@@ -51,13 +44,7 @@ export const AnalyticType = ({
 		return [...new Set(res)].sort();
 	}, [data, formatName]);
 
-	const ddata = useMemo<
-		Array<{
-			name: string;
-			value: number;
-			color: string;
-		}>
-	>(() => {
+	const ddata = useMemo(() => {
 		const ddata: Record<
 			string,
 			{
@@ -73,7 +60,7 @@ export const AnalyticType = ({
 				color: randomColorLabel(label),
 			};
 		}
-		for (const production of data.production) {
+		for (const production of data?.production || []) {
 			for (const item of production.data) {
 				if (item.data.length > 11) {
 					continue;
@@ -88,22 +75,14 @@ export const AnalyticType = ({
 			}
 		}
 		return Object.values(ddata);
-	}, [data, labels]);
+	}, [data, labels, formatName]);
 
 	const isEmpty = useMemo(() => !ddata.some(({ value }) => value > 0), [ddata]);
 	const showSkeleton = (isLoading || isFetching) && !data?.production?.length;
 
 	return (
 		<Stack h="100%">
-			<Group gap="0" justify="flex-end">
-				<Tooltip label='Учитывать зазор между этикетками'>
-					<Checkbox
-						onChange={(e) => setFilterGap(e.target.checked)}
-						checked={filterGap}
-						label="Группировать по Gap"
-					/>
-					</Tooltip>
-			</Group>
+			<LabelGapToggle checked={filterGap} onChange={setFilterGap} />
 			<AspectRatio ratio={16 / 9}>
 				{showSkeleton ? (
 					<ChartSkeleton height="100%" mih={180} />

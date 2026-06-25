@@ -1,29 +1,40 @@
-import { corectQuery, Filterdate, QueryShow } from "@/entites/analytics";
+import {
+	corectQuery,
+	Filterdate,
+	formatDrillDownBreadcrumb,
+	QueryShow,
+} from "@/entites/analytics";
 import {
 	DashboardProvider,
 	DashBoardWidget,
 	UiDashBoard,
 	useStoreDashboardMain,
 } from "@/entites/dashboard";
+import { AnalyticItogSummary } from "@/features/analytics/widgets/itog-summary";
 import { BtnClear } from "@/features/dashboard/btn-clear";
 import { BtnEditMode } from "@/features/dashboard/btn-edit-mod";
 import { ModalForm } from "@/features/dashboard/modal";
 import { Template } from "@/layout";
 import { Widget } from "@/shared/ui";
-import { Group, Paper } from "@mantine/core";
+import { Breadcrumbs, Group, Paper, Text } from "@mantine/core";
 import { type DateValue } from "@mantine/dates";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TbArrowBackUp, TbReload } from "react-icons/tb";
 import { type MouseHandlerDataParam } from "recharts";
 
-
 export const MainPage = () => {
 	const storeDashboardMain = useStoreDashboardMain();
-	const [history, setHistory] = useState([]);
+	const storeFilterdate = useStoreDashboardMain(
+		(state) =>
+			(state.values["$filterdate"] ??
+				state.varibles["$filterdate"]?.default) as [DateValue, DateValue],
+	);
+
+	const [history, setHistory] = useState<IRequestAnalytics[]>([]);
 
 	const [filterdate, setFilterdate] = useState<[DateValue, DateValue]>(
-		storeDashboardMain.getValue("$filterdate"),
+		storeFilterdate,
 	);
 
 	const [query, setQuery] = useState<IRequestAnalytics>(
@@ -31,9 +42,15 @@ export const MainPage = () => {
 			filterdate,
 		} as IRequestAnalytics),
 	);
+
 	useEffect(() => {
 		setQuery(corectQuery({ filterdate } as IRequestAnalytics));
 	}, [filterdate]);
+
+	const breadcrumb = useMemo(
+		() => formatDrillDownBreadcrumb(history, query),
+		[history, query],
+	);
 
 	const handleClick = (arg: MouseHandlerDataParam) => {
 		const { activeLabel } = arg;
@@ -85,27 +102,30 @@ export const MainPage = () => {
 		setHistory((v) => [...v, query]);
 		setQuery(newQuery);
 	};
+
 	const back = () => {
-		if (!history?.length) {
-			return;
-		}
-		const newQuery = history.pop();
-		setHistory([...history]);
-		setQuery(newQuery);
+		setHistory((prev) => {
+			if (!prev.length) {
+				return prev;
+			}
+			const previousQuery = prev[prev.length - 1]!;
+			setQuery(previousQuery);
+			return prev.slice(0, -1);
+		});
 	};
 
-	const handleFilterdate = useCallback((filterdate: [DateValue, DateValue]) => {
-		storeDashboardMain.setValue("filterdate", filterdate);
-		setFilterdate(filterdate);
-		setHistory([]);
-	}, []);
-
-	useEffect(
-		() => {
-			setFilterdate(storeDashboardMain.getValue("$filterdate"));
+	const handleFilterdate = useCallback(
+		(filterdate: [DateValue, DateValue]) => {
+			storeDashboardMain.setValue("filterdate", filterdate);
+			setFilterdate(filterdate);
+			setHistory([]);
 		},
-		storeDashboardMain.getValue("$filterdate") || [],
+		[storeDashboardMain],
 	);
+
+	useEffect(() => {
+		setFilterdate(storeFilterdate);
+	}, [storeFilterdate]);
 
 	return (
 		<Paper>
@@ -114,9 +134,7 @@ export const MainPage = () => {
 				<Template.Header>
 					<Filterdate
 						editable
-						value={
-							storeDashboardMain.getValue("$filterdate") as [DateValue, DateValue]
-						}
+						value={storeFilterdate}
 						onChange={handleFilterdate}
 					/>
 				</Template.Header>
@@ -146,80 +164,30 @@ export const MainPage = () => {
 						<DashBoardWidget widget="labels-current-balance" type="reb" />
 					</div>
 					<div
-						key="itog.sum"
+						key="itog.summary"
 						data-grid={{
 							x: 10,
 							y: 4,
 							w: 2,
-							h: 2,
+							h: 8,
 						}}
 					>
-						<DashBoardWidget
-							widget="analytic-itog-set"
-							filterdate={query.filterdate}
-							type="sum"
-						/>
-					</div>
-					<div
-						key="itog.avg"
-						data-grid={{
-							x: 10,
-							y: 6,
-							w: 2,
-							h: 2,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-itog-set"
-							filterdate={query.filterdate}
-							type="avg"
-						/>
-					</div>
-					<div
-						key="itog.min"
-						data-grid={{
-							x: 10,
-							y: 8,
-							w: 2,
-							h: 2,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-itog-set"
-							filterdate={query.filterdate}
-							type="min"
-						/>
-					</div>
-					<div
-						key="itog.max"
-						data-grid={{
-							x: 10,
-							y: 10,
-							w: 2,
-							h: 2,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-itog-set"
-							filterdate={query.filterdate}
-							type="max"
-						/>
-					</div>
-					<div
-						key="itog.d.max"
-						data-grid={{
-							x: 10,
-							y: 12,
-							w: 2,
-							h: 2,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-itog-set"
-							filterdate={query.filterdate}
-							event="d"
-							type="max"
-						/>
+						<Widget
+							title="Сводка"
+							subTitle={
+								<>
+									За{" "}
+									<QueryShow
+										filterdate={query.filterdate}
+										step={query.step}
+										event="p"
+									/>
+								</>
+							}
+							expanded={false}
+						>
+							<AnalyticItogSummary filterdate={query.filterdate} />
+						</Widget>
 					</div>
 					<div
 						key="itog.analytics"
@@ -231,14 +199,23 @@ export const MainPage = () => {
 						}}
 					>
 						<Widget
-							title={`Работа за ${QueryShow({...query, type: 'by'})}`}
+							title={`Работа за ${QueryShow({ ...query, type: "by" })}`}
+							subTitle={
+								breadcrumb ? (
+									<Breadcrumbs separator="→">
+										{breadcrumb.split(" → ").map((item) => (
+											<Text key={item} size="sm">
+												{item}
+											</Text>
+										))}
+									</Breadcrumbs>
+								) : undefined
+							}
 							menu={[
 								{
 									children: "Сбросить",
 									onClick: () => {
-										setFilterdate([
-											...storeDashboardMain.getValue("$filterdate"),
-										]);
+										setFilterdate([...storeFilterdate]);
 										setHistory([]);
 									},
 									leftSection: <TbReload />,
@@ -267,40 +244,21 @@ export const MainPage = () => {
 								{...query}
 								onClick={handleClick}
 							/>
-							{/* <DashBoardWidget
-								widget="analytic-labels"
-								type="table"
-								filterdate={filterdate}
-							/> */}
 						</Widget>
 					</div>
 					<div
 						key="analytic.labels"
 						data-grid={{
-							x: 6,
+							x: 0,
 							y: Infinity,
-							w: 6,
+							w: 12,
 							h: 6,
 						}}
 					>
 						<DashBoardWidget
 							widget="analytic-labels"
 							type="default"
-							filterdate={query.filterdate}
-						/>
-					</div>
-					<div
-						key="analytic.labels.stack"
-						data-grid={{
-							x: 0,
-							y: Infinity,
-							w: 6,
-							h: 6,
-						}}
-					>
-						<DashBoardWidget
-							widget="analytic-labels"
-							type="stack"
+							allowChangeType
 							filterdate={query.filterdate}
 						/>
 					</div>
