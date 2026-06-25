@@ -2,6 +2,7 @@ import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
 import { useTableDataContext, useTableExpandContext } from '../../context';
 import {
+	alignNestedColumnsFromExpander,
 	getGroupedColumnForLevel,
 	getGroupedNestedColumns,
 	getNestedExpandLayout,
@@ -66,7 +67,7 @@ function TableBodyGroupedInline<T = object>({
 function TableBodyGroupedNested<T = object>({
 	node,
 	columns,
-	column: groupedColumn,
+	column: _groupedColumn,
 	level = 0,
 }: TableBodyGroupedProps<T>) {
 	const { props, groupAt, groupKeys } = useTableDataContext<T>();
@@ -77,14 +78,19 @@ function TableBodyGroupedNested<T = object>({
 	const isExpand = isExpanded(expandKey, 'grouped');
 	const hasChildren = node.isParent && (node.nodes?.length ?? 0) > 0;
 
+	const expandColumn = useMemo(
+		() => getGroupedColumnForLevel(columns, groupKeys, parentLevel),
+		[columns, groupKeys, parentLevel],
+	);
+
 	const nestedColumns = useMemo(
 		() => getGroupedNestedColumns(columns, parentLevel, groupKeys),
 		[columns, parentLevel, groupKeys],
 	);
 
-	const nestedGroupKeys = useMemo(
-		() => groupKeys.slice(parentLevel + 1),
-		[groupKeys, parentLevel],
+	const alignedNestedColumns = useMemo(
+		() => alignNestedColumnsFromExpander(nestedColumns, expandColumn),
+		[nestedColumns, expandColumn],
 	);
 
 	const nestedData = useMemo(
@@ -93,11 +99,11 @@ function TableBodyGroupedNested<T = object>({
 	);
 
 	const layout = useMemo(
-		() => getNestedExpandLayout(columns, groupedColumn, groupAt),
-		[columns, groupedColumn, groupAt],
+		() => getNestedExpandLayout(columns, expandColumn ?? columns[0], groupAt),
+		[columns, expandColumn, groupAt],
 	);
 
-	if (!hasChildren || !isExpand) {
+	if (!hasChildren || !isExpand || !expandColumn) {
 		return null;
 	}
 
@@ -113,10 +119,11 @@ function TableBodyGroupedNested<T = object>({
 					<Tag
 						{...props}
 						data={nestedData}
-						columns={nestedColumns}
-						groupKeys={nestedGroupKeys}
+						columns={alignedNestedColumns}
+						groupKeys={groupKeys}
 						groupAt={groupAt}
 						groupLayout="grouped-first"
+						initialGroupLevel={parentLevel + 1}
 						level={level}
 						withHeader={false}
 						withPagination={false}

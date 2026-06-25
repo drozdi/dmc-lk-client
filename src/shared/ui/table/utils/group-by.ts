@@ -60,15 +60,16 @@ export function groupBy<T = object>(
 	return result;
 }
 
-/** Группировка только по первому ключу (верхний уровень). */
+/** Группировка по ключу на уровне `startLevel` (0 — первый ключ в groupKeys). */
 export function groupByFirstKey<T = object>(
 	nodes: TableNode<T>[],
 	keys: (keyof T)[],
+	startLevel = 0,
 ): TableNode<T>[] {
-	if (!keys.length) {
+	if (!keys.length || startLevel >= keys.length) {
 		return nodes;
 	}
-	return groupBy(nodes, keys[0], 0);
+	return groupBy(nodes, keys[startLevel], startLevel);
 }
 
 /**
@@ -296,13 +297,17 @@ function resolveGroupedColumnLevel<T>(
 	if (!column.isGrouped || column.isGroup || !column.field) {
 		return -1;
 	}
+	const ordinal = getGroupedColumnOrdinalLevel(column, columns);
+	if (ordinal >= 0) {
+		return ordinal;
+	}
 	if (groupKeys.length > 0) {
 		const level = getGroupedColumnLevel(column, groupKeys);
 		if (level >= 0) {
 			return level;
 		}
 	}
-	return getGroupedColumnOrdinalLevel(column, columns);
+	return -1;
 }
 
 /** Последняя grouped-колонка не имеет вложенных grouped-строк — отступ не нужен. */
@@ -543,6 +548,21 @@ export function getNestedTableColumns<T>(columns: ColumnEntity<T>[]): ColumnEnti
 			isGroup: false,
 			isGrouped: false,
 		}));
+}
+
+/** Колонки вложенной таблицы: первая — колонка с expander (выравнивание с padStart). */
+export function alignNestedColumnsFromExpander<T>(
+	columns: ColumnEntity<T>[],
+	expandColumn: ColumnEntity<T> | undefined,
+): ColumnEntity<T>[] {
+	if (!expandColumn?.field) {
+		return columns;
+	}
+	const start = columns.findIndex((column) => column.field === expandColumn.field);
+	if (start <= 0) {
+		return columns;
+	}
+	return columns.slice(start);
 }
 
 /**

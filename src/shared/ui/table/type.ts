@@ -160,6 +160,8 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	minHeight?: number;
 	noDataText?: string;
 	level?: number;
+	/** Уровень groupKeys для первой groupBy (0 — warehouse, 1 — zone, …). */
+	initialGroupLevel?: number;
 }
 
 export interface TableStorage {

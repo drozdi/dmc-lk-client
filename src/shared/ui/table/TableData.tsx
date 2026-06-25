@@ -159,6 +159,7 @@ export function TableData<T = object>({
 	sortRules: initialSortRules,
 	multiGroup: initialMultiGroup,
 	groupLayout: initialGroupLayout,
+	initialGroupLevel = 0,
 
 	////////
 
@@ -735,7 +736,7 @@ export function TableData<T = object>({
 	const nodes: TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
 		let nextNodes: TableNode<T>[] = convertNodes(data);
 		if (appliesTopLevelGrouping(groupLayout, groupKeys.length)) {
-			nextNodes = groupByFirstKey<T>(nextNodes, groupKeys);
+			nextNodes = groupByFirstKey<T>(nextNodes, groupKeys, initialGroupLevel);
 		}
 
 		if (!fetcher && limit > 0) {
@@ -745,7 +746,7 @@ export function TableData<T = object>({
 			nextNodes = sortByRules(nextNodes, sort.rules);
 		}
 		return nextNodes;
-	}, [data, sort.rules, groupKeys, groupLayout, limit, page, fetcher]);
+	}, [data, sort.rules, groupKeys, groupLayout, initialGroupLevel, limit, page, fetcher]);
 
 	useEffect(() => {
 		if (initialProps !== undefined) {
