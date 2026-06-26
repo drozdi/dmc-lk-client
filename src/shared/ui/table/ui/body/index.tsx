@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { useTableGroupingContext } from '../../context';
 import { getGroupedColumnForLevel } from '../../utils/group-by';
+import { findGroupColumn } from '../../utils/column-fields';
 import type { TableBodyProps } from '../type';
 import { TableBodyRow } from './row';
 
@@ -19,8 +20,8 @@ export const TableBody = memo(function TableBody<T = object>({
 	columns,
 	level,
 }: TableBodyProps<T>) {
-	const { groupKeys } = useTableGroupingContext<T>();
-	const group = useMemo(() => columns.find((col) => col.isGroup), [columns]);
+	const { groupKeys, groupedHighlightLastRow } = useTableGroupingContext<T>();
+	const group = useMemo(() => findGroupColumn(columns), [columns]);
 	const grouped = useMemo(
 		() => getGroupedColumnForLevel(columns, groupKeys, 0),
 		[columns, groupKeys],
@@ -28,7 +29,12 @@ export const TableBody = memo(function TableBody<T = object>({
 
 	return (
 		<>
-			{nodes.map((node) => {
+			{nodes.map((node, index) => {
+				const groupedVisual =
+					groupedHighlightLastRow && index === nodes.length - 1
+						? ('highlight-last' as const)
+						: undefined;
+
 				return (
 					<TableBodyRow<T>
 						node={node}
@@ -37,6 +43,7 @@ export const TableBody = memo(function TableBody<T = object>({
 						level={level}
 						group={group}
 						grouped={grouped}
+						groupedVisual={groupedVisual}
 					/>
 				);
 			})}

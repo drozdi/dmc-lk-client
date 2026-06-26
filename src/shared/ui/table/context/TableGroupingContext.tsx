@@ -11,6 +11,8 @@ export interface TableGroupingContext<T = object> {
 	groupColumnField?: keyof T;
 	groupColumn?: ColumnEntity<T>;
 	multiGroup: boolean;
+	/** Подсветить последнюю строку tbody (раскрытый grouped-блок). */
+	groupedHighlightLastRow?: boolean;
 }
 
 const [Provider, useContext] = createSafeContext<TableGroupingContext<unknown>>(

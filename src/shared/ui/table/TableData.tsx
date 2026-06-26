@@ -25,7 +25,7 @@ import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/pa
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
 import { buildColumnOrderIndex } from './utils/column-order-index';
-import { getHeaderCellKey, orderColumnsTree } from './utils/column-fields';
+import { calculateTableColspan, findColumnDeep, findGroupColumn, findGroupOnlyColumn, getHeaderCellKey, orderColumnsTree } from './utils/column-fields';
 import {
 	appliesTopLevelGrouping,
 	buildDataColumns,
@@ -164,6 +164,7 @@ export function TableData<T = object>({
 	multiGroup: initialMultiGroup,
 	groupLayout: initialGroupLayout,
 	initialGroupLevel = 0,
+	groupedHighlightLastRow = false,
 
 	////////
 
@@ -359,7 +360,7 @@ export function TableData<T = object>({
 		resolvedMultiSort,
 		initialSortRules,
 	);
-	const { columnOrder, setColumnOrder, sortColumn } = useColumnOrder(
+	const { columnOrder, segmentOrders, setColumnOrder, sortColumn, sortColumnSegment } = useColumnOrder(
 		columnsRaw,
 		storage,
 		initialColumnOrder,
@@ -548,8 +549,8 @@ export function TableData<T = object>({
 	}, [columnFieldsKey, columnFields, storage, initialColumnWidth]);
 
 	const orderedColumnsRaw = useMemo(
-		() => orderColumnsTree(columnsRaw, columnOrderIndex),
-		[columnsRaw, columnOrderIndex],
+		() => orderColumnsTree(columnsRaw, columnOrderIndex, segmentOrders),
+		[columnsRaw, columnOrderIndex, segmentOrders],
 	);
 
 	const columns = useMemo(() => {
@@ -600,11 +601,14 @@ export function TableData<T = object>({
 	}, [orderedColumnsRaw, groupAt, groupKeys, initialSelectable, initialRowActionsAt, rowActionsOnHover, hasActionsColumn, selectColumn]);
 
 	const groupColumnField = useMemo(() => {
-		const groupOnly = columns.find((c) => c.isGroup && !c.isGrouped);
+		const groupOnly = findGroupOnlyColumn(columns);
 		if (groupOnly?.field) {
 			return groupOnly.field as keyof T;
 		}
-		const unified = columns.find((c) => c.isGroup && c.isGrouped);
+		const unified = findColumnDeep(
+			columns,
+			(col) => col.isGroup && col.isGrouped && !col.isColumns,
+		);
 		return unified?.field as keyof T | undefined;
 	}, [columns]);
 
@@ -629,18 +633,9 @@ export function TableData<T = object>({
 		})(columns);
 		return max;
 	}, [columns]);
-	const colspan = useMemo(
-		() =>
-			columns.reduce((sum: number, column: ColumnEntity<T>) => {
-				return sum + (column.isGroup ? 0 : column.colspan);
-			}, 0) || 1,
-		[columns],
-	);
+	const colspan = useMemo(() => calculateTableColspan(columns), [columns]);
 
-	const groupColumnEntity = useMemo(
-		() => columns.find((col) => col.isGroup),
-		[columns],
-	);
+	const groupColumnEntity = useMemo(() => findGroupColumn(columns), [columns]);
 
 	const groupLayout = useMemo(
 		() => initialGroupLayout ?? resolveGroupLayout(groupColumnEntity),
@@ -903,6 +898,7 @@ export function TableData<T = object>({
 			groupColumnField,
 			groupColumn: groupColumnEntity,
 			multiGroup: resolvedMultiGroup,
+			groupedHighlightLastRow,
 		}),
 		[
 			groupAt,
@@ -913,6 +909,7 @@ export function TableData<T = object>({
 			groupColumnField,
 			groupColumnEntity,
 			resolvedMultiGroup,
+			groupedHighlightLastRow,
 		],
 	);
 
@@ -933,6 +930,7 @@ export function TableData<T = object>({
 			columnOrder,
 			onColumnOrder: setColumnOrder,
 			sortColumn,
+			sortColumnSegment,
 
 			hiddenColumns,
 			toggleColumn,
@@ -980,6 +978,7 @@ export function TableData<T = object>({
 			sortColumn,
 			setColumnOrder,
 			columnOrder,
+			sortColumnSegment,
 			updateNode,
 			storage,
 			initialRowActions,

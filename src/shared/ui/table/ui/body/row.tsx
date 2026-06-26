@@ -8,12 +8,22 @@ import { TableBodyCell } from "./cell";
 import { TableBodyGroup } from "./group";
 import { TableBodyGrouped } from "./grouped";
 
+function resolveGroupedRowClass(
+	groupedVisual: TableBodyRowProps['groupedVisual'],
+): string | undefined {
+	if (groupedVisual === 'highlight-last') {
+		return classes['groupedBlockHighlighted'];
+	}
+	return undefined;
+}
+
 export const TableBodyRow = memo(function TableBodyRow<T = object>({
 	node,
 	columns,
 	level = 0,
 	group,
 	grouped,
+	groupedVisual,
 }: TableBodyRowProps<T>) {
 	const { rowActionsOnHover, hasActionsColumn } = useTableDataContext<T>();
 	const { groupLayout, groupKeys } = useTableGroupingContext<T>();
@@ -29,9 +39,13 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 		() => getGroupedColumnForLevel(columns, groupKeys, node.groupLevel ?? 0) ?? grouped,
 		[columns, groupKeys, node.groupLevel, grouped],
 	);
+	const groupedRowClass = resolveGroupedRowClass(groupedVisual);
+	const rowClassName = [hoverSlotRow ? classes['rowWithActions'] : undefined, groupedRowClass]
+		.filter(Boolean)
+		.join(' ') || undefined;
 
 	return <>
-		<Table.Tr className={hoverSlotRow ? classes['rowWithActions'] : undefined}>
+		<Table.Tr className={rowClassName}>
 			{columns.map((column, columnIndex) => {
 				return (
 					<TableBodyCell

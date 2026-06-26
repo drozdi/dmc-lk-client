@@ -162,6 +162,8 @@ export interface TableDataProps<T = object> extends Omit<TableProps, 'layout' | 
 	level?: number;
 	/** Уровень groupKeys для первой groupBy (0 — warehouse, 1 — zone, …). */
 	initialGroupLevel?: number;
+	/** Подсветить последнюю строку в tbody (вложенная grouped-таблица). */
+	groupedHighlightLastRow?: boolean;
 }
 
 export interface TableStorage {

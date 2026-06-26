@@ -23,6 +23,7 @@ export interface TableDataContext<T = object> {
 	multiSort: boolean;
 
 	sortColumn: (dragField: keyof T, dropField: keyof T) => void;
+	sortColumnSegment: (dragKey: string, dropKey: string, parentKey: string) => void;
 	columnOrder: (keyof T)[];
 	onColumnOrder: (columnOrder: (keyof T)[]) => void;
 

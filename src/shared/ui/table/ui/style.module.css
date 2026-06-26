@@ -79,6 +79,11 @@ th:last-child .resize {
 	position: relative;
 }
 
+.groupedBlockHighlighted > td {
+	background-color: color-mix(in srgb, var(--mantine-color-gray-0) 90%, var(--mantine-color-body));
+	border-bottom: 2px solid var(--mantine-color-gray-4) !important;
+}
+
 .hoverSlotHeader,
 .hoverSlotCell {
 	width: 0 !important;

@@ -78,6 +78,8 @@ export interface TableBodyRowProps<T = object> {
 	group?: ColumnEntity<T>;
 	grouped?: ColumnEntity<T>;
 	level?: number;
+	/** Визуальное выделение последней строки раскрытой grouped-группы. */
+	groupedVisual?: 'highlight-last';
 }
 
 export interface TableBodyGroupedProps<T = object> {

@@ -7,6 +7,8 @@ import {
 	getGroupedCellPaddingForRow,
 	getGroupedColumnLevel,
 	getGroupedColumnPadding,
+	getNestedRowPaddingSteps,
+	getGroupedPaddingBySteps,
 	isUnifiedGroupColumn,
 	resolveRowGroupLevel,
 	toGroupedPaddingStyle,
@@ -34,21 +36,33 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 		let groupedPadding: string | undefined;
 		if (appliesGroupedCellPadding(groupLayout, tableNestLevel)) {
 			const rowGroupLevel = resolveRowGroupLevel(node, groupKeys, columns ?? [], tableNestLevel);
-			groupedPadding =
-				columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0
-					? getGroupedCellPaddingForRow(
-							node,
-							column,
-							columnIndex,
-							columns,
-							groupKeys,
-							rowGroupLevel,
-							tableNestLevel,
-							groupAt,
-						)
-					: isUnifiedGroupColumn(column)
-						? undefined
-						: getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+			if (columns !== undefined && columnIndex !== undefined && rowGroupLevel >= 0) {
+				groupedPadding = getGroupedCellPaddingForRow(
+					node,
+					column,
+					columnIndex,
+					columns,
+					groupKeys,
+					rowGroupLevel,
+					tableNestLevel,
+					groupAt,
+				);
+			} else if (isUnifiedGroupColumn(column)) {
+				groupedPadding = undefined;
+			} else if (column.isGrouped) {
+				groupedPadding = getGroupedColumnPadding<T>(column, getGroupedColumnLevel(column, groupKeys));
+			}
+
+			if (
+				!groupedPadding &&
+				!column.isGroup &&
+				!column.isGrouped &&
+				!column.isSelecting &&
+				!column.isActions &&
+				!column.isHoverSlot
+			) {
+				groupedPadding = getGroupedPaddingBySteps(getNestedRowPaddingSteps(node));
+			}
 		}
 
 		return {

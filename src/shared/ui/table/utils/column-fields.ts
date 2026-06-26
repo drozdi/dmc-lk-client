@@ -32,13 +32,153 @@ export function getHeaderCellKey<T>(column: ColumnEntity<T>): string {
 	return `header-${column.level}-${String(column.header ?? column.colspan)}`;
 }
 
+/** Рекурсивный поиск колонки (в т.ч. внутри isColumns). */
+export function findColumnDeep<T>(
+	columns: ColumnEntity<T>[],
+	predicate: (column: ColumnEntity<T>) => boolean,
+): ColumnEntity<T> | undefined {
+	for (const column of columns) {
+		if (column.isColumns && column.columns.length > 0) {
+			const nested = findColumnDeep(column.columns, predicate);
+			if (nested) {
+				return nested;
+			}
+		}
+		if (predicate(column)) {
+			return column;
+		}
+	}
+	return undefined;
+}
+
+export function findGroupOnlyColumn<T>(columns: ColumnEntity<T>[]): ColumnEntity<T> | undefined {
+	return findColumnDeep(
+		columns,
+		(column) => column.isGroup && !column.isGrouped && !column.isColumns,
+	);
+}
+
+export function findGroupColumn<T>(columns: ColumnEntity<T>[]): ColumnEntity<T> | undefined {
+	return (
+		findGroupOnlyColumn(columns) ??
+		findColumnDeep(
+			columns,
+			(column) => column.isGroup && column.isGrouped && !column.isColumns,
+		)
+	);
+}
+
+/** colspan tbody: group-only не учитывается (как select/expander), вложенные isColumns раскрываются. */
+export function calculateTableColspan<T>(columns: ColumnEntity<T>[]): number {
+	let sum = 0;
+	for (const column of columns) {
+		if (column.isColumns && column.columns.length > 0) {
+			sum += calculateTableColspan(column.columns);
+			continue;
+		}
+		if (column.isGroup && !column.isGrouped) {
+			continue;
+		}
+		sum += column.colspan;
+	}
+	return sum || 1;
+}
+
 export function resolveColumnGroupKey<T>(column: ColumnEntity<T>): string {
 	return column.columnGroupKey ?? ROOT_COLUMN_GROUP;
 }
 
-/** Заголовок группы колонок (не перетаскивается). */
+/** Заголовок группы колонок — перетаскивается при draggable на DataColumn-группе. */
 export function isColumnGroupHeader<T>(column: ColumnEntity<T>): boolean {
 	return column.isColumns && column.isHeader;
+}
+
+/** Сегмент порядка на уровне родителя: группа колонок или одиночное reorderable-поле. */
+export function getColumnSegmentKey<T>(column: ColumnEntity<T>): string {
+	if (isColumnGroupHeader(column)) {
+		return getHeaderCellKey(column);
+	}
+	if (column.field) {
+		return String(column.field);
+	}
+	return getHeaderCellKey(column);
+}
+
+export function isColumnSegmentAtLevel<T>(column: ColumnEntity<T>): boolean {
+	return isColumnGroupHeader(column) || isColumnOrderReorderable(column);
+}
+
+export function collectLevelSegmentKeys<T>(columns: ColumnEntity<T>[]): string[] {
+	return columns.filter(isColumnSegmentAtLevel).map(getColumnSegmentKey);
+}
+
+export function buildSegmentOrdersMap<T>(columns: ColumnEntity<T>[]): Record<string, string[]> {
+	const map: Record<string, string[]> = {};
+
+	function walk(cols: ColumnEntity<T>[], parentKey: string) {
+		const keys = collectLevelSegmentKeys(cols);
+		if (keys.length) {
+			map[parentKey] = keys;
+		}
+		for (const column of cols) {
+			if (column.isColumns && column.columns.length > 0) {
+				const nextParent = column.isHeader ? getHeaderCellKey(column) : parentKey;
+				walk(column.columns, nextParent);
+			}
+		}
+	}
+
+	walk(columns, ROOT_COLUMN_GROUP);
+	return map;
+}
+
+export function mergeSegmentOrders(
+	stored: Record<string, string[]>,
+	current: Record<string, string[]>,
+): Record<string, string[]> {
+	const result: Record<string, string[]> = {};
+	for (const [parentKey, keys] of Object.entries(current)) {
+		const prev = stored[parentKey] ?? [];
+		const merged = [
+			...prev.filter((key) => keys.includes(key)),
+			...keys.filter((key) => !prev.includes(key)),
+		];
+		result[parentKey] = merged;
+	}
+	return result;
+}
+
+function reorderSegmentsAtLevel<T>(
+	columns: ColumnEntity<T>[],
+	segmentOrder: string[] | null | undefined,
+): ColumnEntity<T>[] {
+	if (!segmentOrder?.length) {
+		return columns;
+	}
+
+	const reorderableIndexes: number[] = [];
+	for (let index = 0; index < columns.length; index++) {
+		if (isColumnSegmentAtLevel(columns[index]!)) {
+			reorderableIndexes.push(index);
+		}
+	}
+
+	if (reorderableIndexes.length <= 1) {
+		return columns;
+	}
+
+	const sorted = [...reorderableIndexes.map((index) => columns[index]!)].sort((a, b) => {
+		const left = segmentOrder.indexOf(getColumnSegmentKey(a));
+		const right = segmentOrder.indexOf(getColumnSegmentKey(b));
+		return (left === -1 ? Number.MAX_SAFE_INTEGER : left) -
+			(right === -1 ? Number.MAX_SAFE_INTEGER : right);
+	});
+
+	const result = [...columns];
+	reorderableIndexes.forEach((index, position) => {
+		result[index] = sorted[position]!;
+	});
+	return result;
 }
 
 /** Поле участвует в перестановке порядка колонок внутри своей группы. */
@@ -78,20 +218,25 @@ export function buildFieldGroupMap<T>(columns: ColumnEntity<T>[]): Map<keyof T, 
 	return map;
 }
 
-/** Сортировка порядка колонок: заголовки групп на месте, поля — только внутри группы. */
+/** Сортировка порядка колонок: сегменты (группы) и поля — только внутри одного родителя. */
 export function orderColumnsTree<T>(
 	columns: ColumnEntity<T>[],
 	orderIndex: Map<keyof T, number> | null,
+	segmentOrders?: Record<string, string[]> | null,
+	parentKey: string = ROOT_COLUMN_GROUP,
 ): ColumnEntity<T>[] {
-	const ordered = columns.map((column) => {
+	const withNested = columns.map((column) => {
 		if (column.isColumns && column.columns.length > 0) {
+			const nextParent = column.isHeader ? getHeaderCellKey(column) : parentKey;
 			return {
 				...column,
-				columns: orderColumnsTree(column.columns, orderIndex),
+				columns: orderColumnsTree(column.columns, orderIndex, segmentOrders, nextParent),
 			};
 		}
 		return column;
 	});
+
+	let ordered = reorderSegmentsAtLevel(withNested, segmentOrders?.[parentKey]);
 
 	if (!orderIndex) {
 		return ordered;

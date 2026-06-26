@@ -1,4 +1,5 @@
 import type { ColumnEntity, TableGroupLayout, TableNode } from '../type';
+import { findColumnDeep, findGroupOnlyColumn } from './column-fields';
 
 export function buildExpandKey(
 	parentKey: string | undefined,
@@ -367,8 +368,7 @@ export function getGroupedShiftTargetIndex<T>(
 }
 
 /**
- * Отступ ячейки строки в режиме grouped.
- * start: expander без отступа; end: expander — L шагов; вложенные — rowGroupLevel+1.
+ * Отступ ячейки строки в режиме grouped: один шаг на уровень вложенности (groupLevel).
  */
 export function getGroupedCellPaddingForRow<T>(
 	node: TableNode<T>,
@@ -393,13 +393,13 @@ export function getGroupedCellPaddingForRow<T>(
 		return undefined;
 	}
 
-	const groupedLevel = getGroupedColumnLevel(column, groupKeys);
-	if (groupedLevel < 0 || groupedLevel > rowGroupLevel) {
-		return undefined;
-	}
-
-	const isExpander = hasGroupedCellExpander(node, column, groupKeys);
-	const steps = resolveGroupedCellPaddingSteps(groupedLevel, isExpander, rowGroupLevel, groupAt);
+	const steps = getGroupedNestedPaddingSteps(
+		node,
+		column,
+		groupKeys,
+		rowGroupLevel,
+		groupAt,
+	);
 	return getGroupedPaddingBySteps(steps);
 }
 
@@ -442,12 +442,53 @@ export function appliesTopLevelGrouping(
 	return groupKeysLength > 0 && groupLayout !== 'group-first';
 }
 
-/** Отступы grouped: на верхнем уровне group-first нет, внутри вложенной таблицы — да. */
+/** Отступы grouped: один шаг для любой вложенной строки; на group-first верхнем уровне — нет. */
 export function appliesGroupedCellPadding(
 	groupLayout: TableGroupLayout,
 	tableNestLevel: number,
 ): boolean {
 	return groupLayout !== 'group-first' || tableNestLevel > 0;
+}
+
+/** Строка внутри раскрытой grouped-группы (не корневой родитель). */
+export function isGroupedNestedRow<T>(
+	node: Pick<TableNode<T>, 'groupLevel' | 'isChildren'>,
+): boolean {
+	return (node.groupLevel ?? 0) > 0 || node.isChildren;
+}
+
+/**
+ * Шаги отступа для grouped: корень — 0, любая вложенная строка — 1 шаг (без накопления по уровням).
+ */
+export function getGroupedNestedPaddingSteps<T>(
+	node: TableNode<T>,
+	column: ColumnEntity<T>,
+	groupKeys: (keyof T)[],
+	rowGroupLevel: number,
+	groupAt?: 'start' | 'end',
+): number {
+	const groupedLevel = getGroupedColumnLevel(column, groupKeys);
+	if (groupedLevel < 0 || groupedLevel > rowGroupLevel) {
+		return 0;
+	}
+
+	const isExpander = hasGroupedCellExpander(node, column, groupKeys);
+
+	if (!isGroupedNestedRow(node)) {
+		if (isExpander && !isGroupAtStart(groupAt)) {
+			return groupedLevel;
+		}
+		return 0;
+	}
+
+	return 1;
+}
+
+/** Один шаг отступа для любой вложенной строки. */
+export function getNestedRowPaddingSteps<T>(
+	node: Pick<TableNode<T>, 'groupLevel' | 'isChildren'>,
+): number {
+	return isGroupedNestedRow(node) ? 1 : 0;
 }
 
 /** groupAt по умолчанию — start. */
@@ -496,8 +537,11 @@ export function buildDataColumns<T>(
 		: [...normalColumns, ...orderedGrouped, ...groupColumns];
 
 	const groupColumnField =
-		(groupOnly[0]?.field as keyof T | undefined) ??
-		(unified[0]?.field as keyof T | undefined);
+		(findGroupOnlyColumn(columnsRaw)?.field as keyof T | undefined) ??
+		(findColumnDeep(
+			columnsRaw,
+			(column) => column.isGroup && column.isGrouped && !column.isColumns,
+		)?.field as keyof T | undefined);
 
 	return {
 		groupColumns,

@@ -11,7 +11,7 @@ import {
 } from '../../utils/group-by';
 import { TableData } from '../../TableData';
 import type { TableDataProps } from '../../type';
-import type { TableBodyGroupedProps } from '../type';
+import type { TableBodyGroupedProps, TableBodyRowProps } from '../type';
 import { TableBodyRow } from './row';
 
 function TableBodyGroupedInline<T = object>({
@@ -48,9 +48,16 @@ function TableBodyGroupedInline<T = object>({
 		return null;
 	}
 
+	const resolveChildVisual = (index: number): TableBodyRowProps<T>['groupedVisual'] => {
+		if (index === childNodes.length - 1) {
+			return 'highlight-last';
+		}
+		return undefined;
+	};
+
 	return (
 		<>
-			{childNodes.map((child) => (
+			{childNodes.map((child, index) => (
 				<TableBodyRow<T>
 					key={getNodeExpandKey(child)}
 					node={child}
@@ -58,6 +65,7 @@ function TableBodyGroupedInline<T = object>({
 					level={level + 1}
 					group={group}
 					grouped={groupedColumn}
+					groupedVisual={resolveChildVisual(index)}
 				/>
 			))}
 		</>
@@ -126,6 +134,7 @@ function TableBodyGroupedNested<T = object>({
 						groupLayout="grouped-first"
 						initialGroupLevel={parentLevel + 1}
 						level={level}
+						groupedHighlightLastRow
 						withHeader={false}
 						withPagination={false}
 					/>

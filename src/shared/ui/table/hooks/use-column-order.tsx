@@ -3,8 +3,10 @@ import type { ColumnEntity, TableStorage } from '../type';
 import {
 	ROOT_COLUMN_GROUP,
 	buildFieldGroupMap,
+	buildSegmentOrdersMap,
 	getColumnFields,
 	mergeColumnOrder,
+	mergeSegmentOrders,
 } from '../utils/column-fields';
 
 export function useColumnOrder<T = object>(
@@ -17,6 +19,12 @@ export function useColumnOrder<T = object>(
 	const fieldsKey = fields.join('|');
 	const prevFieldsKeyRef = useRef(fieldsKey);
 	const fieldGroupMap = useMemo(() => buildFieldGroupMap(columns), [columns]);
+	const defaultSegmentOrders = useMemo(() => buildSegmentOrdersMap(columns), [columns]);
+	const segmentOrdersKey = useMemo(
+		() => JSON.stringify(defaultSegmentOrders),
+		[defaultSegmentOrders],
+	);
+	const prevSegmentOrdersKeyRef = useRef(segmentOrdersKey);
 
 	const [internalColumnOrder, setInternalColumnOrder] = useState<(keyof T)[]>(() => {
 		const stored = (storage?.getItem('columns.sorted') || []) as (keyof T)[];
@@ -24,7 +32,15 @@ export function useColumnOrder<T = object>(
 		return mergeColumnOrder(stored.length ? stored : fallback, fallback);
 	});
 
+	const [internalSegmentOrders, setInternalSegmentOrders] = useState<Record<string, string[]>>(
+		() => {
+			const stored = (storage?.getItem('columns.segments') || {}) as Record<string, string[]>;
+			return mergeSegmentOrders(stored, defaultSegmentOrders);
+		},
+	);
+
 	const columnOrder = initialColumnOrder ?? internalColumnOrder;
+	const segmentOrders = internalSegmentOrders;
 
 	const setColumnOrder = useCallback(
 		(newOrder: (keyof T)[]) => {
@@ -36,6 +52,14 @@ export function useColumnOrder<T = object>(
 			}
 		},
 		[initialColumnOrder, onInitialColumnOrder, storage],
+	);
+
+	const setSegmentOrders = useCallback(
+		(next: Record<string, string[]>) => {
+			setInternalSegmentOrders(next);
+			storage?.setItem('columns.segments', next);
+		},
+		[storage],
 	);
 
 	useEffect(() => {
@@ -58,6 +82,19 @@ export function useColumnOrder<T = object>(
 			return synced;
 		});
 	}, [fieldsKey, fields, initialColumnOrder, onInitialColumnOrder, storage]);
+
+	useEffect(() => {
+		if (prevSegmentOrdersKeyRef.current === segmentOrdersKey) {
+			return;
+		}
+		prevSegmentOrdersKeyRef.current = segmentOrdersKey;
+
+		setInternalSegmentOrders((prev) => {
+			const synced = mergeSegmentOrders(prev, defaultSegmentOrders);
+			storage?.setItem('columns.segments', synced);
+			return synced;
+		});
+	}, [defaultSegmentOrders, segmentOrdersKey, storage]);
 
 	const sortColumn = useCallback(
 		(dragField: keyof T, dropField: keyof T) => {
@@ -99,10 +136,41 @@ export function useColumnOrder<T = object>(
 		[columnOrder, fieldGroupMap, setColumnOrder],
 	);
 
+	const sortColumnSegment = useCallback(
+		(dragKey: string, dropKey: string, parentKey: string) => {
+			if (dragKey === dropKey) {
+				return;
+			}
+
+			const prevKeys = segmentOrders[parentKey] ?? defaultSegmentOrders[parentKey] ?? [];
+			const dragIndex = prevKeys.indexOf(dragKey);
+			const dropIndex = prevKeys.indexOf(dropKey);
+			if (dragIndex === -1 || dropIndex === -1) {
+				return;
+			}
+
+			const nextKeys = [...prevKeys];
+			const [dragged] = nextKeys.splice(dragIndex, 1);
+			if (dragged === undefined) {
+				return;
+			}
+			nextKeys.splice(dropIndex, 0, dragged);
+
+			setSegmentOrders({
+				...segmentOrders,
+				[parentKey]: nextKeys,
+			});
+		},
+		[defaultSegmentOrders, segmentOrders, setSegmentOrders],
+	);
+
 	return {
 		columnOrder,
+		segmentOrders,
 		setColumnOrder,
+		setSegmentOrders,
 		sortColumn,
+		sortColumnSegment,
 		setInternalColumnOrder,
 		fieldGroupMap,
 	};

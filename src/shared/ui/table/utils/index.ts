@@ -1,4 +1,5 @@
 export * from './calculate';
+export * from './column-dnd';
 export * from './column-fields';
 export * from './column-order-index';
 export * from './convert-nodes';
