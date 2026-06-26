@@ -5,18 +5,20 @@ import {
 	TbSelector
 } from 'react-icons/tb';
 import { useTableDataContext } from '../../context/TableDataContext';
+import { resolveColumnSortField } from '../../utils/column-fields';
 import type { TableHeaderCellSorterProps } from '../type';
 
 export function TableHeaderCellSorter<T = object>({
 	column,
 	...props
 }: TableHeaderCellSorterProps<T>) {
-	if (!column.isSorted || !column.field) {
+	const sortField = resolveColumnSortField(column);
+	if (!column.isSorted || !sortField) {
 		return null;
 	}
 	const { sort, changeSort, multiSort } = useTableDataContext<T>();
 
-	const ruleIndex = sort.rules.findIndex((rule) => rule.key === column.field);
+	const ruleIndex = sort.rules.findIndex((rule) => rule.key === sortField);
 	const isSorted = ruleIndex !== -1;
 	const isDescending = isSorted ? sort.rules[ruleIndex]!.descending : sort.descending;
 	const sortPriority = isSorted && sort.rules.length > 1 ? ruleIndex + 1 : null;
@@ -36,9 +38,7 @@ export function TableHeaderCellSorter<T = object>({
 		) {
 			return;
 		}
-		if (column.field) {
-			changeSort(column.field as keyof T, { multi: event.shiftKey || multiSort });
-		}
+		changeSort(sortField, { multi: event.shiftKey || multiSort });
 	};
 
 	return (

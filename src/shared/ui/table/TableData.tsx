@@ -24,8 +24,8 @@ import { Table, TableBodyCellSlot, TableEmpty, TableHeaderCellSlot, TablePaginat
 import { TableBulkActionsPanel, TableRowActionsPanel } from './ui/row-actions/panel';
 import { TableError } from './ui/TableError';
 import { calculateColspan, calculateIsColumns, convertNodes, getColumnFields, groupByFirstKey, limitBy, purgeRemovedColumnStorage, resolveColumnFlag, sortByRules } from './utils';
+import { calculateTableColspan, findColumnDeep, findGroupColumn, findGroupOnlyColumn, getHeaderCellKey, isFieldSplitColumn, orderColumnsTree } from './utils/column-fields';
 import { buildColumnOrderIndex } from './utils/column-order-index';
-import { calculateTableColspan, findColumnDeep, findGroupColumn, findGroupOnlyColumn, getHeaderCellKey, orderColumnsTree } from './utils/column-fields';
 import {
 	appliesTopLevelGrouping,
 	buildDataColumns,
@@ -94,6 +94,7 @@ function createSelectColumn<T>(): ColumnEntity<T> {
 		isActions: false,
 		isHoverSlot: false,
 		colspan: 1,
+		isFieldSplit: false,
 		width: 44,
 		align: 'center',
 	};
@@ -120,6 +121,7 @@ function createHoverSlotColumn<T>(at: 'start' | 'end'): ColumnEntity<T> {
 		parentLevel: 0,
 		columns: [],
 		colspan: 1,
+		isFieldSplit: false,
 		actionsAt: at,
 		width: 0,
 		align: 'center',
@@ -296,6 +298,7 @@ export function TableData<T = object>({
 				isSorted: false,
 				isToggleable: false,
 				colspan: calculateColspan(column.children) || column.size || 1,
+				isFieldSplit: false,
 				...column,
 				children: undefined,
 			};
@@ -307,6 +310,7 @@ export function TableData<T = object>({
 			col.columns = Children.toArray(column.children).map((child: any) => {
 				return calculateColumn(child.props, col.level, childGroupKey);
 			});
+			col.isFieldSplit = isFieldSplitColumn(col);
 			if (col.isActions) {
 				col.field = (col.field || '__actions__') as keyof T;
 				col.isHeader = true;
@@ -435,7 +439,7 @@ export function TableData<T = object>({
 	const getColumnWidth = useCallback(
 		(column: ColumnEntity<T>) => {
 			if (column.isGroup && !column.isGrouped) {
-				return columnWidths[column.field as keyof T] ?? column.width ?? 44;
+				return columnWidths[column.field as keyof T] ?? column.width;
 			}
 			if (column.isSelecting) {
 				return columnWidths[column.field as keyof T] ?? column.width ?? 44;

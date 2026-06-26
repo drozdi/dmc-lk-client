@@ -21,9 +21,20 @@ th:last-child .resize {
 }
 
 .selectHeader,
-.selectCell,
+.selectCell {
+	min-width: var(--table-select-column-width, 2.75rem);
+	white-space: nowrap;
+	vertical-align: middle;
+	position: relative;
+	overflow: visible;
+	box-sizing: border-box;
+	text-align: center;
+}
+
 .expanderHeader,
 .expanderCell {
+	width: var(--table-select-column-width, 2.75rem);
+	max-width: var(--table-select-column-width, 2.75rem);
 	min-width: var(--table-select-column-width, 2.75rem);
 	white-space: nowrap;
 	vertical-align: middle;

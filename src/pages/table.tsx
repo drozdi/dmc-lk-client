@@ -946,8 +946,8 @@ export function TablePage() {
 							header="Symbol"
 							align='center'
 						>
-							<DataColumn<SSS> header='Symbol 1' align='center' draggable />
-							<DataColumn<SSS> header='Symbol 2' align='center' draggable />
+							<DataColumn<SSS> header='Symbol 1' align='center' />
+							<DataColumn<SSS> header='Symbol 2' align='center' />
 						</DataColumn>
 						<DataColumn<SSS>
 							draggable

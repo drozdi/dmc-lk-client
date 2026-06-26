@@ -1,17 +1,19 @@
 import { useMemo, useState } from 'react';
 import { useTableDataContext } from '../../context';
-import {
-	getColumnSegmentKey,
-	isColumnGroupHeader,
-	isColumnOrderReorderable,
-	resolveColumnGroupKey,
-} from '../../utils/column-fields';
+import type { ColumnEntity } from '../../type';
 import {
 	COLUMN_DND_MIME,
 	parseColumnDndPayload,
 	serializeColumnDndPayload,
 } from '../../utils/column-dnd';
-import type { ColumnEntity } from '../../type';
+import {
+	getColumnSegmentKey,
+	isColumnGroupHeader,
+	isColumnOrderReorderable,
+	isColumnReorderTarget,
+	isNestedColumn,
+	resolveColumnGroupKey,
+} from '../../utils/column-fields';
 
 export function useColumnDrag<T = object>(
 	column: ColumnEntity<T>,
@@ -30,8 +32,9 @@ export function useColumnDrag<T = object>(
 	const parentKey = resolveColumnGroupKey(column);
 
 	const isFieldDrag = !!column.isDraggable && isColumnOrderReorderable(column);
-	const isSegmentDrag = !!column.isDraggable && isColumnGroupHeader(column);
-	const enabled = isFieldDrag || isSegmentDrag;
+	const isSegmentDrag =
+		!!column.isDraggable && isColumnGroupHeader(column) && !isNestedColumn(column);
+	const enabled = !!column.isDraggable && isColumnReorderTarget(column);
 	const dropSegmentKey = getColumnSegmentKey(column);
 
 	return useMemo(() => {

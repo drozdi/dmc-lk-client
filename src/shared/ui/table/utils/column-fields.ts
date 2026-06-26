@@ -3,10 +3,43 @@ import { compareByColumnOrder } from './column-order-index';
 
 export const ROOT_COLUMN_GROUP = '__root__';
 
+/** Дочерний заголовок split-field (без field, только header). */
+export function isFieldSplitHeaderChild<T>(column: ColumnEntity<T>): boolean {
+	return (
+		!column.field &&
+		!!column.isHeader &&
+		!column.isColumns &&
+		!column.isGroup &&
+		!column.isGrouped &&
+		!column.isSelecting &&
+		!column.isActions &&
+		!column.isHoverSlot
+	);
+}
+
+/**
+ * DataColumn с field и header-only детьми: в tbody одна ячейка с colspan = числу подколонок.
+ */
+export function isFieldSplitColumn<T>(column: ColumnEntity<T>): boolean {
+	if (!column.field || !column.isField || !column.isColumns || column.columns.length === 0) {
+		return false;
+	}
+	return column.columns.every(isFieldSplitHeaderChild);
+}
+
+/** Группа колонок без field — tbody строится из дочерних колонок. */
+export function isColumnGroupOnly<T>(column: ColumnEntity<T>): boolean {
+	return column.isColumns && !!column.isHeader && !column.field;
+}
+
 /** Листовые колонки для tbody (раскрывает вложенные isColumns). */
 export function flattenBodyColumns<T>(columns: ColumnEntity<T>[]): ColumnEntity<T>[] {
 	const result: ColumnEntity<T>[] = [];
 	for (const column of columns) {
+		if (column.isFieldSplit || isFieldSplitColumn(column)) {
+			result.push(column);
+			continue;
+		}
 		if (column.isColumns && column.columns.length > 0) {
 			result.push(...flattenBodyColumns(column.columns));
 			continue;
@@ -30,6 +63,14 @@ export function getHeaderCellKey<T>(column: ColumnEntity<T>): string {
 		return '__actions__';
 	}
 	return `header-${column.level}-${String(column.header ?? column.colspan)}`;
+}
+
+export const TABLE_EXPANDER_COLUMN_WIDTH = 'var(--table-select-column-width, 2.75rem)';
+
+export function isGroupOnlyExpanderColumn<T>(
+	column: Pick<ColumnEntity<T>, 'isGroup' | 'isGrouped'>,
+): boolean {
+	return !!column.isGroup && !column.isGrouped;
 }
 
 /** Рекурсивный поиск колонки (в т.ч. внутри isColumns). */
@@ -68,10 +109,14 @@ export function findGroupColumn<T>(columns: ColumnEntity<T>[]): ColumnEntity<T> 
 	);
 }
 
-/** colspan tbody: group-only не учитывается (как select/expander), вложенные isColumns раскрываются. */
+/** colspan tbody: group-only не учитывается; split-field — colspan родителя. */
 export function calculateTableColspan<T>(columns: ColumnEntity<T>[]): number {
 	let sum = 0;
 	for (const column of columns) {
+		if (column.isFieldSplit || isFieldSplitColumn(column)) {
+			sum += column.colspan;
+			continue;
+		}
 		if (column.isColumns && column.columns.length > 0) {
 			sum += calculateTableColspan(column.columns);
 			continue;
@@ -86,6 +131,11 @@ export function calculateTableColspan<T>(columns: ColumnEntity<T>[]): number {
 
 export function resolveColumnGroupKey<T>(column: ColumnEntity<T>): string {
 	return column.columnGroupKey ?? ROOT_COLUMN_GROUP;
+}
+
+/** Колонка внутри группы (не корневой уровень). */
+export function isNestedColumn<T>(column: ColumnEntity<T>): boolean {
+	return column.columnGroupKey != null;
 }
 
 /** Заголовок группы колонок — перетаскивается при draggable на DataColumn-группе. */
@@ -105,6 +155,9 @@ export function getColumnSegmentKey<T>(column: ColumnEntity<T>): string {
 }
 
 export function isColumnSegmentAtLevel<T>(column: ColumnEntity<T>): boolean {
+	if (isNestedColumn(column)) {
+		return isColumnOrderReorderable(column);
+	}
 	return isColumnGroupHeader(column) || isColumnOrderReorderable(column);
 }
 
@@ -183,16 +236,50 @@ function reorderSegmentsAtLevel<T>(
 
 /** Поле участвует в перестановке порядка колонок внутри своей группы. */
 export function isColumnOrderReorderable<T>(column: ColumnEntity<T>): boolean {
-	return (
-		!!column.field &&
-		column.isField &&
-		!column.isGroup &&
-		!column.isGrouped &&
-		!column.isSelecting &&
-		!column.isActions &&
-		!column.isHoverSlot &&
-		!isColumnGroupHeader(column)
-	);
+	if (
+		!column.field ||
+		!column.isField ||
+		column.isGroup ||
+		column.isGrouped ||
+		column.isSelecting ||
+		column.isActions ||
+		column.isHoverSlot
+	) {
+		return false;
+	}
+	if (column.isFieldSplit || isFieldSplitColumn(column)) {
+		return true;
+	}
+	return !isColumnGroupHeader(column);
+}
+
+/** Поле для сортировки данных: own field или первый field в группе колонок. */
+export function resolveColumnSortField<T>(
+	column: ColumnEntity<T>,
+): keyof T | undefined {
+	if (column.field && column.isField) {
+		return column.field as keyof T;
+	}
+	if (
+		!isNestedColumn(column) &&
+		(isColumnGroupOnly(column) || (column.isColumns && column.isHeader && !column.field))
+	) {
+		for (const child of flattenBodyColumns(column.columns)) {
+			if (child.field && child.isField) {
+				return child.field as keyof T;
+			}
+		}
+	}
+	return undefined;
+}
+
+/** Колонку можно перетаскивать: на корне — field или группа; вложенные — только field. */
+export function isColumnReorderTarget<T>(column: ColumnEntity<T>): boolean {
+	const isFieldColumn = isColumnOrderReorderable(column);
+	if (isNestedColumn(column)) {
+		return isFieldColumn;
+	}
+	return isFieldColumn || isColumnGroupHeader(column);
 }
 
 export function buildFieldGroupMap<T>(columns: ColumnEntity<T>[]): Map<keyof T, string> {
@@ -202,6 +289,13 @@ export function buildFieldGroupMap<T>(columns: ColumnEntity<T>[]): Map<keyof T, 
 		for (const column of cols) {
 			const nextGroupKey =
 				column.isColumns && column.isHeader ? getHeaderCellKey(column) : groupKey;
+
+			if (column.isFieldSplit || isFieldSplitColumn(column)) {
+				if (column.field && column.isField) {
+					map.set(column.field as keyof T, groupKey);
+				}
+				continue;
+			}
 
 			if (column.isColumns && column.columns.length > 0) {
 				walk(column.columns, nextGroupKey);
@@ -269,6 +363,12 @@ export function orderColumnsTree<T>(
 export function getColumnFields<T>(columns: ColumnEntity<T>[]): (keyof T)[] {
 	const result: (keyof T)[] = [];
 	for (const column of columns) {
+		if (column.isFieldSplit || isFieldSplitColumn(column)) {
+			if (column.field && column.isField) {
+				result.push(column.field as keyof T);
+			}
+			continue;
+		}
 		if (column.isColumns && column.columns.length > 0) {
 			result.push(...getColumnFields(column.columns));
 			continue;

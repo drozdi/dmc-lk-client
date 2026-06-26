@@ -3,6 +3,10 @@ import { memo, useMemo } from 'react';
 import { useTableGroupingContext } from '../../context';
 import type { TableNode } from '../../type';
 import {
+	isGroupOnlyExpanderColumn,
+	TABLE_EXPANDER_COLUMN_WIDTH,
+} from '../../utils/column-fields';
+import {
 	appliesGroupedCellPadding,
 	getGroupedCellPaddingForRow,
 	getGroupedColumnLevel,
@@ -109,12 +113,27 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 		);
 	}, [children, column.isHoverSlot, column.isSelecting, groupedContentStyle, hasGroupedContentStyle, plain]);
 
+	const isGroupOnlyExpander = isGroupOnlyExpanderColumn(column);
+	const expanderWidth = TABLE_EXPANDER_COLUMN_WIDTH;
+	const bodyColspan = column.isFieldSplit ? column.colspan : undefined;
+
 	return (
 		<Table.Td
 			className={className}
 			onClick={onClick}
 			style={tdStyle}
-			w={column.isHoverSlot ? 0 : column.isSelecting ? 44 : undefined}
+			colSpan={bodyColspan}
+			w={
+				column.isHoverSlot
+					? 0
+					: column.isSelecting
+						? 44
+						: isGroupOnlyExpander
+							? expanderWidth
+							: undefined
+			}
+			miw={isGroupOnlyExpander ? expanderWidth : undefined}
+			maw={isGroupOnlyExpander ? expanderWidth : undefined}
 			align={column.isSelecting ? 'center' : column.align}
 		>
 			{content}
