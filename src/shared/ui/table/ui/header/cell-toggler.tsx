@@ -3,17 +3,18 @@ import { useCallback } from 'react';
 import {
 	TbX
 } from 'react-icons/tb';
-import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableColumnMetaContext } from '../../context/TableColumnMetaContext';
 import type { TableHeaderCellTogglerProps } from '../type';
 
 export function TableHeaderCellToggler<T = object>({
 	column,
 	...props
 }: TableHeaderCellTogglerProps<T>) {
+	const { toggleColumn, hiddenColumns } = useTableColumnMetaContext<T>();
+
 	if (!column.isToggleable || !column.field) {
 		return null;
 	}
-	const { toggleColumn, hiddenColumns } = useTableDataContext<T>();
 	const isHidden = hiddenColumns.includes(column.field as keyof T);
 
 	const handleClick = useCallback(

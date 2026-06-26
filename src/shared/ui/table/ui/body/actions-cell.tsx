@@ -1,13 +1,13 @@
 import { Group } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { useTableRowActionsContext } from '../../context';
 import type { TableBodyCellBaseProps } from '../type';
 import { resolveVisibleActions } from '../../utils/row-actions';
 import { TableRowActionsMenu, TableRowActionsPanel } from '../row-actions/panel';
 import { TableBodyCellWrap } from './cell-wrap';
 
 export function TableBodyCellActions<T = object>({ node, column }: TableBodyCellBaseProps<T>) {
-	const { rowActions } = useTableDataContext<T>();
+	const { rowActions } = useTableRowActionsContext<T>();
 	const visibleActions = useMemo(
 		() => resolveVisibleActions(node, rowActions),
 		[node, rowActions],

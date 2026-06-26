@@ -1,4 +1,5 @@
-import { useTableDataContext, useTableGroupingContext } from '../../context';
+import { memo, useCallback } from 'react';
+import { useTableEditContext, useTableGroupingContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableBodyCellProps } from '../type';
 import { TableBodyCellActions } from './actions-cell';
@@ -28,12 +29,22 @@ function GroupedGroupCellContent<T>({
 	);
 }
 
-export function TableBodyCell<T = object>({
+function TableBodyCellInner<T>({
 	node,
 	column,
 	columns,
 	columnIndex,
-}: TableBodyCellProps<T>) {
+	isEditing,
+}: TableBodyCellProps<T> & { isEditing: boolean }) {
+	const { updateNode, commitEdit } = useTableEditContext<T>();
+	const { groupAt } = useTableGroupingContext<T>();
+
+	const handleCommitEdit = useCallback(() => commitEdit(node.index), [commitEdit, node.index]);
+	const handleUpdate = useCallback(
+		(value: T[keyof T]) => updateNode(node.index, column.field as keyof T, value),
+		[updateNode, node.index, column.field],
+	);
+
 	if (column.isSelecting) {
 		return <TableBodyCellSelector<T> node={node} column={column} />;
 	}
@@ -53,9 +64,6 @@ export function TableBodyCell<T = object>({
 			/>
 		);
 	}
-	const { updateNode, commitEdit, editorMode } = useTableDataContext<T>();
-	const { groupAt } = useTableGroupingContext<T>();
-
 	if (column.isGroup && column.isGrouped) {
 		return (
 			<TableBodyCellWrap<T>
@@ -73,14 +81,30 @@ export function TableBodyCell<T = object>({
 	return (
 		<TableBodyCellWrap<T> column={column} columns={columns} columnIndex={columnIndex} node={node}>
 			{groupAt === 'start' && <TableBodyCellExpander<T> node={node} column={column} />}
-			{(editorMode(node, column) &&
-				column.editor?.(
-					node.data,
-					column,
-					(value) => updateNode(node.index, column.field as keyof T, value as T[keyof T]),
-					() => commitEdit(node.index),
-				)) || <TableBodyCellSlot<T> node={node} column={column} />}
+			{(isEditing &&
+				column.editor?.(node.data, column, handleUpdate, handleCommitEdit)) || (
+				<TableBodyCellSlot<T> node={node} column={column} />
+			)}
 			{groupAt === 'end' && <TableBodyCellExpander<T> node={node} column={column} />}
 		</TableBodyCellWrap>
 	);
+}
+
+function areCellPropsEqual<T>(
+	prev: TableBodyCellProps<T> & { isEditing: boolean },
+	next: TableBodyCellProps<T> & { isEditing: boolean },
+): boolean {
+	return (
+		prev.node === next.node &&
+		prev.column === next.column &&
+		prev.columns === next.columns &&
+		prev.columnIndex === next.columnIndex &&
+		prev.isEditing === next.isEditing
+	);
+}
+
+const MemoizedTableBodyCellInner = memo(TableBodyCellInner, areCellPropsEqual) as typeof TableBodyCellInner;
+
+export function TableBodyCell<T = object>(props: TableBodyCellProps<T> & { isEditing?: boolean }) {
+	return <MemoizedTableBodyCellInner {...props} isEditing={props.isEditing ?? false} />;
 }

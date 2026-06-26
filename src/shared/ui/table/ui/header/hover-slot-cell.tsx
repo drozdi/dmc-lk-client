@@ -1,4 +1,4 @@
-import { useTableDataContext } from '../../context';
+import { useTableRowActionsContext } from '../../context';
 import classes from '../style.module.css';
 import type { TableHeaderCellWrapProps } from '../type';
 import { TableHeaderBulkActions, useTableHeaderBulkActions } from './bulk-actions';
@@ -9,7 +9,7 @@ export function TableHeaderCellHoverSlot<T = object>({
 	maxCol,
 	maxRow,
 }: TableHeaderCellWrapProps<T>) {
-	const { rowActionsOnHover, hasActionsColumn, rowActionsAt } = useTableDataContext<T>();
+	const { rowActionsOnHover, hasActionsColumn, rowActionsAt } = useTableRowActionsContext<T>();
 	const { isConfigured, canShow } = useTableHeaderBulkActions('select');
 	const showBulk = rowActionsOnHover && !hasActionsColumn && isConfigured;
 	const position = column.actionsAt ?? rowActionsAt;

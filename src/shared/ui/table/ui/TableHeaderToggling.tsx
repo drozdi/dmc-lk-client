@@ -1,5 +1,5 @@
 import { Checkbox, Stack } from '@mantine/core';
-import { useTableDataContext } from '../context';
+import { useTableColumnMetaContext } from '../context';
 import type { ColumnEntity } from '../type';
 import { TableHeaderCellSlot } from './header';
 export interface TableHeaderTogglingProps<T = object> {
@@ -7,7 +7,7 @@ export interface TableHeaderTogglingProps<T = object> {
 }
 
 export function TableHeaderToggling<T = object>({ columns }: TableHeaderTogglingProps<T>) {
-	const { hiddenColumns, toggleColumn } = useTableDataContext<T>();
+	const { hiddenColumns, toggleColumn } = useTableColumnMetaContext<T>();
 	return (
 		<Stack>
 			{columns.filter((column) => column.isToggleable).map((column) => (

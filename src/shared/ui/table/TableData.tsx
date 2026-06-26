@@ -3,11 +3,15 @@ import { Card, Group, SimpleGrid, Stack, Text } from '@mantine/core';
 import { useMounted } from '@mantine/hooks';
 import { Children, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loading } from '../loading';
+import { TableColumnMetaProvider } from './context/TableColumnMetaContext';
 import { TableColumnSizingProvider } from './context/TableColumnSizingContext';
 import { TableDataProvider } from './context/TableDataContext';
+import { TableEditProvider } from './context/TableEditContext';
 import { TableExpandProvider } from './context/TableExpandContext';
 import { TableGroupingProvider } from './context/TableGroupingContext';
+import { TableRowActionsProvider } from './context/TableRowActionsContext';
 import { TableSelectionProvider } from './context/TableSelectionContext';
+import { TableSortProvider } from './context/TableSortContext';
 import { useColumnHidden, useColumnOrder, useColumnSort, useNodeSelect } from './hooks';
 import type {
 	ColumnEntity,
@@ -677,24 +681,6 @@ export function TableData<T = object>({
 			columns: [],
 		});
 	}, []);
-	const editorMode = useCallback(
-		(item: TableNode<T>, column: ColumnEntity<T>): boolean => {
-			if (!editMode) {
-				return false;
-			}
-			if (isGroupContainerRow(item, groupColumnEntity)) {
-				return false;
-			}
-			if (
-				editableMeta.index === item.index &&
-				editableMeta.columns.includes(column.field)
-			) {
-				return true;
-			}
-			return false;
-		},
-		[editMode, editableMeta, groupColumnEntity],
-	);
 
 	const updateNode = useCallback(
 		(index: TableNode<T>['index'], field: keyof T, value: T[keyof T]) => {
@@ -760,8 +746,10 @@ export function TableData<T = object>({
 		[initialData, limit, mounted],
 	);
 
+	const nodesRef = useRef<TableNode<T>[]>([]);
+
 	const nodes: TableNode<T>[] = useMemo<TableNode<T>[]>(() => {
-		let nextNodes: TableNode<T>[] = convertNodes(data);
+		let nextNodes: TableNode<T>[] = convertNodes(data, nodesRef.current);
 		if (appliesTopLevelGrouping(groupLayout, groupKeys.length)) {
 			nextNodes = groupByFirstKey<T>(nextNodes, groupKeys, initialGroupLevel);
 		}
@@ -772,6 +760,7 @@ export function TableData<T = object>({
 		if (sort.rules.length) {
 			nextNodes = sortByRules(nextNodes, sort.rules);
 		}
+		nodesRef.current = nextNodes;
 		return nextNodes;
 	}, [data, sort.rules, groupKeys, groupLayout, initialGroupLevel, limit, page, fetcher]);
 
@@ -816,11 +805,19 @@ export function TableData<T = object>({
 		return { group, groupedByLevel };
 	}, [nodes, groupColumnEntity, groupKeys]);
 
-	const handlerNext = function () {
+	const handlerNext = useCallback(() => {
 		if (fetcher) {
 			fetch(next, true);
 		}
-	};
+	}, [fetcher, fetch, next]);
+
+	const handlerChangeLimit = useCallback(
+		(val: number) => {
+			setPage(initialPage);
+			setLimit(val);
+		},
+		[initialPage],
+	);
 	const handlerPprevious = useCallback(
 		function () {
 			setHistory((prev) => {
@@ -926,36 +923,57 @@ export function TableData<T = object>({
 		[columnWidths, resizeColumn, getColumnWidth],
 	);
 
-	const tableContextValue = useMemo(
+	const editContextValue = useMemo(
 		() => ({
-			selectable: initialSelectable,
-			nodes,
+			editMode,
+			editableIndex: editableMeta.index,
+			editableColumns: editableMeta.columns,
+			handleModeChange,
+			clearModeChange,
+			commitEdit,
+			updateNode,
+		}),
+		[
+			editMode,
+			editableMeta.index,
+			editableMeta.columns,
+			handleModeChange,
+			clearModeChange,
+			commitEdit,
+			updateNode,
+		],
+	);
 
+	const sortContextValue = useMemo(
+		() => ({
+			sort,
+			changeSort,
+			multiSort: resolvedMultiSort,
+		}),
+		[sort, changeSort, resolvedMultiSort],
+	);
+
+	const columnMetaContextValue = useMemo(
+		() => ({
 			columnOrder,
 			onColumnOrder: setColumnOrder,
 			sortColumn,
 			sortColumnSegment,
-
 			hiddenColumns,
 			toggleColumn,
+		}),
+		[
+			columnOrder,
+			setColumnOrder,
+			sortColumn,
+			sortColumnSegment,
+			hiddenColumns,
+			toggleColumn,
+		],
+	);
 
-			props,
-			sort,
-			changeSort,
-			multiSort: resolvedMultiSort,
-			breakpoint,
-			editorMode,
-			handleModeChange,
-			clearModeChange,
-			commitEdit,
-			colspan,
-			rowspan,
-
-			editMode,
-
-			updateNode,
-			storage,
-
+	const rowActionsContextValue = useMemo(
+		() => ({
 			rowActions: initialRowActions,
 			rowActionsPanel: initialRowActionsPanel,
 			rowActionsOnHover,
@@ -965,26 +983,6 @@ export function TableData<T = object>({
 			bulkActionsPanel: initialBulkActionsPanel,
 		}),
 		[
-			hiddenColumns,
-			toggleColumn,
-			props,
-			sort,
-			changeSort,
-			resolvedMultiSort,
-			breakpoint,
-			editorMode,
-			handleModeChange,
-			clearModeChange,
-			commitEdit,
-			colspan,
-			rowspan,
-			editMode,
-			sortColumn,
-			setColumnOrder,
-			columnOrder,
-			sortColumnSegment,
-			updateNode,
-			storage,
 			initialRowActions,
 			initialRowActionsPanel,
 			rowActionsOnHover,
@@ -992,9 +990,20 @@ export function TableData<T = object>({
 			hasActionsColumn,
 			initialBulkActions,
 			initialBulkActionsPanel,
-			initialSelectable,
-			nodes,
 		],
+	);
+
+	const tableContextValue = useMemo(
+		() => ({
+			selectable: initialSelectable,
+			nodes,
+			props,
+			colspan,
+			rowspan,
+			storage,
+			breakpoint,
+		}),
+		[initialSelectable, nodes, props, colspan, rowspan, storage, breakpoint],
 	);
 
 	return (
@@ -1002,7 +1011,11 @@ export function TableData<T = object>({
 			<TableExpandProvider value={expandContextValue}>
 				<TableGroupingProvider value={groupingContextValue}>
 					<TableColumnSizingProvider value={columnSizingContextValue}>
-						<TableDataProvider value={tableContextValue}>
+						<TableSortProvider value={sortContextValue}>
+							<TableColumnMetaProvider value={columnMetaContextValue}>
+								<TableEditProvider value={editContextValue}>
+									<TableRowActionsProvider value={rowActionsContextValue}>
+										<TableDataProvider value={tableContextValue}>
 			<Stack mih={minHeight} gap="md">
 				<Loading active={loading} keepMounted mih={minHeight}>
 					{error && <TableError>{error}</TableError>}
@@ -1023,14 +1036,15 @@ export function TableData<T = object>({
 						limit={limit}
 						limits={initialLimits}
 						onChangePage={setPage}
-						onChangeLimit={(val) => {
-							setPage(initialPage);
-							setLimit(val);
-						}}
+						onChangeLimit={handlerChangeLimit}
 					/>
 				)}
 			</Stack>
-						</TableDataProvider>
+										</TableDataProvider>
+									</TableRowActionsProvider>
+								</TableEditProvider>
+							</TableColumnMetaProvider>
+						</TableSortProvider>
 					</TableColumnSizingProvider>
 				</TableGroupingProvider>
 			</TableExpandProvider>

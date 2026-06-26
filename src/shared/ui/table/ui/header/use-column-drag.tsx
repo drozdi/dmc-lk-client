@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useTableDataContext } from '../../context';
+import { useTableColumnMetaContext } from '../../context';
 import type { ColumnEntity } from '../../type';
 import {
 	COLUMN_DND_MIME,
@@ -28,7 +28,7 @@ export function useColumnDrag<T = object>(
 	onDrop?: (e: React.DragEvent) => void;
 } {
 	const [hovered, setHovered] = useState(false);
-	const { sortColumn, sortColumnSegment } = useTableDataContext<T>();
+	const { sortColumn, sortColumnSegment } = useTableColumnMetaContext<T>();
 	const parentKey = resolveColumnGroupKey(column);
 
 	const isFieldDrag = !!column.isDraggable && isColumnOrderReorderable(column);

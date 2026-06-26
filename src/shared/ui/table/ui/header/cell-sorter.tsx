@@ -4,7 +4,7 @@ import {
 	TbChevronUp,
 	TbSelector
 } from 'react-icons/tb';
-import { useTableDataContext } from '../../context/TableDataContext';
+import { useTableSortContext } from '../../context/TableSortContext';
 import { resolveColumnSortField } from '../../utils/column-fields';
 import type { TableHeaderCellSorterProps } from '../type';
 
@@ -13,10 +13,11 @@ export function TableHeaderCellSorter<T = object>({
 	...props
 }: TableHeaderCellSorterProps<T>) {
 	const sortField = resolveColumnSortField(column);
+	const { sort, changeSort, multiSort } = useTableSortContext<T>();
+
 	if (!column.isSorted || !sortField) {
 		return null;
 	}
-	const { sort, changeSort, multiSort } = useTableDataContext<T>();
 
 	const ruleIndex = sort.rules.findIndex((rule) => rule.key === sortField);
 	const isSorted = ruleIndex !== -1;

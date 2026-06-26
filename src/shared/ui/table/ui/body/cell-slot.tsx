@@ -1,5 +1,6 @@
 import { Box } from '@mantine/core';
-import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
+import { memo, useMemo } from 'react';
+import { useTableEditContext, useTableExpandContext, useTableGroupingContext } from '../../context';
 import {
 	getNodeExpandKey,
 	isGroupContainerRow,
@@ -8,11 +9,8 @@ import {
 } from '../../utils/group-by';
 import type { TableBodyCellSlotProps } from '../type';
 
-export function TableBodyCellSlot<T = object>({
-	node,
-	column,
-}: TableBodyCellSlotProps<T>) {
-	const { handleModeChange, editMode } = useTableDataContext<T>();
+function TableBodyCellSlotInner<T>({ node, column }: TableBodyCellSlotProps<T>) {
+	const { handleModeChange, editMode } = useTableEditContext<T>();
 	const { groupKeys, groupColumn } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 
@@ -51,7 +49,7 @@ export function TableBodyCellSlot<T = object>({
 		};
 	}
 
-	const cellValue = (() => {
+	const cellValue = useMemo(() => {
 		if (typeof column.body === 'function') {
 			try {
 				return column.body(node.data, column);
@@ -65,11 +63,13 @@ export function TableBodyCellSlot<T = object>({
 		}
 
 		return null;
-	})();
+	}, [column, node.data]);
 
 	return (
 		<Box flex="1" maw="100%" ta={column.align} {...attrs}>
-			{cellValue != null ? cellValue : null}
+			{cellValue as React.ReactNode}
 		</Box>
 	);
 }
+
+export const TableBodyCellSlot = memo(TableBodyCellSlotInner) as typeof TableBodyCellSlotInner;

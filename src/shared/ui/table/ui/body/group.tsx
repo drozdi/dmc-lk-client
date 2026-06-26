@@ -1,6 +1,6 @@
 import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
-import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
+import { useTableDataContext, useTableEditContext, useTableExpandContext, useTableGroupingContext } from '../../context';
 import {
 	getBodyColumnPhysicalSpan,
 	getHeaderCellKey,
@@ -93,7 +93,8 @@ function GroupNestedRowCells<T>({
 }
 
 export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }: TableBodyGroupProps<T>) {
-	const { props, editMode } = useTableDataContext<T>();
+	const { props } = useTableDataContext<T>();
+	const { editMode } = useTableEditContext<T>();
 	const { groupAt, groupLayout, groupKeys } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 	const isGroupFirst = groupLayout === 'group-first';

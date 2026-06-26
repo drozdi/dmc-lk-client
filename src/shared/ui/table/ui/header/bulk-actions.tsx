@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTableDataContext, useTableSelectionContext } from '../../context';
+import { useTableDataContext, useTableRowActionsContext, useTableSelectionContext } from '../../context';
 import {
 	buildBulkActionsContext,
 	resolveVisibleBulkActions,
@@ -12,12 +12,8 @@ import {
 export type TableHeaderBulkActionsTarget = 'actions' | 'select';
 
 export function useTableHeaderBulkActions(target: TableHeaderBulkActionsTarget) {
-	const {
-		nodes,
-		bulkActions,
-		bulkActionsPanel,
-		hasActionsColumn,
-	} = useTableDataContext();
+	const { nodes } = useTableDataContext();
+	const { bulkActions, bulkActionsPanel, hasActionsColumn } = useTableRowActionsContext();
 	const { selectedRows, selectable } = useTableSelectionContext();
 
 	const bulkContext = useMemo(

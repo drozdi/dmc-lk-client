@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@mantine/hooks';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { TableNode, TableStorage } from '../type';
 
 export function useNodeSelect<T = object>(
@@ -74,12 +74,15 @@ export function useNodeSelect<T = object>(
 		[setSelectedRows],
 	);
 
+	const nodesRef = useRef(nodes);
+	nodesRef.current = nodes;
+
 	const selectAll = useCallback(
 		(selected: boolean) => {
-			const indices = nodes.map((node) => node.index);
+			const indices = nodesRef.current.map((node) => node.index);
 			setSelectedRows(selected ? indices : []);
 		},
-		[nodes, setSelectedRows],
+		[setSelectedRows],
 	);
 
 	const someSelected = useMemo(

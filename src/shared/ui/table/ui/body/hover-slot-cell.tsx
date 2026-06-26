@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTableDataContext } from '../../context';
+import { useTableRowActionsContext } from '../../context';
 import { resolveVisibleActions } from '../../utils/row-actions';
 import { TableRowActionsPanel } from '../row-actions/panel';
 import classes from '../style.module.css';
@@ -7,7 +7,7 @@ import type { TableBodyCellBaseProps } from '../type';
 import { TableBodyCellWrap } from './cell-wrap';
 
 export function TableBodyCellHoverSlot<T = object>({ node, column }: TableBodyCellBaseProps<T>) {
-	const { rowActions, rowActionsPanel, rowActionsAt } = useTableDataContext<T>();
+	const { rowActions, rowActionsPanel, rowActionsAt } = useTableRowActionsContext<T>();
 	const visibleActions = useMemo(
 		() => resolveVisibleActions(node, rowActions),
 		[node, rowActions],

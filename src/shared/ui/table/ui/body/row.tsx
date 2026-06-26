@@ -1,6 +1,6 @@
 import { Table } from "@mantine/core";
 import { memo, useMemo } from 'react';
-import { useTableDataContext, useTableGroupingContext } from '../../context';
+import { useTableEditContext, useTableRowActionsContext, useTableGroupingContext } from '../../context';
 import { getGroupedColumnForLevel } from '../../utils/group-by';
 import classes from '../style.module.css';
 import type { TableBodyRowProps } from '../type';
@@ -25,8 +25,17 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 	grouped,
 	groupedVisual,
 }: TableBodyRowProps<T>) {
-	const { rowActionsOnHover, hasActionsColumn } = useTableDataContext<T>();
+	const { rowActionsOnHover, hasActionsColumn } = useTableRowActionsContext<T>();
 	const { groupLayout, groupKeys } = useTableGroupingContext<T>();
+	const { editableIndex, editableColumns } = useTableEditContext<T>();
+
+	const editingFields = useMemo(() => {
+		if (editableIndex !== node.index) {
+			return null;
+		}
+		return new Set(editableColumns);
+	}, [editableColumns, editableIndex, node.index]);
+
 	const showGrouped =
 		groupLayout !== 'unified' &&
 		groupLayout !== 'group-first' &&
@@ -47,6 +56,7 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 	return <>
 		<Table.Tr className={rowClassName}>
 			{columns.map((column, columnIndex) => {
+				const isEditing = editingFields?.has(column.field) ?? false;
 				return (
 					<TableBodyCell
 						key={column.field as string}
@@ -54,6 +64,7 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 						column={column}
 						columns={columns}
 						columnIndex={columnIndex}
+						isEditing={isEditing}
 					/>
 				);
 			})}
