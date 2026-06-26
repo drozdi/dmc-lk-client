@@ -1,5 +1,5 @@
 import { createSafeContext } from '../../../internal/utils/create-safe-context';
-import type { TableDataProps, TableGroupLayout } from '../type';
+import type { ColumnEntity, TableDataProps, TableGroupLayout } from '../type';
 
 export interface TableGroupingContext<T = object> {
 	groupAt: TableDataProps['groupAt'];
@@ -9,6 +9,7 @@ export interface TableGroupingContext<T = object> {
 	groupLevel: number;
 	isGroupStart: boolean;
 	groupColumnField?: keyof T;
+	groupColumn?: ColumnEntity<T>;
 	multiGroup: boolean;
 }
 

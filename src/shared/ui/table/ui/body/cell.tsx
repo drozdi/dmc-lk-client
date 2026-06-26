@@ -17,22 +17,12 @@ function GroupedGroupCellContent<T>({
 	node: TableBodyCellProps<T>['node'];
 	column: TableBodyCellProps<T>['column'];
 }) {
-	const { updateNode, commitEdit, editorMode } = useTableDataContext<T>();
 	const { groupAt } = useTableGroupingContext<T>();
-
-	const slot =
-		(editorMode(node, column) &&
-			column.editor?.(
-				node.data,
-				column,
-				(value) => updateNode(node.index, column.field as keyof T, value as T[keyof T]),
-				() => commitEdit(node.index),
-			)) || <TableBodyCellSlot<T> node={node} column={column} />;
 
 	return (
 		<div className={classes['expanderHeaderInnerLabeled']}>
 			{groupAt === 'start' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
-			{slot}
+			<TableBodyCellSlot<T> node={node} column={column} />
 			{groupAt === 'end' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
 		</div>
 	);

@@ -1,5 +1,11 @@
 import { Box } from '@mantine/core';
-import { useTableDataContext } from '../../context';
+import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
+import {
+	getNodeExpandKey,
+	isGroupContainerRow,
+	isGroupedExpanderCell,
+	isUnifiedGroupColumn,
+} from '../../utils/group-by';
 import type { TableBodyCellSlotProps } from '../type';
 
 export function TableBodyCellSlot<T = object>({
@@ -7,22 +13,41 @@ export function TableBodyCellSlot<T = object>({
 	column,
 }: TableBodyCellSlotProps<T>) {
 	const { handleModeChange, editMode } = useTableDataContext<T>();
+	const { groupKeys, groupColumn } = useTableGroupingContext<T>();
+	const { isExpanded } = useTableExpandContext();
+
+	const isGroupContainer = isGroupContainerRow(node, groupColumn);
+	const isUnified = isUnifiedGroupColumn(column);
 
 	if (column.isGroup && !column.isGrouped) {
 		return null;
 	}
+
+	const isGroupedExpander =
+		!isUnified &&
+		isGroupedExpanderCell(node, column, groupKeys) &&
+		isExpanded(getNodeExpandKey(node), 'grouped');
 
 	const attrs: {
 		onDoubleClick?: () => void;
 		onClick?: () => void;
 		style?: React.CSSProperties;
 	} = {};
-	if (editMode === 'row') {
-		attrs.onDoubleClick = () => handleModeChange(node, column);
-	} else if (editMode === 'cell') {
-		attrs.onClick = () => handleModeChange(node, column);
+	if (!isGroupContainer && !isUnified && editMode) {
+		if (editMode === 'row') {
+			attrs.onDoubleClick = () => handleModeChange(node, column);
+		} else if (editMode === 'cell') {
+			attrs.onClick = () => handleModeChange(node, column);
+			attrs.style = {
+				cursor: 'pointer',
+			};
+		}
+	}
+
+	if (isGroupedExpander) {
 		attrs.style = {
-			cursor: 'pointer',
+			...attrs.style,
+			fontWeight: 700,
 		};
 	}
 

@@ -33,6 +33,7 @@ import {
 	getNodeExpandKey,
 	hasGroupNestedData,
 	isGroupAtStart,
+	isGroupContainerRow,
 	resolveGroupLayout,
 } from './utils/group-by';
 
@@ -651,6 +652,9 @@ export function TableData<T = object>({
 			if (!editMode) {
 				return;
 			}
+			if (isGroupContainerRow(node, groupColumnEntity)) {
+				return;
+			}
 			if (!column.editor) {
 				return;
 			}
@@ -666,7 +670,7 @@ export function TableData<T = object>({
 				});
 			}
 		},
-		[editMode, columns],
+		[editMode, columns, groupColumnEntity],
 	);
 	const clearModeChange = useCallback(() => {
 		setEditableMeta({
@@ -679,6 +683,9 @@ export function TableData<T = object>({
 			if (!editMode) {
 				return false;
 			}
+			if (isGroupContainerRow(item, groupColumnEntity)) {
+				return false;
+			}
 			if (
 				editableMeta.index === item.index &&
 				editableMeta.columns.includes(column.field)
@@ -687,7 +694,7 @@ export function TableData<T = object>({
 			}
 			return false;
 		},
-		[editMode, editableMeta],
+		[editMode, editableMeta, groupColumnEntity],
 	);
 
 	const updateNode = useCallback(
@@ -894,6 +901,7 @@ export function TableData<T = object>({
 			groupLevel: level,
 			isGroupStart,
 			groupColumnField,
+			groupColumn: groupColumnEntity,
 			multiGroup: resolvedMultiGroup,
 		}),
 		[
@@ -903,6 +911,7 @@ export function TableData<T = object>({
 			level,
 			isGroupStart,
 			groupColumnField,
+			groupColumnEntity,
 			resolvedMultiGroup,
 		],
 	);

@@ -536,6 +536,57 @@ export function hasGroupNestedData<T>(node: TableNode<T>, column: ColumnEntity<T
 	return getGroupNestedData(node, column).length > 0;
 }
 
+/** Строка-контейнер group/unified: вложенная таблица — другой набор элементов, родитель не редактируется. */
+export function isGroupContainerRow<T>(
+	node: TableNode<T>,
+	groupColumn: ColumnEntity<T> | undefined,
+): boolean {
+	if (!groupColumn?.isGroup) {
+		return false;
+	}
+	return hasGroupNestedData(node, groupColumn);
+}
+
+/**
+ * Разметка строки вложенной group/unified-таблицы:
+ * пустая ячейка на месте expander-колонки, остальные объединены под вложенную таблицу.
+ */
+export function getGroupOnlyNestedRowLayout<T>(
+	columns: ColumnEntity<T>[],
+	expandColumn: ColumnEntity<T>,
+	groupAt: 'start' | 'end' = 'start',
+): {
+	beforeExpander: number;
+	afterExpander: number;
+	nestedColspan: number;
+	nestedBeforeExpander: boolean;
+} {
+	const expandIndex = columns.findIndex((column) => column.field === expandColumn.field);
+	if (expandIndex < 0) {
+		return {
+			beforeExpander: 0,
+			afterExpander: 0,
+			nestedColspan: columns.length,
+			nestedBeforeExpander: true,
+		};
+	}
+
+	const beforeExpander = expandIndex;
+	const afterExpander = columns.length - expandIndex - 1;
+
+	if (isGroupAtStart(groupAt)) {
+		if (afterExpander > 0) {
+			return { beforeExpander, afterExpander, nestedColspan: afterExpander, nestedBeforeExpander: false };
+		}
+		return { beforeExpander, afterExpander, nestedColspan: beforeExpander, nestedBeforeExpander: true };
+	}
+
+	if (beforeExpander > 0) {
+		return { beforeExpander, afterExpander, nestedColspan: beforeExpander, nestedBeforeExpander: true };
+	}
+	return { beforeExpander, afterExpander, nestedColspan: afterExpander, nestedBeforeExpander: false };
+}
+
 /** Колонки вложенной group-first таблицы: без group-only, grouped сохраняются. */
 export function getGroupNestedColumns<T>(columns: ColumnEntity<T>[]): ColumnEntity<T>[] {
 	return columns.filter((column) => {

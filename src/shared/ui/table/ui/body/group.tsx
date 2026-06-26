@@ -4,7 +4,7 @@ import { useTableDataContext, useTableExpandContext, useTableGroupingContext } f
 import {
 	getGroupNestedColumns,
 	getGroupNestedData,
-	getNestedExpandLayout,
+	getGroupOnlyNestedRowLayout,
 	getNestedTableColumns,
 	getNodeExpandKey,
 	hasGroupNestedData,
@@ -20,8 +20,74 @@ function resolveNestedGroupLayout(groupKeysLength: number): TableGroupLayout {
 	return 'default';
 }
 
+function GroupNestedRowCells({
+	beforeExpander,
+	afterExpander,
+	nestedColspan,
+	nestedBeforeExpander,
+	groupAt,
+	children,
+}: {
+	beforeExpander: number;
+	afterExpander: number;
+	nestedColspan: number;
+	nestedBeforeExpander: boolean;
+	groupAt: 'start' | 'end';
+	children: React.ReactNode;
+}) {
+	const isStart = groupAt !== 'end';
+	const leadingCells = Array.from({ length: beforeExpander }, (_, index) => (
+		<Table.Td key={`leading-${index}`} p="0" aria-hidden />
+	));
+	const trailingCells = Array.from({ length: afterExpander }, (_, index) => (
+		<Table.Td key={`trailing-${index}`} p="0" aria-hidden />
+	));
+	const expanderCell = <Table.Td key="expander" p="0" aria-hidden />;
+	const nestedCell = (
+		<Table.Td key="nested" p="0" colSpan={Math.max(nestedColspan, 1)}>
+			{children}
+		</Table.Td>
+	);
+
+	if (isStart) {
+		if (nestedBeforeExpander) {
+			return (
+				<>
+					{nestedCell}
+					{expanderCell}
+				</>
+			);
+		}
+		return (
+			<>
+				{leadingCells}
+				{expanderCell}
+				{nestedCell}
+			</>
+		);
+	}
+
+	if (nestedBeforeExpander) {
+		return (
+			<>
+				{nestedCell}
+				{expanderCell}
+				{trailingCells}
+			</>
+		);
+	}
+
+	return (
+		<>
+			{leadingCells}
+			{expanderCell}
+			{nestedCell}
+		</>
+	);
+}
+
 export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }: TableBodyGroupProps<T>) {
-	const { props, colspan } = useTableDataContext<T>();
+	const { props, editMode } = useTableDataContext<T>();
 	const { groupAt, groupLayout, groupKeys } = useTableGroupingContext<T>();
 	const { isExpanded } = useTableExpandContext();
 	const isGroupFirst = groupLayout === 'group-first';
@@ -41,24 +107,10 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 		[isGroupFirst, groupKeys.length],
 	);
 
-	const layout = useMemo(() => {
-		const isGroupOnly = column.isGroup && !column.isGrouped;
-		if (isGroupOnly) {
-			if (groupAt === 'end') {
-				return {
-					padStart: 0,
-					padEnd: columns.length - colspan,
-					nestedColspan: colspan,
-				};
-			}
-			return {
-				padStart: columns.length - colspan,
-				padEnd: 0,
-				nestedColspan: colspan,
-			};
-		}
-		return getNestedExpandLayout(columns, column, groupAt);
-	}, [columns, column, groupAt, colspan]);
+	const layout = useMemo(
+		() => getGroupOnlyNestedRowLayout(columns, column, groupAt),
+		[columns, column, groupAt],
+	);
 
 	if (!column.isGroup || !hasGroupNestedData(node, column)) {
 		return null;
@@ -70,32 +122,37 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 
 	const Tag = (column.body || TableData<T>) as React.FC<TableDataProps<T>>;
 
+	const nestedTable = (
+		<Collapse expanded={isExpand} p={isRendered ? 'xs' : '0'}>
+			<Tag
+				{...props}
+				data={nestedData}
+				columns={nestedColumns}
+				groupKeys={nestedGroupKeys}
+				groupAt={groupAt}
+				groupLayout={nestedGroupLayout}
+				level={level}
+				editMode={editMode}
+				withHeader={false}
+				withPagination={false}
+			/>
+		</Collapse>
+	);
+
 	return (
 		<Table.Tr
 			style={{
 				borderBottomWidth: isExpand ? '2px' : '',
 			}}
 		>
-			{!isRendered && groupAt === 'start' && layout.padStart > 0 && (
-				<Table.Td colSpan={layout.padStart} p="0" aria-hidden />
-			)}
-			<Table.Td p="0" colSpan={isRendered ? columns.length : layout.nestedColspan}>
-				<Collapse expanded={isExpand} p={isRendered ? 'xs' : '0'}>
-					<Tag
-						{...props}
-						data={nestedData}
-						columns={nestedColumns}
-						groupKeys={nestedGroupKeys}
-						groupAt={groupAt}
-						groupLayout={nestedGroupLayout}
-						level={level}
-						withHeader={false}
-						withPagination={false}
-					/>
-				</Collapse>
-			</Table.Td>
-			{!isRendered && groupAt === 'end' && layout.padEnd > 0 && (
-				<Table.Td colSpan={layout.padEnd} p="0" />
+			{isRendered ? (
+				<Table.Td p="0" colSpan={columns.length}>
+					{nestedTable}
+				</Table.Td>
+			) : (
+				<GroupNestedRowCells groupAt={groupAt ?? 'start'} {...layout}>
+					{nestedTable}
+				</GroupNestedRowCells>
 			)}
 		</Table.Tr>
 	);
