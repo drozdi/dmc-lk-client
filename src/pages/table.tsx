@@ -1,6 +1,7 @@
+import { requestAnalyticsElastic } from '@/entites/analytics';
 import { DataColumn, TableData, TableRowActionsPanel } from '@/shared/ui/table';
 import type { ColumnEntity, TableBulkAction, TableRowAction, TableRowActionsPanelProps } from '@/shared/ui/table/type';
-import { Badge, Group, Stack, Tabs, TextInput, Title } from '@mantine/core';
+import { Badge, Button, Group, Stack, Tabs, Text, TextInput, Title } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { TbPencil, TbTrash } from 'react-icons/tb';
 
@@ -924,7 +925,6 @@ export function TablePage() {
 						<Title order={4}>Групировка колонок</Title>
 					</Stack>
 					<TableData<SSS> data={elementsS} storage="demo.group" limit={50} withColumnBorders>
-						
 						<DataColumn<SSS> header='Group' align='center' draggable>
 							<DataColumn<SSS> group field="group" />
 							<DataColumn<SSS>
@@ -938,8 +938,6 @@ export function TablePage() {
 								header="Element name"
 							/>
 						</DataColumn>
-						
-
 						<DataColumn<SSS>
 							draggable
 							field="symbol"
@@ -957,7 +955,7 @@ export function TablePage() {
 					</TableData>
 				</Tabs.Panel>
 
-				{/* <Tabs.Panel value="group-rows" pt="md">
+				<Tabs.Panel value="group-rows" pt="md">
 					<Stack gap="xs" mb="md">
 						<Title order={4}>Группа</Title>
 						<Text size="sm" c="dimmed">
@@ -1764,7 +1762,7 @@ export function TablePage() {
 							header="Название события"
 						/>
 	</TableData>
-				</Tabs.Panel> */}
+				</Tabs.Panel>
 			</Tabs>
 		</Stack>
 	);

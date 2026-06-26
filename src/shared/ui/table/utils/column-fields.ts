@@ -109,24 +109,21 @@ export function findGroupColumn<T>(columns: ColumnEntity<T>[]): ColumnEntity<T> 
 	);
 }
 
-/** colspan tbody: group-only не учитывается; split-field — colspan родителя. */
-export function calculateTableColspan<T>(columns: ColumnEntity<T>[]): number {
-	let sum = 0;
-	for (const column of columns) {
-		if (column.isFieldSplit || isFieldSplitColumn(column)) {
-			sum += column.colspan;
-			continue;
-		}
-		if (column.isColumns && column.columns.length > 0) {
-			sum += calculateTableColspan(column.columns);
-			continue;
-		}
-		if (column.isGroup && !column.isGrouped) {
-			continue;
-		}
-		sum += column.colspan;
+/** Физический colspan колонки в tbody (split-field → colspan, остальные → 1). */
+export function getBodyColumnPhysicalSpan<T>(column: ColumnEntity<T>): number {
+	if (column.isFieldSplit || isFieldSplitColumn(column)) {
+		return column.colspan;
 	}
-	return sum || 1;
+	return 1;
+}
+
+export function sumBodyColumnPhysicalSpans<T>(columns: ColumnEntity<T>[]): number {
+	return columns.reduce((sum, column) => sum + getBodyColumnPhysicalSpan(column), 0);
+}
+
+/** Число физических колонок tbody (включая group-only и split-field). */
+export function calculateTableColspan<T>(columns: ColumnEntity<T>[]): number {
+	return sumBodyColumnPhysicalSpans(flattenBodyColumns(columns)) || 1;
 }
 
 export function resolveColumnGroupKey<T>(column: ColumnEntity<T>): string {

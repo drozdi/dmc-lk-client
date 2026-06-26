@@ -2,6 +2,12 @@ import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
 import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
 import {
+	getBodyColumnPhysicalSpan,
+	getHeaderCellKey,
+	isGroupOnlyExpanderColumn,
+	sumBodyColumnPhysicalSpans,
+} from '../../utils/column-fields';
+import {
 	getGroupNestedColumns,
 	getGroupNestedData,
 	getGroupOnlyNestedRowLayout,
@@ -10,8 +16,9 @@ import {
 	hasGroupNestedData,
 } from '../../utils/group-by';
 import { TableData } from '../../TableData';
-import type { TableDataProps, TableGroupLayout } from '../../type';
+import type { TableDataProps, TableGroupLayout, ColumnEntity } from '../../type';
 import type { TableBodyGroupProps } from '../type';
+import classes from '../style.module.css';
 
 function resolveNestedGroupLayout(groupKeysLength: number): TableGroupLayout {
 	if (groupKeysLength > 1) {
@@ -20,68 +27,67 @@ function resolveNestedGroupLayout(groupKeysLength: number): TableGroupLayout {
 	return 'default';
 }
 
-function GroupNestedRowCells({
-	beforeExpander,
-	afterExpander,
-	nestedColspan,
+function NestedLayoutPlaceholderCell<T>({ column }: { column: ColumnEntity<T> }) {
+	const isGroupOnly = isGroupOnlyExpanderColumn(column);
+	return (
+		<Table.Td
+			key={getHeaderCellKey(column)}
+			p="0"
+			aria-hidden
+			colSpan={getBodyColumnPhysicalSpan(column)}
+			className={isGroupOnly ? classes['expanderCell'] : undefined}
+		/>
+	);
+}
+
+function GroupNestedRowCells<T>({
+	beforeColumns,
+	afterColumns,
+	expandColumn,
+	nestedColumns,
 	nestedBeforeExpander,
 	groupAt,
 	children,
 }: {
-	beforeExpander: number;
-	afterExpander: number;
-	nestedColspan: number;
+	beforeColumns: ColumnEntity<T>[];
+	afterColumns: ColumnEntity<T>[];
+	expandColumn: ColumnEntity<T>;
+	nestedColumns: ColumnEntity<T>[];
 	nestedBeforeExpander: boolean;
 	groupAt: 'start' | 'end';
 	children: React.ReactNode;
 }) {
-	const isStart = groupAt !== 'end';
-	const leadingCells = Array.from({ length: beforeExpander }, (_, index) => (
-		<Table.Td key={`leading-${index}`} p="0" aria-hidden />
-	));
-	const trailingCells = Array.from({ length: afterExpander }, (_, index) => (
-		<Table.Td key={`trailing-${index}`} p="0" aria-hidden />
-	));
-	const expanderCell = <Table.Td key="expander" p="0" aria-hidden />;
+	const nestedColspan = Math.max(
+		nestedColumns.reduce((sum, col) => sum + getBodyColumnPhysicalSpan(col), 0),
+		1,
+	);
+	const expanderCell = <NestedLayoutPlaceholderCell<T> key="expander" column={expandColumn} />;
 	const nestedCell = (
-		<Table.Td key="nested" p="0" colSpan={Math.max(nestedColspan, 1)}>
+		<Table.Td key="nested" p="0" colSpan={nestedColspan}>
 			{children}
 		</Table.Td>
 	);
-
-	if (isStart) {
-		if (nestedBeforeExpander) {
-			return (
-				<>
-					{nestedCell}
-					{expanderCell}
-				</>
-			);
-		}
-		return (
-			<>
-				{leadingCells}
-				{expanderCell}
-				{nestedCell}
-			</>
-		);
-	}
 
 	if (nestedBeforeExpander) {
 		return (
 			<>
 				{nestedCell}
 				{expanderCell}
-				{trailingCells}
+				{groupAt === 'end' &&
+					afterColumns.map((col) => <NestedLayoutPlaceholderCell<T> key={getHeaderCellKey(col)} column={col} />)}
 			</>
 		);
 	}
 
 	return (
 		<>
-			{leadingCells}
+			{beforeColumns.map((col) => (
+				<NestedLayoutPlaceholderCell<T> key={getHeaderCellKey(col)} column={col} />
+			))}
 			{expanderCell}
 			{nestedCell}
+			{groupAt === 'end' &&
+				afterColumns.map((col) => <NestedLayoutPlaceholderCell<T> key={getHeaderCellKey(col)} column={col} />)}
 		</>
 	);
 }
@@ -107,7 +113,7 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 		[isGroupFirst, groupKeys.length],
 	);
 
-	const layout = useMemo(
+	const rowLayout = useMemo(
 		() => getGroupOnlyNestedRowLayout(columns, column, groupAt),
 		[columns, column, groupAt],
 	);
@@ -146,11 +152,11 @@ export function TableBodyGroup<T = object>({ node, columns, column, level = 0 }:
 			}}
 		>
 			{isRendered ? (
-				<Table.Td p="0" colSpan={columns.length}>
+				<Table.Td p="0" colSpan={sumBodyColumnPhysicalSpans(columns)}>
 					{nestedTable}
 				</Table.Td>
 			) : (
-				<GroupNestedRowCells groupAt={groupAt ?? 'start'} {...layout}>
+				<GroupNestedRowCells<T> groupAt={groupAt ?? 'start'} {...rowLayout}>
 					{nestedTable}
 				</GroupNestedRowCells>
 			)}

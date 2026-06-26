@@ -1,6 +1,6 @@
 import { Group, Table } from "@mantine/core";
 import { memo, useMemo } from 'react';
-import { useTableGroupingContext } from '../../context';
+import { useTableColumnSizingContext, useTableGroupingContext } from '../../context';
 import type { TableNode } from '../../type';
 import {
 	isGroupOnlyExpanderColumn,
@@ -30,6 +30,7 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 	plain = false,
 }: TableBodyCellWrapProps<T>) {
 	const { groupKeys, groupLevel: tableNestLevel, groupLayout, groupAt } = useTableGroupingContext<T>();
+	const { getColumnWidth } = useTableColumnSizingContext<T>();
 
 	const { tdStyle, groupedContentStyle } = useMemo(() => {
 		const baseStyle =
@@ -114,7 +115,8 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 	}, [children, column.isHoverSlot, column.isSelecting, groupedContentStyle, hasGroupedContentStyle, plain]);
 
 	const isGroupOnlyExpander = isGroupOnlyExpanderColumn(column);
-	const expanderWidth = TABLE_EXPANDER_COLUMN_WIDTH;
+	const storedWidth = getColumnWidth(column);
+	const expanderWidth = storedWidth ?? TABLE_EXPANDER_COLUMN_WIDTH;
 	const bodyColspan = column.isFieldSplit ? column.colspan : undefined;
 
 	return (
@@ -132,8 +134,8 @@ export const TableBodyCellWrap = memo(function TableBodyCellWrap<T = object>({
 							? expanderWidth
 							: undefined
 			}
-			miw={isGroupOnlyExpander ? expanderWidth : undefined}
-			maw={isGroupOnlyExpander ? expanderWidth : undefined}
+			miw={isGroupOnlyExpander ? TABLE_EXPANDER_COLUMN_WIDTH : undefined}
+			maw={isGroupOnlyExpander && storedWidth == null ? TABLE_EXPANDER_COLUMN_WIDTH : undefined}
 			align={column.isSelecting ? 'center' : column.align}
 		>
 			{content}

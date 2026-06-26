@@ -600,35 +600,61 @@ export function getGroupOnlyNestedRowLayout<T>(
 	expandColumn: ColumnEntity<T>,
 	groupAt: 'start' | 'end' = 'start',
 ): {
-	beforeExpander: number;
-	afterExpander: number;
-	nestedColspan: number;
+	beforeColumns: ColumnEntity<T>[];
+	afterColumns: ColumnEntity<T>[];
+	expandColumn: ColumnEntity<T>;
+	nestedColumns: ColumnEntity<T>[];
 	nestedBeforeExpander: boolean;
 } {
 	const expandIndex = columns.findIndex((column) => column.field === expandColumn.field);
 	if (expandIndex < 0) {
 		return {
-			beforeExpander: 0,
-			afterExpander: 0,
-			nestedColspan: columns.length,
+			beforeColumns: [],
+			afterColumns: columns,
+			expandColumn,
+			nestedColumns: columns,
 			nestedBeforeExpander: true,
 		};
 	}
 
-	const beforeExpander = expandIndex;
-	const afterExpander = columns.length - expandIndex - 1;
+	const beforeColumns = columns.slice(0, expandIndex);
+	const afterColumns = columns.slice(expandIndex + 1);
 
 	if (isGroupAtStart(groupAt)) {
-		if (afterExpander > 0) {
-			return { beforeExpander, afterExpander, nestedColspan: afterExpander, nestedBeforeExpander: false };
+		if (afterColumns.length > 0) {
+			return {
+				beforeColumns,
+				afterColumns,
+				expandColumn,
+				nestedColumns: afterColumns,
+				nestedBeforeExpander: false,
+			};
 		}
-		return { beforeExpander, afterExpander, nestedColspan: beforeExpander, nestedBeforeExpander: true };
+		return {
+			beforeColumns,
+			afterColumns,
+			expandColumn,
+			nestedColumns: beforeColumns,
+			nestedBeforeExpander: true,
+		};
 	}
 
-	if (beforeExpander > 0) {
-		return { beforeExpander, afterExpander, nestedColspan: beforeExpander, nestedBeforeExpander: true };
+	if (beforeColumns.length > 0) {
+		return {
+			beforeColumns,
+			afterColumns,
+			expandColumn,
+			nestedColumns: beforeColumns,
+			nestedBeforeExpander: true,
+		};
 	}
-	return { beforeExpander, afterExpander, nestedColspan: afterExpander, nestedBeforeExpander: false };
+	return {
+		beforeColumns,
+		afterColumns,
+		expandColumn,
+		nestedColumns: afterColumns,
+		nestedBeforeExpander: false,
+	};
 }
 
 /** Колонки вложенной group-first таблицы: без group-only, grouped сохраняются. */
