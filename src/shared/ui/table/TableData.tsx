@@ -156,7 +156,7 @@ export function TableData<T = object>({
 	onSelectedRowsChange: onInitialSelectedRowsChange,
 
 	data: initialData,
-	total: initialProps,
+	total: initialTotal,
 	loading: initialLoading,
 	error: initialError,
 	withHeader = true,
@@ -246,7 +246,7 @@ export function TableData<T = object>({
 	const [history, setHistory] = useState<(string | number)[]>([]);
 
 	const [data, setData] = useState<T[]>(Array.isArray(initialData) ? initialData : []);
-	const [total, setTotal] = useState<number>(initialProps || data?.length);
+	const [total, setTotal] = useState<number>(initialTotal || data?.length);
 	const [totalPage, setTotalPage] = useState(Math.ceil(total / limit));
 
 	const [fetchError, setFetchError] = useState<React.ReactNode>(undefined);
@@ -765,12 +765,12 @@ export function TableData<T = object>({
 	}, [data, sort.rules, groupKeys, groupLayout, initialGroupLevel, limit, page, fetcher]);
 
 	useEffect(() => {
-		if (initialProps !== undefined) {
-			setTotal(initialProps);
+		if (initialTotal !== undefined) {
+			setTotal(initialTotal);
 			return;
 		}
 		setTotal(data.length);
-	}, [initialProps, data.length]);
+	}, [initialTotal, data.length]);
 
 	const expandables = useMemo<TableExpandablesState>(() => {
 		const group =
@@ -1016,30 +1016,30 @@ export function TableData<T = object>({
 								<TableEditProvider value={editContextValue}>
 									<TableRowActionsProvider value={rowActionsContextValue}>
 										<TableDataProvider value={tableContextValue}>
-			<Stack mih={minHeight} gap="md">
-				<Loading active={loading} keepMounted mih={minHeight}>
-					{error && <TableError>{error}</TableError>}
-					{!error &&
-						(nodes.length
-							? render(nodes, columns, visibleColumns)
-							: <TableEmpty text={noDataText} />)}
-				</Loading>
-				{withPagination && (
-					<Pagination
-						loading={loading}
-						onNext={fetcher ? handlerNext : undefined}
-						onPprevious={fetcher ? handlerPprevious : undefined}
-						activePprevious={history?.length > 1}
-						activeNext={!!next}
-						page={page as number}
-						total={totalPage}
-						limit={limit}
-						limits={initialLimits}
-						onChangePage={setPage}
-						onChangeLimit={handlerChangeLimit}
-					/>
-				)}
-			</Stack>
+											<Stack mih={minHeight} gap="md">
+												<Loading active={loading} keepMounted mih={minHeight}>
+													{error && <TableError>{error}</TableError>}
+													{!error &&
+														(nodes.length
+															? render(nodes, columns, visibleColumns)
+															: <TableEmpty text={noDataText} />)}
+												</Loading>
+												{withPagination && (
+													<Pagination
+														loading={loading}
+														onNext={fetcher ? handlerNext : undefined}
+														onPprevious={fetcher ? handlerPprevious : undefined}
+														activePprevious={history?.length > 1}
+														activeNext={!!next}
+														page={page as number}
+														total={totalPage}
+														limit={limit}
+														limits={initialLimits}
+														onChangePage={setPage}
+														onChangeLimit={handlerChangeLimit}
+													/>
+												)}
+											</Stack>
 										</TableDataProvider>
 									</TableRowActionsProvider>
 								</TableEditProvider>

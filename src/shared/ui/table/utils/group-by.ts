@@ -457,8 +457,64 @@ export function isGroupedNestedRow<T>(
 	return (node.groupLevel ?? 0) > 0 || node.isChildren;
 }
 
+/** Тип линии древовидной направляющей в grouped-колонке. */
+export type GroupedTreeLineKind = 'none' | 'vertical' | 'branch' | 'branch-last';
+
 /**
- * Шаги отступа для grouped: корень — 0, любая вложенная строка — 1 шаг (без накопления по уровням).
+ * Линия вместо значения в grouped-колонке для вложенных строк.
+ * vertical — сквозная │; branch — ├; branch-last — └.
+ */
+export function getGroupedTreeLineKind<T>(
+	node: TableNode<T>,
+	column: ColumnEntity<T>,
+	columns: ColumnEntity<T>[],
+	groupKeys: (keyof T)[],
+	isLastInSiblingGroup: boolean,
+): GroupedTreeLineKind {
+	if (isUnifiedGroupColumn(column) || !column.isGrouped || column.isGroup || !column.field) {
+		return 'none';
+	}
+	if (!isGroupedNestedRow(node)) {
+		return 'none';
+	}
+
+	const columnLevel = resolveGroupedColumnLevel(column, columns, groupKeys);
+	if (columnLevel < 0) {
+		return 'none';
+	}
+
+	const rowGroupLevel =
+		node.groupLevel ??
+		(groupKeys.length > 0 ? Math.min(groupKeys.length - 1, columnLevel) : columnLevel);
+
+	if (columnLevel > rowGroupLevel) {
+		return 'none';
+	}
+
+	if (columnLevel === rowGroupLevel) {
+		return 'none';
+	}
+
+	if (columnLevel === rowGroupLevel - 1) {
+		return isLastInSiblingGroup ? 'branch-last' : 'branch';
+	}
+
+	return 'vertical';
+}
+
+export function shouldHideGroupedColumnValue<T>(
+	node: TableNode<T>,
+	column: ColumnEntity<T>,
+	columns: ColumnEntity<T>[],
+	groupKeys: (keyof T)[],
+	isLastInSiblingGroup: boolean,
+): boolean {
+	return getGroupedTreeLineKind(node, column, columns, groupKeys, isLastInSiblingGroup) !== 'none';
+}
+
+/**
+ * Шаги отступа для grouped: корень — по уровню колонки (groupAt end);
+ * вложенные строки — 0 (иерархия через линии дерева).
  */
 export function getGroupedNestedPaddingSteps<T>(
 	node: TableNode<T>,
@@ -481,14 +537,14 @@ export function getGroupedNestedPaddingSteps<T>(
 		return 0;
 	}
 
-	return 1;
+	return 0;
 }
 
-/** Один шаг отступа для любой вложенной строки. */
+/** Отступ для не-grouped колонок вложенной строки (0 — без сдвига). */
 export function getNestedRowPaddingSteps<T>(
-	node: Pick<TableNode<T>, 'groupLevel' | 'isChildren'>,
+	_node: Pick<TableNode<T>, 'groupLevel' | 'isChildren'>,
 ): number {
-	return isGroupedNestedRow(node) ? 1 : 0;
+	return 0;
 }
 
 /** groupAt по умолчанию — start. */

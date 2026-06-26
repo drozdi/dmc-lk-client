@@ -25,6 +25,7 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 	grouped,
 	groupedVisual,
 }: TableBodyRowProps<T>) {
+	const isLastInGroupedBlock = groupedVisual === 'highlight-last';
 	const { rowActionsOnHover, hasActionsColumn } = useTableRowActionsContext<T>();
 	const { groupLayout, groupKeys } = useTableGroupingContext<T>();
 	const { editableIndex, editableColumns } = useTableEditContext<T>();
@@ -65,6 +66,7 @@ export const TableBodyRow = memo(function TableBodyRow<T = object>({
 						columns={columns}
 						columnIndex={columnIndex}
 						isEditing={isEditing}
+						isLastInGroupedBlock={isLastInGroupedBlock}
 					/>
 				);
 			})}

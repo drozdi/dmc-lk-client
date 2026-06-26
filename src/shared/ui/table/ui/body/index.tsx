@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { useTableGroupingContext } from '../../context';
-import { getGroupedColumnForLevel } from '../../utils/group-by';
 import { findGroupColumn } from '../../utils/column-fields';
+import { getGroupedColumnForLevel } from '../../utils/group-by';
 import type { TableBodyProps } from '../type';
 import { TableBodyRow } from './row';
 

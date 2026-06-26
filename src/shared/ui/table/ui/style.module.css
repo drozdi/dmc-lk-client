@@ -95,6 +95,68 @@ th:last-child .resize {
 	border-bottom: 2px solid var(--mantine-color-gray-4) !important;
 }
 
+.groupedTreeCell {
+	position: relative;
+	display: flex;
+	align-items: stretch;
+	width: 100%;
+	min-height: 100%;
+	overflow: visible;
+}
+
+.groupedTreeLine {
+	position: relative;
+	flex: 1;
+	align-self: stretch;
+	width: 100%;
+	min-height: 1.25rem;
+}
+
+.groupedTreeLine::before,
+.groupedTreeLine::after {
+	content: '';
+	position: absolute;
+	pointer-events: none;
+}
+
+.groupedTreeLine[data-kind='vertical']::before {
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	border-left: 1px solid var(--mantine-color-gray-4);
+	transform: translateX(-50%);
+}
+
+.groupedTreeLine[data-kind='branch']::before {
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	border-left: 1px solid var(--mantine-color-gray-4);
+	transform: translateX(-50%);
+}
+
+.groupedTreeLine[data-kind='branch']::after {
+	left: 50%;
+	top: 50%;
+	right: 0;
+	border-top: 1px solid var(--mantine-color-gray-4);
+}
+
+.groupedTreeLine[data-kind='branch-last']::before {
+	left: 50%;
+	top: 0;
+	height: 50%;
+	border-left: 1px solid var(--mantine-color-gray-4);
+	transform: translateX(-50%);
+}
+
+.groupedTreeLine[data-kind='branch-last']::after {
+	left: 50%;
+	top: 50%;
+	right: 0;
+	border-top: 1px solid var(--mantine-color-gray-4);
+}
+
 .hoverSlotHeader,
 .hoverSlotCell {
 	width: 0 !important;

@@ -1,6 +1,8 @@
 import { Collapse, Table } from '@mantine/core';
 import { useMemo } from 'react';
 import { useTableDataContext, useTableExpandContext, useTableGroupingContext } from '../../context';
+import { TableData } from '../../TableData';
+import type { TableDataProps } from '../../type';
 import {
 	alignNestedColumnsFromExpander,
 	getGroupedColumnForLevel,
@@ -9,8 +11,6 @@ import {
 	getNodeExpandKey,
 	groupChildrenForExpand,
 } from '../../utils/group-by';
-import { TableData } from '../../TableData';
-import type { TableDataProps } from '../../type';
 import type { TableBodyGroupedProps, TableBodyRowProps } from '../type';
 import { TableBodyRow } from './row';
 
@@ -134,7 +134,6 @@ function TableBodyGroupedNested<T = object>({
 						groupLayout="grouped-first"
 						initialGroupLevel={parentLevel + 1}
 						level={level}
-						groupedHighlightLastRow
 						withHeader={false}
 						withPagination={false}
 					/>

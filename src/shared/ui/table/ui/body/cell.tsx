@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 import { useTableEditContext, useTableGroupingContext } from '../../context';
 import classes from '../style.module.css';
+import type { ColumnEntity } from '../../type';
 import type { TableBodyCellProps } from '../type';
 import { TableBodyCellActions } from './actions-cell';
 import { TableBodyCellExpander } from './cell-expander';
@@ -14,16 +15,25 @@ import { TableBodyUnifiedExpander } from './unified-expander';
 function GroupedGroupCellContent<T>({
 	node,
 	column,
+	columns,
+	isLastInGroupedBlock,
 }: {
 	node: TableBodyCellProps<T>['node'];
 	column: TableBodyCellProps<T>['column'];
+	columns?: ColumnEntity<T>[];
+	isLastInGroupedBlock?: boolean;
 }) {
 	const { groupAt } = useTableGroupingContext<T>();
 
 	return (
 		<div className={classes['expanderHeaderInnerLabeled']}>
 			{groupAt === 'start' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
-			<TableBodyCellSlot<T> node={node} column={column} />
+			<TableBodyCellSlot<T>
+				node={node}
+				column={column}
+				columns={columns}
+				isLastInGroupedBlock={isLastInGroupedBlock}
+			/>
 			{groupAt === 'end' && <TableBodyUnifiedExpander<T> node={node} column={column} />}
 		</div>
 	);
@@ -35,6 +45,7 @@ function TableBodyCellInner<T>({
 	columns,
 	columnIndex,
 	isEditing,
+	isLastInGroupedBlock,
 }: TableBodyCellProps<T> & { isEditing: boolean }) {
 	const { updateNode, commitEdit } = useTableEditContext<T>();
 	const { groupAt } = useTableGroupingContext<T>();
@@ -73,7 +84,12 @@ function TableBodyCellInner<T>({
 				node={node}
 				plain
 			>
-				<GroupedGroupCellContent<T> node={node} column={column} />
+				<GroupedGroupCellContent<T>
+					node={node}
+					column={column}
+					columns={columns}
+					isLastInGroupedBlock={isLastInGroupedBlock}
+				/>
 			</TableBodyCellWrap>
 		);
 	}
@@ -83,7 +99,12 @@ function TableBodyCellInner<T>({
 			{groupAt === 'start' && <TableBodyCellExpander<T> node={node} column={column} />}
 			{(isEditing &&
 				column.editor?.(node.data, column, handleUpdate, handleCommitEdit)) || (
-				<TableBodyCellSlot<T> node={node} column={column} />
+				<TableBodyCellSlot<T>
+					node={node}
+					column={column}
+					columns={columns}
+					isLastInGroupedBlock={isLastInGroupedBlock}
+				/>
 			)}
 			{groupAt === 'end' && <TableBodyCellExpander<T> node={node} column={column} />}
 		</TableBodyCellWrap>
@@ -99,12 +120,19 @@ function areCellPropsEqual<T>(
 		prev.column === next.column &&
 		prev.columns === next.columns &&
 		prev.columnIndex === next.columnIndex &&
-		prev.isEditing === next.isEditing
+		prev.isEditing === next.isEditing &&
+		prev.isLastInGroupedBlock === next.isLastInGroupedBlock
 	);
 }
 
 const MemoizedTableBodyCellInner = memo(TableBodyCellInner, areCellPropsEqual) as typeof TableBodyCellInner;
 
 export function TableBodyCell<T = object>(props: TableBodyCellProps<T> & { isEditing?: boolean }) {
-	return <MemoizedTableBodyCellInner {...props} isEditing={props.isEditing ?? false} />;
+	return (
+		<MemoizedTableBodyCellInner
+			{...props}
+			isEditing={props.isEditing ?? false}
+			isLastInGroupedBlock={props.isLastInGroupedBlock ?? false}
+		/>
+	);
 }

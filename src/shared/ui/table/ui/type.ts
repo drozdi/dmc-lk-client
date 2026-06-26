@@ -119,12 +119,17 @@ export interface TableBodyCellWrapProps<T = object> {
 	plain?: boolean;
 }
 
-export interface TableBodyCellSlotProps<T = object> extends TableBodyCellBaseProps<T> {}
+export interface TableBodyCellSlotProps<T = object> extends TableBodyCellBaseProps<T> {
+	columns?: ColumnEntity<T>[];
+	/** Последняя строка в раскрытом grouped-блоке (└ вместо ├). */
+	isLastInGroupedBlock?: boolean;
+}
 
 export interface TableBodyCellProps<T = object> extends TableBodyCellBaseProps<T> {
 	columns?: ColumnEntity<T>[];
 	columnIndex?: number;
 	level?: number;
+	isLastInGroupedBlock?: boolean;
 }
 
 export interface TableBodyCellExpandProps<T = object> extends TableBodyCellBaseProps<T> {
